@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
+#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION >= 15
 
 #include "SwappyVkGoogleDisplayTiming.h"
 
@@ -24,22 +24,21 @@ using std::chrono::nanoseconds;
 
 namespace swappy {
 
-SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(JNIEnv           *env,
-                                                         jobject          jactivity,
-                                                         VkPhysicalDevice physicalDevice,
-                                                         VkDevice         device,
-                                                         const SwappyVkFunctionProvider* provider) :
-    SwappyVkBase(env, jactivity, physicalDevice, device, provider) {}
+SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(
+    JNIEnv* env, jobject jactivity, VkPhysicalDevice physicalDevice,
+    VkDevice device, const SwappyVkFunctionProvider* provider)
+    : SwappyVkBase(env, jactivity, physicalDevice, device, provider) {}
 
-bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                                            uint64_t*      pRefreshDuration) {
+bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
+    VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
     if (!isEnabled()) {
         ALOGE("Swappy is disabled.");
         return false;
     }
 
     VkRefreshCycleDurationGOOGLE refreshCycleDuration;
-    VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain, &refreshCycleDuration);
+    VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain,
+                                                     &refreshCycleDuration);
     if (res != VK_SUCCESS) {
         ALOGE("mpfnGetRefreshCycleDurationGOOGLE failed %d", res);
         return false;
@@ -49,14 +48,14 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(VkSwapchainKHR swapc
 
     double refreshRate = 1000000000.0 / *pRefreshDuration;
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
-        *pRefreshDuration, refreshRate);
+          *pRefreshDuration, refreshRate);
 
     return true;
 }
 
-VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 queue,
-                                                     uint32_t                queueFamilyIndex,
-                                                     const VkPresentInfoKHR* pPresentInfo) {
+VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
+    VkQueue queue, uint32_t queueFamilyIndex,
+    const VkPresentInfoKHR* pPresentInfo) {
     if (!isEnabled()) {
         ALOGE("Swappy is disabled.");
         return VK_ERROR_INITIALIZATION_FAILED;
@@ -68,10 +67,10 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
     }
 
     const SwappyCommon::SwapHandlers handlers = {
-        .lastFrameIsComplete =
-            std::bind(&SwappyVkGoogleDisplayTiming::lastFrameIsCompleted, this, queue),
-        .getPrevFrameGpuTime =
-            std::bind(&SwappyVkGoogleDisplayTiming::getLastFenceTime, this, queue),
+        .lastFrameIsComplete = std::bind(
+            &SwappyVkGoogleDisplayTiming::lastFrameIsCompleted, this, queue),
+        .getPrevFrameGpuTime = std::bind(
+            &SwappyVkGoogleDisplayTiming::getLastFenceTime, this, queue),
     };
 
     VkSemaphore semaphore;
@@ -100,38 +99,26 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
         // Setup the new structures to pass:
         for (uint32_t i = 0; i < pPresentInfo->swapchainCount; i++) {
             pPresentTimes[i].presentID = mNextPresentID;
-            pPresentTimes[i].desiredPresentTime = mCommonBase.getPresentationTime().time_since_epoch().count();
+            pPresentTimes[i].desiredPresentTime =
+                mCommonBase.getPresentationTime().time_since_epoch().count();
         }
 
-        presentTimesInfo = {
-            VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
-            pPresentInfo->pNext,
-            pPresentInfo->swapchainCount,
-            pPresentTimes
-        };
+        presentTimesInfo = {VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
+                            pPresentInfo->pNext, pPresentInfo->swapchainCount,
+                            pPresentTimes};
 
         replacementPresentInfo = {
-            pPresentInfo->sType,
-            &presentTimesInfo,
-            waitSemaphoreCount,
-            pWaitSemaphores,
-            pPresentInfo->swapchainCount,
-            pPresentInfo->pSwapchains,
-            pPresentInfo->pImageIndices,
-            pPresentInfo->pResults
-        };
+            pPresentInfo->sType,          &presentTimesInfo,
+            waitSemaphoreCount,           pWaitSemaphores,
+            pPresentInfo->swapchainCount, pPresentInfo->pSwapchains,
+            pPresentInfo->pImageIndices,  pPresentInfo->pResults};
 
     } else {
         replacementPresentInfo = {
-            pPresentInfo->sType,
-            nullptr,
-            waitSemaphoreCount,
-            pWaitSemaphores,
-            pPresentInfo->swapchainCount,
-            pPresentInfo->pSwapchains,
-            pPresentInfo->pImageIndices,
-            pPresentInfo->pResults
-        };
+            pPresentInfo->sType,          nullptr,
+            waitSemaphoreCount,           pWaitSemaphores,
+            pPresentInfo->swapchainCount, pPresentInfo->pSwapchains,
+            pPresentInfo->pImageIndices,  pPresentInfo->pResults};
     }
     mNextPresentID++;
 
@@ -143,4 +130,4 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(VkQueue                 que
 
 }  // namespace swappy
 
-#endif // #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
+#endif  // #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15

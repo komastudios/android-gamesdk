@@ -4,9 +4,58 @@
       "apk_base": "../istresser/app/build/outputs/apk/debug",
       "apk_name": "app-debug.apk",
       "firebase" : {
+        "no-record-video": true,
         "timeout" : "11m"
       },
-      "orientation" : "landscape"
+      "orientation" : "landscape",
+      "metrics": {
+        "constant": {
+          "MemoryInfo": {
+            "totalMem": true,
+            "threshold": true
+          },
+          "meminfo": {
+            "CommitLimit": true,
+            "HighTotal": true,
+            "LowTotal": true,
+            "MemTotal": true
+          },
+          "ActivityManager": {
+            "MemoryClass": true,
+            "LargeMemoryClass": true,
+            "LowRamDevice": true
+          }
+        },
+        "variable": {
+          "debug": {
+            "nativeHeapAllocatedSize": true
+          },
+          "MemoryInfo": {
+            "availMem": true,
+            "lowMemory": true
+          },
+          "meminfo": {
+            "Active": true,
+            "Active(anon)": true,
+            "Active(file)": true,
+            "AnonPages": true,
+            "MemAvailable": true,
+            "MemFree": true,
+            "VmData": true,
+            "VmRSS": true
+          },
+          "proc": {
+            "oom_score": true
+          },
+          "status": {
+            "VmRSS": true,
+            "VmSize": true
+          }
+        }
+      },
+      "predictions": {
+        "oom_score": true
+      }
     }
   ],
   [
@@ -14,143 +63,72 @@
       "malloc": "40K"
     },
     {
-      "glTest": "40K"
+      "glTest": "40K",
+      "maxConsumer": "2048K"
     }
   ],
   [
-    {},
     {
-      "blocker": true
-    }
-  ],
-  [
-    {},
+    },
     {
       "heuristics": {
-        "trim": true
+        "onTrim": true
       }
     },
     {
       "heuristics": {
-        "vmsize": 0.95
-      }
-    },
-    {
-      "heuristics": {
-        "oom": 400
-      }
-    },
-    {
-      "heuristics": {
-        "oom": 450
-      }
-    },
-    {
-      "heuristics": {
-        "oom": 500
-      }
-    },
-    {
-      "heuristics": {
-        "try": "64M"
-      }
-    },
-    {
-      "heuristics": {
-        "low": true
-      }
-    },
-    {
-      "heuristics": {
-        "cl": 0.95
-      }
-    },
-    {
-      "heuristics": {
-        "avail": "200M"
-      }
-    },
-    {
-      "heuristics": {
-        "avail": "300M"
-      }
-    },
-    {
-      "heuristics": {
-        "cached": 1.0
-      }
-    },
-    {
-      "heuristics": {
-        "avail2": "200M"
-      }
-    },
-    {
-      "heuristics": {
-        "avail2": "300M"
-      }
-    },
-    {
-      "heuristics": {
-        "nativeAllocated": {
-          "red": 0.9,
-          "yellow": 0.8
-        }
-      }
-    },
-    {
-      "heuristics": {
-        "VmSize": {
-          "red": 0.8,
-          "yellow": 0.7
+        "oom_score": {
+          "deltaLimit": {
+            "red": 0.85,
+            "yellow": 0.75
+          }
         }
       }
     },
     {
       "heuristics": {
         "oom_score": {
-          "red": 0.9,
-          "yellow": 0.8
+          "fixed": {
+            "red": 380,
+            "yellow": 300
+          }
         }
       }
     },
     {
       "heuristics": {
-        "summary.graphics": {
-          "red": 0.9,
-          "yellow": 0.8
-        }
-      }
-    },
-    {
-      "heuristics": {
-        "summary.total-pss": {
-          "red": 0.9,
-          "yellow": 0.8
+        "VmRSS": {
+          "deltaLimit": {
+            "red": 0.90,
+            "yellow": 0.75
+          }
         }
       }
     },
     {
       "heuristics": {
         "availMem": {
-          "red": 0.4,
-          "yellow": 0.3
-        }
-      }
-    },
-    {
-      "heuristics": {
-        "Cached": {
-          "red": 0.9,
-          "yellow": 0.8
-        }
-      }
-    },
-    {
-      "heuristics": {
+          "baselineRatio": {
+            "red": 0.30,
+            "yellow": 0.40
+          }
+        },
+
         "MemAvailable": {
-          "red": 0.4,
-          "yellow": 0.3
+          "baselineRatio": {
+            "red": 0.30,
+            "yellow": 0.40
+          }
+        }
+      }
+    },
+    {
+      "heuristics": {
+        "Active": {
+          "fixed  ": {
+            "red": "300M",
+            "yellow": "400M"
+          }
         }
       }
     }

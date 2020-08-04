@@ -15,6 +15,7 @@
  */
 
 #include <jni.h>
+
 #include <string>
 
 #include "swappy_test.h"
@@ -22,15 +23,13 @@
 #include "Log.h"
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_swappy_testapp_MainActivity_runTests(
-        JNIEnv* env,
-        jobject ctx) {
+Java_com_swappy_testapp_MainActivity_runTests(JNIEnv* env, jobject ctx) {
     int argc = 1;
     char appName[] = "testapp";
-    char *argv[] = { appName };
+    char* argv[] = {appName};
     std::string full_record;
     int ret_code = shared_main(argc, argv, env, ctx, full_record);
-    if (ret_code == 0 ) {
+    if (ret_code == 0) {
         ALOGV("%s", full_record.c_str());
     } else {
         ALOGE("%s", full_record.c_str());
@@ -39,9 +38,8 @@ Java_com_swappy_testapp_MainActivity_runTests(
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_swappy_testapp_MainActivity_testSummarySoFar(
-        JNIEnv* env,
-        jobject ctx) {
+Java_com_swappy_testapp_MainActivity_testSummarySoFar(JNIEnv* env,
+                                                      jobject ctx) {
     constexpr int BUF_LEN = 2048;
     static char buf[BUF_LEN] = "";
     test_summary(buf, BUF_LEN);

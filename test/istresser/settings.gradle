@@ -1,2 +1,2 @@
-include ':app', ':helperlibrary'
-project(':helperlibrary').projectDir = new File('../helperlibrary/helperlibrary')
+include ':app', ':memoryadvice'
+project(':memoryadvice').projectDir = new File('../memoryadvice/memoryadvice')

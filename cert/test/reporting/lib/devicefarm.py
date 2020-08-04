@@ -133,8 +133,8 @@ def make_device_args_list_from_catalog(subset: List[Dict],
 
 
 def run_test(flags_file: Path, args_yaml: Path, test_name: str,
-             enable_systrace: bool, devices: List[Dict], excluding: List[Dict],
-             target: DeploymentTarget):
+             enable_systrace: bool, enable_video: bool, devices: List[Dict],
+             excluding: List[Dict], target: DeploymentTarget):
     """Executes an android test deployment on firebase test lab
     Args:
         flags_file: Path to the flags file expected by ftl
@@ -142,6 +142,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
         test_name: The name of the test execution as will be displayed in the
             firebase dashboard
         enable_systrace: if true, cause FTL to record a systrace during exec
+        enable_video: if true, capture video of run
         devices: list of dicts describing devices to deploy to, in form
             of { codename: "sawfish", sdk_version: 26 }
         excluding: opposite to argument devices, elements in this list aren't
@@ -159,6 +160,7 @@ def run_test(flags_file: Path, args_yaml: Path, test_name: str,
         'test',
         'android',
         'run',
+        '--record-video' if enable_video else '--no-record-video',
         '--format=json',
         '--flags-file',
         str(flags_file.resolve()),
@@ -300,12 +302,11 @@ def download_cloud_artifacts(test_info, file_pattern, dst: Path) -> List[Path]:
     return outfiles
 
 
-def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
-                                    test: str, enable_systrace: bool,
-                                    devices: List[Dict], excluding: List[Dict],
-                                    target_devices: DeploymentTarget,
-                                    dst_dir: Path
-                                   ) -> Tuple[List[Path], List[Path]]:
+def run_on_farm_and_collect_reports(
+        args_dict: Dict, flags_dict: Dict, test: str, enable_systrace: bool,
+        enable_video: bool, devices: List[Dict], excluding: List[Dict],
+        target_devices: DeploymentTarget,
+        dst_dir: Path) -> Tuple[List[Path], List[Path]]:
     """Runs the tests on FTL, returning a tuple of lists of result
     json, and result systrace.
     Args:
@@ -313,6 +314,7 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
         flags_dict: the contents that ftl expects for the flags file
         test: the top-level test to run as described in args_dict
         enable_systrace: if true, collect systrace from ftl
+        enable_video: if true, capture video of run
         devices: List of dict (e.g. { codename: "sawfish", sdk_version: 26 })
             describing a subset of the available physical devices to run on;
             if empty, all physical devices available on FTL will be deployed
@@ -342,6 +344,7 @@ def run_on_farm_and_collect_reports(args_dict: Dict, flags_dict: Dict,
                                   args_file,
                                   test,
                                   enable_systrace=enable_systrace,
+                                  enable_video=enable_video,
                                   devices=devices,
                                   excluding=excluding,
                                   target=target_devices)

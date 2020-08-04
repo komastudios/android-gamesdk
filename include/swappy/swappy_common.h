@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <android/native_window.h>
+#include <stdint.h>
 
 /** @brief Swap interval for 60fps, in nanoseconds. */
 #define SWAPPY_SWAP_60FPS (16666667L)
@@ -40,13 +40,19 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
-#define SWAPPY_MINOR_VERSION 5
-#define SWAPPY_PACKED_VERSION ((SWAPPY_MAJOR_VERSION<<16)|(SWAPPY_MINOR_VERSION))
+#define SWAPPY_MINOR_VERSION 7
+#define SWAPPY_PACKED_VERSION \
+    ((SWAPPY_MAJOR_VERSION << 16) | (SWAPPY_MINOR_VERSION))
 
-// Internal macros to generate a symbol to track Swappy version, do not use directly.
-#define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) PREFIX ## _ ## MAJOR ## _ ## MINOR
-#define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR) SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
-#define SWAPPY_VERSION_SYMBOL SWAPPY_VERSION_CONCAT(Swappy_version, SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION)
+// Internal macros to generate a symbol to track Swappy version, do not use
+// directly.
+#define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) \
+    PREFIX##_##MAJOR##_##MINOR
+#define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR) \
+    SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
+#define SWAPPY_VERSION_SYMBOL                                   \
+    SWAPPY_VERSION_CONCAT(Swappy_version, SWAPPY_MAJOR_VERSION, \
+                          SWAPPY_MINOR_VERSION)
 
 /** @endcond */
 
@@ -54,7 +60,8 @@
 typedef uint64_t SwappyThreadId;
 
 /**
- * @brief A structure enabling you to set how Swappy starts and joins threads by calling
+ * @brief A structure enabling you to set how Swappy starts and joins threads by
+ * calling
  * ::Swappy_setThreadFunctions.
  *
  * Usage of this functionality is optional.
@@ -64,10 +71,12 @@ typedef struct SwappyThreadFunctions {
      *
      * This function is called by Swappy to start thread_func on a new thread.
      * @param user_data A value to be passed the thread function.
-     * If the thread was started, this function should set the thread_id and return 0.
-     * If the thread was not started, this function should return a non-zero value.
+     * If the thread was started, this function should set the thread_id and
+     * return 0. If the thread was not started, this function should return a
+     * non-zero value.
      */
-    int (*start)(SwappyThreadId* thread_id, void *(*thread_func)(void*), void* user_data);
+    int (*start)(SwappyThreadId* thread_id, void* (*thread_func)(void*),
+                 void* user_data);
 
     /** @brief Thread join callback.
      *
@@ -77,8 +86,8 @@ typedef struct SwappyThreadFunctions {
 
     /** @brief Thread joinable callback.
      *
-     * This function is called by Swappy to discover whether the thread with the given id
-     * is joinable.
+     * This function is called by Swappy to discover whether the thread with the
+     * given id is joinable.
      */
     bool (*joinable)(SwappyThreadId thread_id);
 } SwappyThreadFunctions;
@@ -89,9 +98,10 @@ extern "C" {
 
 /** @cond INTERNAL */
 
-// Internal function to track Swappy version bundled in a binary. Do not call directly.
-// If you are getting linker errors related to Swappy_version_x_y, you probably have a
-// mismatch between the header used at compilation and the actually library used by the linker.
+// Internal function to track Swappy version bundled in a binary. Do not call
+// directly. If you are getting linker errors related to Swappy_version_x_y, you
+// probably have a mismatch between the header used at compilation and the
+// actually library used by the linker.
 void SWAPPY_VERSION_SYMBOL();
 
 /** @endcond */
@@ -102,9 +112,11 @@ void SWAPPY_VERSION_SYMBOL();
 uint32_t Swappy_version();
 
 /**
- * @brief Call this before any other functions in order to use a custom thread manager.
+ * @brief Call this before any other functions in order to use a custom thread
+ * manager.
  *
- * Usage of this function is entirely optional. Swappy uses std::thread by default.
+ * Usage of this function is entirely optional. Swappy uses std::thread by
+ * default.
  *
  */
 void Swappy_setThreadFunctions(const SwappyThreadFunctions* thread_functions);
@@ -125,7 +137,8 @@ typedef void (*SwappyPreWaitCallback)(void*);
  * @param cpu_time_ns Time for CPU processing of this frame in nanoseconds.
  * @param gpu_time_ns Time for GPU processing of previous frame in nanoseconds.
  */
-typedef void (*SwappyPostWaitCallback)(void*, int64_t cpu_time_ns, int64_t gpu_time_ns);
+typedef void (*SwappyPostWaitCallback)(void*, int64_t cpu_time_ns,
+                                       int64_t gpu_time_ns);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::preSwapBuffers.
@@ -136,21 +149,25 @@ typedef void (*SwappyPreSwapBuffersCallback)(void*);
 /**
  * Pointer to a function that can be attached to SwappyTracer::postSwapBuffers.
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
- * @param desiredPresentationTimeMillis The target time, in milliseconds, at which the frame
- * would be presented on screen.
+ * @param desiredPresentationTimeMillis The target time, in milliseconds, at
+ * which the frame would be presented on screen.
  */
-typedef void (*SwappyPostSwapBuffersCallback)(void*, int64_t desiredPresentationTimeMillis);
+typedef void (*SwappyPostSwapBuffersCallback)(
+    void*, int64_t desiredPresentationTimeMillis);
 
 /**
  * Pointer to a function that can be attached to SwappyTracer::startFrame.
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
- * @param desiredPresentationTimeMillis The time, in milliseconds, at which the frame is scheduled to be presented.
+ * @param desiredPresentationTimeMillis The time, in milliseconds, at which the
+ * frame is scheduled to be presented.
  */
-typedef void (*SwappyStartFrameCallback)(void*, int currentFrame, int64_t desiredPresentationTimeMillis);
+typedef void (*SwappyStartFrameCallback)(void*, int currentFrame,
+                                         int64_t desiredPresentationTimeMillis);
 
 /**
- * Pointer to a function that can be attached to SwappyTracer::swapIntervalChanged.
- * Call ::SwappyGL_getSwapIntervalNS or ::SwappyVk_getSwapIntervalNS to get the latest swapInterval.
+ * Pointer to a function that can be attached to
+ * SwappyTracer::swapIntervalChanged. Call ::SwappyGL_getSwapIntervalNS or
+ * ::SwappyVk_getSwapIntervalNS to get the latest swapInterval.
  * @param userData Pointer to arbitrary data, see SwappyTracer::userData.
  */
 typedef void (*SwappySwapIntervalChangedCallback)(void*);
@@ -172,12 +189,14 @@ typedef struct SwappyTracer {
     SwappyPostWaitCallback postWait;
 
     /**
-     * Callback called before calling the function to queue the frame to the composer.
+     * Callback called before calling the function to queue the frame to the
+     * composer.
      */
     SwappyPreSwapBuffersCallback preSwapBuffers;
 
     /**
-     * Callback called after calling the function to queue the frame to the composer.
+     * Callback called after calling the function to queue the frame to the
+     * composer.
      */
     SwappyPostSwapBuffersCallback postSwapBuffers;
 

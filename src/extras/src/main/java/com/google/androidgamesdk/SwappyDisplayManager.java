@@ -117,24 +117,24 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
             totalModes++;
         }
 
-        long[] supportedRefreshRates = new long[totalModes];
-        int[] supportedRefreshRatesIds = new int[totalModes];
+        long[] supportedRefreshPeriods = new long[totalModes];
+        int[] supportedDisplayModeIds = new int[totalModes];
         totalModes = 0;
         for (int i = 0; i < supportedModes.length; i++) {
             if (!modeMatchesCurrentResolution(supportedModes[i])) {
                 continue;
             }
-            supportedRefreshRates[totalModes] =
+            supportedRefreshPeriods[totalModes] =
                     (long) (ONE_S_IN_NS / supportedModes[i].getRefreshRate());
-            supportedRefreshRatesIds[totalModes] = supportedModes[i].getModeId();
+            supportedDisplayModeIds[totalModes] = supportedModes[i].getModeId();
             totalModes++;
 
         }
         // Call down to native to set the supported refresh rates
-        nSetSupportedRefreshRates(mCookie, supportedRefreshRates, supportedRefreshRatesIds);
+        nSetSupportedRefreshPeriods(mCookie, supportedRefreshPeriods, supportedDisplayModeIds);
     }
 
-    public void setPreferredRefreshRate(final int modeId) {
+    public void setPreferredDisplayModeId(final int modeId) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -181,7 +181,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                 updateSupportedRefreshRates(display);
             }
 
-            if (callNativeCallback() && refreshRateChanged) {
+            if (refreshRateChanged) {
                 final long appVsyncOffsetNanos = display.getAppVsyncOffsetNanos();
                 final long vsyncPresentationDeadlineNanos =
                         mWindowManager.getDefaultDisplay().getPresentationDeadlineNanos();
@@ -190,7 +190,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
                 final long sfVsyncOffsetNanos =
                         vsyncPeriodNanos - (vsyncPresentationDeadlineNanos - ONE_MS_IN_NS);
 
-                nOnRefreshRateChanged(mCookie,
+                nOnRefreshPeriodChanged(mCookie,
                                      vsyncPeriodNanos,
                                      appVsyncOffsetNanos,
                                      sfVsyncOffsetNanos);
@@ -198,17 +198,10 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
         }
     }
 
-    private boolean callNativeCallback() {
-        // Android 11 and beyond has an NDK callback and will get notified directly,
-        // no need to call the callback from here.
-        return (Build.VERSION.SDK_INT < 29 ||
-                (Build.VERSION.SDK_INT == 29 && Build.VERSION.PREVIEW_SDK_INT == 0));
-    }
-
-    private native void nSetSupportedRefreshRates(long cookie,
-                                                  long[] refreshRates,
+    private native void nSetSupportedRefreshPeriods(long cookie,
+                                                  long[] refreshPeriods,
                                                   int[] modeIds);
-    private native void nOnRefreshRateChanged(long cookie,
+    private native void nOnRefreshPeriodChanged(long cookie,
                                               long refreshPeriod,
                                               long appOffset,
                                               long sfOffset);

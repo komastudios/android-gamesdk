@@ -18,10 +18,10 @@
 
 #include "CpuInfo.h"
 
-#include <limits>
 #include <bitset>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 #include "Log.h"
 
@@ -32,13 +32,13 @@ bool startsWith(std::string &mainStr, const char *toMatch) {
     return mainStr.find(toMatch) == 0;
 }
 
-std::vector<std::string> split(const std::string& s, char c) {
+std::vector<std::string> split(const std::string &s, char c) {
     std::vector<std::string> v;
     std::string::size_type i = 0;
     std::string::size_type j = s.find(c);
 
     while (j != std::string::npos) {
-        v.push_back(s.substr(i, j-i));
+        v.push_back(s.substr(i, j - i));
         i = ++j;
         j = s.find(c, j);
 
@@ -49,26 +49,25 @@ std::vector<std::string> split(const std::string& s, char c) {
     return v;
 }
 
-std::string ReadFile(const std::string& path) {
+std::string ReadFile(const std::string &path) {
     char buf[10240];
     FILE *fp = fopen(path.c_str(), "r");
-    if (fp == nullptr)
-        return std::string();
+    if (fp == nullptr) return std::string();
 
     fgets(buf, 10240, fp);
     fclose(fp);
     return std::string(buf);
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
 namespace swappy {
 
 std::string to_string(int n) {
-  constexpr int kBufSize = 12; // strlen("−2147483648")+1
-  static char buf[kBufSize];
-  snprintf(buf, kBufSize, "%d", n);
-  return buf;
+    constexpr int kBufSize = 12;  // strlen("−2147483648")+1
+    static char buf[kBufSize];
+    snprintf(buf, kBufSize, "%d", n);
+    return buf;
 }
 
 CpuInfo::CpuInfo() {
@@ -85,17 +84,18 @@ CpuInfo::CpuInfo() {
     long mMinFrequency = std::numeric_limits<long>::max();
 
     while (fgets(buf, BUFFER_LENGTH, fp) != NULL) {
-        buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
+        buf[strlen(buf) - 1] = '\0';  // eat the newline fgets() stores
         std::string line = buf;
 
         if (startsWith(line, "processor")) {
             Cpu core;
             core.id = mCpus.size();
 
-            auto core_path = std::string("/sys/devices/system/cpu/cpu")
-                             + to_string(core.id);
+            auto core_path =
+                std::string("/sys/devices/system/cpu/cpu") + to_string(core.id);
 
-            auto package_id = ReadFile(core_path + "/topology/physical_package_id");
+            auto package_id =
+                ReadFile(core_path + "/topology/physical_package_id");
             auto frequency = ReadFile(core_path + "/cpufreq/cpuinfo_max_freq");
 
             core.package_id = atol(package_id.c_str());
@@ -105,8 +105,7 @@ CpuInfo::CpuInfo() {
             mMaxFrequency = std::max(mMaxFrequency, core.frequency);
 
             mCpus.push_back(core);
-        }
-        else if (startsWith(line, "Hardware")) {
+        } else if (startsWith(line, "Hardware")) {
             mHardware = split(line, ':')[1];
         }
     }
@@ -120,8 +119,7 @@ CpuInfo::CpuInfo() {
             ++mNumberOfLittleCores;
             cpu.type = Cpu::Type::Little;
             CPU_SET(cpu.id, &mLittleCoresMask);
-        }
-        else {
+        } else {
             ++mNumberOfBigCores;
             cpu.type = Cpu::Type::Big;
             CPU_SET(cpu.id, &mBigCoresMask);
@@ -129,42 +127,29 @@ CpuInfo::CpuInfo() {
     }
 }
 
-unsigned int CpuInfo::getNumberOfCpus() const {
-    return mCpus.size();
-}
+unsigned int CpuInfo::getNumberOfCpus() const { return mCpus.size(); }
 
-const std::vector<CpuInfo::Cpu>& CpuInfo::getCpus() const {
-    return mCpus;
-}
+const std::vector<CpuInfo::Cpu> &CpuInfo::getCpus() const { return mCpus; }
 
-const std::string CpuInfo::getHardware() const {
-    return mHardware;
-}
+const std::string CpuInfo::getHardware() const { return mHardware; }
 
 unsigned int CpuInfo::getNumberOfLittleCores() const {
     return mNumberOfLittleCores;
 }
 
-unsigned int CpuInfo::getNumberOfBigCores() const {
-    return mNumberOfBigCores;
-}
+unsigned int CpuInfo::getNumberOfBigCores() const { return mNumberOfBigCores; }
 
-cpu_set_t CpuInfo::getLittleCoresMask() const {
-    return mLittleCoresMask;
-}
+cpu_set_t CpuInfo::getLittleCoresMask() const { return mLittleCoresMask; }
 
-cpu_set_t CpuInfo::getBigCoresMask() const {
-    return mBigCoresMask;
-}
+cpu_set_t CpuInfo::getBigCoresMask() const { return mBigCoresMask; }
 
 unsigned int to_mask(cpu_set_t cpu_set) {
     std::bitset<32> mask;
 
     for (int i = 0; i < CPU_SETSIZE; ++i) {
-        if (CPU_ISSET(i, &cpu_set))
-            mask[i] = 1;
+        if (CPU_ISSET(i, &cpu_set)) mask[i] = 1;
     }
-    return (int) mask.to_ulong();
+    return (int)mask.to_ulong();
 }
 
-} // namespace swappy
+}  // namespace swappy

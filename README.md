@@ -25,12 +25,14 @@ repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts
 ```
 
 Point the environment variable `ANDROID_HOME` to your local Android SDK (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
-Use the following gradle tasks to build the Game SDK with or without Tuning Fork (default target is `archiveZip`).
+Use the following gradle tasks to build the Game SDK with or without Tuning Fork:
 
 ```bash
 cd gamesdk
-./gradlew archiveZip # Without Tuning Fork
-./gradlew archiveTfZip # With Tuning Fork
+# Build Swappy:
+./gradlew packageLocalZip -Plibraries=swappy -PpackageName=local
+# Build Swappy and Tuning Fork:
+./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
 ### Build with specific prebuilt SDKs
@@ -55,8 +57,10 @@ Finally, build the Game SDK using downloaded prebuilts.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveZip # Without Tuning Fork
-ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew archiveTfZip # With Tuning Fork
+# Build and package Swappy in a ZIP file:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew packageLocalZip -Plibraries=swappy -PpackageName=local
+# Build and package Swappy and Tuning Fork in a ZIP file:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ANDROID_NDK=`pwd`/../prebuilts/ndk/r20 ./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
 ### Build with all prebuilt SDKs
@@ -71,7 +75,55 @@ Build static and dynamic libraries for several SDK/NDK pairs.
 
 ```bash
 cd gamesdk
-ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew gamesdkZip
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork
+```
+
+### Build properties reference
+
+The command lines presented earlier are a combination of a **build or packaging task**, and a set of **properties**.
+
+**Build tasks** are:
+* `build`: build the libraries with prebuilt SDK/NDK.
+* `buildSpecific`: build the libraries with a specific prebuilt SDK/NDK/STL.
+* `buildLocal`: build the libraries with your locally installed Android SDK and NDK.
+* `buildUnity`: build the libraries with the (prebuilt) SDK/NDK for use in Unity.
+* `buildAar`: build the libraries with prebuilt SDK/NDK for distribution in a AAR with prefab.
+
+**Packaging tasks** are:
+* `packageZip`: create a zip of the native libraries for distribution.
+* `packageSpecificZip`: create a zip with the libraries compiled for the specified SDK/NDK/STL.
+* `packageLocalZip`: create a zip with the libraries compiled with your locally installed Android SDK and NDK.
+* `packageUnityZip`: create a zip for integration in Unity.
+* `packageMavenZip`: create a zip with the native libraries in a AAR file in Prefab format and a pom file. You can also use `packageAar` to only get the AAR file.
+
+**Properties** are:
+* `-Plibraries=swappy,tuningfork`: comma-separated list of libraries to build (for packaging/build tasks).
+* `-PpackageName=gamesdk`: the name of the package, for packaging tasks. Defaults to "gamesdk".
+* `-Psdk=14 -Pndk=r16 -Pstl='c++_static'`: the SDK, NDK and STL to use for `buildSpecific` and `packageSpecificZip` tasks.
+* `-PbuildType=Release`: the build type, "Release" (default) or "Debug".
+* Sample related properties:
+  * `-PincludeSampleSources`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built.
+  * `-PincludeSampleArtifacts`: if specified, build tasks will also compile the samples and projects related to the libraries, and include their resulting artifact in the packaged archive.
+  * `-PskipSamplesBuild`: if specified and `-PincludeSampleArtifacts` is specified, this will skip the actual `gradle build` of the samples and projects related to the libraries. Use this when you want to check that the packaging works correctly and don't want to rebuild everything.
+
+Here are some commonly used examples:
+```bash
+# All prebuilt SDKs, with sample sources:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources
+
+# All prebuilt SDKs, with sample sources and precompiled samples:
+ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources -PincludeSampleArtifacts
+
+# Using a specific prebuilt SDK:
+./gradlew packageSpecificZip -Plibraries=swappy -Psdk=14 -Pndk=r16 -Pstl='c++_static'
+
+# Swappy or Swappy+TuningFork for Unity:
+./gradlew buildUnity --Plibraries=swappy --PpackageName=swappyUnity
+./gradlew buildUnity --Plibraries=swappy,tuningfork --PpackageName=unity
+
+# Zips to upload AARs to Maven:
+./gradlew packageMavenZip -Plibraries=swappy -PpackageName=fullsdk
+./gradlew packageMavenZip -Plibraries=tuningfork -PpackageName=fullsdk
 ```
 
 ## Tests

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "tuningfork/histogram.h"
+#include "core/histogram.h"
 
 #include "gtest/gtest.h"
 
@@ -39,7 +39,7 @@ const char kAddElevenTo0To10EventsOnlyJson[] =
     "{\"events\":[10.00,1.00,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00]}";
 
 TEST(HistogramTest, DefaultEmpty) {
-    Histogram h {};
+    Histogram h{};
     EXPECT_EQ(h.Count(), 0) << "Initialized Histogram not empty";
     EXPECT_EQ(h.ToDebugJSON(), kEmptyHistogramJson) << "Empty histogram bad";
 }
@@ -76,16 +76,17 @@ TEST(HistogramTest, AddOneTo0To10EventsOnly) {
     EXPECT_EQ(h.Count(), 0) << "Initialized Histogram not empty";
     h.Add(1.0);
     EXPECT_EQ(h.Count(), 1) << "1 were not counted";
-    EXPECT_EQ(h.ToDebugJSON(), kAddOneTo0To10EventsOnlyJson) << "Add 1 0-10 histogram bad";
+    EXPECT_EQ(h.ToDebugJSON(), kAddOneTo0To10EventsOnlyJson)
+        << "Add 1 0-10 histogram bad";
 }
 
 TEST(HistogramTest, AddElevenTo0To10EventsOnly) {
     Histogram h(0, 10, 8, true);
     EXPECT_EQ(h.Count(), 0) << "Initialized Histogram not empty";
-    for(int i=0;i<11;++i)
-      h.Add(i);
+    for (int i = 0; i < 11; ++i) h.Add(i);
     EXPECT_EQ(h.Count(), 11) << "11 were not counted";
-    EXPECT_EQ(h.ToDebugJSON(), kAddElevenTo0To10EventsOnlyJson) << "Add 11 0-10 histogram bad";
+    EXPECT_EQ(h.ToDebugJSON(), kAddElevenTo0To10EventsOnlyJson)
+        << "Add 11 0-10 histogram bad";
 }
 
-} // namespace histogram_test
+}  // namespace histogram_test

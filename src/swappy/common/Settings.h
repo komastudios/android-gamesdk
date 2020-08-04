@@ -16,33 +16,34 @@
 
 #pragma once
 
-#include "Thread.h"
-
+#include <chrono>
 #include <cstdint>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
-#include <chrono>
-#include <memory>
+
+#include "Thread.h"
 
 namespace swappy {
 
 class Settings {
-  private:
-    // Allows construction with std::unique_ptr from a static method, but disallows construction
-    // outside of the class since no one else can construct a ConstructorTag
-    struct ConstructorTag {
-    };
-  public:
+   private:
+    // Allows construction with std::unique_ptr from a static method, but
+    // disallows construction outside of the class since no one else can
+    // construct a ConstructorTag
+    struct ConstructorTag {};
+
+   public:
     struct DisplayTimings {
         std::chrono::nanoseconds refreshPeriod{0};
         std::chrono::nanoseconds appOffset{0};
         std::chrono::nanoseconds sfOffset{0};
     };
 
-    explicit Settings(ConstructorTag) {};
+    explicit Settings(ConstructorTag){};
 
-    static Settings *getInstance();
+    static Settings* getInstance();
 
     static void reset();
 
@@ -57,7 +58,7 @@ class Settings {
     std::chrono::nanoseconds getSwapDuration() const;
     bool getUseAffinity() const;
 
-  private:
+   private:
     void notifyListeners();
 
     static std::unique_ptr<Settings> instance;
@@ -67,8 +68,8 @@ class Settings {
 
     DisplayTimings mDisplayTimings GUARDED_BY(mMutex);
     std::chrono::nanoseconds mSwapDuration GUARDED_BY(mMutex) =
-            std::chrono::nanoseconds(16'666'667L);
+        std::chrono::nanoseconds(16'666'667L);
     bool mUseAffinity GUARDED_BY(mMutex) = true;
 };
 
-} // namespace swappy
+}  // namespace swappy

@@ -1,1 +1,1 @@
-../../../src/tuningfork/protobuf_util.h
+../../../src/tuningfork/proto/protobuf_util.h

@@ -15,9 +15,10 @@
  */
 
 #include "texture_test_cases.h"
-#include "device_info/device_info.h"
 
 #include <assert.h>
+
+#include "device_info/device_info.h"
 
 // clang-format off
 #include <GLES3/gl32.h>
@@ -145,27 +146,28 @@ TextureTestCase
          noDeltaAllowed}};
 
 TextureTestCase* getCompressedTextureTestCase(GLenum internalformat) {
-  // Sanity check for the *_expected_rgba. If this is erroring, you either
-  // modified OPENGL_TEST_VIEW_WIDTH or OPENGL_TEST_VIEW_HEIGHT without updating
-  // *_expected_rgba, or wrongly updated *_expected_rgba (check the size of the
-  // array).
-  constexpr size_t expected_rgba_len =
-      OPENGL_TEST_VIEW_WIDTH * OPENGL_TEST_VIEW_HEIGHT * sizeof(RGBA);
-  unsigned int expected_rgba_size = expected_rgba_len * sizeof(unsigned char);
-  assert(green32_dxt5_bc3_expected_rgba_len == expected_rgba_size);
-  assert(green32_pvrtci_2bpp_RGB_expected_rgba_len == expected_rgba_size);
-  assert(green32_pvrtci_4bpp_RGB_expected_rgba_len == expected_rgba_size);
-  // expected_rgba_size could be seen as unused when compiled in opt mode.
-  // Consider [[maybe_unused]] once C++17 is supported everywhere
-  (void)(expected_rgba_size);
+    // Sanity check for the *_expected_rgba. If this is erroring, you either
+    // modified OPENGL_TEST_VIEW_WIDTH or OPENGL_TEST_VIEW_HEIGHT without
+    // updating
+    // *_expected_rgba, or wrongly updated *_expected_rgba (check the size of
+    // the array).
+    constexpr size_t expected_rgba_len =
+        OPENGL_TEST_VIEW_WIDTH * OPENGL_TEST_VIEW_HEIGHT * sizeof(RGBA);
+    unsigned int expected_rgba_size = expected_rgba_len * sizeof(unsigned char);
+    assert(green32_dxt5_bc3_expected_rgba_len == expected_rgba_size);
+    assert(green32_pvrtci_2bpp_RGB_expected_rgba_len == expected_rgba_size);
+    assert(green32_pvrtci_4bpp_RGB_expected_rgba_len == expected_rgba_size);
+    // expected_rgba_size could be seen as unused when compiled in opt mode.
+    // Consider [[maybe_unused]] once C++17 is supported everywhere
+    (void)(expected_rgba_size);
 
-  for (size_t i = 0; i < allCompressedTextureTestCasesCount; ++i) {
-    if (allCompressedTextureTestCases[i].internalformat == internalformat) {
-      return &allCompressedTextureTestCases[i];
+    for (size_t i = 0; i < allCompressedTextureTestCasesCount; ++i) {
+        if (allCompressedTextureTestCases[i].internalformat == internalformat) {
+            return &allCompressedTextureTestCases[i];
+        }
     }
-  }
 
-  return nullptr;
+    return nullptr;
 }
 
 }  // namespace androidgamesdk_deviceinfo

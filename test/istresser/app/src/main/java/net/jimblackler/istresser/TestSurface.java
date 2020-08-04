@@ -5,7 +5,6 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 public class TestSurface extends GLSurfaceView {
-
   public static final int GL_CLIENT_VERSION = 2;
   public static final int RED_SIZE = 8;
   public static final int GREEN_SIZE = 8;

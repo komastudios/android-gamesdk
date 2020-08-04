@@ -112,6 +112,12 @@ GLContextConfig BridgeGLContextConfiguration(jobject src_config);
 FpsCalculator &GetFpsCalculator();
 
 /**
+ * Gets the app VSYNC offset in nanoseconds. (Choreographer callback timestamps
+ * will be offset from VSYNC by this amount.)
+ */
+int32_t GetAppVsyncOffsetNanos();
+
+/**
  * Encodes raw color data into a compressed PNG.
  * Each pixel is grouped in four consecutive bytes, ordered RGBA.
  * `bytes` should have (4 * width * height) elements, where the first

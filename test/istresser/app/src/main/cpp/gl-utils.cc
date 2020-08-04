@@ -4,17 +4,22 @@
 #include <android/log.h>
 #include <malloc.h>
 
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, "GlUtils", __VA_ARGS__)
+#define ALOGE(...) \
+  __android_log_print(ANDROID_LOG_ERROR, "GlUtils", __VA_ARGS__)
 
 namespace istresser_glutils {
 
-  bool CheckGlError(std::string_view funcName) {
+bool CheckGlError(std::string_view funcName) {
+  bool result = false;
+  while (true) {
     GLint err = glGetError();
-    if (err != GL_NO_ERROR) {
-      ALOGE("GL error after %s(): 0x%08x\n", funcName, err);
-      return true;
+    if (err == GL_NO_ERROR) {
+      break;
     }
-    return false;
+    result = true;
+    ALOGE("GL error after %s(): 0x%08x\n", funcName, err);
   }
+  return result;
+}
 
 }  // namespace istresser_glutils

@@ -16,22 +16,23 @@
 
 #pragma once
 
+#include <jni.h>
+
 #include <condition_variable>
 #include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
 
-
 namespace swappy {
 
 struct SdkVersion {
-    int sdkInt; // Build.VERSION.SDK_INT
-    int previewSdkInt; // Build.VERSION.PREVIEW_SDK_INT
+    int sdkInt;         // Build.VERSION.SDK_INT
+    int previewSdkInt;  // Build.VERSION.PREVIEW_SDK_INT
 };
 
 class SwappyDisplayManager {
-public:
+   public:
     static const char* SDM_CLASS;
     static const JNINativeMethod SDMNativeMethods[];
     static constexpr int SDMNativeMethodsSize = 2;
@@ -44,23 +45,24 @@ public:
 
     bool isInitialized() { return mInitialized; }
 
-    using RefreshRateMap = std::map<std::chrono::nanoseconds, int>;
+    // Map from refresh period to display mode id
+    using RefreshPeriodMap = std::map<std::chrono::nanoseconds, int>;
 
-    std::shared_ptr<RefreshRateMap> getSupportedRefreshRates();
+    std::shared_ptr<RefreshPeriodMap> getSupportedRefreshPeriods();
 
-    void setPreferredRefreshRate(int index);
+    void setPreferredDisplayModeId(int index);
 
-private:
+   private:
     JavaVM* mJVM;
     std::mutex mMutex;
     std::condition_variable mCondition;
-    std::shared_ptr<RefreshRateMap> mSupportedRefreshRates;
+    std::shared_ptr<RefreshPeriodMap> mSupportedRefreshPeriods;
     jobject mJthis = nullptr;
-    jmethodID mSetPreferredRefreshRate = nullptr;
+    jmethodID mSetPreferredDisplayModeId = nullptr;
     jmethodID mTerminate = nullptr;
     bool mInitialized = false;
 
     friend class SwappyDisplayManagerJNI;
 };
 
-} // namespace swappy
+}  // namespace swappy

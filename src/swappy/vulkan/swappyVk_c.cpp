@@ -16,87 +16,69 @@
 
 // API entry points
 
-#include "swappy/swappyVk.h"
-
 #include "SwappyVk.h"
+#include "swappy/swappyVk.h"
 
 extern "C" {
 
 void SwappyVk_determineDeviceExtensions(
-    VkPhysicalDevice       physicalDevice,
-    uint32_t               availableExtensionCount,
+    VkPhysicalDevice physicalDevice, uint32_t availableExtensionCount,
     VkExtensionProperties* pAvailableExtensions,
-    uint32_t*              pRequiredExtensionCount,
-    char**                 pRequiredExtensions)
-{
+    uint32_t* pRequiredExtensionCount, char** pRequiredExtensions) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
-    swappy.swappyVkDetermineDeviceExtensions(physicalDevice,
-                                             availableExtensionCount, pAvailableExtensions,
-                                             pRequiredExtensionCount, pRequiredExtensions);
+    swappy.swappyVkDetermineDeviceExtensions(
+        physicalDevice, availableExtensionCount, pAvailableExtensions,
+        pRequiredExtensionCount, pRequiredExtensions);
 }
 
-void SwappyVk_setQueueFamilyIndex(
-        VkDevice    device,
-        VkQueue     queue,
-        uint32_t    queueFamilyIndex)
-{
+void SwappyVk_setQueueFamilyIndex(VkDevice device, VkQueue queue,
+                                  uint32_t queueFamilyIndex) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.SetQueueFamilyIndex(device, queue, queueFamilyIndex);
 }
 
 bool SwappyVk_initAndGetRefreshCycleDuration_internal(
-        JNIEnv           *env,
-        jobject          jactivity,
-        VkPhysicalDevice physicalDevice,
-        VkDevice         device,
-        VkSwapchainKHR   swapchain,
-        uint64_t*        pRefreshDuration)
-{
+    JNIEnv* env, jobject jactivity, VkPhysicalDevice physicalDevice,
+    VkDevice device, VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
-    return swappy.GetRefreshCycleDuration(env, jactivity,
-                                          physicalDevice, device, swapchain,
-                                          pRefreshDuration);
+    return swappy.GetRefreshCycleDuration(env, jactivity, physicalDevice,
+                                          device, swapchain, pRefreshDuration);
 }
 
-void SwappyVk_setWindow(
-        VkDevice       device,
-        VkSwapchainKHR swapchain,
-        ANativeWindow* window)
-{
+void SwappyVk_setWindow(VkDevice device, VkSwapchainKHR swapchain,
+                        ANativeWindow* window) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.SetWindow(device, swapchain, window);
 }
 
-void SwappyVk_setSwapIntervalNS(
-        VkDevice       device,
-        VkSwapchainKHR swapchain,
-        uint64_t       swap_ns)
-{
+void SwappyVk_setSwapIntervalNS(VkDevice device, VkSwapchainKHR swapchain,
+                                uint64_t swap_ns) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.SetSwapDuration(device, swapchain, swap_ns);
 }
 
-VkResult SwappyVk_queuePresent(
-        VkQueue                 queue,
-        const VkPresentInfoKHR* pPresentInfo)
-{
+VkResult SwappyVk_queuePresent(VkQueue queue,
+                               const VkPresentInfoKHR* pPresentInfo) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     return swappy.QueuePresent(queue, pPresentInfo);
 }
 
-void SwappyVk_destroySwapchain(
-        VkDevice                device,
-        VkSwapchainKHR          swapchain)
-{
+void SwappyVk_destroySwapchain(VkDevice device, VkSwapchainKHR swapchain) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.DestroySwapchain(device, swapchain);
+}
+
+void SwappyVk_destroyDevice(VkDevice device) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.DestroyDevice(device);
 }
 
 void SwappyVk_setAutoSwapInterval(bool enabled) {
@@ -129,16 +111,23 @@ uint64_t SwappyVk_getFenceTimeoutNS() {
     return swappy.GetFenceTimeout().count();
 }
 
-void SwappyVk_injectTracer(const SwappyTracer *t){
+void SwappyVk_injectTracer(const SwappyTracer* t) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.addTracer(t);
 }
 
-void SwappyVk_setFunctionProvider(const SwappyVkFunctionProvider* pSwappyVkFunctionProvider) {
+void SwappyVk_setFunctionProvider(
+    const SwappyVkFunctionProvider* pSwappyVkFunctionProvider) {
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     swappy.SetFunctionProvider(pSwappyVkFunctionProvider);
+}
+
+uint64_t SwappyVk_getSwapIntervalNS(VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    return swappy.GetSwapInterval(swapchain).count();
 }
 
 }  // extern "C"

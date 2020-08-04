@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 
-#include "jni_wrap.h"
+#include "jni/jni_wrap.h"
 #include "tuningfork_utils.h"
 
 using namespace tuningfork::jni;
