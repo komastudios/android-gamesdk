@@ -1,5 +1,6 @@
 package net.jimblackler.collate;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ReportUtils {
@@ -21,5 +22,17 @@ public class ReportUtils {
       return 0;
     }
     return metrics.getJSONObject("meta").getLong("time");
+  }
+
+  static JSONObject getDeviceInfo(JSONArray result) {
+    JSONObject deviceInfo = null;
+    for (int idx2 = 0; idx2 != result.length(); idx2++) {
+      JSONObject jsonObject = result.getJSONObject(idx2);
+      if (jsonObject.has("deviceInfo")) {
+        deviceInfo = jsonObject.getJSONObject("deviceInfo");
+        break;
+      }
+    }
+    return deviceInfo;
   }
 }

@@ -68,7 +68,7 @@ public class Score {
         return;
       }
       JSONObject params = first.getJSONObject("params");
-      JSONObject deviceInfo = first.getJSONObject("deviceInfo");
+      JSONObject deviceInfo = ReportUtils.getDeviceInfo(result);
       JSONObject runParameters = deviceInfo.getJSONObject("params");
       JSONArray coordinates = params.getJSONArray("coordinates");
       tests.set(params.getJSONArray("tests"));

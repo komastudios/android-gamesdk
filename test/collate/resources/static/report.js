@@ -10,6 +10,9 @@ document.body.addEventListener('click', evt => {
 }, false);
 
 function rowTime(row) {
+  if ('time' in row) {
+    return row.time;
+  }
   return rowMetrics(row).meta.time;
 }
 
@@ -66,10 +69,20 @@ for (const result of data) {
     }
   }
 
+  let deviceInfo;
+  for (let idx = 0; idx !== result.length; idx++) {
+    const row = result[idx];
+    if ('deviceInfo' in row) {
+      deviceInfo = row.deviceInfo;
+      break;
+    }
+  }
+
   {
     const paragraph = document.createElement('p');
     section.appendChild(paragraph);
     paragraph.appendChild(getDataExplorer(first));
+    paragraph.appendChild(getDataExplorer(deviceInfo));
     const anchor = document.createElement('a');
     const label = document.createTextNode('Download JSON');
     anchor.appendChild(label);
@@ -87,7 +100,7 @@ for (const result of data) {
   section.appendChild(graphDiv);
   graphDiv.classList.add('graph');
 
-  buildDygraph(graphDiv, first.deviceInfo, result);
+  buildDygraph(graphDiv, deviceInfo, result);
 
   let totalDuration = 0;
   let durationCount = 0;
