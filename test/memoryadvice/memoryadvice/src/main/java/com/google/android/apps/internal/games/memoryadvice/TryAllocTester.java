@@ -12,4 +12,11 @@ class TryAllocTester {
    * @return 'true' if the allocation attempt was successful.
    */
   static native boolean tryAlloc(int bytes);
+
+  /**
+   * Allocate memory and fill it with data that is unlikely to be compressible.
+   * @param bytes The number of bytes to allocate.
+   * @return 'true' if the allocation attempt was successful.
+   */
+  static native boolean occupyMemory(int bytes);
 }

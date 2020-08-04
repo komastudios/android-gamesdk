@@ -67,22 +67,6 @@ public class Utils {
   }
 
   /**
-   * Return the value associated with the key in the given object. If the object does not define
-   * the key, return the specified default value.
-   * @param object The object to extract the value from.
-   * @param key The key associated with the value.
-   * @param defaultValue The value to return if the object does not specify the key.
-   * @return The associated value, or the defaultValue if the object does not define the key.
-   */
-  static Object getOrDefault(JSONObject object, String key, Object defaultValue) {
-    try {
-      return object.get(key);
-    } catch (JSONException e) {
-      return defaultValue;
-    }
-  }
-
-  /**
    * Creates a deep union of two JSON objects. Arrays are concatenated and dictionaries are merged.
    * @param in The first JSON object; read only.
    * @param out The second JSON object and the object into which changes are written.
