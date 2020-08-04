@@ -1,13 +1,13 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.readFile;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
 import static net.jimblackler.istresser.Utils.getDuration;
-import static net.jimblackler.istresser.Utils.getOrDefault;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -103,6 +103,7 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
     initNative();
 
     Intent launchIntent = getIntent();
@@ -168,17 +169,11 @@ public class MainActivity extends Activity {
     }
 
     params = flattenParams(params1);
-    memoryAdvisor = new MemoryAdvisor(this, params);
-    long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
+    testStartTime = System.currentTimeMillis();
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
-    int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
-    setContentView(R.layout.activity_main);
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
-    testStartTime = System.currentTimeMillis();
-    appSwitchTimerStart = testStartTime;
-    allocationStartedTime = testStartTime;
 
     try {
       // Setting up broadcast receiver
@@ -235,7 +230,7 @@ public class MainActivity extends Activity {
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
       JSONObject report = new JSONObject();
-      report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
+      report.put("time", testStartTime);
       report.put("params", params1);
 
       TestSurface testSurface = findViewById(R.id.glsurfaceView);
@@ -290,7 +285,15 @@ public class MainActivity extends Activity {
       throw new IllegalStateException(e);
     }
 
+    JSONObject _params1 = params1;
+    memoryAdvisor = new MemoryAdvisor(this, params, () -> runOnUiThread(() -> startTest(_params1)));
+  }
+
+  void startTest(JSONObject params1) {
     AtomicReference<JSONArray> criticalLogLines = new AtomicReference<>();
+
+    allocationStartedTime = System.currentTimeMillis();
+    appSwitchTimerStart = testStartTime;
 
     new LogMonitor(line -> {
       if (line.contains("Out of memory")) {
@@ -300,6 +303,17 @@ public class MainActivity extends Activity {
         criticalLogLines.get().put(line);
       }
     });
+
+    try {
+      JSONObject report = new JSONObject();
+      report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
+
+    long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
+    int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
 
     timer.schedule(new TimerTask() {
       @Override

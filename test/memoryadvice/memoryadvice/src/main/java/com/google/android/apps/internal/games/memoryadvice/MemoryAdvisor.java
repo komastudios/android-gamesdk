@@ -1,16 +1,18 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
+import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
+
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
 
 /**
  * Wrapper class for methods related to memory advice.
@@ -19,17 +21,26 @@ public class MemoryAdvisor extends MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
   private final JSONObject deviceProfile;
   private final JSONObject params;
+  private JSONObject onDeviceLimit;
+  private JSONObject onDeviceBaseline;
 
   /**
    * Create an Android memory advice fetcher.
    *
    * @param context The Android context to employ.
    */
-  public MemoryAdvisor(Context context) {
-    this(context, getDefaultParams(context.getAssets()));
+  public MemoryAdvisor(Context context, Runnable readyHandler) {
+    this(context, getDefaultParams(context.getAssets()), readyHandler);
   }
 
-  private static JSONObject getDefaultParams(AssetManager assets) {
+  /**
+   * Get the library's default parameters. These can be selectively modified by the application and
+   * passed back in to the constructor.
+   *
+   * @param assets The AssetManager used to fetch the default parameter file.
+   * @return The default parameters as a JSON object.
+   */
+  public static JSONObject getDefaultParams(AssetManager assets) {
     JSONObject params;
     try {
       params = new JSONObject(readStream(assets.open("memoryadvice/default.json")));
@@ -45,11 +56,50 @@ public class MemoryAdvisor extends MemoryMonitor {
    *
    * @param context The Android context to employ.
    * @param params The active configuration.
+   * @throws MemoryAdvisorException
    */
   public MemoryAdvisor(Context context, JSONObject params) {
+    this(context, params, null);
+  }
+
+  /**
+   * Create an Android memory advice fetcher.
+   *
+   * @param context      The Android context to employ.
+   * @param params       The active configuration.
+   * @param readyHandler A callback used when on device stress test is required.
+   * @throws MemoryAdvisorException
+   */
+  public MemoryAdvisor(Context context, JSONObject params, final Runnable readyHandler) {
     super(context, params.optJSONObject("metrics"));
     this.params = params;
-    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
+    Log.i(TAG, "jb: MemoryMonitor constructor");
+    final ScheduledExecutorService scheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor();
+    if (params.has("onDeviceStressTest")) {
+      deviceProfile = null;
+      if (readyHandler == null) {
+        throw new MemoryAdvisorException("Ready handler required for on device stress test");
+      }
+      try {
+        new OnDeviceStressTester(context, params.getJSONObject("onDeviceStressTest"),
+            new OnDeviceStressTester.Consumer() {
+              @Override
+              void accept(JSONObject baseline, JSONObject limit) {
+                onDeviceBaseline = baseline;
+                onDeviceLimit = limit;
+                scheduledExecutorService.schedule(readyHandler, 1, TimeUnit.MILLISECONDS);
+              }
+            });
+      } catch (JSONException ex) {
+        throw new MemoryAdvisorException(ex);
+      }
+    } else {
+      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
+      if (readyHandler != null) {
+        scheduledExecutorService.schedule(readyHandler, 1, TimeUnit.MILLISECONDS);
+      }
+    }
   }
 
   /**
@@ -162,7 +212,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * getSignal method. GREEN indicates it is safe to allocate further, YELLOW indicates further
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
-  public JSONObject getAdvice() {
+  public JSONObject getAdvice() throws MemoryAdvisorException {
     long time = System.currentTimeMillis();
     JSONObject results = new JSONObject();
 
@@ -170,9 +220,19 @@ public class MemoryAdvisor extends MemoryMonitor {
       JSONObject metricsParams = params.getJSONObject("metrics");
       JSONObject metrics = getMemoryMetrics(metricsParams.getJSONObject("variable"));
       results.put("metrics", metrics);
-      JSONObject limits = deviceProfile.getJSONObject("limits");
-      JSONObject deviceLimit = limits.getJSONObject("limit");
-      JSONObject deviceBaseline = limits.getJSONObject("baseline");
+      JSONObject baseline = this.baseline;
+      JSONObject deviceBaseline;
+      JSONObject deviceLimit;
+      if (deviceProfile != null) {
+        JSONObject limits = deviceProfile.getJSONObject("limits");
+        deviceLimit = limits.getJSONObject("limit");
+        deviceBaseline = limits.getJSONObject("baseline");
+      } else if (onDeviceLimit != null) {
+        deviceBaseline = onDeviceBaseline;
+        deviceLimit = onDeviceLimit;
+      } else {
+        throw new MemoryAdvisorException("Methods called before Advisor was ready");
+      }
 
       if (params.has("heuristics")) {
         JSONArray warnings = new JSONArray();
@@ -409,7 +469,15 @@ public class MemoryAdvisor extends MemoryMonitor {
     try {
       deviceInfo.put("build", BuildInfo.getBuild(context));
       deviceInfo.put("baseline", baseline);
-      deviceInfo.put("deviceProfile", deviceProfile);
+      if (deviceProfile != null) {
+        deviceInfo.put("deviceProfile", deviceProfile);
+      }
+      if (onDeviceBaseline != null) {
+        deviceInfo.put("deviceBaseline", onDeviceBaseline);
+      }
+      if (onDeviceLimit != null) {
+        deviceInfo.put("deviceLimit", onDeviceLimit);
+      }
       deviceInfo.put("params", params);
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting device info", ex);
