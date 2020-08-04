@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "55a32c31_80923ace",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-08-04T18:08:03Z",
+      "side": 1,
+      "message": "I don\u0027t think that\u0027s necessary; since onCreate is called as soon as the app is launched. There shouldn\u0027t be any time for tuning fork to be initialized before the onCreate anyway.",
+      "parentUuid": "03006b57_765c741e",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0a05786_53bb2dda",
         "filename": "src/tuningfork/core/tuningfork_impl.h",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "0c1ae731_3570a7b0",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-08-04T18:08:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0a05786_53bb2dda",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "28aa2d8e_d5a268b4",
         "filename": "src/tuningfork/core/tuningfork_impl.h",
         "patchSetId": 3
@@ -50,6 +86,24 @@
       "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eca64732_81bd3976",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-08-04T18:08:03Z",
+      "side": 1,
+      "message": "It was a merge error, sorry about that. Removing.",
+      "parentUuid": "28aa2d8e_d5a268b4",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
