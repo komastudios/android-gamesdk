@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "b9942c59_560e83a8",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-08-04T21:51:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9f5c4426_c6a080f3",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 58
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c75f413_507b7f86",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 12
@@ -65,6 +89,30 @@
     },
     {
       "key": {
+        "uuid": "97ff0d3b_2542a8b1",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-08-04T21:51:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5c75f413_507b7f86",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 41
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8401c1d8_31fd7e7b",
         "filename": "bender/bender-base/app/src/main/jni/font.h",
         "patchSetId": 12
@@ -85,6 +133,30 @@
       "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88242e26_128956c0",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-08-04T21:51:12Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8401c1d8_31fd7e7b",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 12
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +206,30 @@
     },
     {
       "key": {
+        "uuid": "15aa6f88_22620222",
+        "filename": "bender/bender-base/app/src/main/jni/font.h",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-08-04T21:51:12Z",
+      "side": 1,
+      "message": "Oooh this is a really interesting optimization w.r.t. font map storage! Yes storing entries as glyph strokes was an idea on my mind. But given we are just going to render some simple texts so I didn\u0027t go for it. But I am down with looping back to this later :D",
+      "parentUuid": "f606cd2b_1e81be1a",
+      "range": {
+        "startLine": 65,
+        "startChar": 4,
+        "endLine": 65,
+        "endChar": 59
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d2e5d23e_c3937a4f",
         "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
         "patchSetId": 12
@@ -154,6 +250,30 @@
       "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8c6c7f6_accbba9d",
+        "filename": "bender/bender-base/app/src/main/shaders/sdf.vert",
+        "patchSetId": 12
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1336478
+      },
+      "writtenOn": "2020-08-04T21:51:12Z",
+      "side": 1,
+      "message": "This is an opaque one which is not explicitly stated but I found out GLSL allows this along with other swizzling syntaxes:D",
+      "parentUuid": "d2e5d23e_c3937a4f",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 13
+      },
+      "revId": "8daf0ef89d12b8d46804b7da92604cda3f2ddeaa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
