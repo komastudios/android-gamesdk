@@ -848,7 +848,7 @@ task releaseSdkBuild(type: BuildTask) {
     ext.nativeBuild = { tf,bt -> sdkNativeBuild(tf,bt) }
 }
 
-task gamingFramePacingAarSdkBuild() {
+task gamesFramePacingAarSdkBuild() {
     doFirst {
         // Clear the package path to ensure AAR generation is not polluted
         // by previous build tasks.
@@ -866,13 +866,13 @@ task gamingFramePacingAarSdkBuild() {
     ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
     doLast {
         nativeBuild(withTuningFork, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
+            copyLibraryToPrefabAar(it, packageName, 'swappy', 'games-frame-pacing');
         }
     }
 }
 
-// Same as gamingFramePacingAarSdkBuild but with fullsdk package name
-task gamingFramePacingAarFullSdkBuild() {
+// Same as gamesFramePacingAarSdkBuild but with fullsdk package name
+task gamesFramePacingAarFullSdkBuild() {
     doFirst {
         // Clear the package path to ensure AAR generation is not polluted
         // by previous build tasks.
@@ -890,12 +890,12 @@ task gamingFramePacingAarFullSdkBuild() {
     ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
     doLast {
         nativeBuild(withTuningFork, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'swappy', 'gaming-frame-pacing');
+            copyLibraryToPrefabAar(it, packageName, 'swappy', 'games-frame-pacing');
         }
     }
 }
 
-task gamingPerformanceTunerAarFullSdkBuild() {
+task gamesPerformanceTunerAarFullSdkBuild() {
     doFirst {
         // Clear the package path to ensure AAR generation is not polluted
         // by previous build tasks.
@@ -913,7 +913,7 @@ task gamingPerformanceTunerAarFullSdkBuild() {
     ext.nativeBuild = { tf,bt -> sdkAarNativeBuild(tf,bt) }
     doLast {
         nativeBuild(withTuningFork, buildType).each {
-            copyLibraryToPrefabAar(it, packageName, 'tuningfork', 'gaming-performance-tuner');
+            copyLibraryToPrefabAar(it, packageName, 'tuningfork', 'games-performance-tuner');
         }
     }
 }
@@ -1150,10 +1150,10 @@ addZipTask("fullSdkZip", fullSdkBuild, "gamesdk")
 addZipTask("specificZip", specificBuild, "gamesdk")
 addZipTask("gamesdkZip", releaseSdkBuild, "gamesdk")
 addZipTask("gamesdkDebugZip", debugSdkBuild, "gamesdk_debug")
-addZipTask("gamingFramePacingAar", gamingFramePacingAarSdkBuild, "gaming-frame-pacing.aar")
-addZipTask("fullSdkGamingFramePacingAar", gamingFramePacingAarFullSdkBuild, "gaming-frame-pacing.aar")
-addZipTask("fullSdkGamingPerformanceTunerAar", gamingPerformanceTunerAarFullSdkBuild, "gaming-performance-tuner.aar")
-addAarMavenZipTask("fullSdkGamingFramePacingAarMavenZip", "fullSdkGamingFramePacingAar",
-    "gaming-frame-pacing", "1.5.0-alpha01")
-addAarMavenZipTask("fullSdkGamingPerformanceTunerAarMavenZip", "fullSdkGamingPerformanceTunerAar",
-    "gaming-performance-tuner", "1.0.0-alpha01")
+addZipTask("gamesFramePacingAar", gamesFramePacingAarSdkBuild, "games-frame-pacing.aar")
+addZipTask("fullSdkGamesFramePacingAar", gamesFramePacingAarFullSdkBuild, "games-frame-pacing.aar")
+addZipTask("fullSdkGamesPerformanceTunerAar", gamesPerformanceTunerAarFullSdkBuild, "games-performance-tuner.aar")
+addAarMavenZipTask("fullSdkGamesFramePacingAarMavenZip", "fullSdkGamesFramePacingAar",
+    "games-frame-pacing", "1.5.0")
+addAarMavenZipTask("fullSdkGamesPerformanceTunerAarMavenZip", "fullSdkGamesPerformanceTunerAar",
+    "games-performance-tuner", "1.0.0")

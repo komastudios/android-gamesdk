@@ -14,11 +14,11 @@ export ANDROID_NDK_HOME=`pwd`/../prebuilts/ndk/r20
 if [[ $1 == "full" ]]
 then
     TARGET=fullSdkZip
-    AAR_TARGETS="fullSdkGamingFramePacingAar fullSdkGamingPerformanceTunerAar"
+    AAR_TARGETS="fullSdkGamesFramePacingAar fullSdkGamesPerformanceTunerAar"
     OUTDIR=fullsdk
 else
     TARGET=gamesdkZip
-    AAR_TARGETS=gamingFramePacingAar
+    AAR_TARGETS=gamesFramePacingAar
     OUTDIR=gamesdk
 fi
 ./gradlew $TARGET
@@ -108,20 +108,20 @@ popd
 
 # Calculate hash of the AAR files
 pushd $dist_dir
-sha256sum gaming-frame-pacing.aar > gaming-frame-pacing.aar.sha256
+sha256sum games-frame-pacing.aar > games-frame-pacing.aar.sha256
 popd
 if [[ $1 == "full" ]]
 then
   pushd $dist_dir
-  sha256sum gaming-performance-tuner.aar > gaming-performance-tuner.aar.sha256
+  sha256sum games-performance-tuner.aar > games-performance-tuner.aar.sha256
   popd
 fi
 
 # Prepare AAR files to be uploaded on Maven
 if [[ $1 == "full" ]]
 then
-  ./gradlew fullSdkGamingFramePacingAarMavenZip
-  ./gradlew fullSdkGamingPerformanceTunerAarMavenZip
+  ./gradlew fullSdkGamesFramePacingAarMavenZip
+  ./gradlew fullSdkGamesPerformanceTunerAarMavenZip
 fi
 
 pushd $dist_dir

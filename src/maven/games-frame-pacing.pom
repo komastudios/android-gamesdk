@@ -4,8 +4,8 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>androidx.gaming</groupId>
-  <artifactId>gaming-frame-pacing</artifactId>
+  <groupId>androidx.games</groupId>
+  <artifactId>games-frame-pacing</artifactId>
   <version>@aarVersion@</version>
   <packaging>aar</packaging>
 
