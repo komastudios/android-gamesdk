@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03006b57_765c741e",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-04T14:27:01Z",
+      "side": 1,
+      "message": "Should we be initialized to a BEFORECREATE state rather than ONCREATE?",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0a05786_53bb2dda",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-04T14:27:01Z",
+      "side": 1,
+      "message": "You probably don\u0027t need it to be a pointer.",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "28aa2d8e_d5a268b4",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-04T14:27:01Z",
+      "side": 1,
+      "message": "Why is this needed?",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
