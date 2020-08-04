@@ -37,7 +37,7 @@ def joinPath(String first, String... more) {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
-        .setAarLibrary("games-frame-pacing", "1.5.0")
+        .setAarLibrary("games-frame-pacing", "1.5.0-alpha02")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -55,7 +55,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
-        .setAarLibrary("games-performance-tuner", "1.0.0")
+        .setAarLibrary("games-performance-tuner", "1.0.0-alpha02")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
                         .copySourcesTo("samples/tuningfork/insightsdemo")
