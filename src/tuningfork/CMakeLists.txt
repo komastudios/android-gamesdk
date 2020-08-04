@@ -45,6 +45,7 @@ add_definitions(-DPB_FIELD_16BIT)
 
 set( TUNINGFORK_SRCS
   c_header_check.c
+  core/activity_lifecycle_state.cpp
   core/annotation_util.cpp
   core/async_telemetry.cpp
   core/crash_handler.cpp

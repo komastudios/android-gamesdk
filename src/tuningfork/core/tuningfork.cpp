@@ -234,4 +234,11 @@ TuningFork_ErrorCode RecordLoadingTime(Duration duration,
     else
         return s_impl->RecordLoadingTime(duration, d);
 }
+
+TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->ReportLifecycleEvent(state);
+}
 }  // namespace tuningfork
