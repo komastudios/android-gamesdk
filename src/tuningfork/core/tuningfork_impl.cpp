@@ -24,6 +24,7 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "activity_lifecycle_state.h"
 #include "annotation_util.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
@@ -45,6 +46,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       meminfo_provider_(meminfo_provider),
       ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
       next_ikey_(0),
+      activity_lifecycle_state_(std::make_unique<ActivityLifecycleState>()),
       loading_start_(TimePoint::min()) {
     ALOGI(
         "TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  "
@@ -507,6 +509,12 @@ void TuningForkImpl::InitAsyncTelemetry() {
     MemoryTelemetry::SetUpAsyncWork(*async_telemetry_, meminfo_provider_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
+}
+
+TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
+    TuningFork_LifecycleState state) {
+    activity_lifecycle_state_->SetNewState(state);
+    return TUNINGFORK_ERROR_OK;
 }
 
 }  // namespace tuningfork

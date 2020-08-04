@@ -493,6 +493,31 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
  */
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
 
+/**
+ * @brief The set of states that the TuningFork_reportLifecycleEvent method
+ * accepts.
+ */
+typedef enum TuningFork_LifecycleState {
+    TUNINGFORK_STATE_ONCREATE = 0,
+    TUNINGFORK_STATE_ONSTART = 1,
+    TUNINGFORK_STATE_ONSTOP = 2,
+    TUNINGFORK_STATE_ONDESTROY = 3,
+
+} TuningFork_LifecycleState;
+
+/**
+ * @brief Record the state change of the app's lifecycle.
+ * This method should be called every time the onCreate(), onStart(), onStop()
+ * and onDestroy() methods are triggered for the app. This will help tuning
+ * fork keep track of exactly when the app is on foreground or background.
+ * @param state The new lifecycle state of the app
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't
+ * initialized.
+ */
+TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
+    TuningFork_LifecycleState state);
+
 #ifdef __cplusplus
 }
 #endif

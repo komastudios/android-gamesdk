@@ -93,4 +93,6 @@ TuningFork_ErrorCode SetFidelityParameters(const ProtobufSerialization& params);
 // Enable or disable memory telemetry recording.
 TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
+TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
+
 }  // namespace tuningfork

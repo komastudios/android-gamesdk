@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "Trace.h"
+#include "activity_lifecycle_state.h"
 #include "async_telemetry.h"
 #include "crash_handler.h"
 #include "session.h"
@@ -48,6 +49,7 @@ class TuningForkImpl : public IdProvider {
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
+    std::unique_ptr<ActivityLifecycleState> activity_lifecycle_state_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -93,6 +95,8 @@ class TuningForkImpl : public IdProvider {
         const ProtobufSerialization &params);
 
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
+
+    TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
    private:
     MetricData *TickNanos(MetricId compound_id, TimePoint t);
