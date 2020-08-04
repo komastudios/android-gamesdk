@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "Trace.h"
+#include "activity_lifecycle_state.h"
 #include "async_telemetry.h"
 #include "crash_handler.h"
 #include "session.h"
@@ -51,6 +52,7 @@ class TuningForkImpl : public IdProvider {
     std::mutex loading_time_metadata_map_mutex_;
     std::unordered_map<LoadingTimeMetadata, LoadingTimeMetadataId>
         loading_time_metadata_map_;
+    ActivityLifecycleState activity_lifecycle_state_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -99,6 +101,8 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode RecordLoadingTime(Duration duration,
                                            const LoadingTimeMetadata &metadata);
+
+    TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
    private:
     // Record the time between t and the previous tick in the histogram

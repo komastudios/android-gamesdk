@@ -99,4 +99,6 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 TuningFork_ErrorCode RecordLoadingTime(Duration duration,
                                        const LoadingTimeMetadata& d);
 
+TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
+
 }  // namespace tuningfork
