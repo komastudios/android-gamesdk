@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "1a5516a1_2a1c9d9d",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-05T09:12:52Z",
+      "side": 1,
+      "message": "We can\u0027t be sure devs will call our lifecycle function immediately after init. They might call it twice, at the wrong place or not at all. We should at least warn if they don\u0027t call it, which means we need to have an uninitialized or invalid state.",
+      "parentUuid": "55a32c31_80923ace",
+      "revId": "ae9b9ac934d41f8b3ce3b48762159272cc92c609",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d0a05786_53bb2dda",
         "filename": "src/tuningfork/core/tuningfork_impl.h",
         "patchSetId": 3
