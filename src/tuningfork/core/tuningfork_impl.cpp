@@ -24,6 +24,7 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "activity_lifecycle_state.h"
 #include "annotation_util.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
@@ -581,6 +582,12 @@ TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     if (data == nullptr)
         return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
     data->Record(duration);
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
+    TuningFork_LifecycleState state) {
+    activity_lifecycle_state_.SetNewState(state);
     return TUNINGFORK_ERROR_OK;
 }
 
