@@ -156,11 +156,40 @@ Json::object JsonSerializer::TelemetryContextJson(
         {"duration", DurationToSecondsString(duration)}};
 }
 
+#define SET_METADATA_FIELD(A) \
+    if (md.A != 0) ret[#A] = md.A;
+#define SET_METADATA_FIELD64(A) \
+    if (md.A != 0) ret[#A] = JsonUint64(md.A);
+
+static std::string DurationJsonFromNanos(uint64_t ns) {
+    // For JSON, we should return a string with the number of seconds.
+    // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/duration.proto
+    double dns = ns;
+    dns /= 1000000000.0;
+    std::stringstream str;
+    str << dns << "s";
+    return str.str();
+}
+
+Json::object JsonSerializer::LoadingTimeMetadataJson(
+    const LoadingTimeMetadata& md) {
+    Json::object ret;
+    SET_METADATA_FIELD(state);
+    SET_METADATA_FIELD(source);
+    SET_METADATA_FIELD(compression_level);
+    SET_METADATA_FIELD(network_connectivity);
+    SET_METADATA_FIELD64(network_transfer_speed_bps);
+    if (md.network_latency_ns != 0) {
+        ret["network_latency"] = DurationJsonFromNanos(md.network_latency_ns);
+    }
+    return ret;
+}
+
 Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
                                                  bool& empty,
                                                  Duration& duration) {
     std::vector<Json::object> render_histograms;
-    std::vector<int> loading_events_times;  // Ignore fractional milliseconds
+    std::vector<Json::object> loading_time_series;
     duration = Duration::zero();
     for (const auto& th :
          session_.GetNonEmptyHistograms<FrameTimeMetricData>()) {
@@ -177,13 +206,24 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     for (const auto& th :
          session_.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
         if (th->metric_id_.detail.annotation != annotation) continue;
+        std::vector<int>
+            loading_events_times;  // Ignore fractional milliseconds
         for (auto c : th->histogram_.samples()) {
             auto v = static_cast<int>(c);
             if (v != 0) loading_events_times.push_back(v);
         }
-        duration += th->duration_;
+        LoadingTimeMetadata md;
+        if (id_provider_->MetricIdToLoadingTimeMetadata(th->metric_id_, md) ==
+            TUNINGFORK_ERROR_OK) {
+            Json::object o({});
+            o["loading_events"] =
+                Json::object{{"times_ms", loading_events_times}};
+            o["loading_metadata"] = LoadingTimeMetadataJson(md);
+            loading_time_series.push_back(o);
+            duration += th->duration_;
+        }
     }
-    int total_size = render_histograms.size() + loading_events_times.size();
+    int total_size = render_histograms.size() + loading_time_series.size();
     empty = (total_size == 0);
     Json::object ret;
     if (render_histograms.size() > 0) {
@@ -191,13 +231,9 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             Json::object{{"render_time_histogram", render_histograms}};
     }
     // Loading events
-    if (loading_events_times.size() > 0) {
-        Json::object loading;
-        if (loading_events_times.size() > 0) {
-            loading["loading_events"] =
-                Json::object{{"times_ms", loading_events_times}};
-        }
-        ret["loading"] = loading;
+    if (loading_time_series.size() > 0) {
+        ret["loading"] =
+            Json::object{{"loading_time_series", loading_time_series}};
     }
     return ret;
 }
@@ -211,20 +247,23 @@ Json::object JsonSerializer::MemoryTelemetryReportJson(bool& empty) {
               });
     for (const auto& th : histograms) {
         MemoryMetric mh;
-        id_provider_->MetricIdToMemoryMetric(th->metric_id_, mh);
-        auto& h = th->histogram_;
-        if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
-            const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
-        std::vector<int32_t> counts;
-        for (auto c : h.buckets()) counts.push_back(static_cast<int32_t>(c));
-        Json::object histogram_config{
-            {"bucket_min_bytes", JsonUint64(h.BucketStart())},
-            {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
-        Json::object o{{"type", mh.memory_record_type_},
-                       {"period_ms", static_cast<int>(mh.period_ms_)},
-                       {"histogram_config", histogram_config},
-                       {"counts", counts}};
-        memory_histograms.push_back(o);
+        if (id_provider_->MetricIdToMemoryMetric(th->metric_id_, mh) ==
+            TUNINGFORK_ERROR_OK) {
+            auto& h = th->histogram_;
+            if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
+                const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
+            std::vector<int32_t> counts;
+            for (auto c : h.buckets())
+                counts.push_back(static_cast<int32_t>(c));
+            Json::object histogram_config{
+                {"bucket_min_bytes", JsonUint64(h.BucketStart())},
+                {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
+            Json::object o{{"type", mh.memory_record_type_},
+                           {"period_ms", static_cast<int>(mh.period_ms_)},
+                           {"histogram_config", histogram_config},
+                           {"counts", counts}};
+            memory_histograms.push_back(o);
+        }
     }
     // Memory histogram
     Json::object ret;
