@@ -20,6 +20,7 @@
 #include "metric.h"
 #include "proto/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
+#include "tuningfork_internal.h"
 
 class AAsset;
 
@@ -49,6 +50,9 @@ class IdProvider {
 
     virtual TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
                                                         MemoryMetric& m) = 0;
+
+    virtual TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata& md) = 0;
 };
 
 }  // namespace tuningfork

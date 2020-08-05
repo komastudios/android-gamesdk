@@ -25,15 +25,11 @@
 #include "core/time_provider.h"
 #include "core/tuningfork_extra.h"
 #include "proto/protobuf_util.h"
-#include "tuningfork/tuningfork.h"
-#include "tuningfork/tuningfork_extra.h"
 
 // These functions are implemented in tuningfork.cpp.
 // They are mostly the same as the C interface, but take C++ types.
 
 namespace tuningfork {
-
-typedef TuningFork_LoadingTimeMetadata LoadingTimeMetadata;
 
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google

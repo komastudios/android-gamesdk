@@ -53,6 +53,8 @@ class JsonSerializer {
                                              const RequestInfo& request_info,
                                              const Duration& duration,
                                              bool& empty);
+    json11::Json::object LoadingTimeMetadataJson(const LoadingTimeMetadata& md);
+
     const Session& session_;
     IdProvider* id_provider_;
 };
