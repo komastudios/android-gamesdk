@@ -96,9 +96,15 @@ std::string single_tick_with_loading = R"TF({
   },
   "report": {
     "loading": {
-      "loading_events": {
-        "times_ms": [1500]
-      }
+      "loading_time_series": [{
+        "loading_events": {
+          "times_ms": [1500]
+        },
+        "loading_metadata": {
+          "source":1,
+          "state":1
+        }
+      }]
     },
     "rendering": {
       "render_time_histogram": [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -144,6 +150,13 @@ class IdMap : public IdProvider {
                                                 MemoryMetric& m) override {
         // Not used
         m = {};
+        return TUNINGFORK_ERROR_OK;
+    }
+    TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata& m) override {
+        m = {};
+        m.state = LoadingTimeMetadata::FIRST_RUN;
+        m.source = LoadingTimeMetadata::MEMORY;
         return TUNINGFORK_ERROR_OK;
     }
 };

@@ -537,24 +537,34 @@ typedef struct TuningFork_LoadingTimeMetadata {
         HOT_START = 4,
         // Asset loading between levels
         INTER_LEVEL = 5
-    } loadingState;
+    } state;
     enum Source {
         UNKNOWN_SOURCE = 0,
+        // Uncompressing data.
         MEMORY = 1,
+        // Reading assets from APK bundle.
         APK = 2,
-        DEVICE_STORAGE = 2,
-        EXTERNAL_STORAGE = 3,  // e.g. SD card
-        NETWORK = 4,
-        SHADER_COMPILATION = 5
+        // Reading assets from device storage.
+        DEVICE_STORAGE = 3,
+        // Reading assets from external storage, e.g. SD card.
+        EXTERNAL_STORAGE = 4,
+        // Loading assets from the network.
+        NETWORK = 5,
+        // Shader compilation.
+        SHADER_COMPILATION = 6,
+        // Time spent between process starting and onCreate.
+        PRE_ACTIVITY = 7,
+        // Total time spent between process starting and first render frame.
+        FIRST_TOUCH_TO_FIRST_FRAME = 8
     } source;
-    int32_t compressionLevel;  // 0 = no compression, 100 = max compression
+    int32_t compression_level;  // 0 = no compression, 100 = max compression
     enum NetworkConnectivity {
         UNKNOWN = 0,
         WIFI = 1,
-        MOBILE_NETWORK = 2
-    } networkConnectivity;
-    uint64_t networkTransferSpeed_bps;  // bandwidth in bits per second
-    uint64_t networkLatency_ns;         // latency in nanoseconds
+        CELLULAR_NETWORK = 2
+    } network_connectivity;
+    uint64_t network_transfer_speed_bps;  // bandwidth in bits per second
+    uint64_t network_latency_ns;          // latency in nanoseconds
 } TuningFork_LoadingTimeMetadata;
 
 /**

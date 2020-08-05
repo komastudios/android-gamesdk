@@ -139,6 +139,9 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode LoadingTimeMetadataToId(
         const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id);
 
+    TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata &md) override;
+
     bool keyIsValid(InstrumentationKey key) const;
 
     TuningFork_ErrorCode GetOrCreateInstrumentKeyIndex(InstrumentationKey key,
