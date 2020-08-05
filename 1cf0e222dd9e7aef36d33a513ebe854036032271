@@ -1,0 +1,85 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004223846",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d10",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "89a77309_575e0429",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-05T13:47:04Z",
+      "side": 1,
+      "message": "Wrong casing for \"getValueHelper\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 188,
+        "startChar": 10,
+        "endLine": 188,
+        "endChar": 43
+      },
+      "revId": "1cf0e222dd9e7aef36d33a513ebe854036032271",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004223846",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d10",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8fa35621_bcb3ea47",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-05T13:47:04Z",
+      "side": 1,
+      "message": "Wrong casing for \"validateDevFidelityParamsOrder\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 204,
+        "startChar": 9,
+        "endLine": 204,
+        "endChar": 57
+      },
+      "revId": "1cf0e222dd9e7aef36d33a513ebe854036032271",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004223846",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1366843?revision\u003d10",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "19da1168_9f827bed",
+        "filename": "src/tuningfork/tools/validation/src/main/java/com/google/tuningfork/validation/ValidationUtil.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-05T13:47:04Z",
+      "side": 1,
+      "message": "Wrong casing for \"validateDevFidelityParamsZero\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 249,
+        "startChar": 9,
+        "endLine": 249,
+        "endChar": 56
+      },
+      "revId": "1cf0e222dd9e7aef36d33a513ebe854036032271",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
