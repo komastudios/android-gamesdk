@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e7c5a21_2e7de279",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1566081
+      },
+      "writtenOn": "2020-08-05T06:36:13Z",
+      "side": 1,
+      "message": "AFAIK we are all good to go",
+      "revId": "d3129b226b597bb3025992f0c2032ddb9cffd9d4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
