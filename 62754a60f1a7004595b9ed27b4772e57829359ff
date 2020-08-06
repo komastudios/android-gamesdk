@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bbcc1884_fb79fbc3",
+        "filename": "test/collate/src/main/java/net/jimblackler/collate/ReportUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-06T12:27:35Z",
+      "side": 1,
+      "message": "Any special reason for \"idx2\"? Otherwise \"idx\" would be OK",
+      "revId": "62754a60f1a7004595b9ed27b4772e57829359ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
