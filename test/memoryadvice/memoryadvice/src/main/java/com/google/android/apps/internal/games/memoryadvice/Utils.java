@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /** A helper class with static methods to help with Heuristics and file IO */
 public class Utils {
@@ -146,5 +148,21 @@ public class Utils {
       return (long) (value * unitMultiplier);
     }
     throw new IllegalArgumentException("Input to getMemoryQuantity neither string or number.");
+  }
+
+  /**
+   * Return the value associated with the key in the given object. If the object does not define
+   * the key, return the specified default value.
+   * @param object The object to extract the value from.
+   * @param key The key associated with the value.
+   * @param defaultValue The value to return if the object does not specify the key.
+   * @return The associated value, or the defaultValue if the object does not define the key.
+   */
+  public static Object getOrDefault(JSONObject object, String key, Object defaultValue) {
+    try {
+      return object.get(key);
+    } catch (JSONException e) {
+      return defaultValue;
+    }
   }
 }

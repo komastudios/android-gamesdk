@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.android.apps.internal.games.memoryadvice" />
+    package="com.google.android.apps.internal.games.memoryadvice">
+    <application>
+        <service android:name="com.google.android.apps.internal.games.memoryadvice.StressService"
+            android:process=":externalProcess" />
+    </application>
+</manifest>
