@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a21c7391_ba3c47e8",
+        "filename": "src/tuningfork/core/request_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-08-06T18:21:31Z",
+      "side": 1,
+      "message": "maybe these two methods should have the same name as they mostly do the same thing, and it also would reduce code complexity and make it less likely that the wrong one is referenced.",
+      "range": {
+        "startLine": 77,
+        "startChar": 11,
+        "endLine": 77,
+        "endChar": 35
+      },
+      "revId": "44d84e5b2e0e6254fd1897d684c4050ffee47d01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
