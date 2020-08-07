@@ -30,10 +30,8 @@ void ActivityLifecycleState::SetNewState(TuningFork_LifecycleState new_state) {
         app_on_foreground_ = true;
     else if (current_state_ == TUNINGFORK_STATE_ONSTOP)
         app_on_foreground_ = false;
-    ALOGV(
-        "New lifecycle state recorded: %s, app on foreground: %d",
-        GetStateName(current_state_),
-        app_on_foreground_);
+    ALOGV("New lifecycle state recorded: %s, app on foreground: %d",
+          GetStateName(current_state_), app_on_foreground_);
 }
 
 const char *ActivityLifecycleState::GetStateName(
@@ -56,8 +54,6 @@ TuningFork_LifecycleState ActivityLifecycleState::GetCurrentState() {
     return current_state_;
 }
 
-bool ActivityLifecycleState::IsAppOnForeground() {
-    return app_on_foreground_;
-}
+bool ActivityLifecycleState::IsAppOnForeground() { return app_on_foreground_; }
 
 }  // namespace tuningfork

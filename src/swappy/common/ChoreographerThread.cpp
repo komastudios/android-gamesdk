@@ -220,7 +220,8 @@ void NDKChoreographerThread::looperThread() {
         ALooper_pollAll(-1, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
-    if (mAChoreographer_unregisterRefreshRateCallback && mOnRefreshRateChanged) {
+    if (mAChoreographer_unregisterRefreshRateCallback &&
+        mOnRefreshRateChanged) {
         mAChoreographer_unregisterRefreshRateCallback(mChoreographer, callback,
                                                       this);
     }
@@ -494,8 +495,10 @@ ChoreographerThread::createChoreographerThread(Type type, JavaVM *vm,
     if (vm == nullptr ||
         sdkVersion.sdkInt >= NDKChoreographerThread::MIN_SDK_VERSION) {
         ALOGI("Using NDK Choreographer");
-        const auto usingDisplayManager = SwappyDisplayManager::useSwappyDisplayManager(sdkVersion);
-        const auto refreshRateCallback = usingDisplayManager ? Callback() : onRefreshRateChanged;
+        const auto usingDisplayManager =
+            SwappyDisplayManager::useSwappyDisplayManager(sdkVersion);
+        const auto refreshRateCallback =
+            usingDisplayManager ? Callback() : onRefreshRateChanged;
         return std::make_unique<NDKChoreographerThread>(onChoreographer,
                                                         refreshRateCallback);
     }

@@ -133,7 +133,8 @@ TuningFork_ErrorCode TuningFork_recordLoadingTime(
                                  *eventMetadata);
 }
 
-TuningFork_ErrorCode TuningFork_reportLifecycleEvent(TuningFork_LifecycleState state) {
+TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
+    TuningFork_LifecycleState state) {
     return tf::ReportLifecycleEvent(state);
 }
 

@@ -33,7 +33,6 @@ class ActivityLifecycleState {
     TuningFork_LifecycleState current_state_ = TUNINGFORK_STATE_UNINITIALIZED;
 
     const char *GetStateName(TuningFork_LifecycleState state);
-
 };
 
 }  // namespace tuningfork

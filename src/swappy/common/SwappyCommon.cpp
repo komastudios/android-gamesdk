@@ -278,8 +278,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread = ChoreographerThread::createChoreographerThread(
             ChoreographerThread::Type::App, nullptr, nullptr,
             [this] { mChoreographerFilter->onChoreographer(); },
-            [this] { onRefreshRateChanged(); },
-            mCommonSettings.sdkVersion);
+            [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     }
 
     mChoreographerThread->postFrameCallbacks();
@@ -326,7 +325,8 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 void SwappyCommon::updateDisplayTimings() {
     // grab a pointer to the latest supported refresh rates
     if (mDisplayManager) {
-        mSupportedRefreshPeriods = mDisplayManager->getSupportedRefreshPeriods();
+        mSupportedRefreshPeriods =
+            mDisplayManager->getSupportedRefreshPeriods();
     }
 
     std::lock_guard<std::mutex> lock(mMutex);
@@ -751,10 +751,11 @@ void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
         if (!mDisplayManager || !mSupportedRefreshPeriods) {
             return;
         }
-        // Loop across all supported refresh periods to find the best refresh period.
-        // Best refresh period means:
-        //      Shortest swap period that can still accommodate the frame time and that
-        //      has the longest refresh period possible to optimize power consumption.
+        // Loop across all supported refresh periods to find the best refresh
+        // period. Best refresh period means:
+        //      Shortest swap period that can still accommodate the frame time
+        //      and that has the longest refresh period possible to optimize
+        //      power consumption.
         std::pair<nanoseconds, int> bestRefreshConfig;
         nanoseconds minSwapDuration = 1s;
         for (const auto& refreshConfig : *mSupportedRefreshPeriods) {
@@ -763,13 +764,15 @@ void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            // Don't allow swapping faster than mSwapDuration (see public header)
+            // Don't allow swapping faster than mSwapDuration (see public
+            // header)
             if (swapDuration + FRAME_MARGIN < mSwapDuration) {
                 continue;
             }
 
-            // We iterate in ascending order of refresh period, so accepting any better or
-            // equal-within-margin duration here chooses the longest refresh period possible.
+            // We iterate in ascending order of refresh period, so accepting any
+            // better or equal-within-margin duration here chooses the longest
+            // refresh period possible.
             if (swapDuration < minSwapDuration + FRAME_MARGIN) {
                 minSwapDuration = swapDuration;
                 bestRefreshConfig = refreshConfig;
