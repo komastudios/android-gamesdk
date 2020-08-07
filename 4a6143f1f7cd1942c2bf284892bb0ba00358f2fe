@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac4c137d_09cb2c75",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 725,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-07T12:03:01Z",
+      "side": 1,
+      "message": "Just for the record, why can we ignore these arrays?",
+      "revId": "4a6143f1f7cd1942c2bf284892bb0ba00358f2fe",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
