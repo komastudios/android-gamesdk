@@ -18,9 +18,26 @@
 
 namespace test {
 
-bool CompareIgnoringWhitespace(std::string s0, std::string s1) {
-    // Ignore all whitespace, except when in strings
+// Wind forward over any arrays ... [...] ...
+template<typename Iterator>
+bool WindForwardOverArrays(Iterator& i, Iterator end) {
+    int level = 0;
+    if (*i!='[') return false;
+    for(;i!=end;++i) {
+        if (*i=='[') ++level;
+        if (*i==']') {
+            --level;
+            if (level==0) return true;
+        }
+    }
+    return false;
+}
+
+bool CompareIgnoringWhitespace(std::string s0, std::string s1, bool ignoring_starred_arrays) {
+    // Ignore all whitespace, except when in strings.
+    // '[**]' is a wildcard for any array if ignoring_starred_arrays is true.
     bool in_string = false;
+    bool in_wildcard = false;
     auto a = s0.begin();
     auto b = s1.begin();
     while (true) {
@@ -30,6 +47,13 @@ bool CompareIgnoringWhitespace(std::string s0, std::string s1) {
         }
         if (a == s0.end()) break;
         if (b == s1.end()) return false;
+        if (ignoring_starred_values) {
+            if ((s1.end() - b)>=4 && std::string(b,b+4) == "[**]") {
+                if (!WindForwardOverArrays(a, s0.end())) break;
+                b += 3;
+                continue;
+            }
+        }
         if (*a != *b) return false;
         if (*a == '"') in_string = !in_string;
         ++a;
