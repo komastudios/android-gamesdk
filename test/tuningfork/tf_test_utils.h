@@ -18,6 +18,7 @@
 
 namespace test {
 
-bool CompareIgnoringWhitespace(std::string s0, std::string s1);
+// If ignoring_starred_arrays is true, '[**]' in s1 is an array wildcard.
+bool CompareIgnoringWhitespace(std::string s0, std::string s1, bool ignoring_starred_arrays = false);
 
 }
