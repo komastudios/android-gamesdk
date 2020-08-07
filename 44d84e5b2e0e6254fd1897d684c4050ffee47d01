@@ -22,6 +22,30 @@
       "revId": "44d84e5b2e0e6254fd1897d684c4050ffee47d01",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8574c0e2_3542d4ac",
+        "filename": "src/tuningfork/core/request_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-07T08:50:23Z",
+      "side": 1,
+      "message": "I\u0027ll leave it how it is for now. We may need to dynamically choose between them at runtime if this fix doesn\u0027t solve the issue Luis reported. I\u0027ve not been able to find devices that exhibited the issue to test on.",
+      "parentUuid": "a21c7391_ba3c47e8",
+      "range": {
+        "startLine": 77,
+        "startChar": 11,
+        "endLine": 77,
+        "endChar": 35
+      },
+      "revId": "44d84e5b2e0e6254fd1897d684c4050ffee47d01",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
