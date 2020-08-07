@@ -88,7 +88,8 @@ TuningFork_ErrorCode Init(const Settings &settings,
     if (request_info != nullptr) {
         RequestInfo::CachedValue() = *request_info;
     } else {
-        RequestInfo::CachedValue() = RequestInfo::ForThisGameAndDevice();
+        RequestInfo::CachedValue() =
+            RequestInfo::ForThisGameAndDevice(settings);
     }
 
     if (backend == nullptr) {

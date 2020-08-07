@@ -381,6 +381,13 @@ def copyIncludes(outFolder, Collection<NativeLibrary> libraries) {
             includeEmptyDirs = false
         }
     })
+    // Copy common headers
+    copy {
+        from file(headerFolder)
+        include "common/*.h"
+        into file(includeBuildFolder)
+        includeEmptyDirs = false
+    }
 }
 
 def copyDocs(outFolder) {
