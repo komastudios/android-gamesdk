@@ -24,6 +24,9 @@
 
 namespace tuningfork {
 
+// Forward declaration.
+class Settings;
+
 // Extra information that is sent with requests including device information,
 // game package information and session information.
 struct RequestInfo {
@@ -42,10 +45,11 @@ struct RequestInfo {
     std::string brand;
     std::string product;
     std::string device;
+    uint32_t swappy_version;
 
     // Note that this will include an empty experiment_id and
     // current_fidelity_parameters.
-    static RequestInfo ForThisGameAndDevice();
+    static RequestInfo ForThisGameAndDevice(const Settings& settings);
 
     // We have a globally accessible cached value
     static RequestInfo& CachedValue();
