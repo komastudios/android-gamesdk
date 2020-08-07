@@ -223,6 +223,7 @@ class TuningForkTest {
           time_provider_(tick_size),
           meminfo_provider_(enable_meminfo) {
         RequestInfo info = {};
+        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0);
         init_return_value_ =
             tuningfork::Init(settings, &info, &test_backend_, &time_provider_,
                              &meminfo_provider_);
