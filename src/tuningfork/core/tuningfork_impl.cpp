@@ -570,6 +570,19 @@ TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
     return TUNINGFORK_ERROR_OK;
 }
 
+TuningFork_ErrorCode TuningForkImpl::MetricIdToLoadingTimeMetadata(
+    MetricId id, LoadingTimeMetadata &md) {
+    std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
+    auto metadata_id = id.detail.loading_time.metadata;
+    for (auto &m : loading_time_metadata_map_) {
+        if (m.second == metadata_id) {
+            md = m.first;
+            return TUNINGFORK_ERROR_OK;
+        }
+    }
+    return TUNINGFORK_ERROR_BAD_PARAMETER;
+}
+
 TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     Duration duration, const LoadingTimeMetadata &metadata) {
     LoadingTimeMetadataId metadata_id;

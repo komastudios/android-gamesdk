@@ -96,9 +96,18 @@ std::string single_tick_with_loading = R"TF({
   },
   "report": {
     "loading": {
-      "loading_events": {
+      "loading_events": [{
+        "loading_metadata": {
+          "network_info": {
+            "bandwidth_bps": "1000000000",
+            "connectivity": 1,
+            "latency": "0.05s"
+          },
+          "source":5,
+          "state":1
+        },
         "times_ms": [1500]
-      }
+      }]
     },
     "rendering": {
       "render_time_histogram": [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -144,6 +153,16 @@ class IdMap : public IdProvider {
                                                 MemoryMetric& m) override {
         // Not used
         m = {};
+        return TUNINGFORK_ERROR_OK;
+    }
+    TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata& m) override {
+        m = {};
+        m.state = LoadingTimeMetadata::FIRST_RUN;
+        m.source = LoadingTimeMetadata::NETWORK;
+        m.network_latency_ns = 50000000;  // 50ms
+        m.network_connectivity = LoadingTimeMetadata::NetworkConnectivity::WIFI;
+        m.network_transfer_speed_bps = 1000000000;  // 1Gb/s
         return TUNINGFORK_ERROR_OK;
     }
 };
