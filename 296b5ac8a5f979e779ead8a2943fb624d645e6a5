@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ece318b_d94496f8",
+        "filename": "test/tuningfork/serialization_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-07T11:04:56Z",
+      "side": 1,
+      "message": "Use a SWAPPY_VERSION macro?",
+      "revId": "296b5ac8a5f979e779ead8a2943fb624d645e6a5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49bf1ef4_01652a3e",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-07T11:04:56Z",
+      "side": 1,
+      "message": "Same, TUNINGFORK_VERSION macro",
+      "revId": "296b5ac8a5f979e779ead8a2943fb624d645e6a5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
