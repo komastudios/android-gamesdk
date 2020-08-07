@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54e1282b_c31206c0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-07T09:46:08Z",
+      "side": 1,
+      "message": "Please run \u0027./gradlew format\u0027 before uploading a CL.\nCan we make the error if you don\u0027t on Mac a bit more helpful, Florian?",
+      "revId": "e68765a1faf4789aa88d97c28b84a6f231ae3c17",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
