@@ -85,7 +85,7 @@ std::string getSystemProp(const char* key) {
 namespace tuningfork {
 
 /* static */
-RequestInfo RequestInfo::ForThisGameAndDevice() {
+RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     RequestInfo info;
     // Total memory
     std::string s = slurpFile("/proc/meminfo");
@@ -137,6 +137,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
         info.device = jni::android::os::Build::DEVICE().C();
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
+    info.swappy_version = settings.c_settings.swappy_version;
     return info;
 }
 

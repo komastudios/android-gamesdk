@@ -77,11 +77,21 @@ using namespace json11;
 using namespace std::chrono;
 using namespace date;
 
-Json::object GameSdkInfoJson(const RequestInfo& request_info) {
+static std::string GetVersionString(uint32_t ver) {
     std::stringstream version_str;
-    version_str << TUNINGFORK_MAJOR_VERSION << "." << TUNINGFORK_MINOR_VERSION;
-    return Json::object{{"version", version_str.str()},
-                        {"session_id", request_info.session_id}};
+    uint32_t major_version = ver >> 16;
+    uint32_t minor_version = ver & 0xffff;
+    version_str << major_version << "." << minor_version;
+    return version_str.str();
+}
+Json::object GameSdkInfoJson(const RequestInfo& request_info) {
+    Json::object info{
+        {"version", GetVersionString(request_info.tuningfork_version)},
+        {"session_id", request_info.session_id}};
+    if (request_info.swappy_version != 0) {
+        info["swappy_version"] = GetVersionString(request_info.swappy_version);
+    }
+    return info;
 }
 
 std::string TimeToRFC3339(system_clock::time_point tp) {
