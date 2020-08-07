@@ -47,7 +47,7 @@ bool CompareIgnoringWhitespace(std::string s0, std::string s1, bool ignoring_sta
         }
         if (a == s0.end()) break;
         if (b == s1.end()) return false;
-        if (ignoring_starred_values) {
+        if (ignoring_starred_arrays) {
             if ((s1.end() - b)>=4 && std::string(b,b+4) == "[**]") {
                 if (!WindForwardOverArrays(a, s0.end())) break;
                 b += 3;
