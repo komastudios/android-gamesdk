@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34584eaf_ec4baf25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-08-09T21:07:40Z",
+      "side": 1,
+      "message": "The code has some lint errors about third-party license. I was thinking that\u0027s fine since this code is in third_party/ directory. I\u0027d appreciate your input/guidance on this Will.",
+      "revId": "611ee524be67fe10c3541303afd4dbb1afdd09be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
