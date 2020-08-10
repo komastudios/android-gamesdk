@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38d08652_76946d5d",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-10T13:37:41Z",
+      "side": 1,
+      "message": "I think it\u0027d be better to write the JPanel initialization in a different class and just initiate an object of that class. As later on you\u0027ll need to write controllers for it.",
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
