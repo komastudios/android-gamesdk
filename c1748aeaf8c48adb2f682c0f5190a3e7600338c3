@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "03a719a2_da557dbb",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-10T15:02:58Z",
+      "side": 1,
+      "message": "nit: maybe declare constants as static final members of the class?",
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "38d08652_76946d5d",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
         "patchSetId": 1
