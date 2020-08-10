@@ -16,6 +16,23 @@
       "revId": "611ee524be67fe10c3541303afd4dbb1afdd09be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5d487eb4_efcd2b1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-10T15:20:49Z",
+      "side": 1,
+      "message": "Hey Baris,\nWe may need to reach out to opensource-licensing@google.com and see what they say we should do with this MIT licensed code.\nCan you check if/where endless-tunnel is checked in already in the Android or Google3 codebases?\nThanks.",
+      "revId": "611ee524be67fe10c3541303afd4dbb1afdd09be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
