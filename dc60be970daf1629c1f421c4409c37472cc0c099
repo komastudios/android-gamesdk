@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e2214c95_54e0490c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/RoundedCornerBorder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-10T05:14:09Z",
+      "side": 1,
+      "message": "2020?",
+      "revId": "dc60be970daf1629c1f421c4409c37472cc0c099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "721fb27d_05884602",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/RoundedCornerBorder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-10T05:14:09Z",
+      "side": 1,
+      "message": "nit: maybe r could have a more intuitive name? so it\u0027s easier to figure out what Rectangle2D.Double method does, without having to look in the documentation",
+      "revId": "dc60be970daf1629c1f421c4409c37472cc0c099",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
