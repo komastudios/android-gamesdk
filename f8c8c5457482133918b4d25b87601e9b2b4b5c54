@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "841c17b4_2f777aa5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DevFidelityParamsLayout.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-11T09:25:47Z",
+      "side": 1,
+      "message": "nit: explicit import provides better readability to know where each class comes from.",
+      "revId": "f8c8c5457482133918b4d25b87601e9b2b4b5c54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
