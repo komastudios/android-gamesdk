@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004328363",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1396630?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2e344f51_e8522f75",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/ProtoCompiler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-11T16:09:06Z",
+      "side": 1,
+      "message": "Wrong casing for \"logger\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 38,
+        "startChar": 12,
+        "endLine": 38,
+        "endChar": 38
+      },
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
