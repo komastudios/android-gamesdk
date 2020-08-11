@@ -33,6 +33,52 @@
       "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3fd4b14_0da38e1a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:34:04Z",
+      "side": 1,
+      "message": "TODO format is usually \n  TODO(ldap): ...",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 53
+      },
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3411e38b_1f76ff80",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:34:04Z",
+      "side": 1,
+      "message": "Remove commented part",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 62
+      },
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
