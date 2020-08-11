@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b9fc7ef_af65ee01",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:43:59Z",
+      "side": 1,
+      "message": "Comment format is\n// First is uppercase with dot at the end.\n\nand for other comments too",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 69
+      },
+      "revId": "5bdc51b9a71e0a386b91a7f7a1c0520a3c03829b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c132f5af_7f78a6fe",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:43:59Z",
+      "side": 1,
+      "message": "Format for todos is \n  TODO(ldap): ...",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 53
+      },
+      "revId": "5bdc51b9a71e0a386b91a7f7a1c0520a3c03829b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8198590e_9b1af54e",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTabController.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:43:59Z",
+      "side": 1,
+      "message": "TODO(ldap): ...",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 89
+      },
+      "revId": "5bdc51b9a71e0a386b91a7f7a1c0520a3c03829b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f28fd8d9_f673aa7a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/RoundedCornerBorder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-11T07:43:59Z",
+      "side": 1,
+      "message": "Same as other comment - can you use full names e.g component / graphics",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 91
+      },
+      "revId": "5bdc51b9a71e0a386b91a7f7a1c0520a3c03829b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
