@@ -22,6 +22,30 @@
       "revId": "c85aad07e92426f1a1f97ab3e9686c8668c63628",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d160e847_c57c0fe2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-12T15:16:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5308b8b8_37077925",
+      "range": {
+        "startLine": 27,
+        "startChar": 2,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "c85aad07e92426f1a1f97ab3e9686c8668c63628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
