@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5308b8b8_37077925",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-12T12:14:25Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/javaguide.html#s7-javadoc\n\nSomething like \n\"Allows adding new ...\"\ne.g no future forms\n\nand same for other javadocs",
+      "range": {
+        "startLine": 27,
+        "startChar": 2,
+        "endLine": 28,
+        "endChar": 64
+      },
+      "revId": "c85aad07e92426f1a1f97ab3e9686c8668c63628",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
