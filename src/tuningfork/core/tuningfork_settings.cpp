@@ -48,12 +48,7 @@ static void CheckPersister(const TuningFork_Cache*& persister,
                            std::string save_dir) {
     if (persister == nullptr) {
         if (save_dir.empty()) {
-            // If the save_dir is empty, try the app's cache dir or tmp storage.
-            if (jni::IsValid()) {
-                save_dir = file_utils::GetAppCacheDir();
-            }
-            if (save_dir.empty()) save_dir = "/data/local/tmp";
-            save_dir += "/tuningfork";
+            save_dir = DefaultTuningForkSaveDirectory();
         }
         ALOGI("Using local file cache at %s", save_dir.c_str());
         sFileCache.SetDir(save_dir);

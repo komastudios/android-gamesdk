@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <cstdio>
 #include <fstream>
@@ -278,6 +279,56 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
 std::string UniqueId() {
     using namespace jni;
     return java::util::UUID::randomUUID().toString().C();
+}
+
+static const uint64_t kNanosecondsPerMillisecond = 1000 * 1000;
+static const uint64_t kMillisecondsPerSecond = 1000;
+
+Duration GetElapsedTimeSinceBoot() {
+    struct timespec ts;
+    int err = clock_gettime(CLOCK_BOOTTIME, &ts);
+    if (err != 0) {
+        // This should never happen, but just in case ...
+        ALOGE("clock_gettime(CLOCK_BOOTTIME) failed: %s", strerror(errno));
+        return std::chrono::milliseconds(0);
+    }
+    return std::chrono::milliseconds(
+        uint64_t(ts.tv_sec) * kMillisecondsPerSecond +
+        uint64_t(ts.tv_nsec) / kNanosecondsPerMillisecond);
+}
+Duration GetProcessStartTimeSinceBoot() {
+    std::stringstream filename;
+    int procid = getpid();
+    long ClockHz = sysconf(_SC_CLK_TCK);  // Clock tick freq in Hz
+    filename << "/proc/" << procid << "/stat";
+    std::ifstream f(filename.str().c_str());
+    long dtime_ms = 0;
+    if (f.good()) {
+        std::stringstream str;
+        str << f.rdbuf();
+        std::string item;
+        std::vector<std::string> items;
+        f.seekg(0);
+        while (std::getline(f, item, ' ')) {
+            items.push_back(item);
+        }
+        auto stime = items[21];
+        std::stringstream pstr(stime);
+        uint64_t stime_ticks;
+        pstr >> stime_ticks;
+        return std::chrono::milliseconds(
+            (stime_ticks * kMillisecondsPerSecond) / ClockHz);
+    }
+    return std::chrono::milliseconds(0);
+}
+
+Duration GetTimeSinceProcessStart() {
+    auto etime = GetElapsedTimeSinceBoot();
+    auto ptime = GetProcessStartTimeSinceBoot();
+    if (etime.count() == 0 || ptime.count() == 0)
+        return std::chrono::milliseconds(0);
+    else
+        return etime - ptime;
 }
 
 }  // namespace tuningfork

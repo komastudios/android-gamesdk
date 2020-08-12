@@ -53,11 +53,14 @@ class TuningForkImpl : public IdProvider {
     std::unordered_map<LoadingTimeMetadata, LoadingTimeMetadataId>
         loading_time_metadata_map_;
     ActivityLifecycleState activity_lifecycle_state_;
+    bool before_first_tick_;
+    bool app_first_run_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
-                   IMemInfoProvider *memory_provider);
+                   IMemInfoProvider *memory_provider,
+                   bool first_run /* whether we have just installed the app*/);
 
     ~TuningForkImpl();
 

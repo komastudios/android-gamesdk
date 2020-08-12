@@ -185,15 +185,19 @@ Json::object JsonSerializer::LoadingTimeMetadataJson(
     SET_METADATA_FIELD(ret, state);
     SET_METADATA_FIELD(ret, source);
     SET_METADATA_FIELD(ret, compression_level);
-    Json::object network_info;
-    if (md.network_connectivity != 0)
-        network_info["connectivity"] = md.network_connectivity;
-    if (md.network_transfer_speed_bps != 0)
-        network_info["bandwidth_bps"] =
-            JsonUint64(md.network_transfer_speed_bps);
-    if (md.network_latency_ns != 0)
-        network_info["latency"] = DurationJsonFromNanos(md.network_latency_ns);
-    ret["network_info"] = network_info;
+    if (md.network_connectivity != 0 || md.network_transfer_speed_bps != 0 ||
+        md.network_latency_ns != 0) {
+        Json::object network_info;
+        if (md.network_connectivity != 0)
+            network_info["connectivity"] = md.network_connectivity;
+        if (md.network_transfer_speed_bps != 0)
+            network_info["bandwidth_bps"] =
+                JsonUint64(md.network_transfer_speed_bps);
+        if (md.network_latency_ns != 0)
+            network_info["latency"] =
+                DurationJsonFromNanos(md.network_latency_ns);
+        ret["network_info"] = network_info;
+    }
     return ret;
 }
 
