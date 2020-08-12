@@ -83,4 +83,16 @@ json11::Json::object DeviceSpecJson(const RequestInfo& request_info);
 // Get a unique identifier using java.util.UUID
 std::string UniqueId();
 
+// Time between machine boot and now.
+// Returns a duration with 0 count on error.
+Duration GetElapsedTimeSinceBoot();
+
+// Time between machine boot and process start.
+// Returns a duration with 0 count on error.
+Duration GetProcessStartTimeSinceBoot();
+
+// Time between process start and now.
+// Returns a duration with 0 count on error.
+Duration GetTimeSinceProcessStart();
+
 }  // namespace tuningfork
