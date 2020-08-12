@@ -62,10 +62,9 @@ struct Settings {
     }
 
     // Check validity of the settings, filling in defaults where there are
-    // missing values, and use
-    //  save_dir to initialize the persister if it's not already set in
-    //  c_settings.
-    void Check(const std::string& save_dir);
+    // missing values, and use save_dir to initialize the persister if it's not
+    // already set in c_settings or the default if save_dir is empty.
+    void Check(const std::string& save_dir = "");
 
     // The default histogram that is used if the user doesn't specify one in
     // Settings

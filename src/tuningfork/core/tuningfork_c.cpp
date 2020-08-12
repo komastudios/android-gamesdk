@@ -37,12 +37,11 @@ TuningFork_ErrorCode TuningFork_init_internal(
         settings.c_settings = *c_settings_in;
     }
     jni::Init(env, context);
+    bool first_run = tf::CheckIfFirstRun();
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
     if (err != TUNINGFORK_ERROR_OK) return err;
-    std::string default_save_dir =
-        tf::file_utils::GetAppCacheDir() + "/tuningfork";
-    settings.Check(default_save_dir);
-    err = tf::Init(settings);
+    settings.Check();
+    err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, first_run);
     if (err != TUNINGFORK_ERROR_OK) return err;
     if (!(settings.default_fidelity_parameters_filename.empty() &&
           settings.c_settings.training_fidelity_params == nullptr)) {
