@@ -18,7 +18,11 @@
 
 namespace test {
 
-// If ignoring_starred_arrays is true, '[**]' in s1 is an array wildcard.
-bool CompareIgnoringWhitespace(std::string s0, std::string s1, bool ignoring_starred_arrays = false);
+const std::string kArrayWildcard = "[**]";
+const std::string kRegexPattern = "!REGEX";
+// '[**]' in s1 is an array wildcard - it matches nested arrays.
+// '!REGEX(.*) will match the regex in brackets.
+bool CompareIgnoringWhitespace(std::string s0, std::string s1,
+                               std::string* error_msg = nullptr);
 
-}
+}  // namespace test

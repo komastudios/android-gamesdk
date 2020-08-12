@@ -28,6 +28,7 @@ namespace tuningfork {
 // Convert an array of bytes into a string hex representation
 std::string Base16(const std::vector<unsigned char>& bytes);
 
+// Get the time since process start
 namespace apk_utils {
 
 // Get the serialization of an asset or return false.
@@ -82,5 +83,17 @@ json11::Json::object DeviceSpecJson(const RequestInfo& request_info);
 
 // Get a unique identifier using java.util.UUID
 std::string UniqueId();
+
+// Time between machine boot and now.
+// Returns a duration with 0 count on error.
+Duration GetElapsedTimeSinceBoot();
+
+// Time between machine boot and process start.
+// Returns a duration with 0 count on error.
+Duration ProcessStartTimeSinceBoot();
+
+// Time between process start and now.
+// Returns a duration with 0 count on error.
+Duration GetTimeSinceProcessStart();
 
 }  // namespace tuningfork

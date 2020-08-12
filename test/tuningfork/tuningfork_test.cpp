@@ -262,7 +262,8 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
                       int n_ticks, int n_keys,
                       std::vector<uint32_t> annotation_size,
                       const std::vector<Settings::Histogram>& hists = {},
-                      int num_frame_time_histograms = 0) {
+                      int num_frame_time_histograms = 0,
+                      int num_loading_time_histograms = 0) {
     Settings s{};
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
@@ -274,6 +275,7 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
     s.initial_request_timeout_ms = 5;
     s.ultimate_request_timeout_ms = 50;
     s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
+    s.c_settings.max_num_metrics.loading_time = num_loading_time_histograms;
     s.loading_annotation_index = -1;
     s.level_annotation_index = -1;
     return s;
@@ -357,6 +359,30 @@ TuningForkLogEvent TestEndToEndWithLimits() {
 
     return test.Result();
 }
+
+TuningForkLogEvent TestEndToEndWithLoadingTimes() {
+    const int NTICKS =
+        101;  // note the first tick doesn't add anything to the histogram
+    auto settings = TestSettings(
+        Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 2,
+        {3}, {}, 2 /* (1 annotation * 2 instrument keys)*/, 2);
+    TuningForkTest test(settings, milliseconds(10));
+    Annotation ann;
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
+        ann.set_level(com::google::tuningfork::LEVEL_1);
+        tuningfork::SetCurrentAnnotation(Serialize(ann));
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+    }
+    // Wait for the upload thread to complete writing the string
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                std::cv_status::no_timeout)
+        << "Timeout";
+
+    return test.Result();
+}
+
 TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
@@ -406,10 +432,12 @@ TuningForkLogEvent TestEndToEndWithMemory() {
 }
 
 bool CheckStrings(const std::string& name, const std::string& result,
-                  const std::string& expected, bool ignoring_starred_arrays = false) {
-    bool comp = CompareIgnoringWhitespace(result, expected, ignoring_starred_arrays);
+                  const std::string& expected) {
+    std::string error_message;
+    bool comp = CompareIgnoringWhitespace(result, expected, &error_message);
     EXPECT_TRUE(comp) << "\nResult:\n"
-                      << result << "\n!=\nExpected:" << expected;
+                      << result << "\n!=\nExpected:" << expected << "\n\n"
+                      << error_message;
     return comp;
 }
 
@@ -525,6 +553,73 @@ TEST(TuningForkTest, TestEndToEndWithLimits) {
     // This should be the same since we try to record 2 annotations but limit
     // to 1.
     CheckStrings("AnnotationWithLimits", result, expected_for_annotation_test);
+}
+TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
+    auto result = TestEndToEndWithLoadingTimes();
+    static TuningForkLogEvent expected = R"TF(
+{
+  "name": "applications//apks/0",
+  "session_context":)TF" + session_context +
+                                         R"TF(,
+  "telemetry":[
+    {
+      "context":{
+        "annotations":"",
+        "duration":"!REGEX([0-9.]+s)",
+        "tuning_parameters":{
+          "experiment_id":"",
+          "serialized_fidelity_parameters":""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events":[
+            {
+              "loading_metadata":{
+                "source":7,
+                "state": 2
+              },
+              "times_ms":[!REGEX(\s*[0-9.]+\s*)]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "context":{
+        "annotations":"CAE=",
+        "duration":"!REGEX([0-9.]+s)",
+        "tuning_parameters":{
+          "experiment_id":"",
+          "serialized_fidelity_parameters":""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events":[
+            {
+              "loading_metadata":{
+                "source":8,
+                "state": 2
+              },
+              "times_ms":[!REGEX(\s*[0-9.]+\s*)]
+            }
+          ]
+        },
+        "rendering":{
+          "render_time_histogram":[
+            {
+              "counts":[**],
+              "instrument_id":64001
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+)TF";
+    CheckStrings("LoadingTimes", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
@@ -772,7 +867,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
   }]
 }
 )TF";
-    CheckStrings("WithMemory", result, expected, true);
+    CheckStrings("WithMemory", result, expected);
 }
 
 }  // namespace tuningfork_test

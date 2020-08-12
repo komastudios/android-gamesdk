@@ -36,7 +36,8 @@ namespace tuningfork {
 
 TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                                ITimeProvider *time_provider,
-                               IMemInfoProvider *meminfo_provider)
+                               IMemInfoProvider *meminfo_provider,
+                               bool first_run)
     : settings_(settings),
       trace_(gamesdk::Trace::create()),
       backend_(backend),
@@ -46,7 +47,10 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       meminfo_provider_(meminfo_provider),
       ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
       next_ikey_(0),
-      loading_start_(TimePoint::min()) {
+      loading_start_(TimePoint::min()),
+      before_first_tick_(true),
+      app_first_run_(first_run) {
+    auto start_time = GetTimeSinceProcessStart();
     ALOGI(
         "TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  "
         "n_annotations: %zu"
@@ -105,6 +109,19 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                                  settings_.c_settings.persistent_cache);
 
     InitAsyncTelemetry();
+
+    // Record the time before we were initialized.
+    if (RecordLoadingTime(
+            start_time,
+            LoadingTimeMetadata{
+                app_first_run_ ? LoadingTimeMetadata::LoadingState::FIRST_RUN
+                               : LoadingTimeMetadata::LoadingState::COLD_START,
+                LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY}) !=
+        TUNINGFORK_ERROR_OK) {
+        ALOGW(
+            "Warning: could not record pre-activity loading time. Increase the "
+            "maximum number of loading time metrics.");
+    }
 
     ALOGI("TuningFork initialized");
 }
@@ -346,6 +363,23 @@ TuningFork_ErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key,
 
 TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
                                                TimePoint t, MetricData **pp) {
+    if (before_first_tick_) {
+        before_first_tick_ = false;
+        // Record the time before we were initialized.
+        if (RecordLoadingTime(
+                GetTimeSinceProcessStart(),
+                LoadingTimeMetadata{
+                    app_first_run_
+                        ? LoadingTimeMetadata::LoadingState::FIRST_RUN
+                        : LoadingTimeMetadata::LoadingState::COLD_START,
+                    LoadingTimeMetadata::LoadingSource::
+                        FIRST_TOUCH_TO_FIRST_FRAME}) != TUNINGFORK_ERROR_OK) {
+            ALOGW(
+                "Warning: could not record first frame loading time. Increase "
+                "the maximum number of loading time metrics.");
+        }
+    }
+
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (p) {

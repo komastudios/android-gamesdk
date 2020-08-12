@@ -82,7 +82,7 @@ static std::unique_ptr<DefaultMemInfoProvider> s_meminfo_provider =
 TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
                           ITimeProvider *time_provider,
-                          IMemInfoProvider *meminfo_provider) {
+                          IMemInfoProvider *meminfo_provider, bool first_run) {
     if (s_impl.get() != nullptr) return TUNINGFORK_ERROR_ALREADY_INITIALIZED;
 
     if (request_info != nullptr) {
@@ -114,7 +114,7 @@ TuningFork_ErrorCode Init(const Settings &settings,
     }
 
     s_impl = std::make_unique<TuningForkImpl>(settings, backend, time_provider,
-                                              meminfo_provider);
+                                              meminfo_provider, first_run);
 
     // Set up the Swappy tracer after TuningFork is initialized
     if (settings.c_settings.swappy_tracer_fn != nullptr) {
@@ -242,4 +242,27 @@ TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state) {
     else
         return s_impl->ReportLifecycleEvent(state);
 }
+
+bool CheckIfFirstRun() {
+    if (!file_utils::FileExists(DefaultTuningForkSaveDirectory())) {
+        file_utils::CheckAndCreateDir(DefaultTuningForkSaveDirectory());
+        ALOGV("First run");
+        return true;
+    } else {
+        ALOGV("Not first run");
+        return false;
+    }
+}
+
+std::string DefaultTuningForkSaveDirectory() {
+    std::stringstream save_dir;
+    // Try the app's cache dir or tmp storage.
+    if (jni::IsValid())
+        save_dir << file_utils::GetAppCacheDir();
+    else
+        save_dir << "/data/local/tmp";
+    save_dir << "/tuningfork";
+    return save_dir.str();
+}
+
 }  // namespace tuningfork
