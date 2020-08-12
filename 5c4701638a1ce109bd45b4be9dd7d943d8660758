@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aac81135_fd2f74ec",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-12T11:36:15Z",
+      "side": 1,
+      "message": "Enable insertion of a fake time source? This would allow tighter testing",
+      "range": {
+        "startLine": 284,
+        "startChar": 0,
+        "endLine": 328,
+        "endChar": 0
+      },
+      "revId": "5c4701638a1ce109bd45b4be9dd7d943d8660758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64e55596_25f283d5",
+        "filename": "test/tuningfork/tuningfork_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-12T11:36:15Z",
+      "side": 1,
+      "message": "See note in tuningfork_utils.cpp",
+      "revId": "5c4701638a1ce109bd45b4be9dd7d943d8660758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
