@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba6a3b03_86a7b38b",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2020-08-12T11:42:47Z",
+      "side": 1,
+      "message": "nit: use constants similar to \n    const long ONE_MS_IN_NS \u003d 1000 * 1000;\n    const long ONE_S_IN_NS \u003d ONE_MS_IN_NS * 1000;",
+      "range": {
+        "startLine": 292,
+        "startChar": 59,
+        "endLine": 292,
+        "endChar": 64
+      },
+      "revId": "5c4701638a1ce109bd45b4be9dd7d943d8660758",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "aac81135_fd2f74ec",
         "filename": "src/tuningfork/core/tuningfork_utils.cpp",
         "patchSetId": 2
