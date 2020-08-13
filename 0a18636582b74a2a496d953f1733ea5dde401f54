@@ -93,6 +93,30 @@
       "revId": "0a18636582b74a2a496d953f1733ea5dde401f54",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee316f9d_5ffbb023",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/Parser.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-13T08:57:42Z",
+      "side": 1,
+      "message": "TODO: Delegate finding tuningfork assets to different class.",
+      "parentUuid": "31a30962_fff474e7",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 82
+      },
+      "revId": "0a18636582b74a2a496d953f1733ea5dde401f54",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
