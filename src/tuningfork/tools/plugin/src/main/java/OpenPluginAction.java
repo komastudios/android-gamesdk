@@ -16,6 +16,7 @@
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {

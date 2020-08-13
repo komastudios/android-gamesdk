@@ -20,12 +20,15 @@ import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class MainDialogWrapper extends DialogWrapper {
+
   private static PluginLayout pluginLayout;
+  private final Project project;
 
   protected MainDialogWrapper(@Nullable Project project) {
     super(project);
     init();
     setTitle("Android Performance Tuner Plugin");
+    this.project = project;
   }
 
   @Override
