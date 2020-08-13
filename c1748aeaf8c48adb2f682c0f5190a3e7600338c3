@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ed702ecc_ccd121a8",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-08-13T00:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03a719a2_da557dbb",
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "38d08652_76946d5d",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7532f6a6_0719459e",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-08-13T00:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38d08652_76946d5d",
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "9965bfa7_736751bc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-08-13T00:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3fd4b14_0da38e1a",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 53
+      },
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3411e38b_1f76ff80",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
         "patchSetId": 1
@@ -79,6 +139,30 @@
       "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "168af906_fc38d042",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-08-13T00:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3411e38b_1f76ff80",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 62
+      },
+      "revId": "c1748aeaf8c48adb2f682c0f5190a3e7600338c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
