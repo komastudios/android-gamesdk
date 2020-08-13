@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b9aeec4_6d36e33f",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/OpenPluginAction.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-13T14:40:45Z",
+      "side": 1,
+      "message": "Static mutable fields are essentially global state. Can you avoid this?",
+      "revId": "b8f75603820023b450878179895844ced43f0227",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
