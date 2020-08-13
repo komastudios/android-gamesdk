@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35088ecf_5789f70f",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-13T14:34:45Z",
+      "side": 1,
+      "message": "Even for a \"skeleton\" class it might be good having a way of getting the data out.",
+      "revId": "248bd8673f12bc7db8b83500226af88e0c6c5840",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35839bf9_3f6f25e9",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-13T14:34:45Z",
+      "side": 1,
+      "message": "Even for a \"skeleton\" class it might be good having a way of getting the data out.",
+      "revId": "248bd8673f12bc7db8b83500226af88e0c6c5840",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e26ad09b_369f3822",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-13T14:34:45Z",
+      "side": 1,
+      "message": "Do you intend to change name and options only in the constructor? If so, make them final.",
+      "revId": "248bd8673f12bc7db8b83500226af88e0c6c5840",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
