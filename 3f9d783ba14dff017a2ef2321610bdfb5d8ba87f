@@ -60,6 +60,24 @@
     },
     {
       "key": {
+        "uuid": "346284cb_d336b989",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/ProtoCompiler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-13T15:03:44Z",
+      "side": 1,
+      "message": "This is basically needed to avoid initialization of protocBinary each time this class is initialized(It copies the protobinary from the jar to temporary folder and loads it up for execution). So It either stays as static field which is shared or the whole class becomes a singleton class.\n\nI\u0027ll probably retype the whole class to singleton. Which is more intuitive as there should only exist one protoCompiler instance of this class.",
+      "parentUuid": "c7bcb696_b2c33d3c",
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "49752634_877f25b3",
         "filename": "src/tuningfork/tools/plugin/src/test/java/ProtoCompilerTest.java",
         "patchSetId": 2
