@@ -16,13 +16,20 @@
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
+  private static String projectPath;
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
+    projectPath = Objects.requireNonNull(e.getProject()).getBasePath();
     mainDialogWrapper.show();
+  }
+
+  public static String getProjectPath() {
+    return projectPath;
   }
 }
