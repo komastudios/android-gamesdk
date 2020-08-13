@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "87152852_bc2e2bb1",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/MainPanel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-13T13:27:05Z",
+      "side": 1,
+      "message": "https://google.github.io/styleguide/javaguide.html#s3.3.1-wildcard-imports\n\nAnd other places too",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 21
+      },
+      "revId": "a149b4058e786646aedc057ce680c4726e2e2f29",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a100503_50eb47ad",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/MainPanel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-13T13:27:05Z",
+      "side": 1,
+      "message": "nit: long line",
+      "range": {
+        "startLine": 44,
+        "startChar": 8,
+        "endLine": 44,
+        "endChar": 117
+      },
+      "revId": "a149b4058e786646aedc057ce680c4726e2e2f29",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a06a1db_5b795696",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/MainPanel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-13T13:27:05Z",
+      "side": 1,
+      "message": "TODO(volobushek): ...",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 59
+      },
+      "revId": "a149b4058e786646aedc057ce680c4726e2e2f29",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
