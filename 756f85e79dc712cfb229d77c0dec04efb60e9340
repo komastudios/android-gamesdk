@@ -1,0 +1,85 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004421305",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1400427?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5b8add3f_0f980e9f",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/PluginLayout.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-14T15:10:58Z",
+      "side": 1,
+      "message": "Wrong casing for \"screenSize\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 39,
+        "startChar": 10,
+        "endLine": 39,
+        "endChar": 43
+      },
+      "revId": "756f85e79dc712cfb229d77c0dec04efb60e9340",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004421305",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1400427?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "af21a962_ed96fe54",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-14T15:10:58Z",
+      "side": 1,
+      "message": "Wrong casing for \"mainFont\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 17,
+        "startChar": 10,
+        "endLine": 17,
+        "endChar": 36
+      },
+      "revId": "756f85e79dc712cfb229d77c0dec04efb60e9340",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004421305",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1400427?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fb7c7831_be313a27",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-14T15:10:58Z",
+      "side": 1,
+      "message": "Wrong casing for \"secondaryLabel\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 18,
+        "startChar": 10,
+        "endLine": 18,
+        "endChar": 42
+      },
+      "revId": "756f85e79dc712cfb229d77c0dec04efb60e9340",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
