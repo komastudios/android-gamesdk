@@ -16,6 +16,24 @@
       "revId": "b8f75603820023b450878179895844ced43f0227",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38a12aa4_5df1699a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/OpenPluginAction.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-14T07:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b9aeec4_6d36e33f",
+      "revId": "b8f75603820023b450878179895844ced43f0227",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
