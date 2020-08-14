@@ -19,17 +19,14 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import java.awt.Dimension;
-import java.awt.Font;
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
-class AnnotationTab extends JPanel {
+class AnnotationTab extends TabLayout {
     private JBScrollPane scrollPane;
     private JBTable annotationTable;
     private JPanel decoratorPanel;
@@ -37,14 +34,6 @@ class AnnotationTab extends JPanel {
     private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
     private final JBLabel informationLabel =
         new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
-    private final Font mainFont = new Font(Font.SANS_SERIF, Font.BOLD, FONT_BIG);
-    private final Font secondaryLabel = new Font(Font.SANS_SERIF, Font.PLAIN, FONT_SMALL);
-    private static final int PANEL_MIN_WIDTH = 600;
-    private static final int PANEL_MIN_HEIGHT = 500;
-    private static final int TABLE_MIN_WIDTH = 500;
-    private static final int TABLE_MIN_HEIGHT = 230;
-    private static final int FONT_BIG = 18;
-    private static final int FONT_SMALL = 12;
 
     public AnnotationTab() {
         initVariables();
@@ -64,12 +53,11 @@ class AnnotationTab extends JPanel {
     private void initComponents() {
         // Initialize layout.
         this.setLayout(new VerticalLayout());
-        this.setMinimumSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
-        this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
+        setSize();
 
         // Add labels.
-        annotationLabel.setFont(mainFont);
-        informationLabel.setFont(secondaryLabel);
+        annotationLabel.setFont(getMainFont());
+        informationLabel.setFont(getSecondaryLabel());
         this.add(annotationLabel);
         this.add(Box.createVerticalStrut(10));
         this.add(informationLabel);
@@ -77,41 +65,20 @@ class AnnotationTab extends JPanel {
         // Initialize toolbar and table.
         AnnotationTableModel model = new AnnotationTableModel();
         annotationTable.setModel(model);
-        decoratorPanel.setPreferredSize(new Dimension(TABLE_MIN_WIDTH, TABLE_MIN_HEIGHT));
-        decoratorPanel.setMinimumSize(new Dimension(TABLE_MIN_WIDTH, TABLE_MIN_HEIGHT));
-        annotationTable.setFillsViewportHeight(true);
-        scrollPane.setViewportView(decoratorPanel);
-        annotationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        annotationTable.getTableHeader().setReorderingAllowed(false);
-        annotationTable.setRowSelectionAllowed(true);
-        annotationTable.setSelectionBackground(null);
+        setDecoratorPanelSize(decoratorPanel);
+        setTableSettings(scrollPane, decoratorPanel, annotationTable);
 
         // Initialize field type column.
         TableColumn typeColumn = annotationTable.getColumnModel().getColumn(0);
         typeColumn.setCellEditor(getComboBoxModel());
         typeColumn.setCellRenderer(new TableRenderer.ComboBoxRenderer());
-        typeColumn.setPreferredWidth(150);
 
         // Initialize field name column.
         TableColumn nameColumn = annotationTable.getColumnModel().getColumn(1);
         nameColumn.setCellEditor(getTextFieldModel());
         nameColumn.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
-        nameColumn.setPreferredWidth(350);
-
-        // Table extra feature such as dynamic size and no grid lines.
-        annotationTable.getModel().addTableModelListener(tableModelEvent -> resizePanelToFit());
-        annotationTable.setIntercellSpacing(new Dimension(0, 0));
 
         this.add(scrollPane);
-    }
-
-    private void resizePanelToFit() {
-        int oldWidth = scrollPane.getWidth();
-        int newHeight = Math.max(decoratorPanel.getMinimumSize().height + 2,
-            Math.min(AnnotationTab.this.getHeight() - 100,
-                annotationTable.getRowHeight() * annotationTable.getRowCount() + 30));
-        scrollPane.setSize(new Dimension(oldWidth, newHeight));
-        scrollPane.revalidate();
     }
 
     private DefaultCellEditor getTextFieldModel() {
