@@ -254,7 +254,7 @@ class TuningForkTest {
             std::this_thread::sleep_for(milliseconds(10));
         }
     }
-    void IncrementTime() { time_provider_.Increment(); }
+    void IncrementTime(int count = 1) { for(int i=0;i<count;++i) time_provider_.Increment(); }
 };
 
 const TuningFork_CProtobufSerialization* TrainingModeParams() {
@@ -370,11 +370,16 @@ TuningForkLogEvent TestEndToEndWithLimits() {
 TuningForkLogEvent TestEndToEndWithLoadingTimes() {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
+    const uint64_t kOneGigaBitPerSecond = 1000000000L;
     auto settings = TestSettings(
         Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 2,
-        {3}, {}, 2 /* (1 annotation * 2 instrument keys)*/, 2);
+        {3}, {}, 2 /* (1 annotation * 2 instrument keys)*/, 3);
     TuningForkTest test(settings, milliseconds(10));
     Annotation ann;
+    LoadingHandle loading_handle;
+    tuningfork::StartRecordingLoadingTime({ LoadingTimeMetadata::LoadingState::WARM_START, LoadingTimeMetadata::LoadingSource::NETWORK, 100, LoadingTimeMetadata::NetworkConnectivity::WIFI, kOneGigaBitPerSecond, 0}, {}, loading_handle);
+    test.IncrementTime(10);
+    tuningfork::StopRecordingLoadingTime(loading_handle);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i) {
         test.IncrementTime();
@@ -480,6 +485,34 @@ static const std::string session_context = R"TF(
 }
 )TF";
 
+// This has extra time for the app and asset loading
+static const std::string session_context_loading = R"TF(
+{
+  "device": {
+    "brand": "",
+    "build_version": "",
+    "cpu_core_freqs_hz": [],
+    "device": "",
+    "fingerprint": "",
+    "gles_version": {
+      "major": 0,
+      "minor": 0
+    },
+    "model": "",
+    "product": "",
+    "total_memory_bytes": 0
+  },
+  "game_sdk_info": {
+    "session_id": "",
+    "version": "1.0"
+  },
+  "time_period": {
+    "end_time": "1970-01-01T00:00:02.220000Z",
+    "start_time": "1970-01-01T00:00:00.220000Z"
+  }
+}
+)TF";
+
 TEST(TuningForkTest, EndToEnd) {
     auto result = TestEndToEnd();
     TuningForkLogEvent expected = R"TF(
@@ -566,36 +599,13 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
     static TuningForkLogEvent expected = R"TF(
 {
   "name": "applications//apks/0",
-  "session_context":)TF" + session_context +
+  "session_context":)TF" + session_context_loading +
                                          R"TF(,
   "telemetry":[
     {
       "context":{
         "annotations":"",
-        "duration":"0.1s",
-        "tuning_parameters":{
-          "experiment_id":"",
-          "serialized_fidelity_parameters":""
-        }
-      },
-      "report":{
-        "loading":{
-          "loading_events":[
-            {
-              "loading_metadata":{
-                "source":7,
-                "state": 2
-              },
-              "times_ms":[100]
-            }
-          ]
-        }
-      }
-    },
-    {
-      "context":{
-        "annotations":"CAE=",
-        "duration":"1.11s",
+        "duration":"0.41s",
         "tuning_parameters":{
           "experiment_id":"",
           "serialized_fidelity_parameters":""
@@ -607,12 +617,43 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
             {
               "loading_metadata":{
                 "source":8,
-                "state": 2
+                "state":2
               },
-              "times_ms":[110]
+              "times_ms":[210]
+            },
+            {
+              "loading_metadata":{
+                "compression_level":100,
+                "network_info":{
+                  "bandwidth_bps":"1000000000",
+                  "connectivity":1
+                },
+                "source":5,
+                "state":3
+              },
+              "times_ms":[100]
+            },
+            {
+              "loading_metadata":{
+                "source":7,
+                "state":2
+              },
+              "times_ms":[100]
             }
           ]
-        },
+        }
+      }
+    },
+    {
+      "context":{
+        "annotations":"CAE=",
+        "duration":"1s",
+        "tuning_parameters":{
+          "experiment_id":"",
+          "serialized_fidelity_parameters":""
+        }
+      },
+      "report":{
         "rendering":{
           "render_time_histogram":[
             {

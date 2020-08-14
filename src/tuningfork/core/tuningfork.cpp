@@ -231,12 +231,29 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
         return s_impl->EnableMemoryRecording(enable);
 }
 
-TuningFork_ErrorCode RecordLoadingTime(Duration duration,
-                                       const LoadingTimeMetadata &d) {
+TuningFork_ErrorCode RecordLoadingTime(
+    Duration duration, const LoadingTimeMetadata &d,
+    const ProtobufSerialization &annotation) {
     if (!s_impl)
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else
-        return s_impl->RecordLoadingTime(duration, d);
+        return s_impl->RecordLoadingTime(duration, d, annotation);
+}
+
+TuningFork_ErrorCode StartRecordingLoadingTime(
+    const LoadingTimeMetadata &d, const ProtobufSerialization &annotation,
+    LoadingHandle &handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StartRecordingLoadingTime(d, annotation, handle);
+}
+
+TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StopRecordingLoadingTime(handle);
 }
 
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state) {

@@ -121,15 +121,48 @@ TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {
     return tf::EnableMemoryRecording(enable);
 }
 
-TuningFork_ErrorCode TuningFork_recordLoadingTime(
-    uint64_t time_ns, const TuningFork_LoadingTimeMetadata *eventMetadata,
-    uint32_t eventMetadataSize) {
-    // Handle LoadingTimeMetadata version changes here (none yet).
-    if (eventMetadata == nullptr ||
-        eventMetadataSize != sizeof(TuningFork_LoadingTimeMetadata))
+static TuningFork_ErrorCode CheckLoadingMetaData(
+    const TuningFork_LoadingTimeMetadata *eventMetadata_in,
+    uint32_t eventMetadataSize, tf::LoadingTimeMetadata &eventMetadata) {
+    if (eventMetadata_in == nullptr ||
+        eventMetadataSize != sizeof(tf::LoadingTimeMetadata))
         return TUNINGFORK_ERROR_BAD_PARAMETER;
+    eventMetadata = *eventMetadata_in;
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningFork_recordLoadingTime(
+    uint64_t time_ns, const TuningFork_LoadingTimeMetadata *eventMetadata_in,
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization *annotation) {
+    tf::LoadingTimeMetadata eventMetadata;
+    auto err = CheckLoadingMetaData(eventMetadata_in, eventMetadataSize,
+                                    eventMetadata);
+    if (err != TUNINGFORK_ERROR_OK) return err;
     return tf::RecordLoadingTime(std::chrono::nanoseconds(time_ns),
-                                 *eventMetadata);
+                                 eventMetadata,
+                                 tf::ToProtobufSerialization(*annotation));
+}
+
+TuningFork_ErrorCode TuningFork_startRecordingLoadingTime(
+    const TuningFork_LoadingTimeMetadata *eventMetadata_in,
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization *annotation,
+    TuningFork_LoadingEventHandle *handle) {
+    tf::LoadingTimeMetadata eventMetadata;
+    auto err = CheckLoadingMetaData(eventMetadata_in, eventMetadataSize,
+                                    eventMetadata);
+    if (err != TUNINGFORK_ERROR_OK) {
+        return err;
+    }
+    if (handle == nullptr) return TUNINGFORK_ERROR_INVALID_LOADING_HANDLE;
+    return tf::StartRecordingLoadingTime(
+        eventMetadata, tf::ToProtobufSerialization(*annotation), *handle);
+}
+
+TuningFork_ErrorCode TuningFork_stopRecordingLoadingTime(
+    TuningFork_LoadingEventHandle handle) {
+    return tf::StopRecordingLoadingTime(handle);
 }
 
 TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
