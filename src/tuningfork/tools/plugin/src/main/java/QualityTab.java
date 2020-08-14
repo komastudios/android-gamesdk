@@ -16,20 +16,19 @@
 
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
-import java.awt.Font;
-import java.awt.Toolkit;
-import javax.swing.BoxLayout;
+import com.intellij.ui.table.JBTable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import org.jdesktop.swingx.VerticalLayout;
 
 
-public class DevFidelityParamsLayout extends JPanel {
+public class QualityTab extends TabLayout {
 
-  private JScrollPane scrollPane;
+
   private final static JLabel title = new JLabel("Quality levels");
+  private JScrollPane scrollPane;
 
   private final static JLabel aboutQualitySettings = new JLabel(
       "<html> All quality settings are saved into " +
@@ -38,13 +37,14 @@ public class DevFidelityParamsLayout extends JPanel {
           "Once you add a new level, you can edit/add data it by" +
           "modifying the text in the table below.</html> ");
 
-  private JTable qualityParametersTable;
+  private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
   private QualityTableData qualityTableData;
-  private JPanel tablePanel;
+  private JPanel decoratorPanel;
 
-  public DevFidelityParamsLayout() {
-    this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+  public QualityTab() {
+    this.setLayout(new VerticalLayout());
+    setSize();
     initComponents();
     addComponents();
   }
@@ -56,18 +56,21 @@ public class DevFidelityParamsLayout extends JPanel {
   }
 
   private void initComponents() {
-    title.setFont(
-        new Font("Arial", Font.BOLD, Toolkit.getDefaultToolkit().getScreenSize().height / 43));
+    title.setFont(getMainFont());
+    aboutQualitySettings.setFont(getSecondaryLabel());
+
     qualityTableModel = new QualityTableModel();
-    qualityParametersTable = new JTable(qualityTableModel);
+    qualityParametersTable = new JBTable(qualityTableModel);
     qualityParametersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     qualityTableData = new QualityTableData();
-    tablePanel = ToolbarDecorator.createDecorator(qualityParametersTable)
+    decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
         .setAddAction(anActionButton -> qualityTableData.addRow(qualityParametersTable))
         .setRemoveAction(
             anActionButton -> qualityTableData.removeRow(qualityParametersTable))
         .createPanel();
     scrollPane = new JBScrollPane();
-    scrollPane.setViewportView(tablePanel);
+
+    setDecoratorPanelSize(decoratorPanel);
+    setTableSettings(scrollPane, decoratorPanel, qualityParametersTable);
   }
 }
