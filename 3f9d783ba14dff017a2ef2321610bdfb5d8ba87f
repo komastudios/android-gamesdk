@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "87691bb8_2f0c237e",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/OsUtils.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T17:08:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee0c7a6a_f572c721",
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "27fea6c0_2f846720",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Files/ProtoCompiler.java",
         "patchSetId": 2
@@ -40,6 +58,30 @@
       "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7957368a_3e9f8ee5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/ProtoCompiler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T17:08:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27fea6c0_2f846720",
+      "range": {
+        "startLine": 38,
+        "startChar": 12,
+        "endLine": 38,
+        "endChar": 38
+      },
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -78,6 +120,24 @@
     },
     {
       "key": {
+        "uuid": "e8e8037d_079f3eb8",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Files/ProtoCompiler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T17:08:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "346284cb_d336b989",
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49752634_877f25b3",
         "filename": "src/tuningfork/tools/plugin/src/test/java/ProtoCompilerTest.java",
         "patchSetId": 2
@@ -92,6 +152,24 @@
       "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "793ef0f3_dbb7eec6",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/ProtoCompilerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T17:08:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49752634_877f25b3",
+      "revId": "3f9d783ba14dff017a2ef2321610bdfb5d8ba87f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
