@@ -33,6 +33,7 @@ namespace tuningfork {
 typedef uint16_t InstrumentationKey;
 typedef uint32_t AnnotationId;
 typedef uint64_t TraceHandle;
+typedef uint64_t LoadingHandle;
 typedef uint16_t LoadingTimeMetadataId;
 typedef ProtobufSerialization SerializedAnnotation;
 typedef TuningFork_LoadingTimeMetadata LoadingTimeMetadata;

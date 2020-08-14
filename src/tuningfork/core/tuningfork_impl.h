@@ -55,6 +55,8 @@ class TuningForkImpl : public IdProvider {
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
     bool app_first_run_;
+    std::unordered_map<LoadingHandle, TimePoint> live_loading_events_;
+    std::mutex live_loading_events_mutex_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -102,8 +104,15 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
-    TuningFork_ErrorCode RecordLoadingTime(Duration duration,
-                                           const LoadingTimeMetadata &metadata);
+    TuningFork_ErrorCode RecordLoadingTime(
+        Duration duration, const LoadingTimeMetadata &metadata,
+        const ProtobufSerialization &annotation);
+
+    TuningFork_ErrorCode StartRecordingLoadingTime(
+        const LoadingTimeMetadata &metadata,
+        const ProtobufSerialization &annotation, LoadingHandle &handle);
+
+    TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
     TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
@@ -127,6 +136,7 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
         const SerializedAnnotation &ser, AnnotationId &id,
         bool *loading) const override;
+
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
     TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
