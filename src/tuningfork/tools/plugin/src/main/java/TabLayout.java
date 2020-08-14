@@ -1,0 +1,59 @@
+import com.intellij.ui.table.JBTable;
+import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+
+public class TabLayout extends JPanel {
+
+  private static final int PANEL_MIN_WIDTH = 600;
+  private static final int PANEL_MIN_HEIGHT = 500;
+  private static final int TABLE_MIN_WIDTH = 500;
+  private static final int TABLE_MIN_HEIGHT = 230;
+  private static final int FONT_BIG = 18;
+  private static final int FONT_SMALL = 12;
+  private static final Font mainFont = new Font(Font.SANS_SERIF, Font.BOLD, FONT_BIG);
+  private static final Font secondaryLabel = new Font(Font.SANS_SERIF, Font.PLAIN, FONT_SMALL);
+
+  public static Font getMainFont() {
+    return mainFont;
+  }
+
+  public static Font getSecondaryLabel() {
+    return secondaryLabel;
+  }
+
+  public void setDecoratorPanelSize(JPanel decoratorPanel) {
+    decoratorPanel.setPreferredSize(new Dimension(TABLE_MIN_WIDTH, TABLE_MIN_HEIGHT));
+    decoratorPanel.setMinimumSize(new Dimension(TABLE_MIN_WIDTH, TABLE_MIN_HEIGHT));
+  }
+
+  public void setSize() {
+    this.setMinimumSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
+    this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
+  }
+
+  // Table extra feature such as dynamic size and no grid lines.
+  private void resizePanelToFit(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
+    int oldWidth = scrollPane.getWidth();
+    int newHeight = Math.max(decoratorPanel.getMinimumSize().height + 2,
+        Math.min(this.getHeight() - 100,
+            table.getRowHeight() * table.getRowCount() + 30));
+    scrollPane.setSize(new Dimension(oldWidth, newHeight));
+    scrollPane.revalidate();
+  }
+
+  public void setTableSettings(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
+    scrollPane.setViewportView(decoratorPanel);
+    table.setFillsViewportHeight(true);
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    table.getTableHeader().setReorderingAllowed(false);
+    table.setRowSelectionAllowed(true);
+    table.setSelectionBackground(null);
+    table.getModel().addTableModelListener(
+        tableModelEvent -> resizePanelToFit(scrollPane, decoratorPanel, table));
+    table.setIntercellSpacing(new Dimension(0, 0));
+  }
+}
