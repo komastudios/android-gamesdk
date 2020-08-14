@@ -116,8 +116,8 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
             LoadingTimeMetadata{
                 app_first_run_ ? LoadingTimeMetadata::LoadingState::FIRST_RUN
                                : LoadingTimeMetadata::LoadingState::COLD_START,
-                LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY}) !=
-        TUNINGFORK_ERROR_OK) {
+                LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY},
+            {}) != TUNINGFORK_ERROR_OK) {
         ALOGW(
             "Warning: could not record pre-activity loading time. Increase the "
             "maximum number of loading time metrics.");
@@ -217,6 +217,7 @@ TuningFork_ErrorCode TuningForkImpl::SerializedAnnotationToAnnotationId(
         settings_.level_annotation_index, loading);
     return TUNINGFORK_ERROR_OK;
 }
+
 TuningFork_ErrorCode TuningForkImpl::MakeCompoundId(InstrumentationKey key,
                                                     AnnotationId annotation_id,
                                                     MetricId &id) {
@@ -373,7 +374,8 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
                         ? LoadingTimeMetadata::LoadingState::FIRST_RUN
                         : LoadingTimeMetadata::LoadingState::COLD_START,
                     LoadingTimeMetadata::LoadingSource::
-                        FIRST_TOUCH_TO_FIRST_FRAME}) != TUNINGFORK_ERROR_OK) {
+                        FIRST_TOUCH_TO_FIRST_FRAME},
+                {}) != TUNINGFORK_ERROR_OK) {
             ALOGW(
                 "Warning: could not record first frame loading time. Increase "
                 "the maximum number of loading time metrics.");
@@ -618,13 +620,55 @@ TuningFork_ErrorCode TuningForkImpl::MetricIdToLoadingTimeMetadata(
 }
 
 TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
-    Duration duration, const LoadingTimeMetadata &metadata) {
+    Duration duration, const LoadingTimeMetadata &metadata,
+    const ProtobufSerialization &annotation) {
     LoadingTimeMetadataId metadata_id;
     LoadingTimeMetadataToId(metadata, metadata_id);
+    AnnotationId ann_id = 0;
+    // TODO (willosborn): use the annotation id
+    if (ann_id == annotation_util::kAnnotationError) {
+        ALOGW("Error setting loading annotation of size %zu",
+              annotation.size());
+    }
     // Loading time is stored according to annotation and metadata_id
-    // TODO: (willosborn) restrict possible annotations
-    auto metric_id = MetricId::LoadingTime(
-        current_annotation_id_.detail.annotation, metadata_id);
+    auto metric_id = MetricId::LoadingTime(ann_id, metadata_id);
+    auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
+    if (data == nullptr)
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
+    data->Record(duration);
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
+    const LoadingTimeMetadata &metadata,
+    const ProtobufSerialization &annotation, LoadingHandle &handle) {
+    LoadingTimeMetadataId metadata_id;
+    LoadingTimeMetadataToId(metadata, metadata_id);
+    AnnotationId ann_id = 0;
+    // TODO (willosborn): use the annotation id
+    if (ann_id == annotation_util::kAnnotationError) {
+        ALOGW("Error setting loading annotation of size %zu",
+              annotation.size());
+    }
+    auto metric_id = MetricId::LoadingTime(ann_id, metadata_id);
+    handle = metric_id.base;
+    std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
+    live_loading_events_[handle] = time_provider_->Now();
+    return TUNINGFORK_ERROR_OK;
+}
+TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
+    LoadingHandle handle) {
+    Duration duration;
+    {
+        std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
+        auto it = live_loading_events_.find(handle);
+        if (it == live_loading_events_.end())
+            return TUNINGFORK_ERROR_INVALID_LOADING_HANDLE;
+        duration = time_provider_->Now() - it->second;
+        live_loading_events_.erase(it);
+    }
+    MetricId metric_id;
+    metric_id.base = handle;
     auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
     if (data == nullptr)
         return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;

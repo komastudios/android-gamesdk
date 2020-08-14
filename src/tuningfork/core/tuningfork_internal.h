@@ -96,7 +96,16 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
 // Record a loading time event
 TuningFork_ErrorCode RecordLoadingTime(Duration duration,
-                                       const LoadingTimeMetadata& d);
+                                       const LoadingTimeMetadata& d,
+                                       const ProtobufSerialization& annotation);
+
+// Start recording a loading time event
+TuningFork_ErrorCode StartRecordingLoadingTime(
+    const LoadingTimeMetadata& d, const ProtobufSerialization& annotation,
+    LoadingHandle& handle);
+
+// Record a loading time event
+TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
