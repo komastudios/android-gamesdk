@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62d5cf55_2f0330d8",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T15:27:24Z",
+      "side": 1,
+      "message": "Should be SECONDARY_FONT",
+      "revId": "5d6508cc4d8a0a96a2ba9fcaba394cefd23ab4b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3aa84f30_62deca6b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-14T15:27:24Z",
+      "side": 1,
+      "message": "The defined method only does dynamic size. Just remove \"and no grid lines.\"",
+      "revId": "5d6508cc4d8a0a96a2ba9fcaba394cefd23ab4b3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
