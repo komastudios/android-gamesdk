@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3d0daeee_aa5872c5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "Provide a method to change a certain enum by index to another enum. And a fieldName too.",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29fe466c_6f38b745",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "Elaborate more on what is this variable used for.",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e16e4240_808077cc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "Provide a constructor(String name,List\u003cstring\u003e options). As It may be needed to add a custom enum that was not loaded from protocol buffer.",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6998cf3c_2481ff1b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "Provide a method to add/remove an option and change name.",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07b0b7f9_fab59969",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "nit: string would be a better option here.",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df255df9_cb2eec17",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T12:48:11Z",
+      "side": 1,
+      "message": "Provide method to manipulate a certain fieldName/fieldValue",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
