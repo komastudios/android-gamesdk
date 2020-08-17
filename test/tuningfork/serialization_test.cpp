@@ -146,8 +146,7 @@ std::string single_tick_with_loading = R"TF({
 
 class IdMap : public IdProvider {
     TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
-        const ProtobufSerialization& ser, AnnotationId& id,
-        bool* loading = nullptr) const override {
+        const ProtobufSerialization& ser, AnnotationId& id) override {
         id = 0;
         return TUNINGFORK_ERROR_OK;
     }
