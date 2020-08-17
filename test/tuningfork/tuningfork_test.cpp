@@ -283,7 +283,8 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
     s.Check(kCacheDir);
     s.initial_request_timeout_ms = 5;
     s.ultimate_request_timeout_ms = 50;
-    s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
+    if (num_frame_time_histograms != 0)
+        s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
     s.c_settings.max_num_metrics.loading_time = num_loading_time_histograms;
     s.loading_annotation_index = -1;
     s.level_annotation_index = -1;
@@ -373,10 +374,11 @@ TuningForkLogEvent TestEndToEndWithLoadingTimes() {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
     const uint64_t kOneGigaBitPerSecond = 1000000000L;
-    auto settings = TestSettings(
-        Settings::AggregationStrategy::Submission::TICK_BASED, NTICKS - 1, 2,
-        {3}, {}, 2 /* (1 annotation * 2 instrument keys)*/, 3);
+    auto settings =
+        TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED,
+                     NTICKS - 1, 2, {}, {}, 0 /* use default */, 3);
     TuningForkTest test(settings, milliseconds(10));
+    SerializedAnnotation loading_annotation = {1, 2, 3};
     Annotation ann;
     LoadingHandle loading_handle;
     tuningfork::StartRecordingLoadingTime(
@@ -384,7 +386,7 @@ TuningForkLogEvent TestEndToEndWithLoadingTimes() {
          LoadingTimeMetadata::LoadingSource::NETWORK, 100,
          LoadingTimeMetadata::NetworkConnectivity::WIFI, kOneGigaBitPerSecond,
          0},
-        {}, loading_handle);
+        loading_annotation, loading_handle);
     test.IncrementTime(10);
     tuningfork::StopRecordingLoadingTime(loading_handle);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
@@ -612,7 +614,7 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
     {
       "context":{
         "annotations":"",
-        "duration":"0.41s",
+        "duration":"0.31s",
         "tuning_parameters":{
           "experiment_id":"",
           "serialized_fidelity_parameters":""
@@ -630,24 +632,38 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
             },
             {
               "loading_metadata":{
-                "compression_level":100,
-                "network_info":{
-                  "bandwidth_bps":"1000000000",
-                  "connectivity":1
-                },
-                "source":5,
-                "state":3
-              },
-              "times_ms":[100]
-            },
-            {
-              "loading_metadata":{
                 "source":7,
                 "state":2
               },
               "times_ms":[100]
             }
           ]
+        }
+      }
+    },
+    {
+      "context":{
+        "annotations": "AQID",
+        "duration": "0.1s",
+        "tuning_parameters":{
+          "experiment_id": "",
+          "serialized_fidelity_parameters": ""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events": [{
+            "loading_metadata": {
+              "compression_level": 100,
+              "network_info": {
+                "bandwidth_bps": "1000000000",
+                "connectivity": 1
+              },
+              "source": 5,
+              "state": 3
+            },
+            "times_ms": [100]
+          }]
         }
       }
     },
