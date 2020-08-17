@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54365e43_38a99550",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityTab.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-17T12:07:56Z",
+      "side": 1,
+      "message": "Should it be marked as branched?",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 44
+      },
+      "revId": "64432e0f1903363e3e8d74f54119e1f44c977896",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39b02fbd_f25677b5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-17T12:07:56Z",
+      "side": 1,
+      "message": "2020",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "64432e0f1903363e3e8d74f54119e1f44c977896",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d433fd0_7838b244",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/TabLayout.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-17T12:07:56Z",
+      "side": 1,
+      "message": "As javadoc with /**/",
+      "range": {
+        "startLine": 53,
+        "startChar": 2,
+        "endLine": 53,
+        "endChar": 31
+      },
+      "revId": "64432e0f1903363e3e8d74f54119e1f44c977896",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
