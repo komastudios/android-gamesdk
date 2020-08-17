@@ -177,6 +177,24 @@
     },
     {
       "key": {
+        "uuid": "0ade0053_6890c334",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:31:47Z",
+      "side": 1,
+      "message": "I wanted to say Object is a more elegant approach*.\nFidelityDataModel is used for both setting up new fidelity parameters and setting up quality settings.\nSo if you want to add a new fidelity parameter, you have type (int/float/enum, empty object of that type. if it is enum, then it will be an EnumDataModel that has no setId; this way it will have all enum options) and name. If you want to add a quality setting, you give the object a value.\nIf it would be only a String, it would be difficult to differentiate between Fidelity and Quality settings, and probably would need another data model.",
+      "parentUuid": "4133aac2_35d0f803",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df255df9_cb2eec17",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
         "patchSetId": 2
