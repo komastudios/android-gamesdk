@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8d72dbc6_7e75917a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43be3ba5_e1cfa043",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2fb85f13_75d026af",
         "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "6b1930b9_55b004ae",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fb85f13_75d026af",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9b08a7b2_688f834a",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
         "patchSetId": 3
@@ -50,6 +86,24 @@
       "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe093f45_369afc3e",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b08a7b2_688f834a",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
