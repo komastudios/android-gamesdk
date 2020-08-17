@@ -14,36 +14,50 @@
  * limitations under the License
  */
 
-import com.google.protobuf.Descriptors.Descriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.DynamicMessage;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FidelityDataModel {
 
-  private HashMap<FieldDescriptor, Object> fields;
+  private List<String> fieldNames;
+  private List<Object> fieldValues;
 
   FidelityDataModel() {
-    fields = new HashMap<>();
-  }
-
-  FidelityDataModel(Descriptor desc, DynamicMessage message) {
-
+    fieldNames = new ArrayList<>();
+    fieldValues = new ArrayList<>();
   }
 
   /**
    * Allows adding a new Fidelity Setting, when 'type' is an empty Integer/Float/EnumDataModel obj.
    * Allows adding a new Quality Setting, when 'type' has a value.
    */
-  public boolean addField(FieldDescriptor paramName, Object type) {
-    if (fields.containsKey(paramName)) {
+  public boolean addField(String paramName, Object type) {
+    if (fieldNames.contains(paramName)) {
       return false;
     }
-    fields.put(paramName, type);
+    fieldNames.add(paramName);
+    fieldValues.add(type);
     return true;
   }
 
-  public Object getValue(FieldDescriptor paramName) {
-    return fields.get(paramName);
+  public List<String> getFieldNames() {
+    return fieldNames;
+  }
+
+  public List<Object> getFieldValues() {
+    return fieldValues;
+  }
+
+  public void removeSetting(int index) {
+    fieldNames.remove(index);
+    fieldValues.remove(index);
+  }
+
+  public void updateName(int index, String name) {
+    fieldNames.set(index, name);
+  }
+
+  public void updateValue(int index, Object value) {
+    fieldValues.set(index, value);
   }
 }
