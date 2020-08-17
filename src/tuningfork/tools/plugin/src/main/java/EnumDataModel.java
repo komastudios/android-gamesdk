@@ -15,21 +15,64 @@
  */
 
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class EnumDataModel {
 
-  private final FieldDescriptor name;
-  private final List<EnumValueDescriptor> options;
+  /**
+   * setIndex holds the index number that is chosen for a specific enum in a quality setting
+   */
+  private Integer setIndex;
+  private String name;
+  private List<String> options;
 
-  EnumDataModel(FieldDescriptor name, List<EnumValueDescriptor> options) {
+  EnumDataModel(String name, ArrayList<String> options) {
     this.name = name;
     this.options = options;
   }
 
-  public List<EnumValueDescriptor> getOptions() {
+  EnumDataModel(String name, List<EnumValueDescriptor> options) {
+    this.name = name;
+    this.options = new ArrayList<>();
+
+    for (EnumValueDescriptor enumValueDescriptor : options) {
+      this.options.add(enumValueDescriptor.getName());
+    }
+  }
+
+  EnumDataModel(String name, List<EnumValueDescriptor> options, int setIndex) {
+    this(name, options);
+    this.setIndex = setIndex;
+  }
+
+  public List<String> getOptions() {
     return options;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Optional<Integer> getId() {
+    return Optional.ofNullable(setIndex);
+  }
+
+  public void updateName(String name) {
+    this.name = name;
+  }
+
+  public boolean addOption(String option) {
+    if (options.contains(option)) {
+      return false;
+    }
+    options.add(option);
+    return true;
+  }
+
+  public void removeOption(String option) {
+    options.remove(options);
   }
 }
