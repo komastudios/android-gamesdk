@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43be3ba5_e1cfa043",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T13:30:05Z",
+      "side": 1,
+      "message": "What happens if the name already exists in the fieldNames? It probably shouldn\u0027t allow duplicate names.\n\nnit: return a boolean",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fb85f13_75d026af",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T13:30:05Z",
+      "side": 1,
+      "message": "You probably can\u0027t have duplicate options with same name.",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b08a7b2_688f834a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T13:30:05Z",
+      "side": 1,
+      "message": "Duplicates in fieldNames aswell.",
+      "revId": "c80132ce5946c2a4d73cf4a118d0802faa37326f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
