@@ -178,6 +178,9 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_INVALID_LOADING_HANDLE =
         33,  ///< Invalid handle passed to
              ///< `TuningFork_startRecordingLoadingTime`.
+    TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT =
+        34,  ///< TuningFork_startRecordingLoadingTime was called with the same
+             ///< parameters twice without a stop function inbetween.
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -271,10 +274,13 @@ typedef void (*SwappyTracerFn)(const struct SwappyTracer*);
 /**
  * @brief Limits on the number of metrics of each type.
  * Zero any values to get the default for that type:
- *  Frame time: the maximum number of annotation combinations.
- *  Loading time: the number of loading time annotations + 10 possible other
- *  loading times.
- *  Memory: 15 possible memory metrics.
+
+ * Frame time: min(64, the maximum number of annotation combinations) *
+ num_instrument_keys.
+
+ * Loading time: 32.
+
+ * Memory: 15 possible memory metrics.
  */
 typedef struct TuningFork_MetricLimits {
     uint32_t frame_time;
