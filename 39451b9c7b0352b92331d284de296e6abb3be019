@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e7b147d_6e885ec2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-17T14:22:52Z",
+      "side": 1,
+      "message": "What would happen if the setId was never initialized. \nWouldn\u0027t it return an Optional(getId).isPresent() always be true?",
+      "revId": "39451b9c7b0352b92331d284de296e6abb3be019",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
