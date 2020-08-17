@@ -17,40 +17,40 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnotationDataModel {
+public class QualityDataModel {
 
-  private List<EnumDataModel> enums;
   private List<String> fieldNames;
+  /*
+   * For int32/float values, insert in fieldValues value.toString().
+   * For Enum values, insert <name_of_value_that_is_set>.toString().
+   */
+  private List<String> fieldValues;
 
-  AnnotationDataModel() {
+  QualityDataModel() {
     fieldNames = new ArrayList<>();
-    enums = new ArrayList<>();
+    fieldValues = new ArrayList<>();
   }
 
-  public boolean addEnum(EnumDataModel enumDataModel, String name) {
-    if (fieldNames.contains(name)) {
+  public boolean addField(String paramName, String type) {
+    if (fieldNames.contains(paramName)) {
       return false;
     }
-    fieldNames.add(name);
-    enums.add(enumDataModel);
+    fieldNames.add(paramName);
+    fieldValues.add(type);
     return true;
-  }
-
-  public List<EnumDataModel> getEnums() {
-    return enums;
   }
 
   public List<String> getFieldNames() {
     return fieldNames;
   }
 
-  public void deleteEnumByIndex(int index) {
-    enums.remove(index);
-    fieldNames.remove(index);
+  public List<String> getFieldValues() {
+    return fieldValues;
   }
 
-  public void updateEnum(int index, EnumDataModel newEnum) {
-    enums.set(index, newEnum);
+  public void removeSetting(int index) {
+    fieldNames.remove(index);
+    fieldValues.remove(index);
   }
 
   public boolean updateName(int index, String name) {
@@ -59,5 +59,9 @@ public class AnnotationDataModel {
     }
     fieldNames.set(index, name);
     return true;
+  }
+
+  public void updateValue(int index, String value) {
+    fieldValues.set(index, value);
   }
 }
