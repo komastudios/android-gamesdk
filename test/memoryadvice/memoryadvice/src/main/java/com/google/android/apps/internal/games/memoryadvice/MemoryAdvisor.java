@@ -263,6 +263,13 @@ public class MemoryAdvisor extends MemoryMonitor {
           }
         }
 
+        if (heuristics.has("canaryProcessTester") && metrics.optBoolean("canaryProcessTester")) {
+          JSONObject warning = new JSONObject();
+          warning.put("canaryProcessTester", heuristics.get("canaryProcessTester"));
+          warning.put("level", "red");
+          warnings.put(warning);
+        }
+
         if (heuristics.has("onTrim")) {
           if (metrics.optInt("onTrim") > 0) {
             JSONObject warning = new JSONObject();

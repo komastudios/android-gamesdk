@@ -131,6 +131,19 @@
           }
         }
       }
+    },
+    {
+      "metrics": {
+        "variable": {
+          "canaryProcessTester": {
+            "memory": "1M"
+          }
+        }
+      },
+
+      "heuristics": {
+        "canaryProcessTester": true
+      }
     }
   ]
 ]

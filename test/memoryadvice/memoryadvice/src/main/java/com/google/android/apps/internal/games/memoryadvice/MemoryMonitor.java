@@ -25,6 +25,7 @@ class MemoryMonitor {
   protected final JSONObject baseline;
   private final ActivityManager activityManager;
   private final JSONObject metrics;
+  private final CanaryProcessTester canaryProcessTester;
   private int latestOnTrimLevel;
 
   /**
@@ -35,6 +36,16 @@ class MemoryMonitor {
    */
   MemoryMonitor(Context context, JSONObject metrics) {
     mapTester = new MapTester(context.getCacheDir());
+
+    JSONObject variable = metrics.optJSONObject("variable");
+    JSONObject canaryProcessParams =
+        variable == null ? null : variable.optJSONObject("canaryProcessTester");
+    if (canaryProcessParams == null) {
+      canaryProcessTester = null;
+    } else {
+      canaryProcessTester = new CanaryProcessTester(context, canaryProcessParams);
+    }
+
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
 
     this.metrics = metrics;
@@ -145,6 +156,11 @@ class MemoryMonitor {
       if (mapTester.warning()) {
         report.put("mapTester", true);
         mapTester.reset();
+      }
+
+      if (canaryProcessTester != null && canaryProcessTester.warning()) {
+        report.put("canaryProcessTester", true);
+        canaryProcessTester.reset();
       }
 
       if (latestOnTrimLevel > 0) {
