@@ -15,21 +15,39 @@
  */
 
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EnumDataModel {
 
-  private final FieldDescriptor name;
-  private final List<EnumValueDescriptor> options;
+  private final String name;
+  private final List<String> options;
+  private Integer setId;
 
-  EnumDataModel(FieldDescriptor name, List<EnumValueDescriptor> options) {
+  EnumDataModel(String name, List<EnumValueDescriptor> options) {
     this.name = name;
-    this.options = options;
+    this.options = new ArrayList<>();
+
+    for (EnumValueDescriptor enumValueDescriptor : options) {
+      this.options.add(enumValueDescriptor.getName());
+    }
   }
 
-  public List<EnumValueDescriptor> getOptions() {
+  EnumDataModel(String name, List<EnumValueDescriptor> options, int setId) {
+    this(name, options);
+    this.setId = setId;
+  }
+
+  public List<String> getOptions() {
     return options;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Optional<Integer> getId() {
+    return Optional.of(setId);
   }
 }

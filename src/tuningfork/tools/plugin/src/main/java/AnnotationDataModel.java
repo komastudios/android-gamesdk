@@ -14,26 +14,33 @@
  * limitations under the License
  */
 
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnnotationDataModel {
 
-  private HashMap<EnumDataModel, FieldDescriptor> fields;
+  private List<EnumDataModel> enums;
+  private List<String> fieldNames;
 
   AnnotationDataModel() {
-    fields = new HashMap<>();
+    fieldNames = new ArrayList<>();
+    enums = new ArrayList<>();
   }
 
-  public boolean addEnum(EnumDataModel enumDataModel, FieldDescriptor setValue) {
-    if (fields.containsKey(enumDataModel)) {
+  public boolean addEnum(EnumDataModel enumDataModel, String name) {
+    if (fieldNames.contains(name)) {
       return false;
     }
-    fields.put(enumDataModel, setValue);
+    fieldNames.add(name);
+    enums.add(enumDataModel);
     return true;
   }
 
-  public FieldDescriptor getField(EnumDataModel enumDataModel) {
-    return fields.get(enumDataModel);
+  public List<EnumDataModel> getEnums() {
+    return enums;
+  }
+
+  public List<String> getFieldNames() {
+    return fieldNames;
   }
 }
