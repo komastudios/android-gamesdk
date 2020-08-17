@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c33cf855_a4b6e1bf",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d0daeee_aa5872c5",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "29fe466c_6f38b745",
         "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d16cb6f8_10fa6c55",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29fe466c_6f38b745",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "28c23e40_f6cda531",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e16e4240_808077cc",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6998cf3c_2481ff1b",
         "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "035a0bb8_8ee07d1b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6998cf3c_2481ff1b",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "4133aac2_35d0f803",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "I actually think EnumDataModel is a more elegant approach in this case.\nThe writer class will be responsible to parsing all data to Strings, in case of input --\u003e data model.",
+      "parentUuid": "07b0b7f9_fab59969",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "df255df9_cb2eec17",
         "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
         "patchSetId": 2
@@ -101,6 +191,24 @@
       "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f5487c7_736721ee",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T13:25:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df255df9_cb2eec17",
+      "revId": "db1c2c4e52870bfda327a4cf85848b124d9ca34e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
