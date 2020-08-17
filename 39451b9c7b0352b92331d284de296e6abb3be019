@@ -16,6 +16,24 @@
       "revId": "39451b9c7b0352b92331d284de296e6abb3be019",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d64737ae_b6623ffc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/EnumDataModel.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-17T15:08:21Z",
+      "side": 1,
+      "message": "Apparently it would have thrown an exception when calling isPresent(). I\u0027ve changed that to Optional.ofNullable",
+      "parentUuid": "2e7b147d_6e885ec2",
+      "revId": "39451b9c7b0352b92331d284de296e6abb3be019",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
