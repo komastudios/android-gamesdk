@@ -209,6 +209,12 @@ class SwappyCommon {
 
     void onRefreshRateChanged();
 
+    inline bool swapFasterCondition() {
+        return mSwapDuration <=
+               mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1) +
+                   DURATION_ROUNDING_MARGIN;
+    }
+
     const jobject mJactivity;
     void* mLibAndroid = nullptr;
     PFN_ANativeWindow_setFrameRate mANativeWindow_setFrameRate = nullptr;
@@ -257,6 +263,7 @@ class SwappyCommon {
     bool mPipelineModeAutoMode GUARDED_BY(mMutex) = true;
 
     static constexpr std::chrono::nanoseconds FRAME_MARGIN = 1ms;
+    static constexpr std::chrono::nanoseconds DURATION_ROUNDING_MARGIN = 1ns;
     static constexpr int NON_PIPELINE_PERCENT = 50;  // 50%
     static constexpr int FRAME_DROP_THRESHOLD = 10;  // 10%
 
