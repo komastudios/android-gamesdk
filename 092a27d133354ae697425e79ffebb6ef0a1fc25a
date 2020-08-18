@@ -84,6 +84,24 @@
       "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e99653d_9c671220",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-18T10:17:23Z",
+      "side": 1,
+      "message": "Seems like I have my answer in the next CL :)",
+      "parentUuid": "3f4c9c34_c20aa2d3",
+      "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
