@@ -35,6 +35,7 @@ using std::chrono::nanoseconds;
 // NB These are only needed for C++14
 constexpr nanoseconds SwappyCommon::FrameDuration::MAX_DURATION;
 constexpr nanoseconds SwappyCommon::FRAME_MARGIN;
+constexpr nanoseconds SwappyCommon::DURATION_ROUNDING_MARGIN;
 constexpr nanoseconds SwappyCommon::REFRESH_RATE_MARGIN;
 constexpr int SwappyCommon::NON_PIPELINE_PERCENT;
 constexpr int SwappyCommon::FRAME_DROP_THRESHOLD;
@@ -535,9 +536,7 @@ bool SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
 bool SwappyCommon::swapFaster(int newSwapInterval) {
     bool swappedFaster = false;
     int originalAutoSwapInterval = mAutoSwapInterval;
-    while (newSwapInterval < mAutoSwapInterval &&
-           mSwapDuration <=
-               mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1)) {
+    while (newSwapInterval < mAutoSwapInterval && swapFasterCondition()) {
         mAutoSwapInterval--;
     }
 
@@ -604,9 +603,7 @@ bool SwappyCommon::updateSwapInterval() {
     // So we shouldn't miss any frames with this config but maybe we can go
     // faster ? we check the pipeline frame time here as we prefer lower swap
     // interval than no pipelining
-    else if (missedFramesPercent == 0 &&
-             mSwapDuration <=
-                 mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1) &&
+    else if (missedFramesPercent == 0 && swapFasterCondition() &&
              pipelineFrameTime < lowerBoundForThisRefresh) {
         if (swapFaster(newSwapInterval)) configChanged = true;
     }
