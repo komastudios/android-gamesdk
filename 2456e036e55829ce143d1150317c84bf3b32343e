@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0329d646_33cf361d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-18T16:49:01Z",
+      "side": 1,
+      "message": "Ady, is there a reason we can\u0027t unconditionally destroy the sync fence in FenceWaiter::threadMain?",
+      "revId": "2456e036e55829ce143d1150317c84bf3b32343e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
