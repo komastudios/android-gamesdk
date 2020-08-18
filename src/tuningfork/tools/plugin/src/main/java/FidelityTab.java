@@ -14,85 +14,55 @@
  * limitations under the License
  */
 
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.ToolbarDecorator;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.table.TableColumn;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.util.Random;
 import org.jdesktop.swingx.VerticalLayout;
 
 public class FidelityTab extends TabLayout {
-    private JPanel subPanelButtons;
-    private JPanel subPanelTable;
-    private JButton buttonAdd;
-    private JButton buttonDelete;
-    private JPanel decoratorPanel;
+    private JBScrollPane scrollPane;
     private JBTable fidelityTable;
-    private JScrollPane scrollPane;
-    private DefaultTableModel tableModel;
-    private final JLabel title = new JLabel("Fidelity settings");
+    private JPanel decoratorPanel;
 
-    FidelityTab() {
-        this.setLayout(new VerticalLayout());
-        setSize();
+    private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
+    private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
+
+    public FidelityTab() {
+        initVariables();
         initComponents();
-        addComponents();
     }
 
-    private void addComponents() {
-        subPanelButtons.add(buttonAdd);
-        subPanelButtons.add(buttonDelete);
-
-        this.add(title, BorderLayout.NORTH);
-        this.add(decoratorPanel, BorderLayout.CENTER);
-        this.add(subPanelButtons, BorderLayout.SOUTH);
+    private void initVariables() {
+        scrollPane = new JBScrollPane();
+        fidelityTable = new JBTable();
+        decoratorPanel =
+                ToolbarDecorator.createDecorator(fidelityTable)
+                        .setAddAction(it -> FidelityTabController.addRowAction(fidelityTable))
+                        .setRemoveAction(it -> FidelityTabController.removeRowAction(fidelityTable))
+                        .createPanel();
     }
 
     private void initComponents() {
-        subPanelButtons = new JPanel();
-        subPanelTable = new JPanel();
-
-        buttonAdd = new JButton("+");
-        buttonAdd.setPreferredSize(new Dimension(20, 20));
-        buttonDelete = new JButton("-");
-        buttonDelete.setPreferredSize(new Dimension(20, 20));
-
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("quality_settings (int or enum)");
-        tableModel.addColumn("lod_level (int32)");
-        tableModel.addColumn("distance (float)");
-
-        fidelityTable = new JBTable(tableModel);
-        scrollPane = new JScrollPane(fidelityTable);
-        subPanelTable.add(scrollPane);
-
-        title.setFont(getMainFont());
-
-        buttonAdd.addActionListener(actionListener -> {
-            DefaultTableModel model = (DefaultTableModel) fidelityTable.getModel();
-            // TODO(volobushek): change to actual insert data
-            Random rand = new Random();
-            int first = rand.nextInt();
-            int second = rand.nextInt();
-            float third = rand.nextFloat();
-            model.addRow(new Object[]{first, second, third});
-        });
-
-        buttonDelete.addActionListener(actionListener -> {
-            DefaultTableModel model = (DefaultTableModel) fidelityTable.getModel();
-            int[] rows = fidelityTable.getSelectedRows();
-            for (int i = 0; i < rows.length; i++) {
-                model.removeRow(rows[i] - i);
-            }
-        });
-
-        decoratorPanel = ToolbarDecorator.createDecorator(fidelityTable).createPanel();
+        this.setLayout(new VerticalLayout());
+        setSize();
+        fidelityLabel.setFont(getMainFont());
+        informationLabel.setFont(getSecondaryLabel());
+        this.add(fidelityLabel);
+        this.add(Box.createVerticalStrut(10));
+        this.add(informationLabel);
+        FidelityTableModel model = new FidelityTableModel();
+        fidelityTable.setModel(model);
         setDecoratorPanelSize(decoratorPanel);
         setTableSettings(scrollPane, decoratorPanel, fidelityTable);
+        this.add(scrollPane);
     }
 }
