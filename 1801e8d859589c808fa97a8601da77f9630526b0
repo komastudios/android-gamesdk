@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "08757b93_c04a8898",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-19T09:15:01Z",
+      "side": 1,
+      "message": "Yes. For int32/float values in textproto, it will be false.",
+      "parentUuid": "9982411d_be93174a",
+      "revId": "1801e8d859589c808fa97a8601da77f9630526b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "36385bc5_6b4ab5ab",
         "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "1801e8d859589c808fa97a8601da77f9630526b0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77e87182_6c167c88",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-19T09:15:01Z",
+      "side": 1,
+      "message": "Unfortunately, not. It would print the address of the EnumValueDescriptor.\n\n(output for printing entry.getValue.toString() right now, for the values in the tests):\ncom.google.protobuf.Descriptors$EnumValueDescriptor@6600a560\ncom.google.protobuf.Descriptors$EnumValueDescriptor@5971123b",
+      "parentUuid": "36385bc5_6b4ab5ab",
+      "revId": "1801e8d859589c808fa97a8601da77f9630526b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
