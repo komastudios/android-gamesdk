@@ -34,12 +34,21 @@ public class MessageDataModel {
     this.messageType = messageType;
   }
 
-  public boolean addField(String paramName, String type) {
+  public boolean addMultipleFields(List<String> paramNames, List<String> paramValues) {
+    for (int i = 0; i < paramNames.size(); i++) {
+      if (!addField(paramNames.get(i), paramValues.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public boolean addField(String paramName, String paramValue) {
     if (fieldNames.contains(paramName)) {
       return false;
     }
     fieldNames.add(paramName);
-    fieldTypes.add(type);
+    fieldTypes.add(paramValue);
     return true;
   }
 
