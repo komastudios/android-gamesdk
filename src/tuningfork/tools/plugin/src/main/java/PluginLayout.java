@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+import com.intellij.openapi.project.Project;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -38,11 +39,13 @@ public class PluginLayout extends JPanel {
   private JTree menu;
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();;
   private ArrayList<JPanel> panels;
+  private Project project;
 
-  public PluginLayout() {
+  public PluginLayout(Project project) {
     panels = new ArrayList<>();
     this.setPreferredSize(new Dimension(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2));
     this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    this.project = project;
     initComponents();
     addComponents();
   }
@@ -102,7 +105,7 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout = new QualityTab();
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
-    annotationsLayout = new AnnotationTab();
+    annotationsLayout = new AnnotationTab(project);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
     fidelitySettingsLayout = new FidelityTab();
