@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ab3761c1_9d231af0",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-19T15:40:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "347b27b5_823b50c9",
+      "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c42c065_bf4f6124",
         "filename": "include/tuningfork/tuningfork.h",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16a79894_6465dc1b",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-19T15:40:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c42c065_bf4f6124",
+      "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "471df6ce_51889535",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-19T15:40:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b290d80d_f79cb9d5",
+      "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b009f2fe_50ed17a3",
         "filename": "src/tuningfork/core/tuningfork_c.cpp",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1af11e1f_e454a12e",
+        "filename": "src/tuningfork/core/tuningfork_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-19T15:40:22Z",
+      "side": 1,
+      "message": "The idea is that this function resolves any differences between versions of TUningFork_LoadingTimeMetadata structures and produces the current tf::LoadingTimeMetadata structure, but the latter is typedefed to the former, so it\u0027s a bit of a mute point. I\u0027ve added a comment.",
+      "parentUuid": "b009f2fe_50ed17a3",
+      "revId": "092a27d133354ae697425e79ffebb6ef0a1fc25a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
