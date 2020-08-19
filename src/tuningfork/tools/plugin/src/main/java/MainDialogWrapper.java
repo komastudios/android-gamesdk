@@ -33,7 +33,7 @@ public class MainDialogWrapper extends DialogWrapper {
 
   @Override
   protected @Nullable JComponent createCenterPanel() {
-    pluginLayout = new PluginLayout();
+    pluginLayout = new PluginLayout(project);
     return pluginLayout;
   }
 }
