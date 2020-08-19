@@ -16,6 +16,24 @@
       "revId": "1d1b295678278bb44508b9d41302da85186ce5ba",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc6b932b_ce9918da",
+        "filename": "src/tuningfork/core/tuningfork_settings.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-08-19T16:03:37Z",
+      "side": 1,
+      "message": "If people have lots of annotations for different purposes (frame time and loading), I can see this limit being hit. The idea is they set c_settings.max_num_metrics.frame_time in that case, to the actual number of combinations they realistically expect in a session. I\u0027ll add a warning message so people see they might be hitting the limit.",
+      "parentUuid": "5c5af20b_1f85d755",
+      "revId": "1d1b295678278bb44508b9d41302da85186ce5ba",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
