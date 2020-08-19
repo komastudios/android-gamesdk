@@ -14,9 +14,33 @@
  * limitations under the License
  */
 
+import com.intellij.ui.components.JBLabel;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTable;
 
 public class AnnotationTabController {
+    private List<EnumDataModel> annotationEnums;
+    private MessageDataModel annotationDataModel;
+
+    AnnotationTabController() {
+        annotationEnums = new ArrayList<>();
+        annotationDataModel = new MessageDataModel();
+        annotationDataModel.setMessageType(MessageDataModel.Type.ANNOTATION);
+    }
+
+    public void addAnnotationEnum(EnumDataModel enumDataModel) {
+        annotationEnums.add(enumDataModel);
+    }
+
+    public List<EnumDataModel> getAnnotationEnums() {
+        return annotationEnums;
+    }
+
+    public void addEnumToAnnotation(String enumName, String fieldName) {
+        annotationDataModel.addField(fieldName, enumName);
+    }
+
     public static void addRowAction(JTable jtable) {
         AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
         // TODO(mohanad): placeholder values used. Will be replaced later with default enum value.
@@ -33,5 +57,25 @@ public class AnnotationTabController {
             jtable.getCellEditor().stopCellEditing();
         }
         model.removeRow(row);
+    }
+
+    public boolean saveSettings(JTable jTable, JBLabel savedSettingsLabel) {
+        List<String[]> annotationData = ((AnnotationTableModel) jTable.getModel()).getData();
+
+        for (String[] row : annotationData) {
+            String enumName = row[0];
+            String fieldName = row[1];
+            if (!annotationDataModel.addField(fieldName, enumName)) {
+                return false;
+            }
+        }
+
+        //TODO (aymanm, targintaru, volobushenk) integrate validation
+        savedSettingsLabel.setVisible(true);
+        return true;
+    }
+
+    public MessageDataModel getAnnotationDataModel() {
+        return annotationDataModel;
     }
 }

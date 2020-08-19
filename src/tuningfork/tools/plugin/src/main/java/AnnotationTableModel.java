@@ -26,6 +26,10 @@ public class AnnotationTableModel extends AbstractTableModel {
         data = new ArrayList<>();
     }
 
+    public List<String[]> getData() {
+        return data;
+    }
+
     @Override
     public int getRowCount() {
         return data.size();
