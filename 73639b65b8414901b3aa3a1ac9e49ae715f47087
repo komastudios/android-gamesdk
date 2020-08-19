@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e78f243_b7cb142d",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/DataModelTransformerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-19T08:40:19Z",
+      "side": 1,
+      "message": "nit : Use JUnit Assert(Assert.*)",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 67,
+        "endChar": 47
+      },
+      "revId": "73639b65b8414901b3aa3a1ac9e49ae715f47087",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

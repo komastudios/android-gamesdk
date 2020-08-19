@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9982411d_be93174a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-19T08:40:19Z",
+      "side": 1,
+      "message": "Is this ever false?",
+      "revId": "1801e8d859589c808fa97a8601da77f9630526b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36385bc5_6b4ab5ab",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1737235
+      },
+      "writtenOn": "2020-08-19T08:40:19Z",
+      "side": 1,
+      "message": "Wouldn\u0027t entry.getValue.toString() do the same thing?",
+      "revId": "1801e8d859589c808fa97a8601da77f9630526b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
