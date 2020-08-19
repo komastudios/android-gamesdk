@@ -16,6 +16,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 public class AnnotationTableModel extends AbstractTableModel {
@@ -24,6 +25,10 @@ public class AnnotationTableModel extends AbstractTableModel {
 
     public AnnotationTableModel() {
         data = new ArrayList<>();
+    }
+
+    public List<String[]> getData() {
+        return data;
     }
 
     @Override
@@ -65,5 +70,13 @@ public class AnnotationTableModel extends AbstractTableModel {
     public void removeRow(int row) {
         data.remove(row);
         fireTableDataChanged();
+    }
+
+    public List<String> getAnnotationEnumNames() {
+        return data.stream().map(row -> row[0]).collect(Collectors.toList());
+    }
+
+    public List<String> getAnnotationFieldNames() {
+        return data.stream().map(row -> row[1]).collect(Collectors.toList());
     }
 }

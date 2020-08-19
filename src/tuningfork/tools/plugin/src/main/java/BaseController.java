@@ -14,26 +14,8 @@
  * limitations under the License
  */
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import javax.swing.JComponent;
-import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
 
-public class MainDialogWrapper extends DialogWrapper {
-
-  private static PluginLayout pluginLayout;
-  private final Project project;
-
-  protected MainDialogWrapper(@Nullable Project project) {
-    super(project);
-    init();
-    setTitle("Android Performance Tuner Plugin");
-    this.project = project;
-  }
-
-  @Override
-  protected @Nullable JComponent createCenterPanel() {
-    pluginLayout = new PluginLayout(project);
-    return pluginLayout;
-  }
+public abstract class BaseController {
+  public abstract void onEnumAdd(String name, ArrayList<String> options);
 }

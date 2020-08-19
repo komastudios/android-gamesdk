@@ -14,12 +14,17 @@
  * limitations under the License
  */
 
+import com.intellij.openapi.ui.ComboBox;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.List;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.TableColumn;
 
 public class TabLayout extends JPanel {
 
@@ -72,5 +77,35 @@ public class TabLayout extends JPanel {
     table.getModel().addTableModelListener(
         tableModelEvent -> resizePanelToFit(scrollPane, decoratorPanel, table));
     table.setIntercellSpacing(new Dimension(0, 0));
+  }
+
+  public void initComboBoxColumns(JTable table, int col, List<String> options) {
+    TableColumn column = table.getColumnModel().getColumn(col);
+    column.setCellEditor(getComboBoxModel(options));
+    column.setCellRenderer(new TableRenderer.ComboBoxRenderer());
+  }
+
+  private DefaultCellEditor getComboBoxModel(List<String> options) {
+    ComboBox<String> comboBoxModel = new ComboBox<>();
+    for (String option : options) {
+      comboBoxModel.addItem(option);
+    }
+    DefaultCellEditor boxEditor = new DefaultCellEditor(comboBoxModel);
+    boxEditor.setClickCountToStart(1);
+    return boxEditor;
+  }
+
+  private DefaultCellEditor getTextFieldModel() {
+    JTextField textFieldModel = new JTextField();
+    textFieldModel.setBorder(new RoundedCornerBorder());
+    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
+    textEditor.setClickCountToStart(1);
+    return textEditor;
+  }
+
+  public void initTextFieldColumns(JTable table, int col) {
+    TableColumn column = table.getColumnModel().getColumn(col);
+    column.setCellEditor(getTextFieldModel());
+    column.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
   }
 }
