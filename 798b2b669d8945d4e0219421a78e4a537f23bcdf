@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a6ac59c5_e9f17b83",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/FidelityTabController.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-19T15:58:19Z",
+      "side": 1,
+      "message": "Can you use .toString() instead?",
+      "range": {
+        "startLine": 25,
+        "startChar": 38,
+        "endLine": 25,
+        "endChar": 42
+      },
+      "revId": "798b2b669d8945d4e0219421a78e4a537f23bcdf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
