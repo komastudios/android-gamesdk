@@ -1,0 +1,10 @@
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Code-Review+2: Kseniia Taraimovich <kseniia@google.com>
+Code-Review+2: Henry Daitx <daitx@google.com>
+Presubmit-Verified+1: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Henry Daitx <daitx@google.com>
+Submitted-at: Thu, 20 Aug 2020 14:57:04 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1404691
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
