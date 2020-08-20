@@ -19,6 +19,7 @@
 
 #include "Trace.h"
 #include "activity_lifecycle_state.h"
+#include "annotation_map.h"
 #include "async_telemetry.h"
 #include "crash_handler.h"
 #include "session.h"
@@ -55,6 +56,9 @@ class TuningForkImpl : public IdProvider {
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
     bool app_first_run_;
+    std::unordered_map<LoadingHandle, TimePoint> live_loading_events_;
+    std::mutex live_loading_events_mutex_;
+    AnnotationMap annotation_map_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -102,8 +106,15 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
-    TuningFork_ErrorCode RecordLoadingTime(Duration duration,
-                                           const LoadingTimeMetadata &metadata);
+    TuningFork_ErrorCode RecordLoadingTime(
+        Duration duration, const LoadingTimeMetadata &metadata,
+        const ProtobufSerialization &annotation);
+
+    TuningFork_ErrorCode StartRecordingLoadingTime(
+        const LoadingTimeMetadata &metadata,
+        const ProtobufSerialization &annotation, LoadingHandle &handle);
+
+    TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
     TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
@@ -125,8 +136,8 @@ class TuningForkImpl : public IdProvider {
     bool ShouldSubmit(TimePoint t, MetricData *metric_data);
 
     TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
-        const SerializedAnnotation &ser, AnnotationId &id,
-        bool *loading) const override;
+        const SerializedAnnotation &ser, AnnotationId &id) override;
+
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
     TuningFork_ErrorCode MakeCompoundId(InstrumentationKey k,
@@ -152,8 +163,6 @@ class TuningForkImpl : public IdProvider {
 
     bool LoadingNextScene() const { return loading_start_ != TimePoint::min(); }
 
-    bool IsLoadingAnnotationId(AnnotationId id) const;
-
     void SwapSessions();
 
     bool Debugging() const;
@@ -164,10 +173,6 @@ class TuningForkImpl : public IdProvider {
         Session &session, size_t size, int max_num_instrumentation_keys,
         const std::vector<Settings::Histogram> &histogram_settings,
         const TuningFork_MetricLimits &limits);
-
-    void CreateMemoryHistograms(Session &session);
-
-    void AddMemoryMetrics();
 };
 
 }  // namespace tuningfork

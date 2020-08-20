@@ -116,11 +116,11 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
             LoadingTimeMetadata{
                 app_first_run_ ? LoadingTimeMetadata::LoadingState::FIRST_RUN
                                : LoadingTimeMetadata::LoadingState::COLD_START,
-                LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY}) !=
-        TUNINGFORK_ERROR_OK) {
+                LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY},
+            {}) != TUNINGFORK_ERROR_OK) {
         ALOGW(
             "Warning: could not record pre-activity loading time. Increase the "
-            "maximum number of loading time metrics.");
+            "maximum number of loading time metrics?");
     }
 
     ALOGI("TuningFork initialized");
@@ -139,28 +139,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
     InstrumentationKey ikey = 0;
     int num_loading_created = 0;
     int num_frametime_created = 0;
-    for (uint64_t i = 0; i < size; ++i) {
-        auto aid = i / max_num_instrumentation_keys;
-        if (IsLoadingAnnotationId(aid)) {
-            if (ikey == 0) {
-                if (limits.loading_time == 0 ||
-                    num_loading_created < limits.loading_time) {
-                    session.CreateLoadingTimeSeries(
-                        MetricId::LoadingTime(aid, 0));
-                    ++num_loading_created;
-                }
-            }
-            // Don't create histograms for other instrument keys when loading
-        } else {
-            auto &h =
-                histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
-            if (limits.frame_time == 0 ||
-                num_frametime_created < limits.frame_time) {
-                session.CreateFrameTimeHistogram(MetricId::FrameTime(aid, ikey),
-                                                 h);
-                ++num_frametime_created;
-            }
-        }
+    for (int i = num_frametime_created; i < limits.frame_time; ++i) {
+        auto &h =
+            histogram_settings[ikey < histogram_settings.size() ? ikey : 0];
+        session.CreateFrameTimeHistogram(MetricId::FrameTime(0, ikey), h);
         ++ikey;
         if (ikey >= max_num_instrumentation_keys) ikey = 0;
     }
@@ -174,35 +156,13 @@ void TuningForkImpl::CreateSessionFrameHistograms(
 MetricId TuningForkImpl::SetCurrentAnnotation(
     const ProtobufSerialization &annotation) {
     current_annotation_ = annotation;
-    bool loading;
     AnnotationId id;
-    SerializedAnnotationToAnnotationId(annotation, id, &loading);
+    SerializedAnnotationToAnnotationId(annotation, id);
     if (id == annotation_util::kAnnotationError) {
         ALOGW("Error setting annotation of size %zu", annotation.size());
         current_annotation_id_ = MetricId::FrameTime(0, 0);
         return MetricId{annotation_util::kAnnotationError};
     } else {
-        // Check if we have started or stopped loading
-        if (LoadingNextScene()) {
-            if (!loading) {
-                // We've stopped loading: record the time
-                auto dt = time_provider_->Now() - loading_start_;
-                auto h = current_session_->GetData<LoadingTimeMetricData>(
-                    MetricId::LoadingTime(
-                        current_annotation_id_.detail.annotation, 0));
-                if (h) h->Record(dt);
-                int cnt =
-                    (int)std::chrono::duration_cast<std::chrono::milliseconds>(
-                        dt)
-                        .count();
-                loading_start_ = TimePoint::min();
-            }
-        } else {
-            if (loading) {
-                // We've just switched to a loading screen
-                loading_start_ = time_provider_->Now();
-            }
-        }
         ALOGV("Set annotation id to %" PRIu32, id);
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         return current_annotation_id_;
@@ -210,13 +170,10 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
 }
 
 TuningFork_ErrorCode TuningForkImpl::SerializedAnnotationToAnnotationId(
-    const tuningfork::SerializedAnnotation &ser, tuningfork::AnnotationId &id,
-    bool *loading) const {
-    id = annotation_util::DecodeAnnotationSerialization(
-        ser, annotation_radix_mult_, settings_.loading_annotation_index,
-        settings_.level_annotation_index, loading);
-    return TUNINGFORK_ERROR_OK;
+    const tuningfork::SerializedAnnotation &ser, tuningfork::AnnotationId &id) {
+    return annotation_map_.GetOrInsert(ser, id);
 }
+
 TuningFork_ErrorCode TuningForkImpl::MakeCompoundId(InstrumentationKey key,
                                                     AnnotationId annotation_id,
                                                     MetricId &id) {
@@ -225,17 +182,6 @@ TuningFork_ErrorCode TuningForkImpl::MakeCompoundId(InstrumentationKey key,
     if (err != TUNINGFORK_ERROR_OK) return err;
     id = MetricId::FrameTime(annotation_id, key_index);
     return TUNINGFORK_ERROR_OK;
-}
-bool TuningForkImpl::IsLoadingAnnotationId(AnnotationId id) const {
-    if (settings_.loading_annotation_index == -1) return false;
-    int value;
-    if (annotation_util::Value(id, settings_.loading_annotation_index,
-                               annotation_radix_mult_,
-                               value) == annotation_util::NO_ERROR) {
-        return value > 1;
-    } else {
-        return false;
-    }
 }
 
 TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
@@ -373,12 +319,16 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
                         ? LoadingTimeMetadata::LoadingState::FIRST_RUN
                         : LoadingTimeMetadata::LoadingState::COLD_START,
                     LoadingTimeMetadata::LoadingSource::
-                        FIRST_TOUCH_TO_FIRST_FRAME}) != TUNINGFORK_ERROR_OK) {
+                        FIRST_TOUCH_TO_FIRST_FRAME},
+                {}) != TUNINGFORK_ERROR_OK) {
             ALOGW(
                 "Warning: could not record first frame loading time. Increase "
-                "the maximum number of loading time metrics.");
+                "the maximum number of loading time metrics?");
         }
     }
+
+    // Don't record while we have any loading events live
+    if (live_loading_events_.size() > 0) return TUNINGFORK_ERROR_OK;
 
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
@@ -393,6 +343,9 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
 
 TuningFork_ErrorCode TuningForkImpl::TraceNanos(MetricId compound_id,
                                                 Duration dt, MetricData **pp) {
+    // Don't record while we have any loading events live
+    if (live_loading_events_.size() > 0) return TUNINGFORK_ERROR_OK;
+
     // Find the appropriate histogram and add this time
     auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (h) {
@@ -585,7 +538,8 @@ TuningFork_ErrorCode TuningForkImpl::MetricIdToMemoryMetric(MetricId id,
 
 TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
     tuningfork::AnnotationId id, tuningfork::SerializedAnnotation &ser) {
-    annotation_util::SerializeAnnotationId(id, ser, annotation_radix_mult_);
+    auto err = annotation_map_.Get(id, ser);
+    if (err != TUNINGFORK_ERROR_OK) return err;
     return TUNINGFORK_ERROR_OK;
 }
 
@@ -618,13 +572,51 @@ TuningFork_ErrorCode TuningForkImpl::MetricIdToLoadingTimeMetadata(
 }
 
 TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
-    Duration duration, const LoadingTimeMetadata &metadata) {
+    Duration duration, const LoadingTimeMetadata &metadata,
+    const ProtobufSerialization &annotation) {
     LoadingTimeMetadataId metadata_id;
     LoadingTimeMetadataToId(metadata, metadata_id);
-    // Loading time is stored according to annotation and metadata_id
-    // TODO: (willosborn) restrict possible annotations
-    auto metric_id = MetricId::LoadingTime(
-        current_annotation_id_.detail.annotation, metadata_id);
+    AnnotationId ann_id = 0;
+    auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    auto metric_id = MetricId::LoadingTime(ann_id, metadata_id);
+    auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
+    if (data == nullptr)
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
+    data->Record(duration);
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
+    const LoadingTimeMetadata &metadata,
+    const ProtobufSerialization &annotation, LoadingHandle &handle) {
+    LoadingTimeMetadataId metadata_id;
+    LoadingTimeMetadataToId(metadata, metadata_id);
+    AnnotationId ann_id = 0;
+    auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    auto metric_id = MetricId::LoadingTime(ann_id, metadata_id);
+    handle = metric_id.base;
+    std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
+    if (live_loading_events_.find(handle) != live_loading_events_.end())
+        return TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT;
+    live_loading_events_[handle] = time_provider_->Now();
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
+    LoadingHandle handle) {
+    Duration duration;
+    {
+        std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
+        auto it = live_loading_events_.find(handle);
+        if (it == live_loading_events_.end())
+            return TUNINGFORK_ERROR_INVALID_LOADING_HANDLE;
+        duration = time_provider_->Now() - it->second;
+        live_loading_events_.erase(it);
+    }
+    MetricId metric_id;
+    metric_id.base = handle;
     auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
     if (data == nullptr)
         return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;

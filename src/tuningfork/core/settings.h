@@ -66,6 +66,8 @@ struct Settings {
     // already set in c_settings or the default if save_dir is empty.
     void Check(const std::string& save_dir = "");
 
+    uint64_t NumAnnotationCombinations();
+
     // The default histogram that is used if the user doesn't specify one in
     // Settings
     static Settings::Histogram DefaultHistogram(InstrumentationKey ikey);
