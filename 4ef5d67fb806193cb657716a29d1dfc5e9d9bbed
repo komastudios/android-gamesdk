@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eef9fcac_4b46e667",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-08-20T11:52:45Z",
+      "side": 1,
+      "message": "nit:long line",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 106
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
