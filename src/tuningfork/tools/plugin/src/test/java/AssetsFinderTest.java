@@ -15,42 +15,29 @@
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
-import org.junit.Before;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class AssetsFinderTest {
+    @Rule public TemporaryFolder testFolder = new TemporaryFolder();
 
-  File assetsDir;
-  File tuningforkDir;
-
-  @Before
-  public void getDirObjects() {
-    File root = new File(System.getProperty("user.dir"));
-    String path = root.getAbsolutePath() + ("/src/resources/assets");
-    assetsDir = new File(path);
-    tuningforkDir = new File(path + "/tuningfork");
-  }
-
-  @Test
-  public void noDirectoryFound() {
-    if (assetsDir.exists()) {
-      assetsDir.delete();
+    @Test
+    public void noDirectoryFound() {
+        Optional<File> assetsDirectory =
+            AssetsFinder.findAssets(testFolder.getRoot().getAbsolutePath());
+        Assert.assertFalse(assetsDirectory.isPresent());
     }
 
-    if (tuningforkDir.exists()) {
-      tuningforkDir.delete();
+    @Test
+    public void directoryFound() throws IOException {
+        testFolder.newFolder("assets", "tuningfork");
+        Optional<File> assetsDirectory =
+            AssetsFinder.findAssets(testFolder.getRoot().getAbsolutePath());
+        Assert.assertTrue(assetsDirectory.isPresent());
+        Assert.assertTrue(assetsDirectory.get().getAbsolutePath().endsWith("assets/tuningfork"));
     }
-
-    assert (!AssetsFinder.findAssets().isPresent());
-  }
-
-  @Test
-  public void directoryFound() {
-    if (!tuningforkDir.exists()) {
-      tuningforkDir.mkdirs();
-    }
-
-    assert (AssetsFinder.findAssets().isPresent());
-  }
 }
