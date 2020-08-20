@@ -27,17 +27,17 @@ public class QualityDataModel {
    */
   private List<String> fieldValues;
 
-  QualityDataModel() {
+  public QualityDataModel() {
     fieldNames = new ArrayList<>();
     fieldValues = new ArrayList<>();
   }
 
-  public boolean addField(String paramName, String type) {
+  public boolean addField(String paramName, String value) {
     if (fieldNames.contains(paramName)) {
       return false;
     }
     fieldNames.add(paramName);
-    fieldValues.add(type);
+    fieldValues.add(value);
     return true;
   }
 
@@ -64,5 +64,14 @@ public class QualityDataModel {
 
   public void updateValue(int index, String value) {
     fieldValues.set(index, value);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < fieldNames.size(); i++) {
+      stringBuilder.append(fieldNames.get(i)).append(": ").append(fieldValues.get(i)).append("\n");
+    }
+    return stringBuilder.toString();
   }
 }
