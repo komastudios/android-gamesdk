@@ -32,9 +32,9 @@ public class EnumDataModel {
   public EnumDataModel(String name, List<EnumValueDescriptor> options) {
     this.name = name;
     this.options = new ArrayList<>();
-
-    for (EnumValueDescriptor enumValueDescriptor : options) {
-      this.options.add(enumValueDescriptor.getName());
+    // First enum option is ignored because it's an invalid type.
+    for (int i = 1; i < options.size(); i++) {
+      this.options.add(options.get(i).getName());
     }
   }
 
@@ -60,5 +60,21 @@ public class EnumDataModel {
 
   public void removeOption(String option) {
     options.remove(options);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("enum ").append(name).append(" {\n");
+    stringBuilder
+        .append(name.toUpperCase())
+        .append("_INVALID = 0;")
+        .append("// DO NOT EDIT OR CHANGE NAME")
+        .append("\n");
+    for (int i = 0; i < options.size(); i++) {
+      stringBuilder.append(options.get(i)).append(" = ").append(i + 1).append(";\n");
+    }
+    stringBuilder.append("}\n\n");
+    return stringBuilder.toString();
   }
 }
