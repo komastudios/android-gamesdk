@@ -18,7 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageDataModel {
-  enum Type {FIDELITY, ANNOTATION};
+
+  enum Type {
+    FIDELITY("FidelityParams"),
+    ANNOTATION("Annotation");
+    private final String messageName;
+
+    Type(String messageName) {
+      this.messageName = messageName;
+    }
+
+    public String getMessageName() {
+      return messageName;
+    }
+  }
+
   private List<String> fieldNames;
   private List<String> fieldTypes;
   private Type messageType;
@@ -67,8 +81,25 @@ public class MessageDataModel {
   public void updateType(int index, String type) {
     fieldTypes.set(index, type);
   }
-  
+
   public void setMessageType(Type messageType) {
     this.messageType = messageType;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("message ").append(messageType.getMessageName()).append(" {\n");
+    for (int i = 0; i < fieldNames.size(); i++) {
+      stringBuilder
+          .append(fieldTypes.get(i))
+          .append(" ")
+          .append(fieldNames.get(i))
+          .append(" = ")
+          .append(i + 1)
+          .append(";\n");
+    }
+    stringBuilder.append("}\n\n");
+    return stringBuilder.toString();
   }
 }
