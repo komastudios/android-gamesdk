@@ -14,6 +14,7 @@
  * limitations under the License
  */
 
+import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -23,18 +24,18 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import org.jdesktop.swingx.VerticalLayout;
 
-
 public class QualityTab extends TabLayout {
 
-  private final static JLabel title = new JLabel("Quality levels");
+  private final JLabel title = new JLabel("Quality levels");
   private JScrollPane scrollPane;
 
-  private final static JLabel aboutQualitySettings = new JLabel(
-      "<html> All quality settings are saved into " +
-          "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>" +
-          "You should have at least one quality level. <br>" +
-          "Once you add a new level, you can edit/add data it by" +
-          "modifying the text in the table below.</html> ");
+  private final JLabel aboutQualitySettings =
+      new JLabel(
+          "<html> All quality settings are saved into "
+              + "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>"
+              + "You should have at least one quality level. <br>"
+              + "Once you add a new level, you can edit/add data it by"
+              + "modifying the text in the table below.</html> ");
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
@@ -62,11 +63,11 @@ public class QualityTab extends TabLayout {
     qualityParametersTable = new JBTable(qualityTableModel);
     qualityParametersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     qualityTableData = new QualityTableData();
-    decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
-        .setAddAction(anActionButton -> qualityTableData.addRow(qualityParametersTable))
-        .setRemoveAction(
-            anActionButton -> qualityTableData.removeRow(qualityParametersTable))
-        .createPanel();
+    decoratorPanel =
+        ToolbarDecorator.createDecorator(qualityParametersTable)
+            .setAddAction(anActionButton -> qualityTableData.addRow(qualityParametersTable))
+            .setRemoveAction(anActionButton -> qualityTableData.removeRow(qualityParametersTable))
+            .createPanel();
     scrollPane = new JBScrollPane();
 
     setDecoratorPanelSize(decoratorPanel);

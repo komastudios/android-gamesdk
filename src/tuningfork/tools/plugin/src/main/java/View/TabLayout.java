@@ -14,6 +14,8 @@
  * limitations under the License
  */
 
+package View;
+
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JPanel;
@@ -55,9 +57,10 @@ public class TabLayout extends JPanel {
    */
   private void resizePanelToFit(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
     int oldWidth = scrollPane.getWidth();
-    int newHeight = Math.max(decoratorPanel.getMinimumSize().height + 2,
-        Math.min(this.getHeight() - 100,
-            table.getRowHeight() * table.getRowCount() + 30));
+    int newHeight =
+        Math.max(
+            decoratorPanel.getMinimumSize().height + 2,
+            Math.min(this.getHeight() - 100, table.getRowHeight() * table.getRowCount() + 30));
     scrollPane.setSize(new Dimension(oldWidth, newHeight));
     scrollPane.revalidate();
   }
@@ -69,8 +72,10 @@ public class TabLayout extends JPanel {
     table.getTableHeader().setReorderingAllowed(false);
     table.setRowSelectionAllowed(true);
     table.setSelectionBackground(null);
-    table.getModel().addTableModelListener(
-        tableModelEvent -> resizePanelToFit(scrollPane, decoratorPanel, table));
+    table
+        .getModel()
+        .addTableModelListener(
+            tableModelEvent -> resizePanelToFit(scrollPane, decoratorPanel, table));
     table.setIntercellSpacing(new Dimension(0, 0));
   }
 }
