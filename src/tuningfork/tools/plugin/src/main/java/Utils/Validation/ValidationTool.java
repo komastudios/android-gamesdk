@@ -2,15 +2,10 @@ package Utils.Validation;
 
 import Model.EnumDataModel;
 import Model.QualityDataModel;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import net.sf.cglib.asm.$AnnotationVisitor;
-import org.apache.commons.lang.StringUtils;
-import sun.awt.X11.XSizeHints;
 
 public final class ValidationTool {
 
