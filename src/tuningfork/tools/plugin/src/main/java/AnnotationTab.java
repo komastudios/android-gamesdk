@@ -14,6 +14,7 @@
  * limitations under the License
  */
 
+import View.TabLayout;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
@@ -27,76 +28,77 @@ import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
 class AnnotationTab extends TabLayout {
-    private JBScrollPane scrollPane;
-    private JBTable annotationTable;
-    private JPanel decoratorPanel;
 
-    private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
-    private final JBLabel informationLabel =
-        new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
+  private JBScrollPane scrollPane;
+  private JBTable annotationTable;
+  private JPanel decoratorPanel;
 
-    public AnnotationTab() {
-        initVariables();
-        initComponents();
-    }
+  private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
+  private final JBLabel informationLabel =
+      new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
 
-    private void initVariables() {
-        scrollPane = new JBScrollPane();
-        annotationTable = new JBTable();
-        decoratorPanel =
-            ToolbarDecorator.createDecorator(annotationTable)
-                .setAddAction(it -> AnnotationTabController.addRowAction(annotationTable))
-                .setRemoveAction(it -> AnnotationTabController.removeRowAction(annotationTable))
-                .createPanel();
-    }
+  public AnnotationTab() {
+    initVariables();
+    initComponents();
+  }
 
-    private void initComponents() {
-        // Initialize layout.
-        this.setLayout(new VerticalLayout());
-        setSize();
+  private void initVariables() {
+    scrollPane = new JBScrollPane();
+    annotationTable = new JBTable();
+    decoratorPanel =
+        ToolbarDecorator.createDecorator(annotationTable)
+            .setAddAction(it -> AnnotationTabController.addRowAction(annotationTable))
+            .setRemoveAction(it -> AnnotationTabController.removeRowAction(annotationTable))
+            .createPanel();
+  }
 
-        // Add labels.
-        annotationLabel.setFont(getMainFont());
-        informationLabel.setFont(getSecondaryLabel());
-        this.add(annotationLabel);
-        this.add(Box.createVerticalStrut(10));
-        this.add(informationLabel);
+  private void initComponents() {
+    // Initialize layout.
+    this.setLayout(new VerticalLayout());
+    setSize();
 
-        // Initialize toolbar and table.
-        AnnotationTableModel model = new AnnotationTableModel();
-        annotationTable.setModel(model);
-        setDecoratorPanelSize(decoratorPanel);
-        setTableSettings(scrollPane, decoratorPanel, annotationTable);
+    // Add labels.
+    annotationLabel.setFont(getMainFont());
+    informationLabel.setFont(getSecondaryLabel());
+    this.add(annotationLabel);
+    this.add(Box.createVerticalStrut(10));
+    this.add(informationLabel);
 
-        // Initialize field type column.
-        TableColumn typeColumn = annotationTable.getColumnModel().getColumn(0);
-        typeColumn.setCellEditor(getComboBoxModel());
-        typeColumn.setCellRenderer(new TableRenderer.ComboBoxRenderer());
+    // Initialize toolbar and table.
+    AnnotationTableModel model = new AnnotationTableModel();
+    annotationTable.setModel(model);
+    setDecoratorPanelSize(decoratorPanel);
+    setTableSettings(scrollPane, decoratorPanel, annotationTable);
 
-        // Initialize field name column.
-        TableColumn nameColumn = annotationTable.getColumnModel().getColumn(1);
-        nameColumn.setCellEditor(getTextFieldModel());
-        nameColumn.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
+    // Initialize field type column.
+    TableColumn typeColumn = annotationTable.getColumnModel().getColumn(0);
+    typeColumn.setCellEditor(getComboBoxModel());
+    typeColumn.setCellRenderer(new TableRenderer.ComboBoxRenderer());
 
-        this.add(scrollPane);
-    }
+    // Initialize field name column.
+    TableColumn nameColumn = annotationTable.getColumnModel().getColumn(1);
+    nameColumn.setCellEditor(getTextFieldModel());
+    nameColumn.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
 
-    private DefaultCellEditor getTextFieldModel() {
-        JTextField textFieldModel = new JTextField();
-        textFieldModel.setBorder(new RoundedCornerBorder());
-        DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
-        textEditor.setClickCountToStart(1);
-        return textEditor;
-    }
+    this.add(scrollPane);
+  }
 
-    private DefaultCellEditor getComboBoxModel() {
-        ComboBox<String> comboBoxModel = new ComboBox<>();
-        // TODO(mohanad): This will be replaced by enum values.
-        comboBoxModel.addItem("loadingState");
-        comboBoxModel.addItem("Scene");
-        comboBoxModel.addItem("bigBoss");
-        DefaultCellEditor boxEditor = new DefaultCellEditor(comboBoxModel);
-        boxEditor.setClickCountToStart(1);
-        return boxEditor;
-    }
+  private DefaultCellEditor getTextFieldModel() {
+    JTextField textFieldModel = new JTextField();
+    textFieldModel.setBorder(new RoundedCornerBorder());
+    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
+    textEditor.setClickCountToStart(1);
+    return textEditor;
+  }
+
+  private DefaultCellEditor getComboBoxModel() {
+    ComboBox<String> comboBoxModel = new ComboBox<>();
+    // TODO(mohanad): This will be replaced by enum values.
+    comboBoxModel.addItem("loadingState");
+    comboBoxModel.addItem("Scene");
+    comboBoxModel.addItem("bigBoss");
+    DefaultCellEditor boxEditor = new DefaultCellEditor(comboBoxModel);
+    boxEditor.setClickCountToStart(1);
+    return boxEditor;
+  }
 }
