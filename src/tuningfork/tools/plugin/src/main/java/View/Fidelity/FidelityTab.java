@@ -13,28 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-
 package View.Fidelity;
 
-import Controller.Fidelity.FidelityTabController;
-import Controller.Fidelity.FidelityTableModel;
+import Controller.FidelityTabController;
+import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
+import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
 public class FidelityTab extends TabLayout {
 
+  private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
+  private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
+  List<String> currentEnums = new ArrayList<>();
+  FidelityTabController fidelityTabController;
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel decoratorPanel;
-
-  private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
-  private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
 
   public FidelityTab() {
     initVariables();
@@ -42,13 +48,39 @@ public class FidelityTab extends TabLayout {
   }
 
   private void initVariables() {
+    fidelityTabController = new FidelityTabController();
     scrollPane = new JBScrollPane();
-    fidelityTable = new JBTable();
+    fidelityTable =
+        new JBTable() {
+          @Override
+          public TableCellRenderer getCellRenderer(int row, int column) {
+            if (column == 1) {
+              FidelityTableData currentData =
+                  (FidelityTableData) this.getModel().getValueAt(row, column);
+              return getCellRendererByValue(currentData);
+            } else {
+              return super.getCellRenderer(row, column);
+            }
+          }
+
+          @Override
+          public TableCellEditor getCellEditor(int row, int column) {
+            if (column == 1) {
+              FidelityTableData currentData =
+                  (FidelityTableData) this.getModel().getValueAt(row, column);
+              return getCellEditorByValue(currentData);
+            } else {
+              return super.getCellEditor(row, column);
+            }
+          }
+        };
     decoratorPanel =
         ToolbarDecorator.createDecorator(fidelityTable)
-            .setAddAction(it -> FidelityTabController.addRowAction(fidelityTable))
-            .setRemoveAction(it -> FidelityTabController.removeRowAction(fidelityTable))
+            .setAddAction(it -> fidelityTabController.addRowAction(fidelityTable))
+            .setRemoveAction(it -> fidelityTabController.removeRowAction(fidelityTable))
             .createPanel();
+    fidelityLabel.setFont(TabLayout.getMainFont());
+    informationLabel.setFont(TabLayout.getSecondaryLabel());
   }
 
   private void initComponents() {
@@ -61,8 +93,31 @@ public class FidelityTab extends TabLayout {
     this.add(informationLabel);
     FidelityTableModel model = new FidelityTableModel();
     fidelityTable.setModel(model);
+    TableColumn enumColumn = fidelityTable.getColumnModel().getColumn(1);
+    enumColumn.setCellEditor(new FidelityTableDecorators.TextBoxEditor());
+    enumColumn.setCellRenderer(new FidelityTableDecorators.TextBoxRenderer());
+    TableColumn typeColumn = fidelityTable.getColumnModel().getColumn(0);
+    typeColumn.setMinWidth(150);
+    typeColumn.setMaxWidth(300);
+    typeColumn.setCellEditor(
+        new ComboBoxEditor(new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM}));
+    typeColumn.setCellRenderer(new ComboBoxRenderer());
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, fidelityTable);
     this.add(scrollPane);
+  }
+
+  private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
+    if (data.getFieldType().equals(FieldType.ENUM)) {
+      return new FidelityTableDecorators.JPanelDecorator(currentEnums);
+    }
+    return new FidelityTableDecorators.TextBoxRenderer();
+  }
+
+  private TableCellEditor getCellEditorByValue(FidelityTableData data) {
+    if (data.getFieldType().equals(FieldType.ENUM)) {
+      return new FidelityTableDecorators.JPanelDecorator(currentEnums);
+    }
+    return new FidelityTableDecorators.TextBoxEditor();
   }
 }
