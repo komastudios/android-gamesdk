@@ -37,12 +37,12 @@ public class QualityDataModel {
     this.fieldValues = fieldValues;
   }
 
-  public boolean addField(String paramName, String paramValue) {
+  public boolean addField(String paramName, String value) {
     if (fieldNames.contains(paramName)) {
       return false;
     }
     fieldNames.add(paramName);
-    fieldValues.add(paramValue);
+    fieldValues.add(value);
     return true;
   }
 
@@ -71,7 +71,12 @@ public class QualityDataModel {
     fieldValues.set(index, value);
   }
 
-  public int getFieldCount() {
-    return fieldNames.size();
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < fieldNames.size(); i++) {
+      stringBuilder.append(fieldNames.get(i)).append(": ").append(fieldValues.get(i)).append("\n");
+    }
+    return stringBuilder.toString();
   }
 }
