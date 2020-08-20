@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "cdd56092_902b88ec",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AddEnumDialogWrapper.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T12:12:23Z",
+      "side": 1,
+      "message": "The need to have \"AnnotationTabController\" To use the enumLayout makes it unusable in the FidelityLayout. So I\u0027d say you make a class with an abstract method \"onEnumAdd\" and have your controller extend it. So any class that needs to use the enumDialogLayout will need to just have a controller that extends that class.",
+      "range": {
+        "startLine": 34,
+        "startChar": 10,
+        "endLine": 34,
+        "endChar": 33
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eef9fcac_4b46e667",
         "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
         "patchSetId": 7
@@ -18,6 +41,52 @@
         "startChar": 4,
         "endLine": 42,
         "endChar": 106
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "873b8c41_c0b4621e",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T12:12:23Z",
+      "side": 1,
+      "message": "use ShowAndGet() incase the user hits cancel instead of OK",
+      "range": {
+        "startLine": 94,
+        "startChar": 12,
+        "endLine": 94,
+        "endChar": 37
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34d8fb4a_05b8436d",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTabController.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T12:12:23Z",
+      "side": 1,
+      "message": "Shouldn\u0027t the data model be passed as a parameter. Incase you have old data from the previous settings?",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 29,
+        "endChar": 49
       },
       "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
