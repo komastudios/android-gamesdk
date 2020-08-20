@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "eaee377e_d58ef36c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AddEnumDialogWrapper.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-20T13:26:00Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cdd56092_902b88ec",
+      "range": {
+        "startLine": 34,
+        "startChar": 10,
+        "endLine": 34,
+        "endChar": 33
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eef9fcac_4b46e667",
         "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3471aba9_6eaa96ef",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-20T13:26:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eef9fcac_4b46e667",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 106
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "18ede4bd_70e663ef",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTab.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-20T13:26:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "873b8c41_c0b4621e",
+      "range": {
+        "startLine": 94,
+        "startChar": 12,
+        "endLine": 94,
+        "endChar": 37
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "34d8fb4a_05b8436d",
         "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTabController.java",
         "patchSetId": 7
@@ -91,6 +163,30 @@
       "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c238530b_f535a0a3",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AnnotationTabController.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-20T13:26:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34d8fb4a_05b8436d",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 29,
+        "endChar": 49
+      },
+      "revId": "4ef5d67fb806193cb657716a29d1dfc5e9d9bbed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
