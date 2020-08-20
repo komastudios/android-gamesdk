@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "010ab752_dcacf0b3",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T15:53:28Z",
+      "side": 1,
+      "message": "nit: Adding some logging to determine which field failed to fail would be nice.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 35
+      },
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7e5a597_2d4e1821",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T15:53:28Z",
+      "side": 1,
+      "message": "This is probably going to be another class responsibility",
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6018e65f_645d6618",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-20T15:53:28Z",
+      "side": 1,
+      "message": "Another class responsibility",
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
