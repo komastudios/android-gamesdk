@@ -15,9 +15,14 @@
  */
 package Action;
 
+import Utils.Proto.ProtoCompiler;
 import View.Dialog.MainDialogWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
@@ -25,6 +30,15 @@ public class OpenPluginAction extends AnAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
-    mainDialogWrapper.show();
+    ProgressManager.getInstance()
+        .run(
+            new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
+              public void run(@NotNull ProgressIndicator progressIndicator) {
+                ProtoCompiler protoCompiler = ProtoCompiler.getInstance();
+                progressIndicator.setIndeterminate(true);
+                progressIndicator.setText("Loading Assets");
+                SwingUtilities.invokeLater(mainDialogWrapper::show);
+              }
+            });
   }
 }
