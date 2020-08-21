@@ -29,7 +29,7 @@ public class EnumDataModel {
     this.options = options;
   }
 
-  EnumDataModel(String name, List<EnumValueDescriptor> options) {
+  public EnumDataModel(String name, List<EnumValueDescriptor> options) {
     this.name = name;
     this.options = new ArrayList<>();
 
