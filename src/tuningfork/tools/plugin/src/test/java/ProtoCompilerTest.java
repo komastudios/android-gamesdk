@@ -18,8 +18,8 @@ import static com.google.common.truth.Truth.assertThat;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import Files.CompilationException;
-import Files.ProtoCompiler;
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;

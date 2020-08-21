@@ -14,6 +14,8 @@
  * limitations under the License
  */
 
+package Controller.Quality;
+
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,14 +30,13 @@ import javax.swing.table.TableColumn;
 
 public class QualityTableModel extends AbstractTableModel {
 
-  private final String[] columnNames = {"Quality level number",
-      "Field1" + " (int32)",
-      "Field2" + " (float)",
-      "Field3" + " (ENUM)"};
+  private final String[] columnNames = {
+      "Quality level number", "Field1" + " (int32)", "Field2" + " (float)", "Field3" + " (ENUM)"
+  };
   private List<String[]> data;
   private HashSet<Integer> enumIndexes;
 
-  QualityTableModel() {
+  public QualityTableModel() {
     super();
     data = new ArrayList<>();
     enumIndexes = new HashSet<>();
@@ -62,8 +63,8 @@ public class QualityTableModel extends AbstractTableModel {
   static class ComboBoxTableCellRenderer extends JComboBox implements TableCellRenderer {
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-        boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(
+        JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       setSelectedItem(value);
       return this;
     }

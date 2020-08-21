@@ -14,6 +14,8 @@
  * limitations under the License
  */
 
+package View.Decorator;
+
 import java.awt.Component;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -22,6 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 public class TableRenderer {
+
     public static final class RoundedCornerRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable jTable, Object value,

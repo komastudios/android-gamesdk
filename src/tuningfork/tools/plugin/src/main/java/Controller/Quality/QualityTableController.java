@@ -14,17 +14,21 @@
  * limitations under the License
  */
 
-package Files;
+package Controller.Quality;
 
-/**
- * Exception thrown by {@link ProtoCompiler} when something went wrong.
- */
-public class CompilationException extends Exception {
-    public CompilationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+import javax.swing.JTable;
 
-    public CompilationException(String message) {
-        super(message);
-    }
+public class QualityTableController {
+
+  private static int filesCount = 0;
+
+  public static void addRow(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.addRow(new String[]{Integer.toString(++filesCount), "", "", ""}, table);
+  }
+
+  public static void removeRow(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.removeRow(table.getSelectedRow());
+  }
 }

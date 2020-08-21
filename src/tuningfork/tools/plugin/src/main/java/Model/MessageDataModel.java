@@ -14,11 +14,18 @@
  * limitations under the License
  */
 
+package Model;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageDataModel {
-  enum Type {FIDELITY, ANNOTATION};
+
+  enum Type {
+    FIDELITY,
+    ANNOTATION
+  }
+
   private List<String> fieldNames;
   private List<String> fieldTypes;
   private Type messageType;
@@ -67,7 +74,7 @@ public class MessageDataModel {
   public void updateType(int index, String type) {
     fieldTypes.set(index, type);
   }
-  
+
   public void setMessageType(Type messageType) {
     this.messageType = messageType;
   }

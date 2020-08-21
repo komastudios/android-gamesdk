@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+package Action;
 
-import Utils.Proto.OsUtils;
-import Utils.Proto.OsUtils.OS;
-import java.io.File;
+import View.Dialog.MainDialogWrapper;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * Class to access protoc binary
- */
-public class ProtocBinary {
-    private static final OS CURRENT_OS = OsUtils.getOS();
-    private static final File PROTOC_BINARY =
-        new File("../../../../third_party/protobuf-3.0.0/install/" + CURRENT_OS.getOsName()
-            + "/bin/" + CURRENT_OS.getExecutableProtoFileName());
+public class OpenPluginAction extends AnAction {
 
-    private ProtocBinary() {}
-
-    public static File get() {
-        return PROTOC_BINARY;
-    }
+  @Override
+  public void actionPerformed(@NotNull AnActionEvent e) {
+    MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
+    mainDialogWrapper.show();
+  }
 }

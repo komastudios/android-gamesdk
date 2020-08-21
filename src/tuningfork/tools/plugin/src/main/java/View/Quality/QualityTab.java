@@ -14,6 +14,11 @@
  * limitations under the License
  */
 
+package View.Quality;
+
+import Controller.Quality.QualityTableController;
+import Controller.Quality.QualityTableModel;
+import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -23,22 +28,22 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import org.jdesktop.swingx.VerticalLayout;
 
-
 public class QualityTab extends TabLayout {
 
-  private final static JLabel title = new JLabel("Quality levels");
+  private final JLabel title = new JLabel("Quality levels");
   private JScrollPane scrollPane;
 
-  private final static JLabel aboutQualitySettings = new JLabel(
-      "<html> All quality settings are saved into " +
-          "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>" +
-          "You should have at least one quality level. <br>" +
-          "Once you add a new level, you can edit/add data it by" +
-          "modifying the text in the table below.</html> ");
+  private final JLabel aboutQualitySettings =
+      new JLabel(
+          "<html> All quality settings are saved into "
+              + "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>"
+              + "You should have at least one quality level. <br>"
+              + "Once you add a new level, you can edit/add data it by"
+              + "modifying the text in the table below.</html> ");
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
-  private QualityTableData qualityTableData;
+  private QualityTableController qualityTableController;
   private JPanel decoratorPanel;
 
   public QualityTab() {
@@ -55,18 +60,19 @@ public class QualityTab extends TabLayout {
   }
 
   private void initComponents() {
-    title.setFont(getMainFont());
-    aboutQualitySettings.setFont(getSecondaryLabel());
+    title.setFont(TabLayout.getMainFont());
+    aboutQualitySettings.setFont(TabLayout.getSecondaryLabel());
 
     qualityTableModel = new QualityTableModel();
     qualityParametersTable = new JBTable(qualityTableModel);
     qualityParametersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    qualityTableData = new QualityTableData();
-    decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
-        .setAddAction(anActionButton -> qualityTableData.addRow(qualityParametersTable))
-        .setRemoveAction(
-            anActionButton -> qualityTableData.removeRow(qualityParametersTable))
-        .createPanel();
+    qualityTableController = new QualityTableController();
+    decoratorPanel =
+        ToolbarDecorator.createDecorator(qualityParametersTable)
+            .setAddAction(anActionButton -> qualityTableController.addRow(qualityParametersTable))
+            .setRemoveAction(
+                anActionButton -> qualityTableController.removeRow(qualityParametersTable))
+            .createPanel();
     scrollPane = new JBScrollPane();
 
     setDecoratorPanelSize(decoratorPanel);
