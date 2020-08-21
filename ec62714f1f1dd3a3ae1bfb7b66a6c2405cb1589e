@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a6d9f94_4eb1671f",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-21T11:18:32Z",
+      "side": 1,
+      "message": "TODO(aymanm)",
+      "range": {
+        "startLine": 92,
+        "startChar": 5,
+        "endLine": 92,
+        "endChar": 18
+      },
+      "revId": "ec62714f1f1dd3a3ae1bfb7b66a6c2405cb1589e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25e07bfc_aa5cfba3",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-21T11:18:32Z",
+      "side": 1,
+      "message": "TODO(aymanm)",
+      "range": {
+        "startLine": 117,
+        "startChar": 5,
+        "endLine": 117,
+        "endChar": 18
+      },
+      "revId": "ec62714f1f1dd3a3ae1bfb7b66a6c2405cb1589e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
