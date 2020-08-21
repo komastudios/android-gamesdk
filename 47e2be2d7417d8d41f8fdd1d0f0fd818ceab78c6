@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aad37dfa_2d153a83",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-21T14:17:48Z",
+      "side": 1,
+      "message": "This class only has static methods - if the whole class can be made static, it probably should. (In this case a private constructor could also be a good idea.)",
+      "revId": "47e2be2d7417d8d41f8fdd1d0f0fd818ceab78c6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
