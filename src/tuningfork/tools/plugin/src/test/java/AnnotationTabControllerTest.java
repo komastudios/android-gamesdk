@@ -14,6 +14,9 @@
  * limitations under the License
  */
 
+import Controller.Annotation.AnnotationTabController;
+import Controller.Annotation.AnnotationTableModel;
+import Model.MessageDataModel;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
 import java.util.List;

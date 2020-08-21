@@ -14,22 +14,11 @@
  * limitations under the License
  */
 
-import Utils.Proto.OsUtils;
-import Utils.Proto.OsUtils.OS;
-import java.io.File;
+package Controller;
 
-/**
- * Class to access protoc binary
- */
-public class ProtocBinary {
-    private static final OS CURRENT_OS = OsUtils.getOS();
-    private static final File PROTOC_BINARY =
-        new File("../../../../third_party/protobuf-3.0.0/install/" + CURRENT_OS.getOsName()
-            + "/bin/" + CURRENT_OS.getExecutableProtoFileName());
+import java.util.ArrayList;
 
-    private ProtocBinary() {}
+public abstract class BaseController {
 
-    public static File get() {
-        return PROTOC_BINARY;
-    }
+  public abstract void onEnumAdd(String name, ArrayList<String> options);
 }

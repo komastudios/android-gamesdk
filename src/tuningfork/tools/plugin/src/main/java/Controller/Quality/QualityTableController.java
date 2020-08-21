@@ -14,22 +14,21 @@
  * limitations under the License
  */
 
-import Utils.Proto.OsUtils;
-import Utils.Proto.OsUtils.OS;
-import java.io.File;
+package Controller.Quality;
 
-/**
- * Class to access protoc binary
- */
-public class ProtocBinary {
-    private static final OS CURRENT_OS = OsUtils.getOS();
-    private static final File PROTOC_BINARY =
-        new File("../../../../third_party/protobuf-3.0.0/install/" + CURRENT_OS.getOsName()
-            + "/bin/" + CURRENT_OS.getExecutableProtoFileName());
+import javax.swing.JTable;
 
-    private ProtocBinary() {}
+public class QualityTableController {
 
-    public static File get() {
-        return PROTOC_BINARY;
-    }
+  private static int filesCount = 0;
+
+  public static void addRow(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.addRow(new String[]{Integer.toString(++filesCount), "", "", ""}, table);
+  }
+
+  public static void removeRow(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.removeRow(table.getSelectedRow());
+  }
 }

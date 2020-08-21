@@ -13,9 +13,10 @@
     </extensions>
 
     <actions>
-        <action id="OpenPluginAction" class="OpenPluginAction" text="Android Performance Tuner"
+        <action id="Action.OpenPluginAction" class="Action.OpenPluginAction"
+          text="Android Performance Tuner"
           description="Open APT Plugin">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
+          <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
