@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "65ef6ea6_d401571b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T12:57:37Z",
+      "side": 1,
+      "message": "I am currently working on the validation part of the plugin. I was thinking of adding most of the validation functionality in a single CL, to avoid merge conflicts. (I would have to add an Error/Warning collector both here and in the validation CL)",
+      "parentUuid": "d8c2c62e_54565c0e",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 35
+      },
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a7e5a597_2d4e1821",
         "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
         "patchSetId": 5
@@ -66,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "f1ce9c81_3bd41ed8",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T12:57:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a7e5a597_2d4e1821",
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6018e65f_645d6618",
         "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
         "patchSetId": 5
@@ -80,6 +122,24 @@
       "revId": "43cdf8402200dad396277599672811dfc97dd53c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b721498c_8f614b6b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T12:57:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6018e65f_645d6618",
+      "revId": "43cdf8402200dad396277599672811dfc97dd53c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
