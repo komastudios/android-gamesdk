@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b066dd1d_943a00f7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-21T15:08:18Z",
+      "side": 1,
+      "message": "I don\u0027t get how \"abstract\" helps here. To me the idea of marking the methods and the class static is to make evident it\u0027s a utility class that does not interact with instance data.\n\nMarking the class abstract gives the idea you must subclass it. Is that the idea?",
+      "range": {
+        "startLine": 30,
+        "startChar": 7,
+        "endLine": 30,
+        "endChar": 15
+      },
+      "revId": "b57de70011b82d6f133f3cfc991a9822b031ba9e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
