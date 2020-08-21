@@ -16,35 +16,43 @@
 
 package View.Quality;
 
-import Controller.Quality.QualityTableController;
+import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
 import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.util.Arrays;
+import java.util.HashSet;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import org.jdesktop.swingx.VerticalLayout;
+
 
 public class QualityTab extends TabLayout {
 
-  private final JLabel title = new JLabel("Quality levels");
+  private final static JLabel title = new JLabel("Quality levels");
   private JScrollPane scrollPane;
 
-  private final JLabel aboutQualitySettings =
-      new JLabel(
-          "<html> All quality settings are saved into "
-              + "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>"
-              + "You should have at least one quality level. <br>"
-              + "Once you add a new level, you can edit/add data it by"
-              + "modifying the text in the table below.</html> ");
+  private final static JLabel aboutQualitySettings = new JLabel(
+      "<html> All quality settings are saved into " +
+          "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>" +
+          "You should have at least one quality level. <br>" +
+          "Once you add a new level, you can edit/add data it by" +
+          "modifying the text in the table below.</html> ");
+  private final static JButton saveSettingsButton = new JButton("Save settings");
+  private final JBLabel savedSettingsLabel = new JBLabel(
+      "Annotation Settings are successfully saved!");
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
-  private QualityTableController qualityTableController;
+  private QualityTabController qualityTabController;
   private JPanel decoratorPanel;
+  private JPanel saveSettingsPanel;
+  private JPanel centerLabelPanel;
 
   public QualityTab() {
     this.setLayout(new VerticalLayout());
@@ -57,25 +65,48 @@ public class QualityTab extends TabLayout {
     this.add(title);
     this.add(aboutQualitySettings);
     this.add(scrollPane);
+    this.add(saveSettingsPanel);
+    this.add(centerLabelPanel);
+  }
+
+  private void setColumnsAndRenderers() {
+    HashSet<Integer> enumColumns = qualityTableModel.getEnumIndexes();
+    int columnCount = qualityTableModel.getColumnCount();
+    for (int i = 0; i < columnCount; i++) {
+      if (enumColumns.contains(i)) {
+        // TODO (targintaru) add enums from fidelity controller
+        initComboBoxColumns(qualityParametersTable, i,
+            Arrays.asList("option1", "option2", "option3"));
+      } else {
+        initTextFieldColumns(qualityParametersTable, i);
+      }
+    }
   }
 
   private void initComponents() {
-    title.setFont(TabLayout.getMainFont());
-    aboutQualitySettings.setFont(TabLayout.getSecondaryLabel());
+    title.setFont(getMainFont());
+    aboutQualitySettings.setFont(getSecondaryLabel());
+    qualityTabController = new QualityTabController();
 
     qualityTableModel = new QualityTableModel();
     qualityParametersTable = new JBTable(qualityTableModel);
-    qualityParametersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    qualityTableController = new QualityTableController();
-    decoratorPanel =
-        ToolbarDecorator.createDecorator(qualityParametersTable)
-            .setAddAction(anActionButton -> qualityTableController.addRow(qualityParametersTable))
-            .setRemoveAction(
-                anActionButton -> qualityTableController.removeRow(qualityParametersTable))
-            .createPanel();
+    decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
+        .setAddAction(anActionButton -> QualityTabController.addRow(qualityParametersTable))
+        .setRemoveAction(
+            anActionButton -> QualityTabController.removeRow(qualityParametersTable))
+        .createPanel();
     scrollPane = new JBScrollPane();
-
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, qualityParametersTable);
+    setColumnsAndRenderers();
+
+    savedSettingsLabel.setVisible(false);
+    saveSettingsPanel = new JPanel();
+    saveSettingsPanel.add(saveSettingsButton);
+    saveSettingsButton.addActionListener(actionEvent ->
+        qualityTabController.saveSettings(qualityParametersTable, savedSettingsLabel));
+
+    centerLabelPanel = new JPanel();
+    centerLabelPanel.add(savedSettingsLabel);
   }
 }
