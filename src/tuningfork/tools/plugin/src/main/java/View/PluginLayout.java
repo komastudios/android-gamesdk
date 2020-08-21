@@ -115,7 +115,7 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
     // TODO:(aymanm, targintaru, volobushenk replace controller later for persistent data
-    annotationsLayout = new AnnotationTab(project, new AnnotationTabController());
+    annotationsLayout = new AnnotationTab(new AnnotationTabController());
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
     fidelitySettingsLayout = new FidelityTab();

@@ -80,8 +80,6 @@ public class TabLayout extends JPanel {
     table.setRowSelectionAllowed(true);
     table.setSelectionBackground(null);
     table.setSelectionForeground(null);
-    table.getModel().addTableModelListener(
-        tableModelEvent -> resizePanelToFit(scrollPane, decoratorPanel, table));
     table.setIntercellSpacing(new Dimension(0, 0));
   }
 

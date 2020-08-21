@@ -18,16 +18,13 @@ package View.Annotation;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
-import Model.EnumDataModel;
-import View.Dialog.AddEnumDialogWrapper;
+import View.EnumTable;
 import View.TabLayout;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -38,9 +35,7 @@ public class AnnotationTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable annotationTable;
   private JPanel decoratorPanel;
-  private JPanel addEnumPanel;
   private JPanel saveSettingsPanel;
-  private Project project;
 
   private AnnotationTabController annotationController;
 
@@ -49,22 +44,16 @@ public class AnnotationTab extends TabLayout {
       new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
   private final JBLabel savedSettingsLabel =
       new JBLabel("Annotation Settings are successfully saved!");
-  private final JButton addEnumButton = new JButton("Add enum");
   private final JButton saveSettingsButton = new JButton("Save settings");
 
-  public AnnotationTab(Project project, AnnotationTabController annotationController) {
-    this.project = project;
+  public AnnotationTab(AnnotationTabController annotationController) {
     this.annotationController = annotationController;
     initVariables();
     initComponents();
   }
 
   private void setColumnsEditorsAndRenderers() {
-    List<String> annotationNames = annotationController
-        .getAnnotationEnums()
-        .stream()
-        .map(EnumDataModel::getName)
-        .collect(Collectors.toList());
+    List<String> annotationNames = annotationController.getEnumsNames();
     initComboBoxColumns(annotationTable, 0, annotationNames);
     initTextFieldColumns(annotationTable, 1);
   }
@@ -74,10 +63,7 @@ public class AnnotationTab extends TabLayout {
     annotationTable = new JBTable();
     decoratorPanel =
         ToolbarDecorator.createDecorator(annotationTable)
-            .setAddAction(it -> {
-              AnnotationTabController.addRowAction(annotationTable);
-              setColumnsEditorsAndRenderers();
-            })
+            .setAddAction(it -> AnnotationTabController.addRowAction(annotationTable))
             .setRemoveAction(it -> AnnotationTabController.removeRowAction(annotationTable))
             .createPanel();
   }
@@ -93,16 +79,7 @@ public class AnnotationTab extends TabLayout {
     this.add(annotationLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
-
-    addEnumPanel = new JPanel();
-    addEnumPanel.add(addEnumButton);
-    this.add(addEnumPanel);
-    addEnumButton.addActionListener(actionEvent -> {
-      AddEnumDialogWrapper enumDialogWrapper = new AddEnumDialogWrapper(project,
-          annotationController);
-      enumDialogWrapper.showAndGet();
-    });
-
+    annotationController.setAnnotationTab(this);
     // Initialize toolbar and table.
     AnnotationTableModel model = new AnnotationTableModel();
     annotationTable.setModel(model);
@@ -111,7 +88,7 @@ public class AnnotationTab extends TabLayout {
     setColumnsEditorsAndRenderers();
 
     this.add(scrollPane);
-
+    this.add(new EnumTable(annotationController));
     saveSettingsPanel = new JPanel();
     saveSettingsPanel.add(saveSettingsButton);
     this.add(saveSettingsPanel);
@@ -123,5 +100,9 @@ public class AnnotationTab extends TabLayout {
     settingsLabelPanel.add(savedSettingsLabel);
     savedSettingsLabel.setVisible(false);
     this.add(settingsLabelPanel);
+  }
+
+  public JBTable getAnnotationTable() {
+    return annotationTable;
   }
 }
