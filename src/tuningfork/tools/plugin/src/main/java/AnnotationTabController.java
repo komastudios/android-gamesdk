@@ -14,13 +14,38 @@
  * limitations under the License
  */
 
+import com.intellij.ui.components.JBLabel;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTable;
 
-public class AnnotationTabController {
+public class AnnotationTabController extends BaseController {
+
+    private List<EnumDataModel> annotationEnums;
+    private MessageDataModel annotationDataModel;
+
+    AnnotationTabController() {
+        annotationEnums = new ArrayList<>();
+        annotationDataModel = new MessageDataModel();
+        annotationDataModel.setMessageType(MessageDataModel.Type.ANNOTATION);
+    }
+
+    public void addAnnotationEnum(EnumDataModel enumDataModel) {
+        annotationEnums.add(enumDataModel);
+    }
+
+    public List<EnumDataModel> getAnnotationEnums() {
+        return annotationEnums;
+    }
+
+    public void addEnumToAnnotation(String enumName, String fieldName) {
+        annotationDataModel.addField(fieldName, enumName);
+    }
+
     public static void addRowAction(JTable jtable) {
         AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
         // TODO(mohanad): placeholder values used. Will be replaced later with default enum value.
-        model.addRow(new String[] {
+        model.addRow(new String[]{
             "",
             "",
         });
@@ -33,5 +58,35 @@ public class AnnotationTabController {
             jtable.getCellEditor().stopCellEditing();
         }
         model.removeRow(row);
+    }
+
+    public boolean saveSettings(JTable jTable, JBLabel savedSettingsLabel) {
+        List<String> annotationEnumNames = ((AnnotationTableModel) jTable.getModel())
+            .getAnnotationEnumNames();
+        List<String> annotationFieldNames = ((AnnotationTableModel) jTable.getModel())
+            .getAnnotationFieldNames();
+        annotationDataModel = new MessageDataModel();
+        annotationDataModel.setMessageType(MessageDataModel.Type.FIDELITY);
+
+        savedSettingsLabel.setVisible(true);
+
+        if (!annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames)) {
+            savedSettingsLabel.setText("ERROR: multiple fields with the same name.");
+            return false;
+        }
+
+        //TODO (aymanm, targintaru, volobushenk) integrate validation; return false if errors
+        savedSettingsLabel.setText("Settings saved successfully!");
+        return true;
+    }
+
+    public MessageDataModel getAnnotationDataModel() {
+        return annotationDataModel;
+    }
+
+
+    @Override
+    public void onEnumAdd(String name, ArrayList<String> options) {
+        annotationEnums.add(new EnumDataModel(name, options));
     }
 }
