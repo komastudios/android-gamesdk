@@ -14,6 +14,8 @@
  * limitations under the License
  */
 
+package Utils.Assets;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -40,9 +42,10 @@ public class AssetsFinder {
       return Optional.empty();
     }
 
-    List<File> foundDir = Arrays.stream(files)
-        .filter(file -> Pattern.matches(".*/assets/tuningfork", file.getAbsolutePath()))
-        .collect(Collectors.toList());
+    List<File> foundDir =
+        Arrays.stream(files)
+            .filter(file -> Pattern.matches(".*/assets/tuningfork", file.getAbsolutePath()))
+            .collect(Collectors.toList());
 
     if (foundDir.size() == 1) {
       File match = foundDir.get(0);

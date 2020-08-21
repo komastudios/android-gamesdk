@@ -14,6 +14,7 @@
  * limitations under the License
  */
 
+import Utils.Assets.AssetsFinder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;

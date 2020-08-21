@@ -14,6 +14,11 @@
  * limitations under the License
  */
 
+package View;
+
+import View.Annotation.AnnotationTab;
+import View.Fidelity.FidelityTab;
+import View.Quality.QualityTab;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -37,7 +42,7 @@ public class PluginLayout extends JPanel {
   private JPanel fidelitySettingsLayout;
   private JPanel menuPanel;
   private JTree menu;
-  private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();;
+  private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private ArrayList<JPanel> panels;
 
   public PluginLayout() {
@@ -80,19 +85,21 @@ public class PluginLayout extends JPanel {
     menu.setCellRenderer(new CustomCellRenderer());
     menu.setBackground(new Color(0, true));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    menu.addTreeSelectionListener(treeSelectionEvent -> {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-          treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-      if (node.equals(annotationsNode)) {
-        changeLayoutVisibility(annotationsLayout);
-      } else if (node.equals(fidelityNode)) {
-        changeLayoutVisibility(fidelitySettingsLayout);
-      } else if (node.equals(qualitySettingsNode)) {
-        changeLayoutVisibility(qualitySettingsLayout);
-      } else if (!node.isLeaf()) {
-        menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-      }
-    });
+    menu.addTreeSelectionListener(
+        treeSelectionEvent -> {
+          DefaultMutableTreeNode node =
+              (DefaultMutableTreeNode)
+                  treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
+          if (node.equals(annotationsNode)) {
+            changeLayoutVisibility(annotationsLayout);
+          } else if (node.equals(fidelityNode)) {
+            changeLayoutVisibility(fidelitySettingsLayout);
+          } else if (node.equals(qualitySettingsNode)) {
+            changeLayoutVisibility(qualitySettingsLayout);
+          } else if (!node.isLeaf()) {
+            menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+          }
+        });
     menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     menu.setSelectionModel(new LeafOnlySelectionModel());
     menuPanel.setSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
@@ -108,7 +115,8 @@ public class PluginLayout extends JPanel {
     annotationsLayout.setVisible(true);
     fidelitySettingsLayout = new FidelityTab();
     fidelitySettingsLayout.setVisible(false);
-    fidelitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    fidelitySettingsLayout.setSize(
+        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
 
     menuPanel = new JPanel();
 
@@ -128,11 +136,16 @@ public class PluginLayout extends JPanel {
     }
 
     @Override
-    public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected,
+    public Component getTreeCellRendererComponent(
+        JTree jTree,
+        Object value,
+        boolean selected,
         boolean expanded,
-        boolean leaf, int row, boolean hasFocus) {
-      Component cell = super
-          .getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
+        boolean leaf,
+        int row,
+        boolean hasFocus) {
+      Component cell =
+          super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
 
       if (!leaf) {
         cell.setFont(new Font("Roboto", Font.BOLD, 13));

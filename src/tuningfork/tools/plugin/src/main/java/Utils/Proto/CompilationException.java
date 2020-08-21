@@ -14,26 +14,18 @@
  * limitations under the License
  */
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import javax.swing.JComponent;
-import org.jetbrains.annotations.Nullable;
+package Utils.Proto;
 
-public class MainDialogWrapper extends DialogWrapper {
+/**
+ * Exception thrown by {@link ProtoCompiler} when something went wrong.
+ */
+public class CompilationException extends Exception {
 
-  private static PluginLayout pluginLayout;
-  private final Project project;
-
-  protected MainDialogWrapper(@Nullable Project project) {
-    super(project);
-    init();
-    setTitle("Android Performance Tuner Plugin");
-    this.project = project;
+  public CompilationException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  @Override
-  protected @Nullable JComponent createCenterPanel() {
-    pluginLayout = new PluginLayout();
-    return pluginLayout;
+  public CompilationException(String message) {
+    super(message);
   }
 }

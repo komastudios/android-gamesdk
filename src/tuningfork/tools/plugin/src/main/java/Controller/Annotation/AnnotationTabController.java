@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
+package Controller.Annotation;
 
 import javax.swing.JTable;
 
-class QualityTableData {
-  private static int filesCount = 0;
+public class AnnotationTabController {
 
-  public static void addRow(JTable table) {
-    QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.addRow(new String[]{Integer.toString(++filesCount), "", "", ""}, table);
+  public static void addRowAction(JTable jtable) {
+    AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
+    // TODO(mohanad): placeholder values used. Will be replaced later with default enum value.
+    model.addRow(
+        new String[]{
+            "", "",
+        });
   }
 
-  public static void removeRow(JTable table) {
-    QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.removeRow(table.getSelectedRow());
+  public static void removeRowAction(JTable jtable) {
+    AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
+    int row = jtable.getSelectedRow();
+    if (jtable.getCellEditor() != null) {
+      jtable.getCellEditor().stopCellEditing();
+    }
+    model.removeRow(row);
   }
 }

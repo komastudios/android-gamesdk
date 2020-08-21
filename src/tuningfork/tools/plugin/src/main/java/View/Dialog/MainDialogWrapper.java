@@ -14,15 +14,29 @@
  * limitations under the License
  */
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.jetbrains.annotations.NotNull;
+package View.Dialog;
 
-public class OpenPluginAction extends AnAction {
+import View.PluginLayout;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import javax.swing.JComponent;
+import org.jetbrains.annotations.Nullable;
+
+public class MainDialogWrapper extends DialogWrapper {
+
+  private static PluginLayout pluginLayout;
+  private final Project project;
+
+  public MainDialogWrapper(@Nullable Project project) {
+    super(project);
+    init();
+    setTitle("Android Performance Tuner Plugin");
+    this.project = project;
+  }
 
   @Override
-  public void actionPerformed(@NotNull AnActionEvent e) {
-    MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
-    mainDialogWrapper.show();
+  protected @Nullable JComponent createCenterPanel() {
+    pluginLayout = new PluginLayout();
+    return pluginLayout;
   }
 }
