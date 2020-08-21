@@ -27,7 +27,7 @@ public class QualityDataModel {
    */
   private List<String> fieldValues;
 
-  QualityDataModel() {
+  public QualityDataModel() {
     fieldNames = new ArrayList<>();
     fieldValues = new ArrayList<>();
   }
