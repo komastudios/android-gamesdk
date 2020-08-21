@@ -15,10 +15,11 @@
  */
 package View.Dialog;
 
-import Controller.BaseController;
+import Controller.EnumController;
+import Model.EnumDataModel;
 import View.TabLayout;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
@@ -32,22 +33,56 @@ import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.Nullable;
 
-public class AddEnumDialogWrapper extends DialogWrapper {
+public class EnumDialogWrapper extends DialogWrapper {
 
   private EnumLayout enumLayout;
-  private BaseController controller;
+  private EnumController controller;
+  private boolean isEdit;
+  private int editingRow;
+  private EnumDataModel enumDataModel;
 
-  public AddEnumDialogWrapper(
-      @Nullable Project project, BaseController controller) {
-    super(project);
-    init();
-    setTitle("Add enum");
+  public EnumDialogWrapper(EnumController controller) {
+    super(true);
+    setTitle("Add Enum");
     this.controller = controller;
+    this.enumLayout = new EnumLayout();
+    init();
+  }
+
+  public EnumDialogWrapper(EnumController controller, int row,
+      EnumDataModel enumDataModel) {
+    super(true);
+    this.controller = controller;
+    this.isEdit = true;
+    this.editingRow = row;
+    this.enumDataModel = enumDataModel;
+    setTitle("Edit Enum");
+    init();
+  }
+
+
+  @Nullable
+  @Override
+  protected ValidationInfo doValidate() {
+    if (enumLayout.optionsTable.isEditing()) {
+      enumLayout.optionsTable.getCellEditor().stopCellEditing();
+    }
+    if (enumLayout.getName().isEmpty()) {
+      return new ValidationInfo("Name can not be empty", enumLayout.nameTextField);
+    }
+    if (enumLayout.getOptions().isEmpty()) {
+      return new ValidationInfo("Options can not be empty", enumLayout.scrollPane);
+    }
+    return super.doValidate();
   }
 
   @Override
   protected void doOKAction() {
-    controller.onEnumAdd(enumLayout.getName(), enumLayout.getOptions());
+    if (isEdit) {
+      controller.editEnum(editingRow, enumLayout.getName(), enumLayout.getOptions());
+    } else {
+      controller.addEnum(enumLayout.getName(), enumLayout.getOptions());
+    }
     super.doOKAction();
   }
 
@@ -55,6 +90,9 @@ public class AddEnumDialogWrapper extends DialogWrapper {
   protected @Nullable
   JComponent createCenterPanel() {
     enumLayout = new EnumLayout();
+    if (isEdit) {
+      enumLayout.setData(enumDataModel);
+    }
     return enumLayout;
   }
 
@@ -64,7 +102,7 @@ public class AddEnumDialogWrapper extends DialogWrapper {
     private JBTable optionsTable;
     private JPanel decoratorPanel;
     private JTextField nameTextField;
-
+    private DefaultTableModel model;
     private final JLabel nameLabel = new JBLabel("Name");
 
     EnumLayout() {
@@ -76,6 +114,11 @@ public class AddEnumDialogWrapper extends DialogWrapper {
       this.add(nameLabel);
       this.add(nameTextField);
       this.add(scrollPane);
+    }
+
+    public void setData(EnumDataModel enumDataModel) {
+      nameTextField.setText(enumDataModel.getName());
+      enumDataModel.getOptions().forEach(optionName -> model.addRow(new Object[]{optionName}));
     }
 
     public String getName() {
@@ -97,13 +140,11 @@ public class AddEnumDialogWrapper extends DialogWrapper {
       this.setLayout(new VerticalLayout());
 
       nameTextField = new JTextField();
-
-      DefaultTableModel model = new DefaultTableModel();
+      model = new DefaultTableModel();
       model.setColumnIdentifiers(new String[]{"Options"});
       optionsTable = new JBTable();
       optionsTable.setModel(model);
       initTextFieldColumns(optionsTable, 0);
-
       scrollPane = new JBScrollPane();
       decoratorPanel =
           ToolbarDecorator.createDecorator(optionsTable)
