@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "a4d9cbb4_2b90d7b5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTabController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T14:45:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "409ae4a7_b6ceae21",
+      "revId": "8e3ef37b6a548d88695a2609bb45c8744afe8aa9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba813d5b_e3327db5",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
         "patchSetId": 1
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "02e38955_e051dd95",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T14:45:28Z",
+      "side": 1,
+      "message": "The columnNames will be retrieved from the fidelity controller anyway, so this is just dummy data. I wanted to emphasise \u003cname\u003e+\u0027 \u0027+\u0027(\u0027+\u003ctype\u003e+\u0027)\u0027.\nI changed it to just a string.",
+      "parentUuid": "ba813d5b_e3327db5",
+      "range": {
+        "startLine": 32,
+        "startChar": 6,
+        "endLine": 34,
+        "endChar": 27
+      },
+      "revId": "8e3ef37b6a548d88695a2609bb45c8744afe8aa9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "60b31eb6_f2a76629",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
         "patchSetId": 1
@@ -56,6 +98,24 @@
       "revId": "8e3ef37b6a548d88695a2609bb45c8744afe8aa9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bfaa825_f2efb7fa",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-21T14:45:28Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "60b31eb6_f2a76629",
+      "revId": "8e3ef37b6a548d88695a2609bb45c8744afe8aa9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
