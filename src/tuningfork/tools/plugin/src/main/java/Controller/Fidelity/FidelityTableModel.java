@@ -16,18 +16,22 @@
 
 package Controller.Fidelity;
 
+import Controller.Enum.EnumController;
+import View.Fidelity.FidelityTableData;
+import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.Messages;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 public class FidelityTableModel extends AbstractTableModel {
 
-  private final String[] columnNames = {
-      "quality_settings (int or enum)", "lod_level (int32)", "distance (float)"
-  };
-  private List<String[]> data;
+  private final String[] columnNames = {"Type", "Parameter name"};
+  private List<FidelityTableData> data;
+  private EnumController controller;
 
-  public FidelityTableModel() {
+  public FidelityTableModel(EnumController controller) {
+    this.controller = controller;
     data = new ArrayList<>();
   }
 
@@ -43,7 +47,7 @@ public class FidelityTableModel extends AbstractTableModel {
 
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
-    return data.get(rowIndex)[columnIndex];
+    return data.get(rowIndex);
   }
 
   @Override
@@ -51,7 +55,7 @@ public class FidelityTableModel extends AbstractTableModel {
     return columnNames[column];
   }
 
-  public void addRow(String[] row) {
+  public void addRow(FidelityTableData row) {
     data.add(row);
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
@@ -63,7 +67,23 @@ public class FidelityTableModel extends AbstractTableModel {
 
   @Override
   public void setValueAt(Object value, int row, int column) {
-    data.get(row)[column] = value.toString();
+    if (column == 0) {
+      FieldType fieldType = (FieldType) value;
+      if (fieldType.equals(FieldType.ENUM) && !controller.hasEnums()) {
+        Messages.showErrorDialog("You Need to Add An Enum First.",
+            "Unable to Choose Enum");
+        return;
+      }
+      data.get(row).setFieldType((FieldType) value);
+    } else if (column == 1) {
+      if (data.get(row).getFieldType().equals(FieldType.ENUM)) {
+        FidelityTableData fidelityTableData = (FidelityTableData) value;
+        data.get(row).setFieldEnumName(fidelityTableData.getFieldEnumName());
+        data.get(row).setFieldParamName(fidelityTableData.getFieldParamName());
+      } else {
+        data.get(row).setFieldParamName(value.toString());
+      }
+    }
     fireTableCellUpdated(row, column);
   }
 

@@ -16,22 +16,28 @@
 
 package Controller.Fidelity;
 
-import java.util.Random;
+import Controller.Enum.EnumController;
+import View.Fidelity.FidelityTableData;
+import View.Fidelity.FieldType;
 import javax.swing.JTable;
 
-public class FidelityTabController {
+public class FidelityTabController extends EnumController {
 
-  public static void addRowAction(JTable jtable) {
-    FidelityTableModel model = (FidelityTableModel) jtable.getModel();
-    // TODO(volobushek): change to actual insert data.
-    Random rand = new Random();
-    String first = Integer.toString(rand.nextInt());
-    String second = Integer.toString(rand.nextInt());
-    String third = Float.toString(rand.nextFloat());
-    model.addRow(new String[]{first, second, third});
+  public FidelityTabController() {
+    super();
   }
 
-  public static void removeRowAction(JTable jtable) {
+  @Override
+  public void onEnumTableChanged() {
+
+  }
+
+  public void addRowAction(JTable jtable) {
+    FidelityTableModel model = (FidelityTableModel) jtable.getModel();
+    model.addRow(new FidelityTableData(FieldType.INT32, "", ""));
+  }
+
+  public void removeRowAction(JTable jtable) {
     FidelityTableModel model = (FidelityTableModel) jtable.getModel();
     int row = jtable.getSelectedRow();
     if (jtable.getCellEditor() != null) {
