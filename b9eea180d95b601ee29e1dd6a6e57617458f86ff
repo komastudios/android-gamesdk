@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004557156",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1406969?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "509463d0_10958545",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/QualityTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-21T08:48:41Z",
+      "side": 1,
+      "message": "Wrong casing for \"title\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 29,
+        "startChar": 10,
+        "endLine": 29,
+        "endChar": 35
+      },
+      "revId": "b9eea180d95b601ee29e1dd6a6e57617458f86ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004557156",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1406969?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fd11138a_c058d7b7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/QualityTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-21T08:48:41Z",
+      "side": 1,
+      "message": "Wrong casing for \"aboutQualitySettings\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 32,
+        "startChar": 10,
+        "endLine": 32,
+        "endChar": 50
+      },
+      "revId": "b9eea180d95b601ee29e1dd6a6e57617458f86ff",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
