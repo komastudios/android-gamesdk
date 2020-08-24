@@ -383,7 +383,6 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
             {  // Get the sync object with a lock
                 std::lock_guard<std::mutex> lock(thread.lock);
                 sync = mWaitingSyncs[thread.queue].front();
-                mWaitingSyncs[thread.queue].pop_front();
             }
 
             gamesdk::ScopedTrace tracer("Swappy: GPU frame time");
@@ -399,6 +398,7 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
             // Move the sync object to the signaled list
             {
                 std::lock_guard<std::mutex> lock(thread.lock);
+                mWaitingSyncs[thread.queue].pop_front();
 
                 mSignaledSyncs[thread.queue].push_back(sync);
                 waitingSyncsEmpty = mWaitingSyncs[thread.queue].empty();
