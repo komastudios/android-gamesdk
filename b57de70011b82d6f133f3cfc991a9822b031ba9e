@@ -46,6 +46,30 @@
       "revId": "b57de70011b82d6f133f3cfc991a9822b031ba9e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b8972b2_db0884f7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-24T09:32:45Z",
+      "side": 1,
+      "message": "You can make the class final just to signal you don\u0027t want subclassing (the private constructor prevents it anyway). No need to make it an inner class, my original \"static class\" comment confused things a bit.",
+      "parentUuid": "eb9f0925_17ec5357",
+      "range": {
+        "startLine": 30,
+        "startChar": 7,
+        "endLine": 30,
+        "endChar": 15
+      },
+      "revId": "b57de70011b82d6f133f3cfc991a9822b031ba9e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
