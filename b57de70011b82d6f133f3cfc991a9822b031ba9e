@@ -22,6 +22,30 @@
       "revId": "b57de70011b82d6f133f3cfc991a9822b031ba9e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb9f0925_17ec5357",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-24T07:30:19Z",
+      "side": 1,
+      "message": "You\u0027re right, \u0027abstract\u0027 doesn\u0027t help. But outer classes can\u0027t be declared static, so I don\u0027t see how I could make DataModelTransformer static, unless I create an outer class and make this class an inner one. Is this what you mean?",
+      "parentUuid": "b066dd1d_943a00f7",
+      "range": {
+        "startLine": 30,
+        "startChar": 7,
+        "endLine": 30,
+        "endChar": 15
+      },
+      "revId": "b57de70011b82d6f133f3cfc991a9822b031ba9e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
