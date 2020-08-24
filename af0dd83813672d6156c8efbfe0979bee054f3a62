@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d19c5e18_5f846311",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/EnumController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-24T07:37:16Z",
+      "side": 1,
+      "message": "why not return enums.remove(index)?",
+      "revId": "af0dd83813672d6156c8efbfe0979bee054f3a62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
