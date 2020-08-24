@@ -16,11 +16,20 @@
 
 package Controller.Quality;
 
+import Model.QualityDataModel;
 import javax.swing.JTable;
 
-public class QualityTableController {
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JLabel;
 
+public class QualityTabController {
   private static int filesCount = 0;
+  private List<QualityDataModel> qualityDataModels;
+
+  public QualityTabController() {
+    qualityDataModels = new ArrayList<>();
+  }
 
   public static void addRow(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
@@ -31,4 +40,33 @@ public class QualityTableController {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.removeRow(table.getSelectedRow());
   }
+
+  public boolean saveSettings(JTable table, JLabel savedSettingsLabel) {
+    List<String> fieldNames = ((QualityTableModel) table.getModel()).getColumnNames();
+    List<List<String>> qualitySettings = ((QualityTableModel) table.getModel()).getQualitySettings();
+
+    for (List<String> qualitySetting : qualitySettings) {
+      QualityDataModel qualityDataModel = new QualityDataModel(fieldNames, qualitySetting);
+
+      //TODO (targintaru) integrate validation
+
+      qualityDataModels.add(qualityDataModel);
+    }
+
+    savedSettingsLabel.setVisible(true);
+    return true;
+  }
+
+  public static int getFilesCount() {
+    return filesCount;
+  }
+
+  public List<QualityDataModel> getQualityDataModels() {
+    return qualityDataModels;
+  }
+
+  public static void increaseFilesCount() {
+    filesCount++;
+  }
 }
+
