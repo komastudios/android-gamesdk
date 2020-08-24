@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "663375a8_46476748",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Validation/ValidationTool.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-24T12:18:27Z",
+      "side": 1,
+      "message": "Unused import.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 30
+      },
+      "revId": "c7e3ac51b98cc6776f4d123fc38708a954f0c6a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
