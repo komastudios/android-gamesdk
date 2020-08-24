@@ -140,6 +140,30 @@
       "revId": "95827798a255dc51c41c2b16c8902f60429065c0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "812f771a_961206cf",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/ValidationToolTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-24T09:26:29Z",
+      "side": 1,
+      "message": "Changing the return type of gerErrorCount from Integer to int solved this",
+      "parentUuid": "57342379_fda3cdb6",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 10
+      },
+      "revId": "95827798a255dc51c41c2b16c8902f60429065c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
