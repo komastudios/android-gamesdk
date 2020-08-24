@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "00d50a59_93dc7e3c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/QualityDataModel.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-24T09:14:03Z",
+      "side": 1,
+      "message": "nit: It should be \u0027value\u0027 instead of \u0027type\u0027 to avoid confusion.",
+      "range": {
+        "startLine": 40,
+        "startChar": 51,
+        "endLine": 40,
+        "endChar": 55
+      },
+      "revId": "95827798a255dc51c41c2b16c8902f60429065c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd80f634_9389a61a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Validation/ValidationTool.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-24T09:14:03Z",
+      "side": 1,
+      "message": "Since all of the methods are final. Then just make the class final to clear up lint issues. and remove the final from the methods.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 27
+      },
+      "revId": "95827798a255dc51c41c2b16c8902f60429065c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aae152c_042a5dab",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/ValidationToolTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-24T09:14:03Z",
+      "side": 1,
+      "message": "nit: JUnit assertion would show the \"Expected Vs Actual\"",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 10
+      },
+      "revId": "95827798a255dc51c41c2b16c8902f60429065c0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
