@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c74fda98_3cf12880",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/DataModelTransformerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-24T09:04:48Z",
+      "side": 1,
+      "message": "nit: using JUnit assertion would just make it clear which is the expected and which is the actual.",
+      "range": {
+        "startLine": 62,
+        "startChar": 4,
+        "endLine": 62,
+        "endChar": 10
+      },
+      "revId": "f5ff0af8c2678299d0bb92211e9454b3bb69b7d8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
