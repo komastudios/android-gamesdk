@@ -27,17 +27,22 @@ public class QualityDataModel {
    */
   private List<String> fieldValues;
 
-  QualityDataModel() {
+  public QualityDataModel() {
     fieldNames = new ArrayList<>();
     fieldValues = new ArrayList<>();
   }
 
-  public boolean addField(String paramName, String type) {
+  public QualityDataModel(List<String> fieldNames, List<String> fieldValues) {
+    this.fieldNames = fieldNames;
+    this.fieldValues = fieldValues;
+  }
+
+  public boolean addField(String paramName, String paramValue) {
     if (fieldNames.contains(paramName)) {
       return false;
     }
     fieldNames.add(paramName);
-    fieldValues.add(type);
+    fieldValues.add(paramValue);
     return true;
   }
 
@@ -64,5 +69,9 @@ public class QualityDataModel {
 
   public void updateValue(int index, String value) {
     fieldValues.set(index, value);
+  }
+
+  public int getFieldCount() {
+    return fieldNames.size();
   }
 }
