@@ -27,9 +27,14 @@ public class QualityDataModel {
    */
   private List<String> fieldValues;
 
-  QualityDataModel() {
+  public QualityDataModel() {
     fieldNames = new ArrayList<>();
     fieldValues = new ArrayList<>();
+  }
+
+  public QualityDataModel(List<String> fieldNames, List<String> fieldValues) {
+    this.fieldNames = fieldNames;
+    this.fieldValues = fieldValues;
   }
 
   public boolean addField(String paramName, String type) {

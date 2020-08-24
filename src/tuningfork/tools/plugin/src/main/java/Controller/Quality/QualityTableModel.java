@@ -16,64 +16,55 @@
 
 package Controller.Quality;
 
-import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 public class QualityTableModel extends AbstractTableModel {
 
-  private final String[] columnNames = {
-      "Quality level number", "Field1" + " (int32)", "Field2" + " (float)", "Field3" + " (ENUM)"
-  };
+  private String[] columnNames = {"Quality level number",
+      "Field1 (int32)",
+      "Field2 (float)",
+      "Field3 (ENUM)"};
   private List<String[]> data;
-  private HashSet<Integer> enumIndexes;
+  private Set<Integer> enumIndexes;
 
   public QualityTableModel() {
-    super();
     data = new ArrayList<>();
     enumIndexes = new HashSet<>();
-    enumIndexes.add(3);
+    addEnumIndexes();
   }
 
-  public void setEnums(JTable table) {
-    for (Integer enumIndexEntry : enumIndexes) {
-      TableColumn enumCol = table.getColumnModel().getColumn(enumIndexEntry);
-      // TODO(targintaru) - probably elsewhere - retrieve data from fidelity settings enum....
-      JComboBox<String> enumValues = new JComboBox();
-      DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-      comboBoxModel.addElement("Low");
-      comboBoxModel.addElement("Medium");
-      comboBoxModel.addElement("High");
-      enumValues.setModel(comboBoxModel);
-      enumCol.setCellEditor(new DefaultCellEditor(enumValues));
-      ComboBoxTableCellRenderer renderer = new ComboBoxTableCellRenderer();
-      renderer.setModel(comboBoxModel);
-      enumCol.setCellRenderer(renderer);
-    }
+  public QualityTableModel(String[] columnNames) {
+    data = new ArrayList<>();
+    enumIndexes = new HashSet<>();
+    this.columnNames = columnNames;
+    addEnumIndexes();
   }
 
-  static class ComboBoxTableCellRenderer extends JComboBox implements TableCellRenderer {
+  private void addEnumIndexes() {
+    ArrayList<String> fidelitySettingsTypes = (ArrayList<String>) Arrays.stream(columnNames)
+        .map(columnName -> columnName.split(" ")[1])
+        .collect(Collectors.toList());
+    enumIndexes = IntStream.range(0, fidelitySettingsTypes.size())
+        .filter(i -> fidelitySettingsTypes.get(i).equals("(ENUM)")).boxed()
+        .collect(Collectors.toSet());
+  }
 
-    @Override
-    public Component getTableCellRendererComponent(
-        JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-      setSelectedItem(value);
-      return this;
-    }
+  public HashSet<Integer> getEnumIndexes() {
+    return (HashSet<Integer>) enumIndexes;
   }
 
   public void addRow(String[] row, JTable table) {
     data.add(row);
+    QualityTabController.increaseFilesCount();
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
-    setEnums(table);
   }
 
   public void removeRow(int row) {
@@ -110,5 +101,21 @@ public class QualityTableModel extends AbstractTableModel {
   public void setValueAt(Object o, int row, int column) {
     data.get(row)[column] = o.toString();
     fireTableCellUpdated(row, column);
+  }
+
+  public List<String> getColumnNames() {
+    return Arrays.stream(columnNames)
+        .map(columnName -> columnName.split(" ")[0])
+        .collect(Collectors.toList());
+  }
+
+  public List<List<String>> getQualitySettings() {
+    List<List<String>> qualitySettings = new ArrayList<>();
+
+    for (String[] row : data) {
+      qualitySettings.add(Arrays.asList(row));
+    }
+
+    return qualitySettings;
   }
 }
