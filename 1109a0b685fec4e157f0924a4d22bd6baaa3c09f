@@ -1,0 +1,400 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "a9f05a13_305f2e71",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 32,
+                "startChar": 30,
+                "endLine": 32,
+                "endChar": 37
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "bef254e2_b3550c49",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 32,
+        "startChar": 30,
+        "endLine": 32,
+        "endChar": 37
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "2342cdbd_eac267fc",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 43,
+                "startChar": 36,
+                "endLine": 43,
+                "endChar": 43
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "1984060a_3a486251",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 43,
+        "startChar": 36,
+        "endLine": 43,
+        "endChar": 43
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "e18b0f9f_f0bc92e0",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 44,
+                "startChar": 77,
+                "endLine": 44,
+                "endChar": 85
+              },
+              "replacement": "preferred"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "ac80ea9d_0710c0a5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"prefered\" -- should it be \"preferred\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 44,
+        "startChar": 77,
+        "endLine": 44,
+        "endChar": 85
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "995a3487_fc8ae562",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 54,
+                "startChar": 18,
+                "endLine": 54,
+                "endChar": 25
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "7d45b8bd_c6bfbe1f",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 54,
+        "startChar": 18,
+        "endLine": 54,
+        "endChar": 25
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "52092d5f_01b179c6",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 65,
+                "startChar": 59,
+                "endLine": 65,
+                "endChar": 66
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "0e424da3_9f56290b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 65,
+        "startChar": 59,
+        "endLine": 65,
+        "endChar": 66
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "0ad69380_ac030f33",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 75,
+                "startChar": 18,
+                "endLine": 75,
+                "endChar": 25
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "99199a10_1a1365e5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 75,
+        "startChar": 18,
+        "endLine": 75,
+        "endChar": 25
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "6ea2ae92_43c67e14",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 77,
+                "startChar": 27,
+                "endLine": 77,
+                "endChar": 34
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "70cb5610_8e89007d",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 77,
+        "startChar": 27,
+        "endLine": 77,
+        "endChar": 34
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "755e9155_cd3d7342",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 81,
+                "startChar": 18,
+                "endLine": 81,
+                "endChar": 25
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "932e3fb7_d37fcfdd",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 81,
+        "startChar": 18,
+        "endLine": 81,
+        "endChar": 25
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000004579984",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1408247?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "0f538c6e_af657816",
+          "description": "Change to \"src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java\"",
+          "replacements": [
+            {
+              "path": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+              "range": {
+                "startLine": 83,
+                "startChar": 63,
+                "endLine": 83,
+                "endChar": 70
+              },
+              "replacement": "Settings"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "18698093_e92a5cfa",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1550585
+      },
+      "writtenOn": "2020-08-24T12:10:22Z",
+      "side": 1,
+      "message": "Common typo found: \"Setings\" -- should it be \"Settings\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027NO_TYPO_CHECK\u003d\u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 83,
+        "startChar": 63,
+        "endLine": 83,
+        "endChar": 70
+      },
+      "revId": "1109a0b685fec4e157f0924a4d22bd6baaa3c09f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
