@@ -20,8 +20,9 @@ import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
 import View.Annotation.AnnotationTab;
 import com.intellij.ui.components.JBLabel;
-import java.util.List;
+
 import javax.swing.JTable;
+import java.util.List;
 
 public class AnnotationTabController extends EnumController {
 
@@ -39,7 +40,7 @@ public class AnnotationTabController extends EnumController {
   }
 
   @Override
-  public void onEnumTableChanged() {
+  public void onEnumTableChanged(ChangeType changeType, Object[] changeList) {
     annotationTab.initComboBoxColumns(annotationTab.getAnnotationTable(), 0, getEnumsNames());
   }
 

@@ -17,17 +17,17 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
+import Controller.Fidelity.FidelityTabController;
+import Model.MessageDataModel;
+import Model.MessageDataModel.Type;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
 import com.intellij.openapi.project.Project;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import javax.swing.BoxLayout;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.treeStructure.Tree;
+import org.jdesktop.swingx.HorizontalLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.UIManager;
@@ -36,25 +36,39 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PluginLayout extends JPanel {
 
   private JPanel qualitySettingsLayout;
   private JPanel annotationsLayout;
   private JPanel fidelitySettingsLayout;
+  private FidelityTabController fidelityTabController;
   private JPanel menuPanel;
   private JTree menu;
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private ArrayList<JPanel> panels;
-  private Project project;
 
   public PluginLayout(Project project) {
     panels = new ArrayList<>();
     this.setPreferredSize(new Dimension(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2));
-    this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    this.project = project;
+    this.setLayout(new HorizontalLayout());
     initComponents();
     addComponents();
+  }
+
+  public List<ValidationInfo> validateData() {
+    return getFidelityTabController().validate();
+  }
+
+  public FidelityTabController getFidelityTabController() {
+    return fidelityTabController;
   }
 
   private void addComponents() {
@@ -85,7 +99,7 @@ public class PluginLayout extends JPanel {
     settingsRoot.add(qualitySettingsNode);
 
     UIManager.put("Tree.rendererFillBackground", false);
-    menu = new JTree(settingsRoot);
+    menu = new Tree(settingsRoot);
     menu.setCellRenderer(new CustomCellRenderer());
     menu.setBackground(new Color(0, true));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -105,6 +119,7 @@ public class PluginLayout extends JPanel {
           }
         });
     menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    menu.setPreferredSize(new Dimension(150, this.getPreferredSize().height));
     menu.setSelectionModel(new LeafOnlySelectionModel());
     menuPanel.setSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     menuPanel.add(menu);
@@ -118,10 +133,13 @@ public class PluginLayout extends JPanel {
     annotationsLayout = new AnnotationTab(new AnnotationTabController());
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
-    fidelitySettingsLayout = new FidelityTab();
+    MessageDataModel fidelityMessage = new MessageDataModel();
+    fidelityMessage.setMessageType(Type.FIDELITY);
+    fidelityTabController = new FidelityTabController(fidelityMessage);
+    fidelitySettingsLayout = new FidelityTab(fidelityTabController);
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
-        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+            new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
 
     menuPanel = new JPanel();
 
