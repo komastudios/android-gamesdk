@@ -33,6 +33,24 @@
       "revId": "db5a2cf672ab50da6e61088fe5d4a4c71f5b86a7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8453c75_6c8a52f2",
+        "filename": "build.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1159783
+      },
+      "writtenOn": "2020-08-25T13:36:44Z",
+      "side": 1,
+      "message": "Yes. This option seems to work as well. I have updated the CL accordingly.",
+      "parentUuid": "1acb4834_61a5bd81",
+      "revId": "db5a2cf672ab50da6e61088fe5d4a4c71f5b86a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
