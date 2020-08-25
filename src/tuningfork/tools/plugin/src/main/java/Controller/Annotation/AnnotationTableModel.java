@@ -65,7 +65,11 @@ public class AnnotationTableModel extends AbstractTableModel {
 
   @Override
   public void setValueAt(Object value, int row, int column) {
-    data.get(row)[column] = value.toString();
+    if (value == null) {
+      data.get(row)[column] = "";
+    } else {
+      data.get(row)[column] = value.toString();
+    }
     fireTableCellUpdated(row, column);
   }
 
