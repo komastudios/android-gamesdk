@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "07d3ed86_4a16180b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/AssetsWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-25T08:40:26Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9c602e39_e60509d5",
+      "revId": "ef93358f66d59aa53f567ddb11508838aadb549b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a67018b0_17e15bb3",
         "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
         "patchSetId": 3
