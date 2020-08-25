@@ -33,9 +33,6 @@ public class AnnotationTableModel extends AbstractTableModel {
     this.data = data;
   }
 
-  public List<String[]> getData() {
-    return data;
-  }
 
   @Override
   public int getRowCount() {

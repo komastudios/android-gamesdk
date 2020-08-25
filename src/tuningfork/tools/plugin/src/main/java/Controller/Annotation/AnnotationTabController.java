@@ -18,36 +18,42 @@ package Controller.Annotation;
 import Controller.Enum.EnumController;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
-import View.Annotation.AnnotationTab;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTable;
 
 public class AnnotationTabController extends EnumController {
 
   private MessageDataModel annotationDataModel;
-  private AnnotationTab annotationTab;
+  private final PropertyChangeSupport propertyChangeSupport;
 
   public AnnotationTabController(MessageDataModel annotationDataModel) {
+    super();
     this.annotationDataModel = annotationDataModel;
+    propertyChangeSupport = new PropertyChangeSupport(this);
   }
 
   public void addInitialAnnotation(JTable table) {
     List<String> enumNames = annotationDataModel.getFieldNames();
-    List<String> enumValues = annotationDataModel.getFieldValues();
+    List<String> enumValues = annotationDataModel.getFieldTypes();
     AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+    List<String[]> data = new ArrayList<>();
     for (int i = 0; i < enumNames.size(); i++) {
-      model.addRow(new String[]{enumValues.get(i), enumNames.get(i)});
+      data.add(new String[]{enumValues.get(i), enumNames.get(i)});
     }
+    model.setData(data);
   }
 
-  public void setAnnotationTab(AnnotationTab annotationTab) {
-    this.annotationTab = annotationTab;
-  }
 
 
   @Override
-  public void onEnumTableChanged() {
-    annotationTab.initComboBoxColumns(annotationTab.getAnnotationTable(), 0, getEnumsNames());
+  public void onEnumTableChanged(ChangeType changeType, Object[] changeList) {
+    if (changeType.equals(ChangeType.EDIT)) {
+      propertyChangeSupport.firePropertyChange("editEnum", changeList[0], changeList[1]);
+    } else if (changeType.equals(ChangeType.REMOVE)) {
+      propertyChangeSupport.firePropertyChange("deleteEnum", changeList[0], "");
+    }
   }
 
   public static void addRowAction(JTable jtable) {
@@ -79,7 +85,7 @@ public class AnnotationTabController extends EnumController {
     return annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames);
   }
 
-  public MessageDataModel getAnnotationDataModel() {
+  public MessageDataModel getAnnotationData() {
     return annotationDataModel;
   }
 }
