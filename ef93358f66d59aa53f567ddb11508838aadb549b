@@ -33,6 +33,23 @@
       "revId": "ef93358f66d59aa53f567ddb11508838aadb549b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb7dca8e_91f90c8d",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-25T07:20:31Z",
+      "side": 1,
+      "message": "nit: remove printing",
+      "revId": "ef93358f66d59aa53f567ddb11508838aadb549b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
