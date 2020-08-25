@@ -16,6 +16,24 @@
       "revId": "af0dd83813672d6156c8efbfe0979bee054f3a62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46c3f490_e3385197",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/EnumController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-25T15:19:56Z",
+      "side": 1,
+      "message": "enums.remove(index) would return the object removed. not a boolean. so I just made the whole method return a void",
+      "parentUuid": "d19c5e18_5f846311",
+      "revId": "af0dd83813672d6156c8efbfe0979bee054f3a62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
