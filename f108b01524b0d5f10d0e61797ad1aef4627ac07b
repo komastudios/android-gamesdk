@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e00e8f3_527d0fb3",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/ValidationSettings/ValidationSettingsTableModel.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-25T09:46:14Z",
+      "side": 1,
+      "message": "Since this is effectively a constant make it static final (and name in UPPER_SNAKE_CASE)",
+      "revId": "f108b01524b0d5f10d0e61797ad1aef4627ac07b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
