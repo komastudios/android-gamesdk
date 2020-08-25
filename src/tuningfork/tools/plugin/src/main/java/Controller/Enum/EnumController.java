@@ -18,14 +18,21 @@ package Controller.Enum;
 
 import Model.EnumDataModel;
 import com.intellij.ui.table.JBTable;
+
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.swing.table.DefaultTableModel;
 
 public abstract class EnumController {
 
-  private List<EnumDataModel> enums;
+  public enum ChangeType {
+    ADD,
+    REMOVE,
+    EDIT
+  }
+
+  private final List<EnumDataModel> enums;
 
   public EnumController() {
     enums = new ArrayList<>();
@@ -40,8 +47,7 @@ public abstract class EnumController {
   }
 
   public List<String> getEnumsNames() {
-    return enums.stream().map(EnumDataModel::getName).collect(
-        Collectors.toList());
+    return enums.stream().map(EnumDataModel::getName).collect(Collectors.toList());
   }
 
   public boolean addEnum(String name, ArrayList<String> options) {
@@ -49,40 +55,46 @@ public abstract class EnumController {
     if (enums.contains(enumDataModel)) {
       return false;
     }
+    onEnumTableChanged(ChangeType.ADD, new String[]{name});
     enums.add(enumDataModel);
     return true;
   }
 
-  public void removeEnum(int index) {
-    enums.remove(index);
+  public void removeEnum(int row) {
+    onEnumTableChanged(ChangeType.REMOVE, new String[]{enums.get(row).getName()});
+    enums.remove(row);
   }
 
   public boolean editEnum(int index, String name, ArrayList<String> options) {
     EnumDataModel enumDataModel = new EnumDataModel(name, options);
-    if (!name.equals(enums.get(index).getName()) && enums.contains(enumDataModel)) {
+    boolean conflictingEnumNames =
+            enums.stream().map(EnumDataModel::getName).anyMatch(enumName -> enumName.equals(name));
+    if (!name.equals(enums.get(index).getName()) && conflictingEnumNames) {
       return false;
     }
+    onEnumTableChanged(ChangeType.EDIT, new String[]{enums.get(index).getName(), name});
     enums.set(index, enumDataModel);
     return true;
   }
 
-  public void addEnumToTable(JBTable table) {
+  public final void addEnumToTable(JBTable table) {
     DefaultTableModel model = (DefaultTableModel) table.getModel();
     model.addRow(new Object[]{enums.get(enums.size() - 1).getName()});
-    onEnumTableChanged();
   }
 
-  public void removeEnumFromTable(JBTable table, int row) {
+  public final void removeEnumFromTable(JBTable table, int row) {
     DefaultTableModel model = (DefaultTableModel) table.getModel();
     model.removeRow(row);
-    onEnumTableChanged();
   }
 
-  public void editEnumInTable(JBTable table, int row) {
+  public final void editEnumInTable(JBTable table, int row) {
     DefaultTableModel model = (DefaultTableModel) table.getModel();
     model.setValueAt(enums.get(row).getName(), row, 0);
-    onEnumTableChanged();
   }
 
-  public abstract void onEnumTableChanged();
+  public boolean canRemoveEnum(String enumName) {
+    return true;
+  }
+
+  public abstract void onEnumTableChanged(ChangeType changeType, Object[] changeList);
 }
