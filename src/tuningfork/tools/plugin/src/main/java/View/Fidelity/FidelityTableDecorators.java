@@ -99,9 +99,14 @@ public class FidelityTableDecorators {
 
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-      FidelityTableData feed = (FidelityTableData) value;
-      fidelityTablePanel.updateData(feed, isSelected, table);
-      fidelityTablePanel.getEnumTypes().addItem(feed.getFieldEnumName());
+      FidelityTableData fidelityTableData = (FidelityTableData) value;
+      fidelityTablePanel.updateData(fidelityTableData, isSelected, table);
+      fidelityTablePanel.setComboBoxChoices(enums);
+      if (enums.contains(fidelityTableData.getFieldEnumName())) {
+        fidelityTablePanel.getEnumTypes().setSelectedItem(fidelityTableData.getFieldEnumName());
+      } else {
+        fidelityTablePanel.getEnumTypes().setSelectedIndex(-1);
+      }
       return fidelityTablePanel;
     }
   }
