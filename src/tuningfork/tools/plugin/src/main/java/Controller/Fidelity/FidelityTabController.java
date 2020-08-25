@@ -16,20 +16,43 @@
 
 package Controller.Fidelity;
 
-import Controller.Enum.EnumController;
+import Model.EnumDataModel;
+import Model.MessageDataModel;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.ValidationInfo;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JTable;
 
-public class FidelityTabController extends EnumController {
+public class FidelityTabController {
 
-  public FidelityTabController() {
+  private final MessageDataModel fidelityMessage;
+  private final List<EnumDataModel> enums;
+  private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
+
+  public FidelityTabController(MessageDataModel fidelityMessage, List<EnumDataModel> enums) {
     super();
+    this.fidelityMessage = fidelityMessage;
+    this.enums = enums;
   }
 
-  @Override
-  public void onEnumTableChanged() {
+  public void addFidelityField(String name, String type) {
+    fidelityMessage.addField(name, type);
+  }
 
+  public void removeFidelityField(int index) {
+    fidelityMessage.removeSetting(index);
+  }
+
+  public void updateName(int index, String newName) {
+    fidelityMessage.updateName(index, newName);
+  }
+
+  public void updateType(int index, String type) {
+    fidelityMessage.updateType(index, type);
   }
 
   public void addRowAction(JTable jtable) {
@@ -44,5 +67,29 @@ public class FidelityTabController extends EnumController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+  }
+
+  public List<String> getEnumNames() {
+    return enums.stream().map(EnumDataModel::getName)
+        .collect(Collectors.toList());
+  }
+
+  public List<ValidationInfo> validate() {
+    List<ValidationInfo> validationInfos = new ArrayList<>();
+    List<String> names = fidelityMessage.getFieldNames();
+    boolean duplicateField =
+        names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
+    if (duplicateField) {
+      validationInfos.add(new ValidationInfo("Duplicate Fields Are Not Allowed"));
+    }
+    names.stream()
+        .filter(s -> !s.matches(FIELD_NAME_PATTERN) && !s.isEmpty())
+        .forEach(s ->
+            validationInfos.add(
+                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_].")));
+    if (names.stream().anyMatch(String::isEmpty)) {
+      validationInfos.add(new ValidationInfo("Empty Fields Are Not Allowed."));
+    }
+    return validationInfos;
   }
 }
