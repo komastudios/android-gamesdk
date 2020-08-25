@@ -61,9 +61,6 @@ public class MessageDataModel {
   }
 
   public boolean addField(String paramName, String paramValue) {
-    if (fieldNames.contains(paramName)) {
-      return false;
-    }
     fieldNames.add(paramName);
     fieldTypes.add(paramValue);
     return true;
@@ -73,7 +70,7 @@ public class MessageDataModel {
     return fieldNames;
   }
 
-  public List<String> getFieldValues() {
+  public List<String> getFieldTypes() {
     return fieldTypes;
   }
 

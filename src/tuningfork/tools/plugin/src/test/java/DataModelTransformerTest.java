@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.crypto.Data;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class DataModelTransformerTest {
     MessageDataModel annotationDataModel = DataModelTransformer
         .transformToAnnotation(messageDesc).get();
     List<String> enumNames = annotationDataModel.getFieldNames();
-    List<String> enums = annotationDataModel.getFieldValues();
+    List<String> enums = annotationDataModel.getFieldTypes();
 
     Assert.assertEquals(enumNames.size(), 4);
     Assert.assertEquals(enumNames.get(0), "loading_state");
@@ -82,7 +81,7 @@ public class DataModelTransformerTest {
 
     MessageDataModel fidelityDataModel = DataModelTransformer.transformToFidelity(messageDesc)
         .get();
-    List<String> fidelityValues = fidelityDataModel.getFieldValues();
+    List<String> fidelityValues = fidelityDataModel.getFieldTypes();
     List<String> fidelityNames = fidelityDataModel.getFieldNames();
 
     Assert.assertEquals(fidelityValues.size(), 3);

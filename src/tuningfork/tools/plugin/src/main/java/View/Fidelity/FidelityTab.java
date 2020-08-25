@@ -17,7 +17,6 @@ package View.Fidelity;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
-import View.EnumTable;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
@@ -25,6 +24,8 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -32,7 +33,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
-public class FidelityTab extends TabLayout {
+public class FidelityTab extends TabLayout implements PropertyChangeListener {
 
   private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
   private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
@@ -41,13 +42,13 @@ public class FidelityTab extends TabLayout {
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
 
-  public FidelityTab() {
+  public FidelityTab(FidelityTabController fidelityTabController) {
+    this.fidelityTabController = fidelityTabController;
     initVariables();
     initComponents();
   }
 
   private void initVariables() {
-    fidelityTabController = new FidelityTabController();
     scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
@@ -106,20 +107,43 @@ public class FidelityTab extends TabLayout {
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
-    this.add(new EnumTable(fidelityTabController));
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
     if (data.getFieldType().equals(FieldType.ENUM)) {
-      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumsNames());
+      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames());
     }
     return new FidelityTableDecorators.TextBoxRenderer();
   }
 
   private TableCellEditor getCellEditorByValue(FidelityTableData data) {
     if (data.getFieldType().equals(FieldType.ENUM)) {
-      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumsNames());
+      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames());
     }
     return new FidelityTableDecorators.TextBoxEditor();
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+    if (evt.getPropertyName().equals("editEnum")) {
+      String oldName = evt.getOldValue().toString();
+      String newName = evt.getNewValue().toString();
+      FidelityTableModel fidelityTableModel = (FidelityTableModel) fidelityTable.getModel();
+      for (int i = 0; i < fidelityTableModel.getRowCount(); i++) {
+        FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
+        if (rowData.getFieldEnumName().equals(oldName)) {
+          rowData.setFieldEnumName(newName);
+        }
+      }
+    } else if (evt.getPropertyName().equals("deleteEnum")) {
+      String name = evt.getOldValue().toString();
+      FidelityTableModel fidelityTableModel = (FidelityTableModel) fidelityTable.getModel();
+      for (int i = 0; i < fidelityTableModel.getRowCount(); i++) {
+        FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
+        if (rowData.getFieldEnumName().equals(name)) {
+          rowData.setFieldEnumName("");
+        }
+      }
+    }
   }
 }
