@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "697ffe1b_978896ee",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-25T11:55:05Z",
+      "side": 1,
+      "message": "It\u0027s a bit hard to see what\u0027s actually being tested here, can you factor out or reorganize some parts?",
+      "revId": "f5dd5ad27978f4a1d54b0bb0908c9d1d64cefa74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
