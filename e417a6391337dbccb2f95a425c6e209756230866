@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43c40f19_9a8bad33",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/ValidationSettings/ValidationSettingsTableModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-25T11:48:26Z",
+      "side": 1,
+      "message": "private?",
+      "revId": "e417a6391337dbccb2f95a425c6e209756230866",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
