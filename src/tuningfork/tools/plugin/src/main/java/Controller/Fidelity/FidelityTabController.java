@@ -16,20 +16,27 @@
 
 package Controller.Fidelity;
 
-import Controller.Enum.EnumController;
+import Model.EnumDataModel;
 import Model.MessageDataModel;
-import Model.MessageDataModel.Type;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.ValidationInfo;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JTable;
 
-public class FidelityTabController extends EnumController {
+public class FidelityTabController {
 
-  private MessageDataModel fidelityDataModel;
+  private final MessageDataModel fidelityMessage;
+  private final List<EnumDataModel> enums;
+  private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
 
-  public FidelityTabController(MessageDataModel fidelityDataModel){
-    this.fidelityDataModel = fidelityDataModel;
+  public FidelityTabController(MessageDataModel fidelityMessage, List<EnumDataModel> enums) {
+    super();
+    this.fidelityMessage = fidelityMessage;
+    this.enums = enums;
   }
 
   public void addInitialFidelity(JTable table) {
@@ -48,10 +55,19 @@ public class FidelityTabController extends EnumController {
     }
   }
 
-  @Override
-  public void onEnumTableChanged() {
-
+  public void addFidelityField(String name, String type) {
+    fidelityMessage.addField(name, type);
   }
+  public void removeFidelityField(int index) {
+    fidelityMessage.removeSetting(index);
+  }
+
+  public void updateName(int index, String newName) {
+    fidelityMessage.updateName(index, newName);
+  }
+
+  public void updateType(int index, String type) {
+    fidelityMessage.updateType(index, type);
 
   public MessageDataModel getFidelityData() {
     return fidelityDataModel;
@@ -71,14 +87,27 @@ public class FidelityTabController extends EnumController {
     model.removeRow(row);
   }
 
-  public boolean saveSettings(JTable jTable) {
-    List<String> fidelityParamNames = ((FidelityTableModel) jTable.getModel())
-        .getFidelityParamNames();
-    List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
-        .getFidelityFieldValues();
-    fidelityDataModel = new MessageDataModel();
-    fidelityDataModel.setMessageType(Type.FIDELITY);
-    fidelityDataModel.addMultipleFields(fidelityParamNames, fidelityFieldValues);
-    return true;
+  public List<String> getEnumNames() {
+    return enums.stream().map(EnumDataModel::getName)
+        .collect(Collectors.toList());
+  }
+
+  public List<ValidationInfo> validate() {
+    List<ValidationInfo> validationInfos = new ArrayList<>();
+    List<String> names = fidelityMessage.getFieldNames();
+    boolean duplicateField =
+        names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
+    if (duplicateField) {
+      validationInfos.add(new ValidationInfo("Duplicate Fields Are Not Allowed"));
+    }
+    names.stream()
+        .filter(s -> !s.matches(FIELD_NAME_PATTERN) && !s.isEmpty())
+        .forEach(s ->
+            validationInfos.add(
+                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_].")));
+    if (names.stream().anyMatch(String::isEmpty)) {
+      validationInfos.add(new ValidationInfo("Empty Fields Are Not Allowed."));
+    }
+    return validationInfos;
   }
 }

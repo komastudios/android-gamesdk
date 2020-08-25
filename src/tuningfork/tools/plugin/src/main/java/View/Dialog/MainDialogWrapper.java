@@ -29,8 +29,10 @@ import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
 import java.util.List;
 import javax.swing.JComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MainDialogWrapper extends DialogWrapper {
@@ -67,15 +69,9 @@ public class MainDialogWrapper extends DialogWrapper {
       return;
     }
 
-    if (!pluginLayout.saveSettings()) {
-      addNotification(
-          "Unable to write annotation and quality settings back to .proto files. Different fields can't have the same name.");
-      return;
-    }
-
+    pluginLayout.saveSettings();
     MessageDataModel fidelityModel = fidelityTabController.getFidelityData();
-    MessageDataModel annotationModel = annotationTabController.getAnnotationDataModel();
-
+    MessageDataModel annotationModel = annotationTabController.getAnnotationData();
     if (!assetsWriter.saveDevTuningForkProto(annotationEnums, annotationModel, fidelityModel)) {
       addNotification("Unable to write annotation and quality settings back to .proto files");
     } else {
@@ -98,9 +94,19 @@ public class MainDialogWrapper extends DialogWrapper {
     init();
   }
 
+  @NotNull
   @Override
-  protected @Nullable
-  JComponent createCenterPanel() {
+  protected List<ValidationInfo> doValidateAll() {
+    List<ValidationInfo> validationInfos = pluginLayout.validateData();
+    if (validationInfos.isEmpty()) {
+      return validationInfos;
+    }
+    return validationInfos.subList(0, Math.min(validationInfos.size(), 2));
+  }
+
+  @Override
+  @Nullable
+  protected JComponent createCenterPanel() {
     pluginLayout = new PluginLayout(annotationData, fidelityData, enumData);
     return pluginLayout;
   }

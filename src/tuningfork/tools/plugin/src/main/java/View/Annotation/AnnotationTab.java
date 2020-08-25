@@ -81,7 +81,6 @@ public class AnnotationTab extends TabLayout {
     this.add(annotationLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
-    annotationController.setAnnotationTab(this);
     // Initialize toolbar and table.
     AnnotationTableModel model = new AnnotationTableModel();
     annotationTable.setModel(model);

@@ -18,6 +18,8 @@ package Controller.Annotation;
 import Controller.Enum.EnumController;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
+import com.intellij.ui.components.JBLabel;
+import java.beans.PropertyChangeSupport;
 import View.Annotation.AnnotationTab;
 import java.util.List;
 import javax.swing.JTable;
@@ -25,9 +27,10 @@ import javax.swing.JTable;
 public class AnnotationTabController extends EnumController {
 
   private MessageDataModel annotationDataModel;
-  private AnnotationTab annotationTab;
+  private final PropertyChangeSupport propertyChangeSupport;
 
   public AnnotationTabController(MessageDataModel annotationDataModel) {
+    super();
     this.annotationDataModel = annotationDataModel;
   }
 
@@ -46,8 +49,12 @@ public class AnnotationTabController extends EnumController {
 
 
   @Override
-  public void onEnumTableChanged() {
-    annotationTab.initComboBoxColumns(annotationTab.getAnnotationTable(), 0, getEnumsNames());
+  public void onEnumTableChanged(ChangeType changeType, Object[] changeList) {
+    if (changeType.equals(ChangeType.EDIT)) {
+      propertyChangeSupport.firePropertyChange("editEnum", changeList[0], changeList[1]);
+    } else if (changeType.equals(ChangeType.REMOVE)) {
+      propertyChangeSupport.firePropertyChange("deleteEnum", changeList[0], "");
+    }
   }
 
   public static void addRowAction(JTable jtable) {
