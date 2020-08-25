@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6afd577f_f214c001",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-25T12:11:48Z",
+      "side": 1,
+      "message": "Thanks for the CL! Added a comment about specifying the NDK to use to Gradle.",
+      "revId": "db5a2cf672ab50da6e61088fe5d4a4c71f5b86a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1acb4834_61a5bd81",
+        "filename": "build.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-25T12:11:48Z",
+      "side": 1,
+      "message": "We\u0027ve started to move toward explicit parameters for the NDK version, rather than env variables, can you try:\n\n```\nset ANDROID_HOME\u003dC:\\win_build_extras\\sdk\n\ngradlew packageLocalZip -Plibraries\u003dswappy,tuningfork -PincludeSampleArtifacts -Pndk\u003d21.3.6528147\n```\n\nInternally, the Gradle build will search for this specific NDK into ANDROID_HOME\\ndk, so it should be equivalent to what you did.\n\nIt\u0027s hopefully enough and slightly better to avoid polluting the environment variables. Let me know if it works, otherwise we can keep the environment variables for now!",
+      "revId": "db5a2cf672ab50da6e61088fe5d4a4c71f5b86a7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
