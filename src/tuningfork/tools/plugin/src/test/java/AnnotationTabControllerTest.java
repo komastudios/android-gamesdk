@@ -19,10 +19,11 @@ import Controller.Annotation.AnnotationTableModel;
 import Model.MessageDataModel;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
-import java.util.List;
-import javax.swing.JTable;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.swing.JTable;
+import java.util.List;
 
 public class AnnotationTabControllerTest {
 
@@ -38,26 +39,15 @@ public class AnnotationTabControllerTest {
 
     MessageDataModel annotation = controller.getAnnotationDataModel();
     List<String> names = annotation.getFieldNames();
-    List<String> values = annotation.getFieldValues();
+    List<String> types = annotation.getFieldTypes();
 
     Assert.assertEquals(names.size(), 3);
-    Assert.assertEquals(values.get(0), "enum1");
-    Assert.assertEquals(values.get(1), "enum2");
-    Assert.assertEquals(values.get(2), "enum3");
+    Assert.assertEquals(types.get(0), "enum1");
+    Assert.assertEquals(types.get(1), "enum2");
+    Assert.assertEquals(types.get(2), "enum3");
     Assert.assertEquals(names.get(0), "enumName1");
     Assert.assertEquals(names.get(1), "enumName2");
     Assert.assertEquals(names.get(2), "enumName3");
   }
 
-  @Test
-  public void twoEnumsSameName() {
-    AnnotationTabController controller = new AnnotationTabController();
-    AnnotationTableModel model = new AnnotationTableModel();
-    model.addRow(new String[]{"enum1", "enumName1"});
-    model.addRow(new String[]{"enum2", "enumName1"});
-    model.addRow(new String[]{"enum3", "enumName3"});
-    JTable table = new JBTable(model);
-
-    Assert.assertFalse(controller.saveSettings(table, new JBLabel()));
-  }
 }

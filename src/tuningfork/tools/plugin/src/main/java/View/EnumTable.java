@@ -18,6 +18,7 @@ package View;
 
 import Controller.Enum.EnumController;
 import View.Dialog.EnumDialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -77,6 +78,12 @@ public class EnumTable extends JPanel {
 
   private void removeEnum() {
     int row = enumTable.getSelectedRow();
+    if (!controller.canRemoveEnum(controller.getEnumsNames().get(row))) {
+      Messages
+          .showInfoMessage("Enum can not be deleted because it's currently being used.",
+              "Unable To Delete Enum");
+      return;
+    }
     controller.removeEnum(row);
     controller.removeEnumFromTable(enumTable, row);
   }

@@ -16,21 +16,21 @@
 
 package Controller.Fidelity;
 
-import Controller.Enum.EnumController;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.Messages;
+
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.AbstractTableModel;
 
 public class FidelityTableModel extends AbstractTableModel {
 
   private final String[] columnNames = {"Type", "Parameter name"};
   private List<FidelityTableData> data;
-  private EnumController controller;
+  private FidelityTabController controller;
 
-  public FidelityTableModel(EnumController controller) {
+  public FidelityTableModel(FidelityTabController controller) {
     this.controller = controller;
     data = new ArrayList<>();
   }
@@ -57,6 +57,7 @@ public class FidelityTableModel extends AbstractTableModel {
 
   public void addRow(FidelityTableData row) {
     data.add(row);
+    controller.addFidelityField("", row.getFieldType().getName());
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
 
@@ -70,9 +71,11 @@ public class FidelityTableModel extends AbstractTableModel {
     if (column == 0) {
       FieldType fieldType = (FieldType) value;
       if (fieldType.equals(FieldType.ENUM) && !controller.hasEnums()) {
-        Messages.showErrorDialog("You Need to Add An Enum First.",
-            "Unable to Choose Enum");
+        Messages.showErrorDialog("You Need to Add An Enum First.", "Unable to Choose Enum");
         return;
+      }
+      if (fieldType.equals(FieldType.INT32) || fieldType.equals(FieldType.FLOAT)) {
+        controller.updateType(row, fieldType.getName());
       }
       data.get(row).setFieldType((FieldType) value);
     } else if (column == 1) {
@@ -80,8 +83,11 @@ public class FidelityTableModel extends AbstractTableModel {
         FidelityTableData fidelityTableData = (FidelityTableData) value;
         data.get(row).setFieldEnumName(fidelityTableData.getFieldEnumName());
         data.get(row).setFieldParamName(fidelityTableData.getFieldParamName());
+        controller.updateName(row, fidelityTableData.getFieldParamName());
+        controller.updateType(row, fidelityTableData.getFieldEnumName());
       } else {
         data.get(row).setFieldParamName(value.toString());
+        controller.updateName(row, value.toString());
       }
     }
     fireTableCellUpdated(row, column);
@@ -89,6 +95,7 @@ public class FidelityTableModel extends AbstractTableModel {
 
   public void removeRow(int row) {
     data.remove(row);
+    controller.removeFidelityField(row);
     fireTableDataChanged();
   }
 }

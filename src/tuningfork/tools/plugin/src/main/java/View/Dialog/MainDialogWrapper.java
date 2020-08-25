@@ -19,8 +19,12 @@ package View.Dialog;
 import View.PluginLayout;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import javax.swing.JComponent;
+import com.intellij.openapi.ui.ValidationInfo;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.JComponent;
+import java.util.List;
 
 public class MainDialogWrapper extends DialogWrapper {
 
@@ -34,8 +38,17 @@ public class MainDialogWrapper extends DialogWrapper {
     this.project = project;
   }
 
+  @NotNull
   @Override
-  protected @Nullable JComponent createCenterPanel() {
+  protected List<ValidationInfo> doValidateAll() {
+    List<ValidationInfo> validationInfos = pluginLayout.validateData();
+    if (validationInfos.isEmpty()) return validationInfos;
+    return validationInfos.subList(0, Math.min(validationInfos.size(), 2));
+  }
+
+  @Override
+  @Nullable
+  protected JComponent createCenterPanel() {
     pluginLayout = new PluginLayout(project);
     return pluginLayout;
   }
