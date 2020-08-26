@@ -17,24 +17,21 @@ package Controller.Annotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 public class AnnotationTableModel extends AbstractTableModel {
 
   private final String[] columnNames = {"Type", "Name"};
   private List<String[]> data;
+  private final AnnotationTabController annotationTabController;
 
-  public AnnotationTableModel() {
-    data = new ArrayList<>();
+  public AnnotationTableModel(AnnotationTabController annotationTabController) {
+    this.data = new ArrayList<>();
+    this.annotationTabController = annotationTabController;
   }
 
   public void setData(List<String[]> data) {
     this.data = data;
-  }
-
-  public List<String[]> getData() {
-    return data;
   }
 
   @Override
@@ -59,6 +56,7 @@ public class AnnotationTableModel extends AbstractTableModel {
 
   public void addRow(String[] row) {
     data.add(row);
+    annotationTabController.addEnumField();
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
 
@@ -69,24 +67,29 @@ public class AnnotationTableModel extends AbstractTableModel {
 
   @Override
   public void setValueAt(Object value, int row, int column) {
-    if (value == null) {
-      data.get(row)[column] = "";
-    } else {
-      data.get(row)[column] = value.toString();
+    if (column == 0) {
+      if (value == null) {
+        data.get(row)[column] = "";
+        annotationTabController.setEnumFieldType(row, "");
+      } else {
+        data.get(row)[column] = value.toString();
+        annotationTabController.setEnumFieldType(row, value.toString());
+      }
+    } else if (column == 1) {
+      if (value == null) {
+        data.get(row)[column] = "";
+        annotationTabController.setEnumFieldName(row, "");
+      } else {
+        data.get(row)[column] = value.toString();
+        annotationTabController.setEnumFieldName(row, value.toString());
+      }
     }
     fireTableCellUpdated(row, column);
   }
 
   public void removeRow(int row) {
     data.remove(row);
+    annotationTabController.removeEnumField(row);
     fireTableDataChanged();
-  }
-
-  public List<String> getAnnotationEnumNames() {
-    return data.stream().map(row -> row[0]).collect(Collectors.toList());
-  }
-
-  public List<String> getAnnotationFieldNames() {
-    return data.stream().map(row -> row[1]).collect(Collectors.toList());
   }
 }

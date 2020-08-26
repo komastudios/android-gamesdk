@@ -18,7 +18,6 @@ package View.Fidelity;
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
 import Model.EnumDataModel;
-import View.EnumTable;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
@@ -117,7 +116,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
-    fidelityTabController.addEnums(enumData);
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
@@ -156,5 +154,9 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
         }
       }
     }
+  }
+
+  public void saveSettings() {
+    fidelityTable.clearSelection();
   }
 }

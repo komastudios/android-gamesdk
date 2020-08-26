@@ -18,16 +18,12 @@ package View;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Fidelity.FidelityTabController;
-import Model.MessageDataModel;
-import Model.MessageDataModel.Type;
-import Controller.Fidelity.FidelityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
 import View.ValidationSettings.ValidationSettingsTab;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.treeStructure.Tree;
 import java.awt.Color;
@@ -35,12 +31,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.UIManager;
@@ -80,11 +72,9 @@ public class PluginLayout extends JPanel {
   }
 
   public List<ValidationInfo> validateData() {
-    return getFidelityTabController().validate();
-  }
-
-  public FidelityTabController getFidelityTabController() {
-    return fidelityTabController;
+    List<ValidationInfo> validationInfo = getFidelityTabController().validate();
+    validationInfo.addAll(getAnnotationTabController().validate());
+    return validationInfo;
   }
 
   private void addComponents() {
@@ -154,22 +144,22 @@ public class PluginLayout extends JPanel {
   }
 
   private void initComponents() {
+    fidelityTabController = new FidelityTabController(fidelityData, enumData);
+    annotationTabController = new AnnotationTabController(annotationData, enumData);
     qualitySettingsLayout = new QualityTab();
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
-    PropertyChangeSupport enumChanges = new PropertyChangeSupport(
-        AnnotationTabController.class);
-    enumChanges.addPropertyChangeListener((PropertyChangeListener) fidelitySettingsLayout);
-    annotationTabController = new AnnotationTabController(enumChanges);
-    annotationsLayout = new AnnotationTab(new AnnotationTabController(annotationData), enumData);
+    annotationsLayout = new AnnotationTab(annotationTabController);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
-    fidelitySettingsLayout = new FidelityTab(new FidelityTabController(fidelityData), enumData);
+    fidelitySettingsLayout = new FidelityTab(fidelityTabController, enumData);
+    annotationTabController.addPropertyChangeListener(fidelitySettingsLayout);
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
-            new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout = new ValidationSettingsTab();
-    validationSettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    validationSettingsLayout
+        .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout.setVisible(false);
 
     menuPanel = new JPanel();
@@ -245,7 +235,8 @@ public class PluginLayout extends JPanel {
     return annotationsLayout.getAnnotationController();
   }
 
-  public boolean saveSettings() {
-    return fidelitySettingsLayout.saveSettings() && annotationsLayout.saveSettings();
+  public void saveSettings() {
+    fidelitySettingsLayout.saveSettings();
+    annotationsLayout.saveSettings();
   }
 }

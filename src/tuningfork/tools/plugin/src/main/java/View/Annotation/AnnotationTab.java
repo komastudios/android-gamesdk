@@ -18,34 +18,34 @@ package View.Annotation;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
-import Model.EnumDataModel;
+import View.Annotation.AnnotationDecorator.EnumComboBoxDecorator;
 import View.EnumTable;
 import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import java.util.List;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
-public class AnnotationTab extends TabLayout {
+public class AnnotationTab extends TabLayout implements PropertyChangeListener {
 
   private JBScrollPane scrollPane;
   private JBTable annotationTable;
   private JPanel decoratorPanel;
-
-  private AnnotationTabController annotationController;
-  private List<EnumDataModel> enumData;
+  private AnnotationTableModel model;
+  private final AnnotationTabController annotationController;
 
   private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
   private final JBLabel informationLabel =
       new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
 
-  public AnnotationTab(AnnotationTabController annotationController, List<EnumDataModel> enumData) {
+  public AnnotationTab(AnnotationTabController annotationController) {
     this.annotationController = annotationController;
-    this.enumData = enumData;
     initVariables();
     initComponents();
   }
@@ -54,20 +54,16 @@ public class AnnotationTab extends TabLayout {
     return annotationController;
   }
 
-  private void setColumnsEditorsAndRenderers() {
-    List<String> annotationNames = annotationController.getEnumsNames();
-    initComboBoxColumns(annotationTable, 0, annotationNames);
-    initTextFieldColumns(annotationTable, 1);
-  }
-
   private void initVariables() {
     scrollPane = new JBScrollPane();
     annotationTable = new JBTable();
     decoratorPanel =
         ToolbarDecorator.createDecorator(annotationTable)
-            .setAddAction(it -> AnnotationTabController.addRowAction(annotationTable))
-            .setRemoveAction(it -> AnnotationTabController.removeRowAction(annotationTable))
+            .setAddAction(it -> annotationController.addRowAction(annotationTable))
+            .setRemoveAction(it -> annotationController.removeRowAction(annotationTable))
             .createPanel();
+    model = new AnnotationTableModel(annotationController);
+    annotationController.addPropertyChangeListener(this);
   }
 
   private void initComponents() {
@@ -82,24 +78,53 @@ public class AnnotationTab extends TabLayout {
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
     // Initialize toolbar and table.
-    AnnotationTableModel model = new AnnotationTableModel();
     annotationTable.setModel(model);
+    TableColumn enumColumn = annotationTable.getColumnModel().getColumn(0);
+    enumColumn.setCellRenderer(new EnumComboBoxDecorator(
+        annotationController.getEnums()));
+    enumColumn.setCellEditor(new EnumComboBoxDecorator(
+        annotationController.getEnums()));
     annotationController.addInitialAnnotation(annotationTable);
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, annotationTable);
-    setColumnsEditorsAndRenderers();
+    initTextFieldColumns(annotationTable, 1);
 
     this.add(scrollPane);
-    annotationController.addEnums(enumData);
+    this.add(Box.createVerticalStrut(10));
     this.add(new EnumTable(annotationController));
   }
 
-  public boolean saveSettings() {
+  public void saveSettings() {
     annotationTable.clearSelection();
-    return annotationController.saveSettings(annotationTable);
   }
 
-  public JBTable getAnnotationTable() {
-    return annotationTable;
+  @Override
+  public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    switch (propertyChangeEvent.getPropertyName()) {
+      case "addEnum":
+        annotationTable.repaint();
+        break;
+      case "editEnum":
+        String oldName = propertyChangeEvent.getOldValue().toString();
+        String newName = propertyChangeEvent.getNewValue().toString();
+        for (int i = 0; i < model.getRowCount(); i++) {
+          String enumType = model.getValueAt(i, 0).toString();
+          if (enumType.equals(oldName)) {
+            model.setValueAt(newName, i, 0);
+          }
+        }
+        annotationTable.repaint();
+        break;
+      case "deleteEnum":
+        String name = propertyChangeEvent.getOldValue().toString();
+        for (int i = 0; i < model.getRowCount(); i++) {
+          String enumType = model.getValueAt(i, 0).toString();
+          if (enumType.equals(name)) {
+            model.setValueAt("", i, 0);
+          }
+        }
+        annotationTable.repaint();
+        break;
+    }
   }
 }
