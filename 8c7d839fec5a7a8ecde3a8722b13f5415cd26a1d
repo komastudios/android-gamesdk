@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f96de2e_f6b30dfc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-26T14:50:15Z",
+      "side": 1,
+      "message": "nit: No need for optional. since there\u0027s no case for error/empty optional",
+      "range": {
+        "startLine": 39,
+        "startChar": 25,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "8c7d839fec5a7a8ecde3a8722b13f5415cd26a1d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
