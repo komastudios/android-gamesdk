@@ -17,17 +17,19 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
+import Controller.Fidelity.FidelityTabController;
+import Model.EnumDataModel;
+import Model.MessageDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
-import View.ValidationSettings.ValidationSettingsTab;
-import com.intellij.openapi.project.Project;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -40,21 +42,25 @@ import javax.swing.tree.TreeSelectionModel;
 
 public class PluginLayout extends JPanel {
 
-  private JPanel qualitySettingsLayout;
-  private JPanel annotationsLayout;
-  private JPanel fidelitySettingsLayout;
-  private JPanel validationSettingsLayout;
+  private QualityTab qualitySettingsLayout;
+  private AnnotationTab annotationsLayout;
+  private FidelityTab fidelitySettingsLayout;
   private JPanel menuPanel;
   private JTree menu;
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private ArrayList<JPanel> panels;
-  private Project project;
+  private final MessageDataModel annotationData;
+  private final MessageDataModel fidelityData;
+  private final List<EnumDataModel> enumData;
 
-  public PluginLayout(Project project) {
+  public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
+      List<EnumDataModel> enumData) {
     panels = new ArrayList<>();
+    this.annotationData = annotationData;
+    this.enumData = enumData;
+    this.fidelityData = fidelityData;
     this.setPreferredSize(new Dimension(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2));
     this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    this.project = project;
     initComponents();
     addComponents();
   }
@@ -64,7 +70,6 @@ public class PluginLayout extends JPanel {
     this.add(fidelitySettingsLayout);
     this.add(annotationsLayout);
     this.add(qualitySettingsLayout);
-    this.add(validationSettingsLayout);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -83,41 +88,30 @@ public class PluginLayout extends JPanel {
     DefaultMutableTreeNode fidelityNode = new DefaultMutableTreeNode("Fidelity settings");
     DefaultMutableTreeNode qualitySettingsNode = new DefaultMutableTreeNode("Quality settings");
 
-    //new root for validation and settings attached there
-    DefaultMutableTreeNode validationRoot = new DefaultMutableTreeNode("Validation");
-    DefaultMutableTreeNode validationSettings = new DefaultMutableTreeNode("Settings");
-
-    validationRoot.add(validationSettings);
-
     settingsRoot.add(annotationsNode);
     settingsRoot.add(fidelityNode);
     settingsRoot.add(qualitySettingsNode);
 
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
-
-    root.add(settingsRoot);
-    root.add(validationRoot);
-
     UIManager.put("Tree.rendererFillBackground", false);
-    menu = new JTree(root);
+    menu = new JTree(settingsRoot);
     menu.setCellRenderer(new CustomCellRenderer());
     menu.setBackground(new Color(0, true));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    menu.addTreeSelectionListener(treeSelectionEvent -> {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-              treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-      if (node.equals(annotationsNode)) {
-        changeLayoutVisibility(annotationsLayout);
-      } else if (node.equals(fidelityNode)) {
-        changeLayoutVisibility(fidelitySettingsLayout);
-      } else if (node.equals(qualitySettingsNode)) {
-        changeLayoutVisibility(qualitySettingsLayout);
-      } else if (node.equals(validationSettings)){
-        changeLayoutVisibility(validationSettingsLayout);
-      } else if (!node.isLeaf()) {
-        menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-      }
-    });
+    menu.addTreeSelectionListener(
+        treeSelectionEvent -> {
+          DefaultMutableTreeNode node =
+              (DefaultMutableTreeNode)
+                  treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
+          if (node.equals(annotationsNode)) {
+            changeLayoutVisibility(annotationsLayout);
+          } else if (node.equals(fidelityNode)) {
+            changeLayoutVisibility(fidelitySettingsLayout);
+          } else if (node.equals(qualitySettingsNode)) {
+            changeLayoutVisibility(qualitySettingsLayout);
+          } else if (!node.isLeaf()) {
+            menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+          }
+        });
     menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     menu.setSelectionModel(new LeafOnlySelectionModel());
     menuPanel.setSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
@@ -128,24 +122,19 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout = new QualityTab();
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
-    // TODO:(aymanm, targintaru, volobushenk replace controller later for persistent data
-    annotationsLayout = new AnnotationTab(new AnnotationTabController());
+    annotationsLayout = new AnnotationTab(new AnnotationTabController(annotationData), enumData);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
-    fidelitySettingsLayout = new FidelityTab();
+    fidelitySettingsLayout = new FidelityTab(new FidelityTabController(fidelityData), enumData);
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
-            new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-    validationSettingsLayout = new ValidationSettingsTab();
-    validationSettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-    validationSettingsLayout.setVisible(false);
+        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
 
     menuPanel = new JPanel();
 
     panels.add(qualitySettingsLayout);
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
-    panels.add(validationSettingsLayout);
 
     initMenuTree();
   }
@@ -203,5 +192,17 @@ public class PluginLayout extends JPanel {
     public void addSelectionPaths(TreePath[] treePaths) {
       super.addSelectionPaths(getLeafs(treePaths));
     }
+  }
+
+  public FidelityTabController getFidelityTabController() {
+    return fidelitySettingsLayout.getFidelityTabController();
+  }
+
+  public AnnotationTabController getAnnotationTabController() {
+    return annotationsLayout.getAnnotationController();
+  }
+
+  public boolean saveSettings() {
+    return fidelitySettingsLayout.saveSettings() && annotationsLayout.saveSettings();
   }
 }

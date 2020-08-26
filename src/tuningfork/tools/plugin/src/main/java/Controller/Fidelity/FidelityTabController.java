@@ -17,19 +17,44 @@
 package Controller.Fidelity;
 
 import Controller.Enum.EnumController;
+import Model.MessageDataModel;
+import Model.MessageDataModel.Type;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
+import java.util.List;
 import javax.swing.JTable;
 
 public class FidelityTabController extends EnumController {
 
-  public FidelityTabController() {
-    super();
+  private MessageDataModel fidelityDataModel;
+
+  public FidelityTabController(MessageDataModel fidelityDataModel){
+    this.fidelityDataModel = fidelityDataModel;
+  }
+
+  public void addInitialFidelity(JTable table) {
+    List<String> fieldNames = fidelityDataModel.getFieldNames();
+    List<String> fieldValues = fidelityDataModel.getFieldValues();
+    FidelityTableModel model = (FidelityTableModel) table.getModel();
+
+    for (int i = 0; i < fieldNames.size(); i++) {
+      if (fieldValues.get(i).equals("int32")) {
+        model.addRow(new FidelityTableData(FieldType.INT32, "", fieldNames.get(i)));
+      } else if (fieldValues.get(i).equals("float")) {
+        model.addRow(new FidelityTableData(FieldType.FLOAT, "", fieldNames.get(i)));
+      } else {
+        model.addRow(new FidelityTableData(FieldType.ENUM, fieldValues.get(i), fieldNames.get(i)));
+      }
+    }
   }
 
   @Override
   public void onEnumTableChanged() {
 
+  }
+
+  public MessageDataModel getFidelityData() {
+    return fidelityDataModel;
   }
 
   public void addRowAction(JTable jtable) {
@@ -44,5 +69,16 @@ public class FidelityTabController extends EnumController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+  }
+
+  public boolean saveSettings(JTable jTable) {
+    List<String> fidelityParamNames = ((FidelityTableModel) jTable.getModel())
+        .getFidelityParamNames();
+    List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
+        .getFidelityFieldValues();
+    fidelityDataModel = new MessageDataModel();
+    fidelityDataModel.setMessageType(Type.FIDELITY);
+    fidelityDataModel.addMultipleFields(fidelityParamNames, fidelityFieldValues);
+    return true;
   }
 }
