@@ -19,12 +19,19 @@ package Utils;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Assets.AssetsFinder;
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
+import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.ProtocolMessageEnum;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,15 +40,25 @@ import java.util.stream.Collectors;
 
 public final class DataModelTransformer {
 
-  private DataModelTransformer() {
+  private File assetsDir;
+  private File devTuningfork;
+  private FileDescriptor devTuningforkDesc;
+  private ProtoCompiler compiler;
+
+
+  public DataModelTransformer(String projectPath, ProtoCompiler compiler)
+      throws IOException, CompilationException {
+    assetsDir = new File(
+        AssetsFinder.findAssets(projectPath).getAbsolutePath());
+    devTuningfork = new File(assetsDir, "dev_tuningfork.proto");
+    this.compiler = compiler;
+    devTuningforkDesc = compiler.compile(devTuningfork, Optional.empty());
   }
 
-  public static Optional<List<EnumDataModel>> getEnums(List<EnumDescriptor> enumDescriptors) {
-    return Optional.of(
-        enumDescriptors.stream()
-            .map(descriptor -> new EnumDataModel(descriptor.getName(), descriptor.getValues()))
-            .collect(Collectors.toList())
-    );
+  public static List<EnumDataModel> getEnums(List<EnumDescriptor> enumDescriptors) {
+    return enumDescriptors.stream()
+        .map(descriptor -> new EnumDataModel(descriptor.getName(), descriptor.getValues()))
+        .collect(Collectors.toList());
   }
 
   public static Optional<MessageDataModel> transformToAnnotation(Descriptor desc) {
@@ -113,4 +130,21 @@ public final class DataModelTransformer {
 
     return Optional.of(fidelityModel);
   }
+
+  public MessageDataModel initAnnotationData() {
+    Descriptor messageDesc = devTuningforkDesc.findMessageTypeByName("Annotation");
+    return transformToAnnotation(messageDesc).get();
+  }
+
+  public MessageDataModel initFidelityData() {
+    Descriptor messageDesc = devTuningforkDesc.findMessageTypeByName("FidelityParams");
+    return transformToFidelity(messageDesc).get();
+  }
+
+
+  public List<EnumDataModel> initEnumData() {
+    List<EnumDescriptor> enumDescriptors = devTuningforkDesc.getEnumTypes();
+    return getEnums(enumDescriptors);
+  }
+
 }

@@ -141,7 +141,7 @@ public class DataModelTransformerTest {
     File file = helper.getFile("annotation_valid.proto");
     FileDescriptor fDesc = compiler.compile(file, Optional.empty());
     List<EnumDescriptor> enumDesc = fDesc.getEnumTypes();
-    List<EnumDataModel> enumDataModels = DataModelTransformer.getEnums(enumDesc).get();
+    List<EnumDataModel> enumDataModels = DataModelTransformer.getEnums(enumDesc);
     List<String> options1 = enumDataModels.get(0).getOptions();
     List<String> options2 = enumDataModels.get(1).getOptions();
     List<String> options3 = enumDataModels.get(2).getOptions();
