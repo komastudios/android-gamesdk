@@ -26,6 +26,9 @@ import View.Quality.QualityTab;
 import View.ValidationSettings.ValidationSettingsTab;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.treeStructure.Tree;
+import View.ValidationSettings.ValidationSettingsTab;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.treeStructure.Tree;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -72,7 +75,9 @@ public class PluginLayout extends JPanel {
   }
 
   public List<ValidationInfo> validateData() {
-    return getFidelityTabController().validate();
+    List<ValidationInfo> validationInfo = getFidelityTabController().validate();
+    validationInfo.addAll(getAnnotationTabController().validate());
+    return validationInfo;
   }
 
   private void addComponents() {
@@ -143,21 +148,20 @@ public class PluginLayout extends JPanel {
 
   private void initComponents() {
     fidelityTabController = new FidelityTabController(fidelityData, enumData);
-    annotationTabController = new AnnotationTabController(annotationData);
+    annotationTabController = new AnnotationTabController(annotationData, enumData);
     qualitySettingsLayout = new QualityTab();
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
-
-    annotationsLayout = new AnnotationTab(new AnnotationTabController(annotationData), enumData);
+    annotationsLayout = new AnnotationTab(annotationTabController);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
     fidelitySettingsLayout = new FidelityTab(fidelityTabController, enumData);
+    annotationTabController.addPropertyChangeListener(fidelitySettingsLayout);
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
-        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+            new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout = new ValidationSettingsTab();
-    validationSettingsLayout
-        .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    validationSettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout.setVisible(false);
 
     menuPanel = new JPanel();
@@ -226,7 +230,7 @@ public class PluginLayout extends JPanel {
   }
 
   public FidelityTabController getFidelityTabController() {
-    return fidelityTabController;
+    return fidelitySettingsLayout.getFidelityTabController();
   }
 
   public AnnotationTabController getAnnotationTabController() {
