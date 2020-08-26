@@ -19,7 +19,6 @@ import Controller.Enum.EnumController;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
 import View.Annotation.AnnotationTab;
-import com.intellij.ui.components.JBLabel;
 import java.util.List;
 import javax.swing.JTable;
 
@@ -29,13 +28,17 @@ public class AnnotationTabController extends EnumController {
   private AnnotationTab annotationTab;
 
   public AnnotationTabController() {
-    super();
     annotationDataModel = new MessageDataModel();
     annotationDataModel.setMessageType(Type.ANNOTATION);
   }
 
+
   public void setAnnotationTab(AnnotationTab annotationTab) {
     this.annotationTab = annotationTab;
+  }
+
+  public MessageDataModel getAnnotationData() {
+    return annotationDataModel;
   }
 
   @Override
@@ -61,7 +64,7 @@ public class AnnotationTabController extends EnumController {
     model.removeRow(row);
   }
 
-  public boolean saveSettings(JTable jTable, JBLabel savedSettingsLabel) {
+  public boolean saveSettings(JTable jTable) {
     List<String> annotationEnumNames = ((AnnotationTableModel) jTable.getModel())
         .getAnnotationEnumNames();
     List<String> annotationFieldNames = ((AnnotationTableModel) jTable.getModel())
@@ -69,20 +72,10 @@ public class AnnotationTabController extends EnumController {
     annotationDataModel = new MessageDataModel();
     annotationDataModel.setMessageType(Type.ANNOTATION);
 
-    savedSettingsLabel.setVisible(true);
-
-    if (!annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames)) {
-      savedSettingsLabel.setText("ERROR: multiple fields with the same name.");
-      return false;
-    }
-
-    //TODO (aymanm, targintaru, volobushenk) integrate validation; return false if errors
-    savedSettingsLabel.setText("Settings saved successfully!");
-    return true;
+    return annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames);
   }
 
   public MessageDataModel getAnnotationDataModel() {
     return annotationDataModel;
   }
-
 }

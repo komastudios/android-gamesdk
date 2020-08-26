@@ -23,10 +23,18 @@ import javax.swing.table.AbstractTableModel;
 public class AnnotationTableModel extends AbstractTableModel {
 
   private final String[] columnNames = {"Type", "Name"};
-  private final List<String[]> data;
+  private List<String[]> data;
 
-  public AnnotationTableModel() {
-    data = new ArrayList<>();
+
+  public AnnotationTableModel(List<String[]> data) {
+    this.data = data;
+    if (data == null) {
+      this.data = new ArrayList<>();
+    }
+  }
+
+  public void setData(List<String[]> data) {
+    this.data = data;
   }
 
   public List<String[]> getData() {

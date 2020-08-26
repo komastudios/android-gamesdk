@@ -26,7 +26,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.util.List;
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -35,21 +34,26 @@ public class AnnotationTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable annotationTable;
   private JPanel decoratorPanel;
-  private JPanel saveSettingsPanel;
 
   private AnnotationTabController annotationController;
+  private List<String[]> annotationData;
+  private List<String> enumData;
 
   private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
   private final JBLabel informationLabel =
       new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
-  private final JBLabel savedSettingsLabel =
-      new JBLabel("Annotation Settings are successfully saved!");
-  private final JButton saveSettingsButton = new JButton("Save settings");
 
-  public AnnotationTab(AnnotationTabController annotationController) {
+  public AnnotationTab(AnnotationTabController annotationController, List<String[]> annotationData,
+      List<String> enumData) {
     this.annotationController = annotationController;
+    this.annotationData = annotationData;
+    this.enumData = enumData;
     initVariables();
     initComponents();
+  }
+
+  public AnnotationTabController getAnnotationController() {
+    return annotationController;
   }
 
   private void setColumnsEditorsAndRenderers() {
@@ -81,25 +85,19 @@ public class AnnotationTab extends TabLayout {
     this.add(informationLabel);
     annotationController.setAnnotationTab(this);
     // Initialize toolbar and table.
-    AnnotationTableModel model = new AnnotationTableModel();
+    AnnotationTableModel model = new AnnotationTableModel(annotationData);
     annotationTable.setModel(model);
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, annotationTable);
     setColumnsEditorsAndRenderers();
 
     this.add(scrollPane);
-    this.add(new EnumTable(annotationController));
-    saveSettingsPanel = new JPanel();
-    saveSettingsPanel.add(saveSettingsButton);
-    this.add(saveSettingsPanel);
-    saveSettingsButton.addActionListener(actionEvent -> {
-      annotationController.saveSettings(annotationTable, savedSettingsLabel);
-    });
+    this.add(new EnumTable(annotationController, enumData));
+  }
 
-    JPanel settingsLabelPanel = new JPanel();
-    settingsLabelPanel.add(savedSettingsLabel);
-    savedSettingsLabel.setVisible(false);
-    this.add(settingsLabelPanel);
+  public boolean saveSettings() {
+    annotationTable.clearSelection();
+    return annotationController.saveSettings(annotationTable);
   }
 
   public JBTable getAnnotationTable() {

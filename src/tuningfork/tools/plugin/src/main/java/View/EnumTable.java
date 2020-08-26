@@ -17,15 +17,16 @@
 package View;
 
 import Controller.Enum.EnumController;
+import Controller.Enum.EnumTableModel;
 import View.Dialog.EnumDialogWrapper;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 
 public class EnumTable extends JPanel {
@@ -36,16 +37,12 @@ public class EnumTable extends JPanel {
   private JScrollPane jScrollPane;
   private final static int TABLE_WIDTH = 300;
   private final static int TABLE_HEIGHT = 200;
+  private List<String> enumData;
 
-  public EnumTable(EnumController controller) {
+  public EnumTable(EnumController controller, List<String> enumData) {
+    this.enumData = enumData;
     this.setLayout(new HorizontalLayout());
-    this.enumTable = new JBTable(new DefaultTableModel(new Object[][]{}, new Object[]{"Enums"}) {
-      @Override
-      public void removeRow(int row) {
-        dataVector.remove(row);
-        fireTableDataChanged();
-      }
-    });
+    this.enumTable = new JBTable(new EnumTableModel(enumData));
     this.controller = controller;
     enumDecoratePanel = ToolbarDecorator.createDecorator(enumTable)
         .setAddAction(it -> addEnum())

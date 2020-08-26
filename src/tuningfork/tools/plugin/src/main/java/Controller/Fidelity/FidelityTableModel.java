@@ -16,23 +16,26 @@
 
 package Controller.Fidelity;
 
-import Controller.Enum.EnumController;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.Messages;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 public class FidelityTableModel extends AbstractTableModel {
 
   private final String[] columnNames = {"Type", "Parameter name"};
   private List<FidelityTableData> data;
-  private EnumController controller;
+  private FidelityTabController controller;
 
-  public FidelityTableModel(EnumController controller) {
+  public FidelityTableModel(FidelityTabController controller, List<FidelityTableData> data) {
     this.controller = controller;
-    data = new ArrayList<>();
+    this.data = data;
+    if (data == null) {
+      this.data = new ArrayList<>();
+    }
   }
 
   @Override
@@ -70,8 +73,8 @@ public class FidelityTableModel extends AbstractTableModel {
     if (column == 0) {
       FieldType fieldType = (FieldType) value;
       if (fieldType.equals(FieldType.ENUM) && !controller.hasEnums()) {
-        Messages.showErrorDialog("You Need to Add An Enum First.",
-            "Unable to Choose Enum");
+        Messages.showErrorDialog("You Need to Add An Controller.Enum First.",
+            "Unable to Choose Controller.Enum");
         return;
       }
       data.get(row).setFieldType((FieldType) value);
@@ -90,5 +93,23 @@ public class FidelityTableModel extends AbstractTableModel {
   public void removeRow(int row) {
     data.remove(row);
     fireTableDataChanged();
+  }
+
+  public List<String> getFidelityFieldValues() {
+    List<String> enumNames = new ArrayList<>();
+    for (FidelityTableData row : data) {
+      if (row.getFieldType().equals(FieldType.ENUM)) {
+        enumNames.add(row.getFieldEnumName());
+      } else if (row.getFieldType().equals(FieldType.INT32)) {
+        enumNames.add("int32");
+      } else {
+        enumNames.equals("float");
+      }
+    }
+    return enumNames;
+  }
+
+  public List<String> getFidelityParamNames() {
+    return data.stream().map(row -> row.getFieldParamName()).collect(Collectors.toList());
   }
 }

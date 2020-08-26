@@ -25,6 +25,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -40,14 +41,23 @@ public class FidelityTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
+  private List<FidelityTableData> fidelityTableData;
+  private List<String> enumData;
 
-  public FidelityTab() {
+  public FidelityTab(FidelityTabController controller, List<FidelityTableData> fidelityTableData,
+      List<String> enumData) {
+    this.fidelityTabController = controller;
+    this.fidelityTableData = fidelityTableData;
+    this.enumData = enumData;
     initVariables();
     initComponents();
   }
 
+  public FidelityTabController getFidelityTabController() {
+    return fidelityTabController;
+  }
+
   private void initVariables() {
-    fidelityTabController = new FidelityTabController();
     scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
@@ -91,7 +101,7 @@ public class FidelityTab extends TabLayout {
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
-    FidelityTableModel model = new FidelityTableModel(fidelityTabController);
+    FidelityTableModel model = new FidelityTableModel(fidelityTabController, fidelityTableData);
     fidelityTable.setModel(model);
     TableColumn enumColumn = fidelityTable.getColumnModel().getColumn(1);
     enumColumn.setCellEditor(new FidelityTableDecorators.TextBoxEditor());
@@ -106,7 +116,7 @@ public class FidelityTab extends TabLayout {
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
-    this.add(new EnumTable(fidelityTabController));
+    this.add(new EnumTable(fidelityTabController, enumData));
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
@@ -121,5 +131,10 @@ public class FidelityTab extends TabLayout {
       return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumsNames());
     }
     return new FidelityTableDecorators.TextBoxEditor();
+  }
+
+  public boolean saveSettings() {
+    fidelityTable.clearSelection();
+    return fidelityTabController.saveSettings(fidelityTable);
   }
 }
