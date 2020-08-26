@@ -39,13 +39,10 @@ public class EnumTable extends JPanel {
 
   public EnumTable(EnumController controller) {
     this.setLayout(new HorizontalLayout());
-    this.enumTable = new JBTable(new DefaultTableModel(new Object[][]{}, new Object[]{"Enums"}) {
-      @Override
-      public void removeRow(int row) {
-        dataVector.remove(row);
-        fireTableDataChanged();
-      }
-    });
+    DefaultTableModel tableModel = new DefaultTableModel();
+    tableModel.setColumnIdentifiers(new Object[]{"Options"});
+    controller.addEnumsToModel(tableModel);
+    this.enumTable = new JBTable(tableModel);
     this.controller = controller;
     enumDecoratePanel = ToolbarDecorator.createDecorator(enumTable)
         .setAddAction(it -> addEnum())

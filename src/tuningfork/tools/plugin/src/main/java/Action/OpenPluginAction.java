@@ -15,6 +15,10 @@
  */
 package Action;
 
+import Model.EnumDataModel;
+import Model.MessageDataModel;
+import Utils.DataModelTransformer;
+import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import View.Dialog.MainDialogWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -22,6 +26,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import java.io.IOException;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,15 +35,31 @@ public class OpenPluginAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
+
     ProgressManager.getInstance()
         .run(
             new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
               public void run(@NotNull ProgressIndicator progressIndicator) {
                 ProtoCompiler protoCompiler = ProtoCompiler.getInstance();
+                String projectPath = e.getProject().getProjectFilePath().split(".idea")[0];
                 progressIndicator.setIndeterminate(true);
                 progressIndicator.setText("Loading Assets");
-                SwingUtilities.invokeLater(mainDialogWrapper::show);
+
+                DataModelTransformer transformer = new DataModelTransformer(projectPath);
+                try {
+                  MessageDataModel annotationData = transformer.initAnnotationData(protoCompiler);
+                  MessageDataModel fidelityTableData = transformer.initFidelityData(protoCompiler);
+                  List<EnumDataModel> enumData = transformer.initEnumData(protoCompiler);
+                  SwingUtilities.invokeLater(() -> {
+                    MainDialogWrapper dialogWrapper = new MainDialogWrapper(e.getProject(),
+                        annotationData,
+                        fidelityTableData,
+                        enumData);
+                    dialogWrapper.show();
+                  });
+                } catch (IOException | CompilationException ex) {
+                  ex.printStackTrace();
+                }
               }
             });
   }

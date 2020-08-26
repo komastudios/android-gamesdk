@@ -23,7 +23,7 @@ public class QualityDataModel {
   private List<String> fieldNames;
   /*
    * For int32/float values, insert in fieldValues value.toString().
-   * For Enum values, insert <name_of_value_that_is_set>.toString().
+   * For Controller.Enum values, insert <name_of_value_that_is_set>.toString().
    */
   private List<String> fieldValues;
 

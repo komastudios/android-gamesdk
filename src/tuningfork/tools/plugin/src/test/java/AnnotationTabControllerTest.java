@@ -17,8 +17,8 @@
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
 import Model.MessageDataModel;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
+import java.io.IOException;
 import java.util.List;
 import javax.swing.JTable;
 import org.junit.Assert;
@@ -29,12 +29,12 @@ public class AnnotationTabControllerTest {
   @Test
   public void addOneAnnotation() {
     AnnotationTabController controller = new AnnotationTabController();
-    AnnotationTableModel model = new AnnotationTableModel();
+    AnnotationTableModel model = new AnnotationTableModel(null);
     model.addRow(new String[]{"enum1", "enumName1"});
     model.addRow(new String[]{"enum2", "enumName2"});
     model.addRow(new String[]{"enum3", "enumName3"});
     JTable table = new JBTable(model);
-    controller.saveSettings(table, new JBLabel());
+    controller.saveSettings(table);
 
     MessageDataModel annotation = controller.getAnnotationDataModel();
     List<String> names = annotation.getFieldNames();
@@ -50,14 +50,14 @@ public class AnnotationTabControllerTest {
   }
 
   @Test
-  public void twoEnumsSameName() {
+  public void twoEnumsSameName() throws IOException {
     AnnotationTabController controller = new AnnotationTabController();
-    AnnotationTableModel model = new AnnotationTableModel();
+    AnnotationTableModel model = new AnnotationTableModel(null);
     model.addRow(new String[]{"enum1", "enumName1"});
     model.addRow(new String[]{"enum2", "enumName1"});
     model.addRow(new String[]{"enum3", "enumName3"});
     JTable table = new JBTable(model);
 
-    Assert.assertFalse(controller.saveSettings(table, new JBLabel()));
+    Assert.assertFalse(controller.saveSettings(table));
   }
 }
