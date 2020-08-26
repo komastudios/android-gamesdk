@@ -1,0 +1,10 @@
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Code-Review+2: Jim Blackler <jimblackler@google.com>
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Autosubmit+1: Florian Rival <florianrival@google.com>
+Bypass-Presubmit+1: Florian Rival <florianrival@google.com>
+Submitted-by: Florian Rival <florianrival@google.com>
+Submitted-at: Wed, 26 Aug 2020 11:02:56 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1411788
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
