@@ -106,7 +106,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     setDecoratorPanelSize(fidelityDecoratorPanel);
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
-    this.add(Box.createVerticalStrut(10));
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {

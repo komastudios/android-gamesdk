@@ -33,7 +33,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
@@ -144,21 +143,21 @@ public class PluginLayout extends JPanel {
 
   private void initComponents() {
     qualitySettingsLayout = new QualityTab();
-    qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-    qualitySettingsLayout.setVisible(false);
-    PropertyChangeSupport enumChanges = new PropertyChangeSupport(
-        AnnotationTabController.class);
-    enumChanges.addPropertyChangeListener((PropertyChangeListener) fidelitySettingsLayout);
-    // TODO:(aymanm, targintaru, volobushenk replace controller later for persistent data
-    annotationTabController = new AnnotationTabController(enumChanges);
-    annotationsLayout = new AnnotationTab(annotationTabController);
-    annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
-    annotationsLayout.setVisible(true);
+    annotationTabController = new AnnotationTabController();
     MessageDataModel fidelityMessage = new MessageDataModel();
     fidelityMessage.setMessageType(Type.FIDELITY);
     fidelityTabController = new FidelityTabController(fidelityMessage,
         annotationTabController.getEnums());
     fidelitySettingsLayout = new FidelityTab(fidelityTabController);
+    qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    qualitySettingsLayout.setVisible(false);
+    // TODO:(aymanm, targintaru, volobushenk replace controller later for persistent data
+    annotationTabController.addPropertyChangeListener(
+        (PropertyChangeListener) fidelitySettingsLayout);
+    annotationsLayout = new AnnotationTab(annotationTabController);
+    annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    annotationsLayout.setVisible(true);
+
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
         new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
