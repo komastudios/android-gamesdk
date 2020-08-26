@@ -15,6 +15,10 @@
  */
 package Controller.Annotation;
 
+import Utils.DataModelTransformer;
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +27,22 @@ import javax.swing.table.AbstractTableModel;
 public class AnnotationTableModel extends AbstractTableModel {
 
   private final String[] columnNames = {"Type", "Name"};
-  private final List<String[]> data;
+  private List<String[]> data;
+  private final ProtoCompiler compiler;
 
-  public AnnotationTableModel() {
+  public AnnotationTableModel(AnnotationTabController controller, ProtoCompiler compiler)
+      throws IOException, CompilationException {
+    this.compiler = compiler;
+    data = DataModelTransformer.iniAnnotationData(controller.getProjectPath(), compiler);
+  }
+
+  public AnnotationTableModel(ProtoCompiler compiler) {
+    this.compiler = compiler;
     data = new ArrayList<>();
+  }
+
+  public void setData(List<String[]> data) {
+    this.data = data;
   }
 
   public List<String[]> getData() {

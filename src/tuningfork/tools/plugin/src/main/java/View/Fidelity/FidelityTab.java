@@ -17,6 +17,8 @@ package View.Fidelity;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
 import View.EnumTable;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
@@ -25,6 +27,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -40,14 +43,21 @@ public class FidelityTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
+  private ProtoCompiler compiler;
 
-  public FidelityTab() {
+  public FidelityTab(FidelityTabController controller, ProtoCompiler compiler)
+      throws IOException, CompilationException {
+    this.fidelityTabController = controller;
+    this.compiler = compiler;
     initVariables();
     initComponents();
   }
 
+  public FidelityTabController getFidelityTabController() {
+    return fidelityTabController;
+  }
+
   private void initVariables() {
-    fidelityTabController = new FidelityTabController();
     scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
@@ -83,7 +93,7 @@ public class FidelityTab extends TabLayout {
     informationLabel.setFont(TabLayout.getSecondaryLabel());
   }
 
-  private void initComponents() {
+  private void initComponents() throws IOException, CompilationException {
     this.setLayout(new VerticalLayout());
     setSize();
     fidelityLabel.setFont(TabLayout.getMainFont());
@@ -91,7 +101,7 @@ public class FidelityTab extends TabLayout {
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
-    FidelityTableModel model = new FidelityTableModel(fidelityTabController);
+    FidelityTableModel model = new FidelityTableModel(fidelityTabController, compiler);
     fidelityTable.setModel(model);
     TableColumn enumColumn = fidelityTable.getColumnModel().getColumn(1);
     enumColumn.setCellEditor(new FidelityTableDecorators.TextBoxEditor());
@@ -106,7 +116,7 @@ public class FidelityTab extends TabLayout {
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
-    this.add(new EnumTable(fidelityTabController));
+    this.add(new EnumTable(fidelityTabController, compiler));
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
@@ -121,5 +131,10 @@ public class FidelityTab extends TabLayout {
       return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumsNames());
     }
     return new FidelityTableDecorators.TextBoxEditor();
+  }
+
+  public boolean saveSettings() {
+    fidelityTable.clearSelection();
+    return fidelityTabController.saveSettings(fidelityTable);
   }
 }

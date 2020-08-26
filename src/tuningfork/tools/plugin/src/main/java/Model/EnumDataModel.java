@@ -18,7 +18,6 @@ package Model;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class EnumDataModel {
 
@@ -61,23 +60,6 @@ public class EnumDataModel {
 
   public void removeOption(String option) {
     options.remove(options);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    EnumDataModel enumDataModel = (EnumDataModel) o;
-    return name.equals(enumDataModel.getName());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name);
   }
 
   @Override
