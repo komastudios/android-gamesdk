@@ -17,19 +17,32 @@
 package Controller.Fidelity;
 
 import Controller.Enum.EnumController;
+import Model.MessageDataModel;
+import Model.MessageDataModel.Type;
+import Utils.Proto.ProtoCompiler;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
+import java.util.List;
 import javax.swing.JTable;
 
 public class FidelityTabController extends EnumController {
 
-  public FidelityTabController() {
-    super();
+  private MessageDataModel fidelityDataModel;
+  private final String projectPath;
+  private final ProtoCompiler compiler = ProtoCompiler.getInstance();
+
+  public FidelityTabController(String projectPath) {
+    super(projectPath);
+    this.projectPath = projectPath;
   }
 
   @Override
   public void onEnumTableChanged() {
 
+  }
+
+  public MessageDataModel getFidelityData() {
+    return fidelityDataModel;
   }
 
   public void addRowAction(JTable jtable) {
@@ -44,5 +57,16 @@ public class FidelityTabController extends EnumController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+  }
+
+  public boolean saveSettings(JTable jTable) {
+    List<String> fidelityParamNames = ((FidelityTableModel) jTable.getModel())
+        .getFidelityParamNames();
+    List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
+        .getFidelityFieldValues();
+    fidelityDataModel = new MessageDataModel();
+    fidelityDataModel.setMessageType(Type.FIDELITY);
+    fidelityDataModel.addMultipleFields(fidelityParamNames, fidelityFieldValues);
+    return true;
   }
 }

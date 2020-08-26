@@ -17,6 +17,7 @@ package View.Fidelity;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
+import Utils.Proto.CompilationException;
 import View.EnumTable;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
@@ -25,6 +26,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -40,14 +42,19 @@ public class FidelityTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
+  private String projectPath;
 
-  public FidelityTab() {
+  public FidelityTab(FidelityTabController controller) throws IOException, CompilationException {
+    this.fidelityTabController = controller;
     initVariables();
     initComponents();
   }
 
+  public FidelityTabController getFidelityTabController() {
+    return fidelityTabController;
+  }
+
   private void initVariables() {
-    fidelityTabController = new FidelityTabController();
     scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
@@ -83,7 +90,7 @@ public class FidelityTab extends TabLayout {
     informationLabel.setFont(TabLayout.getSecondaryLabel());
   }
 
-  private void initComponents() {
+  private void initComponents() throws IOException, CompilationException {
     this.setLayout(new VerticalLayout());
     setSize();
     fidelityLabel.setFont(TabLayout.getMainFont());
@@ -121,5 +128,10 @@ public class FidelityTab extends TabLayout {
       return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumsNames());
     }
     return new FidelityTableDecorators.TextBoxEditor();
+  }
+
+  public boolean saveSettings() {
+    fidelityTable.clearSelection();
+    return fidelityTabController.saveSettings(fidelityTable);
   }
 }

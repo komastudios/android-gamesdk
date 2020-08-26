@@ -26,7 +26,6 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
-
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     MainDialogWrapper mainDialogWrapper = new MainDialogWrapper(e.getProject());
