@@ -45,7 +45,7 @@ public class MessageDataModel {
     fieldTypes = new ArrayList<>();
   }
 
-  MessageDataModel(List<String> fieldNames, List<String> fieldTypes, Type messageType) {
+  public MessageDataModel(List<String> fieldNames, List<String> fieldTypes, Type messageType) {
     this.fieldTypes = fieldTypes;
     this.fieldNames = fieldNames;
     this.messageType = messageType;
