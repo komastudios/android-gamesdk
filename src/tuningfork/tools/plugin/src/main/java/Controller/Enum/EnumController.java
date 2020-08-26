@@ -18,8 +18,6 @@ package Controller.Enum;
 
 import Model.EnumDataModel;
 import com.intellij.ui.table.JBTable;
-
-import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,32 +33,23 @@ public abstract class EnumController {
 
   private final List<EnumDataModel> enums;
 
-  public EnumController() {
-    enums = new ArrayList<>();
+  public EnumController(List<EnumDataModel> enums) {
+    this.enums = enums;
   }
 
-  public List<EnumDataModel> getEnums() {
+  public final List<EnumDataModel> getEnums() {
     return enums;
   }
 
-  public boolean hasEnums() {
+  public final boolean hasEnums() {
     return !getEnums().isEmpty();
   }
 
-  public List<String> getEnumsNames() {
+  public final List<String> getEnumsNames() {
     return enums.stream().map(EnumDataModel::getName).collect(Collectors.toList());
   }
 
-  public boolean addEnums(List<EnumDataModel> enumData) {
-    for(EnumDataModel enumDataModel : enumData) {
-      if (!addEnum(enumDataModel.getName(), enumDataModel.getOptions())) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  public boolean addEnum(String name, List<String> options) {
+  public final boolean addEnum(String name, List<String> options) {
     EnumDataModel enumDataModel = new EnumDataModel(name, (ArrayList<String>) options);
     if (enums.contains(enumDataModel)) {
       return false;
@@ -70,15 +59,15 @@ public abstract class EnumController {
     return true;
   }
 
-  public void removeEnum(int row) {
+  public final void removeEnum(int row) {
     onEnumTableChanged(ChangeType.REMOVE, new String[]{enums.get(row).getName()});
     enums.remove(row);
   }
 
-  public boolean editEnum(int index, String name, ArrayList<String> options) {
+  public final boolean editEnum(int index, String name, ArrayList<String> options) {
     EnumDataModel enumDataModel = new EnumDataModel(name, options);
     boolean conflictingEnumNames =
-            enums.stream().map(EnumDataModel::getName).anyMatch(enumName -> enumName.equals(name));
+        enums.stream().map(EnumDataModel::getName).anyMatch(enumName -> enumName.equals(name));
     if (!name.equals(enums.get(index).getName()) && conflictingEnumNames) {
       return false;
     }
@@ -87,7 +76,7 @@ public abstract class EnumController {
     return true;
   }
 
-  public void addEnumsToModel(DefaultTableModel tableModel) {
+  public final void addEnumsToModel(DefaultTableModel tableModel) {
     for (EnumDataModel enumDataModel : enums) {
       tableModel.addRow(new Object[]{enumDataModel.getName()});
     }

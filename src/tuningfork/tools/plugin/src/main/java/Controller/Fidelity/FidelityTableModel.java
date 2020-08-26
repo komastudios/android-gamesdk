@@ -20,7 +20,6 @@ import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 public class FidelityTableModel extends AbstractTableModel {
@@ -96,23 +95,5 @@ public class FidelityTableModel extends AbstractTableModel {
     data.remove(row);
     controller.removeFidelityField(row);
     fireTableDataChanged();
-  }
-
-  public List<String> getFidelityFieldValues() {
-    List<String> enumNames = new ArrayList<>();
-    for (FidelityTableData row : data) {
-      if (row.getFieldType().equals(FieldType.ENUM)) {
-        enumNames.add(row.getFieldEnumName());
-      } else if (row.getFieldType().equals(FieldType.INT32)) {
-        enumNames.add("int32");
-      } else {
-        enumNames.add("float");
-      }
-    }
-    return enumNames;
-  }
-
-  public List<String> getFidelityParamNames() {
-    return data.stream().map(row -> row.getFieldParamName()).collect(Collectors.toList());
   }
 }
