@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11badb7f_8e3ad081",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Annotation/AnnotationTabController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-26T13:00:23Z",
+      "side": 1,
+      "message": "I\u0027d be much better if you took away all those initData() and protocol buffer outside of the Controllers. and Just send a List\u003c\u003e Data. Otherwise this will overload the controller responsibility",
+      "range": {
+        "startLine": 39,
+        "startChar": 2,
+        "endLine": 40,
+        "endChar": 69
+      },
+      "revId": "35509f84fee1f7a91715c3d75d06258da36d7e0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ff90af2_f7ff5a19",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Enum/EnumController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-26T13:00:23Z",
+      "side": 1,
+      "message": "Preprocess outside of the control and send the data to the constructor",
+      "revId": "35509f84fee1f7a91715c3d75d06258da36d7e0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2dc1a8c_b7d9f297",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTabController.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-26T13:00:23Z",
+      "side": 1,
+      "message": "Same here aswell. Outside of the controller and just send the data needed to the constructor",
+      "revId": "35509f84fee1f7a91715c3d75d06258da36d7e0d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
