@@ -15,9 +15,12 @@
  */
 
 package Utils;
+
+import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
@@ -26,9 +29,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class DataModelTransformer {
-  private DataModelTransformer() {}
+
+  private DataModelTransformer() {
+  }
+
+  public static Optional<List<EnumDataModel>> getEnums(List<EnumDescriptor> enumDescriptors) {
+    return Optional.of(
+        enumDescriptors.stream()
+            .map(descriptor -> new EnumDataModel(descriptor.getName(), descriptor.getValues()))
+            .collect(Collectors.toList())
+    );
+  }
 
   public static Optional<MessageDataModel> transformToAnnotation(Descriptor desc) {
     List<FieldDescriptor> fieldDescriptors = desc.getFields();
