@@ -18,42 +18,45 @@ package Controller.Annotation;
 import Controller.Enum.EnumController;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
-import com.intellij.ui.components.JBLabel;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.List;
 import javax.swing.JTable;
 
 public class AnnotationTabController extends EnumController {
 
   private MessageDataModel annotationDataModel;
   private final PropertyChangeSupport propertyChangeSupport;
-
-  public AnnotationTabController(PropertyChangeSupport propertyChangeSupport) {
+  public AnnotationTabController() {
     super();
     annotationDataModel = new MessageDataModel();
     annotationDataModel.setMessageType(Type.ANNOTATION);
-    this.propertyChangeSupport = propertyChangeSupport;
+    this.propertyChangeSupport = new PropertyChangeSupport(this);
   }
 
   @Override
-  public void onEnumTableChanged(ChangeType changeType, Object[] changeList) {
-    if (changeType.equals(ChangeType.EDIT)) {
-      propertyChangeSupport.firePropertyChange("editEnum", changeList[0], changeList[1]);
+  public void onEnumTableChanged(ChangeType changeType,
+      Object[] changeList) {
+    if (changeType.equals(ChangeType.ADD)) {
+      propertyChangeSupport
+          .firePropertyChange("addEnum", changeList[0], "");
+    } else if (changeType.equals(ChangeType.EDIT)) {
+      propertyChangeSupport
+          .firePropertyChange("editEnum", changeList[0], changeList[1]);
     } else if (changeType.equals(ChangeType.REMOVE)) {
-      propertyChangeSupport.firePropertyChange("deleteEnum", changeList[0], "");
+      propertyChangeSupport
+          .firePropertyChange("deleteEnum", changeList[0], "");
     }
   }
 
-  public static void addRowAction(JTable jtable) {
+  public void addRowAction(JTable jtable) {
     AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
-    // TODO(mohanad): placeholder values used. Will be replaced later with default enum value.
-    model.addRow(new String[]{
-        "",
-        "",
-    });
+    model.addRow(
+        new String[]{
+            "", "",
+        });
   }
 
-  public static void removeRowAction(JTable jtable) {
+  public void removeRowAction(JTable jtable) {
     AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
     int row = jtable.getSelectedRow();
     if (jtable.getCellEditor() != null) {
@@ -62,28 +65,25 @@ public class AnnotationTabController extends EnumController {
     model.removeRow(row);
   }
 
-  public boolean saveSettings(JTable jTable, JBLabel savedSettingsLabel) {
-    List<String> annotationEnumNames = ((AnnotationTableModel) jTable.getModel())
-        .getAnnotationEnumNames();
-    List<String> annotationFieldNames = ((AnnotationTableModel) jTable.getModel())
-        .getAnnotationFieldNames();
-    annotationDataModel = new MessageDataModel();
-    annotationDataModel.setMessageType(Type.ANNOTATION);
-
-    savedSettingsLabel.setVisible(true);
-
-    if (!annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames)) {
-      savedSettingsLabel.setText("ERROR: multiple fields with the same name.");
-      return false;
-    }
-
-    //TODO (aymanm, targintaru, volobushenk) integrate validation; return false if errors
-    savedSettingsLabel.setText("Settings saved successfully!");
-    return true;
+  public void setEnumFieldType(int row, String enumType) {
+    annotationDataModel.updateType(row, enumType);
   }
 
-  public MessageDataModel getAnnotationDataModel() {
-    return annotationDataModel;
+  public void setEnumFieldName(int row, String enumType) {
+    annotationDataModel.updateName(row, enumType);
   }
 
+  public void addEnumField() {
+    annotationDataModel.addField("", "");
+  }
+
+  public void removeEnumField(int row) {
+    annotationDataModel.removeSetting(row);
+  }
+
+  public void addPropertyChangeListener(
+      PropertyChangeListener propertyChangeListener) {
+    propertyChangeSupport
+        .addPropertyChangeListener(propertyChangeListener);
+  }
 }
