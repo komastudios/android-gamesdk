@@ -46,7 +46,7 @@ public class EnumDialogWrapper extends DialogWrapper {
 
   public EnumDialogWrapper(EnumController controller) {
     super(true);
-    setTitle("Add Enum");
+    setTitle("Add Controller.Enum");
     this.controller = controller;
     this.enumLayout = new EnumLayout();
     init();
@@ -59,7 +59,7 @@ public class EnumDialogWrapper extends DialogWrapper {
     this.isEdit = true;
     this.editingRow = row;
     this.enumDataModel = enumDataModel;
-    setTitle("Edit Enum");
+    setTitle("Edit Controller.Enum");
     init();
   }
 

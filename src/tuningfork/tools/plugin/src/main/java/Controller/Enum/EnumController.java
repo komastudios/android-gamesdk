@@ -17,18 +17,36 @@
 package Controller.Enum;
 
 import Model.EnumDataModel;
+import Utils.Assets.AssetsFinder;
+import Utils.DataModelTransformer;
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
+import com.google.protobuf.Descriptors.EnumDescriptor;
+import com.google.protobuf.Descriptors.FileDescriptor;
 import com.intellij.ui.table.JBTable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 
 public abstract class EnumController {
 
+  private String projectPath;
+
   private List<EnumDataModel> enums;
+
+  private final ProtoCompiler compiler = ProtoCompiler.getInstance();
 
   public EnumController() {
     enums = new ArrayList<>();
+  }
+
+  public EnumController(String projectPath) {
+    enums = new ArrayList<>();
+    this.projectPath = projectPath;
   }
 
   public List<EnumDataModel> getEnums() {
@@ -44,8 +62,8 @@ public abstract class EnumController {
         Collectors.toList());
   }
 
-  public boolean addEnum(String name, ArrayList<String> options) {
-    EnumDataModel enumDataModel = new EnumDataModel(name, options);
+  public boolean addEnum(String name, List<String> options) {
+    EnumDataModel enumDataModel = new EnumDataModel(name, (ArrayList<String>) options);
     if (enums.contains(enumDataModel)) {
       return false;
     }
@@ -53,8 +71,9 @@ public abstract class EnumController {
     return true;
   }
 
-  public void removeEnum(int index) {
+  public boolean removeEnum(int index) {
     enums.remove(index);
+    return true;
   }
 
   public boolean editEnum(int index, String name, ArrayList<String> options) {
@@ -67,22 +86,38 @@ public abstract class EnumController {
   }
 
   public void addEnumToTable(JBTable table) {
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    EnumTableModel model = (EnumTableModel) table.getModel();
     model.addRow(new Object[]{enums.get(enums.size() - 1).getName()});
     onEnumTableChanged();
   }
 
   public void removeEnumFromTable(JBTable table, int row) {
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    EnumTableModel model = (EnumTableModel) table.getModel();
     model.removeRow(row);
     onEnumTableChanged();
   }
 
   public void editEnumInTable(JBTable table, int row) {
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    EnumTableModel model = (EnumTableModel) table.getModel();
     model.setValueAt(enums.get(row).getName(), row, 0);
     onEnumTableChanged();
   }
 
   public abstract void onEnumTableChanged();
+
+  public List<String> initEnumData() throws IOException, CompilationException {
+    System.out.println(projectPath);
+    File assetsDir = new File(
+        AssetsFinder.findAssets(projectPath).getAbsolutePath());
+    File devTuningfork = new File(assetsDir, "dev_tuningfork.proto");
+    FileDescriptor fDesc = compiler.compile(devTuningfork, Optional.empty());
+    List<EnumDescriptor> enumDescriptors = fDesc.getEnumTypes();
+
+    List<EnumDataModel> enumsFromProto = DataModelTransformer
+        .getEnums(enumDescriptors).get();
+    enumsFromProto.stream().map(enumModel -> addEnum(enumModel.getName(), enumModel.getOptions()));
+    enums.addAll(enumsFromProto);
+    return enumsFromProto.stream().map(enumDataModel -> enumDataModel.getName()).collect(
+        Collectors.toList());
+  }
 }
