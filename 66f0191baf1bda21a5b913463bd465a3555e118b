@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49d87bad_ddeb2a6c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Enum/EnumTableModel.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "This class is missing isEditable and getValueAt. Which might introduce some bugs to the UI. I\u0027d suggest deleting this and using the DefaultTableModel and just do addRow then setValueAt. Since It\u0027s a simple table. no custom TableModel required",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 56
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8e80a57_a0fa6891",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "nit: Have this a public and pass over the asset folder to it. Instead of finding the asset folder 3 different times which might take plenty of time for huge projects.",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 34
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddcaa669_196ae2de",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "nit: Just return the dataModel and the controller will handle the rest",
+      "range": {
+        "startLine": 127,
+        "startChar": 16,
+        "endLine": 127,
+        "endChar": 30
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27a170b8_77df922a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "let the controller handle the job of parsing his data into table because the controller will need the data model.",
+      "range": {
+        "startLine": 147,
+        "startChar": 16,
+        "endLine": 147,
+        "endChar": 39
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8ed07ac_c8aef43d",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "go for empty strings instead of null",
+      "range": {
+        "startLine": 164,
+        "startChar": 56,
+        "endLine": 164,
+        "endChar": 60
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0609b9fc_6c3b23fc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "go for empty strings instead of null",
+      "range": {
+        "startLine": 166,
+        "startChar": 56,
+        "endLine": 166,
+        "endChar": 60
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca31b881_64578693",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "Just return the List\u003cEnumDataModel\u003e and the let the controller handle the rest.\n\nI need the enumDataModel as a reference because it\u0027s being sent to all 3 views. so they need to  be aware of each other.",
+      "range": {
+        "startLine": 175,
+        "startChar": 16,
+        "endLine": 175,
+        "endChar": 28
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eec8953b_ee9ccaa1",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/MainDialogWrapper.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "Both of them will return the same enum list. Just return one of them(There\u0027s only 1 enum table in annotation. So preferably keep that)",
+      "range": {
+        "startLine": 63,
+        "startChar": 4,
+        "endLine": 64,
+        "endChar": 73
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efc7fb0a_0bdc1e01",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/MainDialogWrapper.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 1,
+      "message": "I think there will always be a model. But that model might be empty. So there\u0027s no need to do that check. The validation is handling all of this",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 85,
+        "endChar": 5
+      },
+      "revId": "66f0191baf1bda21a5b913463bd465a3555e118b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "841ea402_47793908",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/EnumDataModel.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-27T08:58:19Z",
+      "side": 0,
+      "message": "It\u0027s best to have this back as we always mean enum names when comparing enums. to check for duplicity and so on.",
+      "revId": "8c7d839fec5a7a8ecde3a8722b13f5415cd26a1d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
