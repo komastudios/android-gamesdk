@@ -18,6 +18,7 @@ package Controller.Fidelity;
 
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.Messages;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,6 +76,17 @@ public class FidelityTableModel extends AbstractTableModel {
       FieldType fieldType = (FieldType) value;
       if (fieldType.equals(FieldType.INT32) || fieldType.equals(FieldType.FLOAT)) {
         controller.updateType(row, fieldType.getName());
+        controller.updateEnum(row, null);
+      } else {
+        if (controller.hasEnums()) {
+          controller.updateType(row, controller.getEnumNames().get(0));
+          controller.updateEnum(row, controller.getEnums().get(0));
+          data.get(row).setFieldEnumName(controller.getEnumNames().get(0));
+        } else {
+          Messages.showErrorDialog("You Need to Add An Enum First.",
+              "Unable to Choose Enum");
+          return;
+        }
       }
       data.get(row).setFieldType((FieldType) value);
     } else if (column == 1) {
@@ -84,6 +96,7 @@ public class FidelityTableModel extends AbstractTableModel {
         data.get(row).setFieldParamName(fidelityTableData.getFieldParamName());
         controller.updateName(row, fidelityTableData.getFieldParamName());
         controller.updateType(row, fidelityTableData.getFieldEnumName());
+        controller.updateEnum(row, controller.findEnumByName(fidelityTableData.getFieldEnumName()));
       } else {
         data.get(row).setFieldParamName(value.toString());
         controller.updateName(row, value.toString());

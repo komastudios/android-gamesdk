@@ -99,7 +99,7 @@ public class TabLayout extends JPanel {
     return boxEditor;
   }
 
-  private DefaultCellEditor getTextFieldModel() {
+  public DefaultCellEditor getTextFieldModel() {
     JTextField textFieldModel = new JTextField();
     textFieldModel.setBorder(new RoundedCornerBorder());
     DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);

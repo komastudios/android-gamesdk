@@ -16,11 +16,13 @@
 
 package Model;
 
+import View.Fidelity.FieldType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessageDataModel {
-
 
   public enum Type {
     FIDELITY("FidelityParams"),
@@ -39,16 +41,19 @@ public class MessageDataModel {
   private List<String> fieldNames;
   private List<String> fieldTypes;
   private Type messageType;
+  private List<Optional<EnumDataModel>> enumData;
 
   public MessageDataModel() {
     fieldNames = new ArrayList<>();
     fieldTypes = new ArrayList<>();
+    enumData = new ArrayList<>();
   }
 
   public MessageDataModel(List<String> fieldNames, List<String> fieldTypes, Type messageType) {
     this.fieldTypes = fieldTypes;
     this.fieldNames = fieldNames;
     this.messageType = messageType;
+    enumData = new ArrayList<>();
   }
 
   public boolean addMultipleFields(List<String> paramNames, List<String> paramValues) {
@@ -60,10 +65,34 @@ public class MessageDataModel {
     return true;
   }
 
+  public void setEnumData(List<EnumDataModel> enumDataModelList) {
+    enumData = new ArrayList<>();
+    for (String fieldType : fieldTypes) {
+      if (fieldType.equals(FieldType.INT32.getName()) || fieldType
+          .equals(FieldType.FLOAT.getName())) {
+        enumData.add(Optional.empty());
+      } else {
+        enumData.add(Optional.ofNullable(findEnumByName(fieldType, enumDataModelList)));
+      }
+    }
+  }
+
+  private EnumDataModel findEnumByName(String enumName, List<EnumDataModel> enumDataModels) {
+    List<EnumDataModel> possibleEnums = enumDataModels.stream()
+        .filter(enumDataModel -> enumDataModel.getName().equals(enumName))
+        .collect(Collectors.toList());
+    if (possibleEnums.isEmpty()) {
+      return null;
+    } else {
+      return possibleEnums.get(0);
+    }
+  }
+
   // TODO(aymanm): Set the method return type to void.
   public boolean addField(String paramName, String paramValue) {
     fieldNames.add(paramName);
     fieldTypes.add(paramValue);
+    enumData.add(Optional.empty());
     return true;
   }
 
@@ -92,6 +121,14 @@ public class MessageDataModel {
 
   public void setMessageType(Type messageType) {
     this.messageType = messageType;
+  }
+
+  public Optional<EnumDataModel> getEnumData(int row) {
+    return enumData.get(row);
+  }
+
+  public void setEnumData(int row, Optional<EnumDataModel> enumData) {
+    this.enumData.set(row, enumData);
   }
 
   @Override
