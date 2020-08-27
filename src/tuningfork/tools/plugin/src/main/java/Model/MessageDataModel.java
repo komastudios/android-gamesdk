@@ -18,9 +18,9 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MessageDataModel {
-
 
   public enum Type {
     FIDELITY("FidelityParams"),
@@ -39,10 +39,12 @@ public class MessageDataModel {
   private List<String> fieldNames;
   private List<String> fieldTypes;
   private Type messageType;
+  private List<Optional<EnumDataModel>> enumData;
 
   public MessageDataModel() {
     fieldNames = new ArrayList<>();
     fieldTypes = new ArrayList<>();
+    enumData = new ArrayList<>();
   }
 
   public MessageDataModel(List<String> fieldNames, List<String> fieldTypes, Type messageType) {
@@ -64,6 +66,7 @@ public class MessageDataModel {
   public boolean addField(String paramName, String paramValue) {
     fieldNames.add(paramName);
     fieldTypes.add(paramValue);
+    enumData.add(Optional.empty());
     return true;
   }
 
@@ -92,6 +95,14 @@ public class MessageDataModel {
 
   public void setMessageType(Type messageType) {
     this.messageType = messageType;
+  }
+
+  public Optional<EnumDataModel> getEnumData(int row) {
+    return enumData.get(row);
+  }
+
+  public void setEnumData(int row, Optional<EnumDataModel> enumData) {
+    this.enumData.set(row, enumData);
   }
 
   @Override
