@@ -22,6 +22,30 @@
       "revId": "8c7d839fec5a7a8ecde3a8722b13f5415cd26a1d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74b3e29f_2f3f951b",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/DataModelTransformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-27T05:02:01Z",
+      "side": 1,
+      "message": "Done. I\u0027ve modified this in the next CL (https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1411791/5), because I\u0027m using this function there and it was easier like this.",
+      "parentUuid": "7f96de2e_f6b30dfc",
+      "range": {
+        "startLine": 39,
+        "startChar": 25,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "8c7d839fec5a7a8ecde3a8722b13f5415cd26a1d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
