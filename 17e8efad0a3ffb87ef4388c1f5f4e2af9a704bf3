@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c2b025fb_3e6392f8",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTableModel.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-28T08:45:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf3f2953_d5d8192c",
+      "range": {
+        "startLine": 73,
+        "startChar": 52,
+        "endLine": 73,
+        "endChar": 68
+      },
+      "revId": "17e8efad0a3ffb87ef4388c1f5f4e2af9a704bf3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "90d0a52b_c6b62514",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTableModel.java",
         "patchSetId": 10
@@ -45,6 +69,30 @@
       "revId": "17e8efad0a3ffb87ef4388c1f5f4e2af9a704bf3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4735ad8_e79dea43",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTableModel.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-28T08:45:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90d0a52b_c6b62514",
+      "range": {
+        "startLine": 74,
+        "startChar": 30,
+        "endLine": 74,
+        "endChar": 45
+      },
+      "revId": "17e8efad0a3ffb87ef4388c1f5f4e2af9a704bf3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
