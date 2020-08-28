@@ -17,6 +17,7 @@
 package View.Quality;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.icons.AllIcons.Actions;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.List;
@@ -25,6 +26,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -68,13 +70,23 @@ public class QualityDecorators {
     JLabel label;
 
     public TrendRenderer() {
+      ToolTipManager.sharedInstance().setInitialDelay(150);
       label = new JLabel();
     }
 
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       label.setHorizontalAlignment(SwingConstants.CENTER);
-      label.setIcon(AllIcons.Actions.FindAndShowPrevMatches);
+      String strValue = value.toString();
+      label.setToolTipText("");
+      if (strValue.equals("increase")) {
+        label.setIcon(AllIcons.Actions.FindAndShowPrevMatches);
+      } else if (strValue.equals("decrease")) {
+        label.setIcon(AllIcons.Actions.FindAndShowNextMatches);
+      } else {
+        label.setIcon(Actions.IntentionBulb);
+        label.setToolTipText("Warning: The current field is not monotonic");
+      }
       return label;
     }
   }

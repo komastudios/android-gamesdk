@@ -101,6 +101,13 @@ public class MessageDataModel {
     return true;
   }
 
+  public boolean addField(String paramName, String paramValue, EnumDataModel enumDataModel) {
+    fieldNames.add(paramName);
+    fieldTypes.add(paramValue);
+    enumData.add(Optional.ofNullable(enumDataModel));
+    return true;
+  }
+
   public List<String> getFieldNames() {
     return fieldNames;
   }

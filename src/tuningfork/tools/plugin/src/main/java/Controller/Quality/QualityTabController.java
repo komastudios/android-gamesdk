@@ -19,8 +19,10 @@ package Controller.Quality;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Validation.ValidationTool;
 import View.Fidelity.FieldType;
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
@@ -47,11 +49,13 @@ public class QualityTabController {
   public void addInitialQuality(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.setFidelityNames(fidelityData.getFieldNames());
-
+    List<List<String>> data = new ArrayList<>();
     for (QualityDataModel qualityDataModel : qualityDataModels) {
-      List<String> columnToAdd = qualityDataModel.getFieldValues();
-      tableModel.addColumn(columnToAdd);
+      data.add(new ArrayList<>());
+      data.get(data.size() - 1).addAll(qualityDataModel.getFieldValues());
     }
+    tableModel.setInitialData(data);
+    tableModel.updateTrend();
   }
 
   public void addColumn(JTable table) {
@@ -80,11 +84,13 @@ public class QualityTabController {
     qualityDataModels.add(qualityDataModel);
   }
 
+  public void removeQualityFile(int fileID) {
+    qualityDataModels.remove(fileID);
+  }
+
   public void addNewFieldToAllFiles(int row) {
-    qualityDataModels.forEach(qualityDataModel -> {
-      qualityDataModel.addField("",
-          getDefaultValueByIndex(row));
-    });
+    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.addField("",
+        getDefaultValueByIndex(row)));
   }
 
   public void updateFieldName(final int row, final String newName) {
@@ -133,15 +139,30 @@ public class QualityTabController {
     return ImmutableList.of("");
   }
 
+  // This should return true on going from (int32,float) to enum or EnumA -> enumB
   public boolean shouldChangeValue(String oldType, String newType) {
     boolean wasNotEnum =
         oldType.equals(FieldType.FLOAT.getName()) || oldType.equals(FieldType.INT32.getName());
     boolean isEnum =
         !newType.equals(FieldType.FLOAT.getName()) && !newType.equals(FieldType.INT32.getName());
-    if (wasNotEnum ^ isEnum) {
+    if (wasNotEnum && isEnum) {
       return true;
     }
-    return true;
+    return !wasNotEnum && isEnum;
+  }
+
+  public String getNewTrendState(int row) {
+    boolean isIncreasing = ValidationTool
+        .isIncreasingSingleField(qualityDataModels, fidelityData, row);
+    boolean isDecreasing = ValidationTool
+        .isDecreasingSingleField(qualityDataModels, fidelityData, row);
+    if (!isIncreasing && !isDecreasing) {
+      return "none";
+    } else if (!isIncreasing) {
+      return "decrease";
+    } else {
+      return "increase";
+    }
   }
 
   public FieldType getTypeByIndex(int row) {
