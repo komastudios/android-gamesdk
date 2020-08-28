@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "93830798_411f46a7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Assets/AssetsWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-28T09:18:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44507ad4_492fd622",
+      "range": {
+        "startLine": 73,
+        "startChar": 17,
+        "endLine": 73,
+        "endChar": 22
+      },
+      "revId": "129992407407bcbc735ca9292444891128fe1841",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "24f324bb_4a10e9da",
         "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
         "patchSetId": 8
@@ -39,6 +63,24 @@
       "revId": "129992407407bcbc735ca9292444891128fe1841",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c4028db_28e2ee7c",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-08-28T09:18:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24f324bb_4a10e9da",
+      "revId": "129992407407bcbc735ca9292444891128fe1841",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
