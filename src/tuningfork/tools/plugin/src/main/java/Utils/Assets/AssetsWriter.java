@@ -20,10 +20,13 @@ import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 
+import Utils.Proto.CompilationException;
+import Utils.Proto.ProtoCompiler;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class AssetsWriter {
@@ -31,8 +34,6 @@ public class AssetsWriter {
   private final String assetsDirectory;
   private static final String AUTO_GENERATED_PROTO =
       "// This file is auto generated -- DO NOT EDIT\n";
-  private static final String AUTO_GENERATED_TEXTPROTO =
-      "# This file is auto generated -- DO NOT EDIT\n";
 
   public AssetsWriter(String assetsDirectory) {
     this.assetsDirectory = assetsDirectory;
@@ -59,23 +60,29 @@ public class AssetsWriter {
     return false;
   }
 
-  public boolean saveDevFidelityParams(List<QualityDataModel> qualityDataModel) {
+  public boolean saveDevFidelityParams(ProtoCompiler compiler,
+      List<QualityDataModel> qualityDataModel) {
     return IntStream.range(0, qualityDataModel.size())
-            .filter(i -> saveDevFidelityParams(qualityDataModel.get(i), i + 1))
-            .count()
+        .filter(i -> {
+          try {
+            saveDevFidelityParams(compiler,
+                qualityDataModel.get(i), i + 1);
+          } catch (IOException | CompilationException e) {
+            e.printStackTrace();
+          }
+          return true;
+        })
+        .count()
         == qualityDataModel.size();
   }
 
-  public boolean saveDevFidelityParams(QualityDataModel qualityDataModel, int fileNumber) {
-    File file = new File(assetsDirectory, "dev_tuningfork_fidelityparams_" + fileNumber + ".txt");
-    try (FileWriter fileWriter = new FileWriter(file)) {
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
-      fileWriter.write(qualityDataModel.toString());
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
-      return true;
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return false;
+  public void saveDevFidelityParams(ProtoCompiler compiler,
+      QualityDataModel qualityDataModel, int fileNumber) throws IOException, CompilationException {
+    File devTuningfork = new File(assetsDirectory, "dev_tuningfork.proto");
+    String filePath = assetsDirectory + "/dev_tuningfork_fidelityparams_" + fileNumber + ".bin";
+    compiler.encodeFromTextprotoFile("FidelityParams", devTuningfork,
+            qualityDataModel.toString(),
+            filePath,
+            Optional.empty());
   }
 }
