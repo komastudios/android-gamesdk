@@ -80,9 +80,9 @@ public class AssetsWriter {
       QualityDataModel qualityDataModel, int fileNumber) throws IOException, CompilationException {
     File devTuningfork = new File(assetsDirectory, "dev_tuningfork.proto");
     String filePath = assetsDirectory + "/dev_tuningfork_fidelityparams_" + fileNumber + ".bin";
-    compiler.encodeFromTextprotoFile("FidelityParams", devTuningfork,
-            qualityDataModel.toString(),
-            filePath,
-            Optional.empty());
+    compiler.encodeFromTextprotoFile("com.google.tuningfork.FidelityParams", devTuningfork,
+        qualityDataModel.toString(),
+        filePath,
+        Optional.empty());
   }
 }

@@ -28,7 +28,8 @@ public abstract class EnumController {
   public enum ChangeType {
     ADD,
     REMOVE,
-    EDIT
+    EDIT,
+    EDIT_OPTIONS,
   }
 
   private final List<EnumDataModel> enums;
@@ -54,8 +55,8 @@ public abstract class EnumController {
     if (enums.contains(enumDataModel)) {
       return false;
     }
-    onEnumTableChanged(ChangeType.ADD, new String[]{name});
     enums.add(enumDataModel);
+    onEnumTableChanged(ChangeType.ADD, new String[]{name});
     return true;
   }
 
@@ -71,8 +72,13 @@ public abstract class EnumController {
     if (!name.equals(enums.get(index).getName()) && conflictingEnumNames) {
       return false;
     }
-    onEnumTableChanged(ChangeType.EDIT, new String[]{enums.get(index).getName(), name});
+    String oldName = enums.get(index).getName();
+    List<String> oldOptions = enums.get(index).getOptions();
     enums.set(index, enumDataModel);
+    onEnumTableChanged(ChangeType.EDIT, new String[]{oldName, name});
+    if (!oldOptions.equals(options)) {
+      onEnumTableChanged(ChangeType.EDIT_OPTIONS, new Object[]{oldOptions, options, name});
+    }
     return true;
   }
 
@@ -96,10 +102,5 @@ public abstract class EnumController {
     DefaultTableModel model = (DefaultTableModel) table.getModel();
     model.setValueAt(enums.get(row).getName(), row, 0);
   }
-
-  public boolean canRemoveEnum(String enumName) {
-    return true;
-  }
-
   public abstract void onEnumTableChanged(ChangeType changeType, Object[] changeList);
 }
