@@ -33,6 +33,24 @@
       "revId": "e596edbc3926689bf959985312e6375e8f8b5684",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0c7d987_d4b09a63",
+        "filename": "test/tuningfork/metrics/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-08-28T18:38:55Z",
+      "side": 1,
+      "message": "I am curious too about the crashes -- the logs indicated a native crash when calling that function (not when using the result, which could have been because of a null pointer). I can show them to you later.",
+      "parentUuid": "4a095717_f81be7c5",
+      "revId": "e596edbc3926689bf959985312e6375e8f8b5684",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
