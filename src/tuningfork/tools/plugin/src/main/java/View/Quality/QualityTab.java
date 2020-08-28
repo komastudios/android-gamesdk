@@ -29,9 +29,9 @@ import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.OptionalInt;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -43,7 +43,6 @@ import org.jdesktop.swingx.VerticalLayout;
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
   private final static JLabel title = new JLabel("Quality levels");
-  private JScrollPane scrollPane;
 
   private final static JLabel aboutQualitySettings = new JLabel(
       "<html> All quality settings are saved into " +
@@ -54,7 +53,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
-  private QualityTabController qualityTabController;
+  private final QualityTabController qualityTabController;
   private JPanel decoratorPanel;
 
   public QualityTab(QualityTabController qualityTabController) {
@@ -91,9 +90,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         } else if (column == 1) {
           return new TrendRenderer();
         } else {
-          if (qualityTabController.isEnum(qualityTableModel.getValueAt(row, 0).toString())) {
-            return new EnumOptionsDecorator(qualityTabController
-                .getEnumOptionsByName(qualityTableModel.getValueAt(row, 0).toString()));
+          if (qualityTabController.isEnum(row)) {
+            return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
             return new RoundedCornerRenderer();
           }
@@ -106,9 +104,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         if (column <= 1) {
           return getTextFieldModel();
         } else {
-          if (qualityTabController.isEnum(qualityTableModel.getValueAt(row, 0).toString())) {
-            return new EnumOptionsDecorator(qualityTabController
-                .getEnumOptionsByName(qualityTableModel.getValueAt(row, 0).toString()));
+          if (qualityTabController.isEnum(row)) {
+            return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
             return getTextFieldModel();
           }
@@ -153,23 +150,43 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     trendCol.setMinWidth(80);
     for (int i = 2; i < jTableHeader.getColumnModel().getColumnCount(); i++) {
       TableColumn dataColumn = jTableHeader.getColumnModel().getColumn(i);
-      dataColumn.setMinWidth(120);
-      dataColumn.setMaxWidth(120);
-      dataColumn.setPreferredWidth(120);
+      dataColumn.setMinWidth(140);
+      dataColumn.setMaxWidth(140);
+      dataColumn.setPreferredWidth(140);
     }
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    if (evt.getPropertyName().equals("addField")) {
-      qualityTabController.addRow(qualityParametersTable);
-    } else if (evt.getPropertyName().equals("nameChange")) {
-      String newName = evt.getNewValue().toString();
-      int fieldRow = qualityTabController.getFieldIndexByName(evt.getOldValue().toString());
-      qualityTableModel.setValueAt(newName, fieldRow, 0);
-    } else if (evt.getPropertyName().equals("removeField")) {
-      int row = Integer.parseInt(evt.getNewValue().toString());
-      qualityTabController.removeRow(qualityParametersTable, row);
+    switch (evt.getPropertyName()) {
+      case "addField":
+        qualityTabController.addRow(qualityParametersTable);
+        break;
+      case "nameChange":
+        String newName = evt.getNewValue().toString();
+        int fieldRow = qualityTabController.getFieldIndexByName(evt.getOldValue().toString());
+        qualityTableModel.setValueAt(newName, fieldRow, 0);
+        break;
+      case "removeField":
+        int row = Integer.parseInt(evt.getNewValue().toString());
+        qualityTabController.removeRow(qualityParametersTable, row);
+        break;
+      case "typeChange":
+        String oldType = evt.getOldValue().toString();
+        int index = (int) ((Object[]) evt.getNewValue())[0];
+        String newType = String.valueOf(((Object[]) evt.getNewValue())[1]);
+        if (qualityTabController.shouldChangeValue(oldType, newType)) {
+          qualityTableModel
+              .setRowValue(index, qualityTabController.getDefaultValueByIndex(index));
+        }
+        break;
+      case "editOptions":
+        OptionalInt currentIndex = qualityTabController.getFidelityRowByEnumName(
+            ((Object[]) evt.getNewValue())[1].toString()
+        );
+        currentIndex.ifPresent(value -> qualityTableModel
+            .setRowValue(value, qualityTabController.getDefaultValueByIndex(value)));
+
     }
   }
 }

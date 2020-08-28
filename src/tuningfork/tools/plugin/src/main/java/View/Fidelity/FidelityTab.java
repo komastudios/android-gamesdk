@@ -146,6 +146,7 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
         FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
         if (rowData.getFieldEnumName().equals(oldName)) {
           rowData.setFieldEnumName(newName);
+          fidelityTabController.updateType(i, newName);
         }
       }
     } else if (evt.getPropertyName().equals("deleteEnum")) {
@@ -155,6 +156,7 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
         FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
         if (rowData.getFieldEnumName().equals(name)) {
           rowData.setFieldEnumName("");
+          fidelityTabController.updateType(i, "");
         }
       }
     }

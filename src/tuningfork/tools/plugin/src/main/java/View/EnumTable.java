@@ -18,13 +18,10 @@ package View;
 
 import Controller.Enum.EnumController;
 import View.Dialog.EnumDialogWrapper;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
@@ -34,13 +31,23 @@ public class EnumTable extends JPanel {
   private final JBTable enumTable;
   private final JPanel enumDecoratePanel;
   private final EnumController controller;
-  private JScrollPane jScrollPane;
   private final static int TABLE_WIDTH = 300;
   private final static int TABLE_HEIGHT = 200;
 
   public EnumTable(EnumController controller) {
     this.setLayout(new HorizontalLayout());
-    DefaultTableModel tableModel = new DefaultTableModel();
+    DefaultTableModel tableModel = new DefaultTableModel() {
+      @Override
+      public void removeRow(int row) {
+        dataVector.remove(row);
+        fireTableDataChanged();
+      }
+
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    };
     tableModel.setColumnIdentifiers(new Object[]{"Options"});
     controller.addEnumsToModel(tableModel);
     this.enumTable = new JBTable(tableModel);
@@ -53,12 +60,10 @@ public class EnumTable extends JPanel {
     initComponent();
     enumDecoratePanel.setPreferredSize(new Dimension(TABLE_WIDTH, TABLE_HEIGHT));
     enumDecoratePanel.setMinimumSize(new Dimension(TABLE_WIDTH, TABLE_HEIGHT));
-    this.add(jScrollPane);
+    this.add(enumDecoratePanel);
   }
 
   private void initComponent() {
-    jScrollPane = new JBScrollPane();
-    jScrollPane.setViewportView(enumDecoratePanel);
     enumTable.setFillsViewportHeight(true);
     enumTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     enumTable.getTableHeader().setReorderingAllowed(false);
@@ -75,12 +80,6 @@ public class EnumTable extends JPanel {
 
   private void removeEnum() {
     int row = enumTable.getSelectedRow();
-    if (!controller.canRemoveEnum(controller.getEnumsNames().get(row))) {
-      Messages
-          .showInfoMessage("Enum can not be deleted because it's currently being used.",
-              "Unable To Delete Enum");
-      return;
-    }
     controller.removeEnum(row);
     controller.removeEnumFromTable(enumTable, row);
   }

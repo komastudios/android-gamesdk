@@ -93,15 +93,16 @@ public class FidelityTabController {
   }
 
   public void updateType(int index, String type) {
+    String oldType = fidelityDataModel.getFieldTypes().get(index);
     fidelityDataModel.updateType(index, type);
+    if (!oldType.equals(type)) {
+      propertyChangeSupport
+          .firePropertyChange("typeChange", oldType, new Object[]{index, type});
+    }
   }
 
   public MessageDataModel getFidelityData() {
     return fidelityDataModel;
-  }
-
-  public boolean hasEnums() {
-    return enums.size() > 0;
   }
 
   public void addRowAction(JTable jtable) {
@@ -116,6 +117,10 @@ public class FidelityTabController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+  }
+
+  public boolean hasEnums() {
+    return !enums.isEmpty();
   }
 
   public List<String> getEnumNames() {

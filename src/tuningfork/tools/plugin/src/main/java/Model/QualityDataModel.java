@@ -38,9 +38,6 @@ public class QualityDataModel {
   }
 
   public boolean addField(String paramName, String value) {
-    if (fieldNames.contains(paramName)) {
-      return false;
-    }
     fieldNames.add(paramName);
     fieldValues.add(value);
     return true;
@@ -60,9 +57,6 @@ public class QualityDataModel {
   }
 
   public boolean updateName(int index, String name) {
-    if (fieldNames.contains(name)) {
-      return false;
-    }
     fieldNames.set(index, name);
     return true;
   }

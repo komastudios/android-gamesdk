@@ -66,6 +66,9 @@ public class AnnotationTabController extends EnumController {
     } else if (changeType.equals(ChangeType.REMOVE)) {
       propertyChangeSupport
           .firePropertyChange("deleteEnum", changeList[0], "");
+    } else if (changeType.equals(ChangeType.EDIT_OPTIONS)) {
+      propertyChangeSupport.firePropertyChange("editOptions", changeList[0],
+          new Object[]{changeList[1], changeList[2]});
     }
   }
 

@@ -167,6 +167,7 @@ public class PluginLayout extends JPanel {
         fidelityData, annotationTabController.getEnums());
     qualitySettingsLayout = new QualityTab(qualityTabController);
     fidelityTabController.addPropertyChangeListener(qualitySettingsLayout);
+    annotationTabController.addPropertyChangeListener(qualitySettingsLayout);
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
 
