@@ -23,6 +23,10 @@ import Model.QualityDataModel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -61,17 +65,22 @@ public class AssetsWriter {
 
   public boolean saveDevFidelityParams(List<QualityDataModel> qualityDataModel) {
     return IntStream.range(0, qualityDataModel.size())
-            .filter(i -> saveDevFidelityParams(qualityDataModel.get(i), i + 1))
-            .count()
+        .filter(i -> saveDevFidelityParams(qualityDataModel.get(i), i + 1))
+        .count()
         == qualityDataModel.size();
   }
 
   public boolean saveDevFidelityParams(QualityDataModel qualityDataModel, int fileNumber) {
-    File file = new File(assetsDirectory, "dev_tuningfork_fidelityparams_" + fileNumber + ".txt");
-    try (FileWriter fileWriter = new FileWriter(file)) {
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
-      fileWriter.write(qualityDataModel.toString());
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
+    File file = new File(assetsDirectory, "dev_tuningfork_fidelityparams_" + fileNumber + ".bin");
+    String toWrite = AUTO_GENERATED_PROTO + qualityDataModel.toString() + AUTO_GENERATED_PROTO;
+    byte[] binDataToWrite = toWrite.getBytes(StandardCharsets.UTF_8);
+
+    try (RandomAccessFile stream = new RandomAccessFile(file, "rw")) {
+      FileChannel channel = stream.getChannel();
+      ByteBuffer byteBuffer = ByteBuffer.allocate(binDataToWrite.length);
+      byteBuffer.put(binDataToWrite);
+      byteBuffer.flip();
+      channel.write(byteBuffer);
       return true;
     } catch (IOException e) {
       e.printStackTrace();
