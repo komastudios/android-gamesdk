@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44507ad4_492fd622",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Assets/AssetsWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-28T09:06:13Z",
+      "side": 1,
+      "message": "If It reached this part. Then It should be true I guess?",
+      "range": {
+        "startLine": 73,
+        "startChar": 17,
+        "endLine": 73,
+        "endChar": 22
+      },
+      "revId": "129992407407bcbc735ca9292444891128fe1841",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24f324bb_4a10e9da",
+        "filename": "src/tuningfork/tools/plugin/src/test/java/AssetsWriterTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-08-28T09:06:13Z",
+      "side": 1,
+      "message": "Keeping an enum value in the test would be good",
+      "revId": "129992407407bcbc735ca9292444891128fe1841",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
