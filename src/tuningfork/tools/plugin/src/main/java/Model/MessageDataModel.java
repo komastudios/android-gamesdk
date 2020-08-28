@@ -101,6 +101,14 @@ public class MessageDataModel {
     return true;
   }
 
+  public boolean addField(String paramName, String paramValue,
+      EnumDataModel enumDataModel) {
+    fieldNames.add(paramName);
+    fieldTypes.add(paramValue);
+    enumData.add(Optional.of(enumDataModel));
+    return true;
+  }
+
   public List<String> getFieldNames() {
     return fieldNames;
   }
@@ -132,8 +140,8 @@ public class MessageDataModel {
     return enumData.get(row);
   }
 
-  public void setEnumData(int row, Optional<EnumDataModel> enumData) {
-    this.enumData.set(row, enumData);
+  public void setEnumData(int row, EnumDataModel enumData) {
+    this.enumData.set(row, Optional.ofNullable(enumData));
   }
 
   @Override

@@ -23,9 +23,9 @@ import javax.swing.table.AbstractTableModel;
 
 public class QualityTableModel extends AbstractTableModel {
 
-  private List<String> columnNames;
-  private List<List<String>> data;
-  private QualityTabController qualityTabController;
+  private final List<String> columnNames;
+  private final List<List<String>> data;
+  private final QualityTabController qualityTabController;
 
   public QualityTableModel(QualityTabController qualityTabController) {
     data = new ArrayList<>();
@@ -33,10 +33,20 @@ public class QualityTableModel extends AbstractTableModel {
     this.qualityTabController = qualityTabController;
   }
 
+  public void setInitialData(List<List<String>> data) {
+    for (List<String> datum : data) {
+      for (int j = 0; j < getRowCount(); j++) {
+        this.data.get(j).add(datum.get(j));
+      }
+      columnNames.add(String.valueOf(columnNames.size() - 1));
+    }
+    fireTableStructureChanged();
+  }
+
   public void addRow() {
     List<String> row = new ArrayList<>();
     row.add("");
-    row.add("");
+    row.add("increase");
     for (int i = 2; i < getColumnCount(); i++) {
       row.add(qualityTabController.getDefaultValueByIndex(getRowCount()));
     }
@@ -46,12 +56,21 @@ public class QualityTableModel extends AbstractTableModel {
   }
 
   public void addColumn() {
-    columnNames.add(String.valueOf(columnNames.size() - 1));
+    columnNames.add(String.valueOf(getColumnCount() - 1));
+    qualityTabController.addNewQualityFile();
     for (int i = 0; i < getRowCount(); i++) {
       data.get(i).add(qualityTabController.getDefaultValueByIndex(i));
+      updateTrend(i);
     }
-    qualityTabController.addNewQualityFile();
+
     fireTableStructureChanged();
+  }
+
+  public void updateTrend() {
+    for (int i = 0; i < getRowCount(); i++) {
+      updateTrend(i);
+    }
+    fireTableDataChanged();
   }
 
   public void setFidelityNames(List<String> fidelityNames) {
@@ -63,24 +82,27 @@ public class QualityTableModel extends AbstractTableModel {
     }
   }
 
-  public void addColumn(List<String> columnData) {
-    columnNames.add(String.valueOf(columnNames.size() - 1));
-    for (int i = 0; i < getRowCount(); i++) {
-      data.get(i).add(columnData.get(i));
-    }
-    fireTableStructureChanged();
-  }
-
   public void setRowValue(int row, String value) {
     for (int i = 2; i < getColumnCount(); i++) {
-      setValueAt(value, row, i);
+      data.get(row).set(i, value);
+      qualityTabController.updateFieldValue(i - 2, row, value);
     }
+    updateTrend(row);
   }
 
   public void removeColumn(int column) {
     columnNames.remove(column);
+    qualityTabController.removeQualityFile(column - 2);
     for (int i = 0; i < getRowCount(); i++) {
       data.get(i).remove(column);
+      if (getColumnCount() > 2) {
+        updateTrend(i);
+      } else {
+        setValueAt("increase", i, 1);
+      }
+    }
+    for (int i = 2; i < getColumnCount(); i++) {
+      columnNames.set(i, String.valueOf(i - 1));
     }
     fireTableStructureChanged();
   }
@@ -120,13 +142,15 @@ public class QualityTableModel extends AbstractTableModel {
     data.get(row).set(column, object.toString());
     if (column == 0) {
       qualityTabController.updateFieldName(row, object.toString());
-    } else {
+    } else if (column > 1) {
       qualityTabController.updateFieldValue(column - 2, row, object.toString());
+      updateTrend(row);
     }
     fireTableCellUpdated(row, column);
   }
 
-  public List<String> getColumnNames() {
-    return columnNames;
+  public void updateTrend(int row) {
+    setValueAt(qualityTabController.getNewTrendState(row), row, 1);
   }
+
 }

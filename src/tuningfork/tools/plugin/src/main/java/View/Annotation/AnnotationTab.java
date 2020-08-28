@@ -18,6 +18,7 @@ package View.Annotation;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
+import Model.EnumDataModel;
 import View.Annotation.AnnotationDecorator.EnumComboBoxDecorator;
 import View.EnumTable;
 import View.TabLayout;
@@ -106,7 +107,8 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
         break;
       case "editEnum":
         String oldName = propertyChangeEvent.getOldValue().toString();
-        String newName = propertyChangeEvent.getNewValue().toString();
+        EnumDataModel newEnum = (EnumDataModel) propertyChangeEvent.getNewValue();
+        String newName = newEnum.getName();
         for (int i = 0; i < model.getRowCount(); i++) {
           String enumType = model.getValueAt(i, 0).toString();
           if (enumType.equals(oldName)) {

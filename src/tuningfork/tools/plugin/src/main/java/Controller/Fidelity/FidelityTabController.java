@@ -18,7 +18,6 @@ package Controller.Fidelity;
 
 import Model.EnumDataModel;
 import Model.MessageDataModel;
-import Model.MessageDataModel.Type;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -84,12 +83,19 @@ public class FidelityTabController {
 
   public void updateName(int index, String newName) {
     propertyChangeSupport
-        .firePropertyChange("nameChange", fidelityDataModel.getFieldNames().get(index), newName);
+        .firePropertyChange("nameChange", fidelityDataModel.getFieldNames().get(index),
+            new Object[]{index, newName});
     fidelityDataModel.updateName(index, newName);
   }
 
   public void updateEnum(int index, EnumDataModel enumDataModel) {
-    fidelityDataModel.setEnumData(index, Optional.ofNullable(enumDataModel));
+    Optional<EnumDataModel> oldType = fidelityDataModel.getEnumData(index);
+    fidelityDataModel.setEnumData(index, enumDataModel);
+    if ((oldType.isPresent() ^ fidelityDataModel.getEnumData(index).isPresent())
+        || (oldType.isPresent() && !oldType.get().equals(enumDataModel))) {
+      propertyChangeSupport
+          .firePropertyChange("typeChange", null, index);
+    }
   }
 
   public EnumDataModel findEnumByName(String name) {
@@ -98,12 +104,7 @@ public class FidelityTabController {
   }
 
   public void updateType(int index, String type) {
-    String oldType = fidelityDataModel.getFieldTypes().get(index);
     fidelityDataModel.updateType(index, type);
-    if (!oldType.equals(type)) {
-      propertyChangeSupport
-          .firePropertyChange("typeChange", oldType, new Object[]{index, type});
-    }
   }
 
   public MessageDataModel getFidelityData() {

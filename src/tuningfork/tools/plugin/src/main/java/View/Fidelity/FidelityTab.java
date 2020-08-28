@@ -17,6 +17,7 @@ package View.Fidelity;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
+import Model.EnumDataModel;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
@@ -139,13 +140,15 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   public void propertyChange(PropertyChangeEvent evt) {
     if (evt.getPropertyName().equals("editEnum")) {
       String oldName = evt.getOldValue().toString();
-      String newName = evt.getNewValue().toString();
+      EnumDataModel newEnum = (EnumDataModel) evt.getNewValue();
+      String newName = newEnum.getName();
       FidelityTableModel fidelityTableModel = (FidelityTableModel) fidelityTable.getModel();
       for (int i = 0; i < fidelityTableModel.getRowCount(); i++) {
         FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
         if (rowData.getFieldEnumName().equals(oldName)) {
           rowData.setFieldEnumName(newName);
           fidelityTabController.updateType(i, newName);
+          fidelityTabController.updateEnum(i, newEnum);
         }
       }
     } else if (evt.getPropertyName().equals("deleteEnum")) {

@@ -18,6 +18,7 @@
 package Utils.Validation;
 
 import Model.EnumDataModel;
+import Model.MessageDataModel;
 import Model.QualityDataModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,17 +58,12 @@ public final class ValidationTool {
 
   private static ArrayList<String> transformEnumToIndexSingleRow(
       List<QualityDataModel> qualityDataModels,
-      ArrayList<String> qualityParams, List<EnumDataModel> fidelityEnums,
+      ArrayList<String> qualityParams, MessageDataModel fidelityMessage,
       int row) {
     ArrayList<String> transformed = qualityParams;
-    String firstValue = qualityParams.get(0);
 
-    if (!firstValue.matches("[-+]?[0-9]*\\.?[0-9]+")) {
-      String enumName = qualityDataModels.get(0).getFieldNames().get(row);
-      EnumDataModel currentEnum = fidelityEnums.stream()
-          .filter(enumDataModel -> enumDataModel.getName().equals(enumName))
-          .collect(Collectors.toList())
-          .get(0);
+    if (fidelityMessage.getEnumData(row).isPresent()) {
+      EnumDataModel currentEnum = fidelityMessage.getEnumData(row).get();
       transformed = (ArrayList<String>) getEnumIndexes(qualityParams,
           qualityDataModels,
           currentEnum.getOptions());
@@ -77,10 +73,10 @@ public final class ValidationTool {
   }
 
   public static boolean isIncreasingSingleField(List<QualityDataModel> qualityDataModels,
-      List<EnumDataModel> fidelityEnums, int row) {
+      MessageDataModel fidelityMessage, int row) {
     ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
     ArrayList<String> transformedQualityParams = transformEnumToIndexSingleRow(qualityDataModels,
-        qualityParams, fidelityEnums, row);
+        qualityParams, fidelityMessage, row);
 
     return IntStream.range(0, qualityDataModels.size() - 1)
         .allMatch(setting -> Float.parseFloat(transformedQualityParams.get(setting))
@@ -89,10 +85,10 @@ public final class ValidationTool {
   }
 
   public static boolean isDecreasingSingleField(List<QualityDataModel> qualityDataModels,
-      List<EnumDataModel> fidelityEnums, int row) {
+      MessageDataModel fidelityMessage, int row) {
     ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
     ArrayList<String> transformedQualityParams = transformEnumToIndexSingleRow(qualityDataModels,
-        qualityParams, fidelityEnums, row);
+        qualityParams, fidelityMessage, row);
 
     return IntStream.range(0, qualityDataModels.size() - 1)
         .allMatch(setting -> Float.parseFloat(transformedQualityParams.get(setting))
