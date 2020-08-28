@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ca90bb1c_47e01435",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "A few nits, otherwise looks like a good start! :) ",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25b58395_ee5b69c8",
+        "filename": "test/tuningfork/metrics/app/src/androidTest/java/test/tuningfork/metricstest/ExampleInstrumentedTest.kt",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "Do you want to keep this example, or can we remove it?",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "285e5f3a_ebeb8a2c",
+        "filename": "test/tuningfork/metrics/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "Let\u0027s give this a real proper name ;) \nSomething like \"launchTests\"?",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e06f6f51_8777c5f1",
+        "filename": "test/tuningfork/metrics/app/src/main/java/test/tuningfork/metricstest/MainActivity.kt",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "Let\u0027s also give sample_text a proper name or remove it if unused.",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2de72136_e8ec9893",
+        "filename": "test/tuningfork/metrics/app/src/main/res/layout/activity_main.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "uber nit: if we keep this TextView, let\u0027s have a text that is empty or saying \"Waiting for tests to be finished...\" (we can also do this from the onCreate).",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93b29494_43531515",
+        "filename": "test/tuningfork/metrics/app/src/test/java/test/tuningfork/metricstest/ExampleUnitTest.kt",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T09:18:25Z",
+      "side": 1,
+      "message": "Same, let\u0027s clean these example tests if we don\u0027t use them :)",
+      "revId": "ab4ca66aaeccee1c7693f6450099a251b5af35cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
