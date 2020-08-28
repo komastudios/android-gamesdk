@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d5992eb_36b29669",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T16:35:25Z",
+      "side": 1,
+      "message": "Sounds good to go ahead with this",
+      "revId": "e596edbc3926689bf959985312e6375e8f8b5684",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4a095717_f81be7c5",
+        "filename": "test/tuningfork/metrics/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-08-28T16:35:25Z",
+      "side": 1,
+      "message": "Weird! How did you find this solution of passing the class? Curious about why this was crashing.",
+      "revId": "e596edbc3926689bf959985312e6375e8f8b5684",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
