@@ -19,6 +19,7 @@ package Controller.Quality;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Validation.ValidationTool;
 import View.Fidelity.FieldType;
 import java.util.List;
 import java.util.OptionalInt;
@@ -27,7 +28,6 @@ import javax.swing.JTable;
 
 public class QualityTabController {
 
-  private static int filesCount = 1;
   private final List<QualityDataModel> qualityDataModels;
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enums;
@@ -42,7 +42,7 @@ public class QualityTabController {
 
   public void addColumn(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.addColumn(filesCount++);
+    tableModel.addColumn();
   }
 
   public void removeColumn(JTable table) {
@@ -66,11 +66,13 @@ public class QualityTabController {
     qualityDataModels.add(qualityDataModel);
   }
 
+  public void removeQualityFile(int fileID) {
+    qualityDataModels.remove(fileID);
+  }
+
   public void addNewFieldToAllFiles(int row) {
-    qualityDataModels.forEach(qualityDataModel -> {
-      qualityDataModel.addField("",
-          getDefaultValueByIndex(row));
-    });
+    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.addField("",
+        getDefaultValueByIndex(row)));
   }
 
   public void updateFieldName(final int row, final String newName) {
@@ -119,29 +121,28 @@ public class QualityTabController {
     return List.of("");
   }
 
-  private int getFidelityFieldIndexByEnumTypeName(String typeName) {
-    if (typeName.equals(FieldType.INT32.getName())
-        || typeName.equals(FieldType.FLOAT.getName())) {
-      return -1;
-    }
-    OptionalInt indexValue = IntStream.range(0, fidelityData.getFieldTypes().size())
-        .filter(i -> fidelityData.getFieldTypes().get(i).equals(typeName))
-        .findFirst();
-    if (indexValue.isPresent()) {
-      return indexValue.getAsInt();
-    }
-    return -1;
-  }
-
+  // This should return true on going from (int32,float) to enum or EnumA -> enumB
   public boolean shouldChangeValue(String oldType, String newType) {
     boolean wasNotEnum =
         oldType.equals(FieldType.FLOAT.getName()) || oldType.equals(FieldType.INT32.getName());
     boolean isEnum =
         !newType.equals(FieldType.FLOAT.getName()) && !newType.equals(FieldType.INT32.getName());
-    if (wasNotEnum ^ isEnum) {
+    if (wasNotEnum && isEnum) {
       return true;
     }
-    return true;
+    return !wasNotEnum && isEnum;
+  }
+
+  public String getNewTrendState(int row) {
+    boolean isIncreasing = ValidationTool.isIncreasingSingleField(qualityDataModels, enums, row);
+    boolean isDecreasing = ValidationTool.isDecreasingSingleField(qualityDataModels, enums, row);
+    if (!isIncreasing && !isDecreasing) {
+      return "none";
+    } else if (!isIncreasing) {
+      return "decrease";
+    } else {
+      return "increase";
+    }
   }
 
   public FieldType getTypeByIndex(int row) {

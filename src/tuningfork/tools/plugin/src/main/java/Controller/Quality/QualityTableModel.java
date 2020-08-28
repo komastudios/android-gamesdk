@@ -36,7 +36,7 @@ public class QualityTableModel extends AbstractTableModel {
   public void addRow() {
     List<String> row = new ArrayList<>();
     row.add("");
-    row.add("");
+    row.add("increase");
     for (int i = 2; i < getColumnCount(); i++) {
       row.add(qualityTabController.getDefaultValueByIndex(getRowCount()));
     }
@@ -45,12 +45,14 @@ public class QualityTableModel extends AbstractTableModel {
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
 
-  public void addColumn(int fileNumber) {
-    columnNames.add(String.valueOf(fileNumber));
+  public void addColumn() {
+    columnNames.add(String.valueOf(getColumnCount() - 1));
+    qualityTabController.addNewQualityFile();
     for (int i = 0; i < getRowCount(); i++) {
       data.get(i).add(qualityTabController.getDefaultValueByIndex(i));
+      setValueAt(qualityTabController.getNewTrendState(i), i, 1);
     }
-    qualityTabController.addNewQualityFile();
+
     fireTableStructureChanged();
   }
 
@@ -62,8 +64,17 @@ public class QualityTableModel extends AbstractTableModel {
 
   public void removeColumn(int column) {
     columnNames.remove(column);
+    qualityTabController.removeQualityFile(column - 2);
     for (int i = 0; i < getRowCount(); i++) {
       data.get(i).remove(column);
+      if (getColumnCount() > 2) {
+        setValueAt(qualityTabController.getNewTrendState(i), i, 1);
+      } else {
+        setValueAt("increase", i, 1);
+      }
+    }
+    for (int i = 2; i < getColumnCount(); i++) {
+      columnNames.set(i, String.valueOf(i - 1));
     }
     fireTableStructureChanged();
   }
@@ -103,8 +114,9 @@ public class QualityTableModel extends AbstractTableModel {
     data.get(row).set(column, object.toString());
     if (column == 0) {
       qualityTabController.updateFieldName(row, object.toString());
-    } else {
+    } else if (column > 1) {
       qualityTabController.updateFieldValue(column - 2, row, object.toString());
+      setValueAt(qualityTabController.getNewTrendState(row), row, 1);
     }
     fireTableCellUpdated(row, column);
   }
