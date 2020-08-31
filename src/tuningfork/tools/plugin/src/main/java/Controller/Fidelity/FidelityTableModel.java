@@ -100,7 +100,7 @@ public class FidelityTableModel extends AbstractTableModel {
       } else if (row.getFieldType().equals(FieldType.INT32)) {
         enumNames.add("int32");
       } else {
-        enumNames.equals("float");
+        enumNames.add("float");
       }
     }
     return enumNames;

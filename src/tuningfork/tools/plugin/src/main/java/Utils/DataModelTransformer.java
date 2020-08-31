@@ -16,12 +16,15 @@
 
 package Utils;
 
+import Files.AssetsParser;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.MessageDataModel.Type;
 import Model.QualityDataModel;
 import Utils.Assets.AssetsFinder;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
+import com.google.common.io.Files;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
@@ -29,9 +32,9 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.ProtocolMessageEnum;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,7 +44,8 @@ import java.util.stream.Collectors;
 public final class DataModelTransformer {
 
   private File assetsDir;
-  private File devTuningfork;
+  private Optional<File> devTuningfork;
+  private Optional<List<File>> qualityFiles;
   private FileDescriptor devTuningforkDesc;
   private ProtoCompiler compiler;
 
@@ -50,9 +54,14 @@ public final class DataModelTransformer {
       throws IOException, CompilationException {
     assetsDir = new File(
         AssetsFinder.findAssets(projectPath).getAbsolutePath());
-    devTuningfork = new File(assetsDir, "dev_tuningfork.proto");
+    AssetsParser parser = new AssetsParser(assetsDir);
+    parser.parseFiles();
+    devTuningfork = parser.getDevTuningForkFile();
+    qualityFiles = parser.getDevFidelityParamFiles();
     this.compiler = compiler;
-    devTuningforkDesc = compiler.compile(devTuningfork, Optional.empty());
+    if (!devTuningfork.isEmpty()) {
+      devTuningforkDesc = compiler.compile(devTuningfork.get(), Optional.empty());
+    }
   }
 
   public static List<EnumDataModel> getEnums(List<EnumDescriptor> enumDescriptors) {
@@ -132,19 +141,45 @@ public final class DataModelTransformer {
   }
 
   public MessageDataModel initAnnotationData() {
+    if (devTuningfork.isEmpty()) {
+      return new MessageDataModel(new ArrayList<>(), new ArrayList<>(), Type.ANNOTATION);
+    }
     Descriptor messageDesc = devTuningforkDesc.findMessageTypeByName("Annotation");
     return transformToAnnotation(messageDesc).get();
   }
 
   public MessageDataModel initFidelityData() {
+    if (devTuningfork.isEmpty()) {
+      return new MessageDataModel(new ArrayList<>(), new ArrayList<>(), Type.FIDELITY);
+    }
     Descriptor messageDesc = devTuningforkDesc.findMessageTypeByName("FidelityParams");
     return transformToFidelity(messageDesc).get();
   }
 
-
   public List<EnumDataModel> initEnumData() {
+    if (devTuningfork.isEmpty()) {
+      return new ArrayList<>();
+    }
     List<EnumDescriptor> enumDescriptors = devTuningforkDesc.getEnumTypes();
     return getEnums(enumDescriptors);
   }
 
+  public List<QualityDataModel> initQualityData() throws IOException {
+    if (devTuningfork.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    Descriptor fidelityDesc = devTuningforkDesc.findMessageTypeByName("FidelityParams");
+    List<QualityDataModel> qualityDataModelList = new ArrayList<>();
+    if (qualityFiles.isPresent()) {
+      List<File> qualityFilesList = qualityFiles.get();
+      for (File qualityFile : qualityFilesList) {
+        byte[] fileContent = Files.toByteArray(qualityFile);
+        DynamicMessage fidelityMessage = compiler.decodeFromBinary(fidelityDesc, fileContent);
+        qualityDataModelList.add(transformToQuality(fidelityMessage).get());
+      }
+    }
+
+    return qualityDataModelList;
+  }
 }
