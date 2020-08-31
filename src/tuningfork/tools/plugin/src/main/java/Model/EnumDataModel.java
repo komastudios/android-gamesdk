@@ -43,6 +43,10 @@ public class EnumDataModel {
     return options;
   }
 
+  public int size() {
+    return options.size();
+  }
+
   public String getName() {
     return name;
   }

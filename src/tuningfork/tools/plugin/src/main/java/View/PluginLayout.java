@@ -17,6 +17,7 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
+import Model.EnumDataModel;
 import Controller.Fidelity.FidelityTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
@@ -34,6 +35,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BoxLayout;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -174,7 +177,7 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout.setVisible(false);
 
     // Validation settings initialization.
-    validationSettingsLayout = new ValidationSettingsTab();
+    validationSettingsLayout = new ValidationSettingsTab(enumData);
     validationSettingsLayout
         .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout.setVisible(false);
