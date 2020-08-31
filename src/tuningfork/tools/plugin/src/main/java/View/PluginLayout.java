@@ -17,12 +17,16 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
+import Controller.Enum.EnumController;
 import Controller.Fidelity.FidelityTabController;
+import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
+import com.intellij.openapi.project.Project;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -52,13 +56,18 @@ public class PluginLayout extends JPanel {
   private final MessageDataModel annotationData;
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enumData;
+  private final List<QualityDataModel> qualityData;
+  private final Project project;
 
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
-      List<EnumDataModel> enumData) {
+      List<EnumDataModel> enumData, List<QualityDataModel> qualityData,
+      Project project) {
     panels = new ArrayList<>();
     this.annotationData = annotationData;
+    this.qualityData = qualityData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
+    this.project = project;
     this.setPreferredSize(new Dimension(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2));
     this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     initComponents();
@@ -119,13 +128,19 @@ public class PluginLayout extends JPanel {
   }
 
   private void initComponents() {
-    qualitySettingsLayout = new QualityTab();
+    QualityTabController qualityTabController = new QualityTabController(qualityData,
+        fidelityData.getFieldsCount());
+    FidelityTabController fidelityTabController = new FidelityTabController(fidelityData);
+    EnumController enumController = new EnumController(enumData);
+    qualitySettingsLayout = new QualityTab(fidelityTabController,
+        qualityTabController, enumController, project);
     qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     qualitySettingsLayout.setVisible(false);
-    annotationsLayout = new AnnotationTab(new AnnotationTabController(annotationData), enumData);
+    annotationsLayout = new AnnotationTab(new AnnotationTabController(annotationData),
+        enumController);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
-    fidelitySettingsLayout = new FidelityTab(new FidelityTabController(fidelityData), enumData);
+    fidelitySettingsLayout = new FidelityTab(fidelityTabController, enumController);
     fidelitySettingsLayout.setVisible(false);
     fidelitySettingsLayout.setSize(
         new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
@@ -202,7 +217,12 @@ public class PluginLayout extends JPanel {
     return annotationsLayout.getAnnotationController();
   }
 
+  public QualityTabController getQualityTabController() {
+    return qualitySettingsLayout.getQualityTabController();
+  }
+
   public boolean saveSettings() {
-    return fidelitySettingsLayout.saveSettings() && annotationsLayout.saveSettings();
+    return fidelitySettingsLayout.saveSettings() && annotationsLayout.saveSettings() &&
+        qualitySettingsLayout.saveSettings();
   }
 }
