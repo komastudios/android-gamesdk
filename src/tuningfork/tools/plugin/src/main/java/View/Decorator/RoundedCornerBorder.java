@@ -33,7 +33,29 @@ import javax.swing.border.AbstractBorder;
 
 public final class RoundedCornerBorder extends AbstractBorder {
 
+  public enum BorderType {
+    NORMAL(JBColor.GRAY),
+    ERROR(JBColor.RED);
+    JBColor borderColor;
+
+    private BorderType(JBColor borderColor) {
+      this.borderColor = borderColor;
+    }
+
+    public JBColor getBorderColor() {
+      return borderColor;
+    }
+  }
+
   private final Color ALPHA_ZERO = UIUtil.getWindowColor();
+  BorderType borderType = BorderType.NORMAL;
+
+  public RoundedCornerBorder() {
+  }
+
+  public RoundedCornerBorder(BorderType borderType) {
+    this.borderType = borderType;
+  }
 
   @Override
   public void paintBorder(
@@ -45,7 +67,7 @@ public final class RoundedCornerBorder extends AbstractBorder {
     Area corner = new Area(new Rectangle2D.Double(x, y, width, height));
     corner.subtract(new Area(border));
     graphics2D.fill(corner);
-    graphics2D.setPaint(JBColor.GRAY);
+    graphics2D.setPaint(borderType.getBorderColor());
     graphics2D.draw(border);
     graphics2D.dispose();
   }
@@ -67,3 +89,4 @@ public final class RoundedCornerBorder extends AbstractBorder {
     return insets;
   }
 }
+
