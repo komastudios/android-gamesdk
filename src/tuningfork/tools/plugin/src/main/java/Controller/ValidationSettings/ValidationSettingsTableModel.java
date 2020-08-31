@@ -18,7 +18,9 @@ package Controller.ValidationSettings;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ValidationSettingsTableModel extends AbstractTableModel {
@@ -63,6 +65,18 @@ public class ValidationSettingsTableModel extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int row, int column) {
         return true;
+    }
+
+    public List<String> getColumnNames() {
+        return Arrays.asList(COLUMN_NAMES);
+    }
+
+    public List<List<String>> getValidationSettings() {
+        List<List<String>> validationSettings = new ArrayList<>();
+        for (String[] row : data) {
+            validationSettings.add(Arrays.asList(row));
+        }
+        return validationSettings;
     }
 
     @Override
