@@ -15,9 +15,9 @@
  */
 package View.Fidelity;
 
+import Controller.Enum.EnumController;
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
-import Model.EnumDataModel;
 import View.EnumTable;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
@@ -26,7 +26,6 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import java.util.List;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -42,11 +41,11 @@ public class FidelityTab extends TabLayout {
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
-  private List<EnumDataModel> enumData;
+  private EnumController enumController;
 
-  public FidelityTab(FidelityTabController controller, List<EnumDataModel> enumData) {
+  public FidelityTab(FidelityTabController controller, EnumController enumController) {
     this.fidelityTabController = controller;
-    this.enumData = enumData;
+    this.enumController = enumController;
     initVariables();
     initComponents();
   }
@@ -99,9 +98,12 @@ public class FidelityTab extends TabLayout {
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
+
     FidelityTableModel model = new FidelityTableModel(fidelityTabController);
     fidelityTable.setModel(model);
+    fidelityTabController.addEnums(enumController.getEnums());
     fidelityTabController.addInitialFidelity(fidelityTable);
+
     TableColumn enumColumn = fidelityTable.getColumnModel().getColumn(1);
     enumColumn.setCellEditor(new FidelityTableDecorators.TextBoxEditor());
     enumColumn.setCellRenderer(new FidelityTableDecorators.TextBoxRenderer());
@@ -111,11 +113,11 @@ public class FidelityTab extends TabLayout {
     typeColumn.setCellEditor(
         new ComboBoxEditor(new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM}));
     typeColumn.setCellRenderer(new ComboBoxRenderer());
+
     setDecoratorPanelSize(fidelityDecoratorPanel);
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
-    fidelityTabController.addEnums(enumData);
     this.add(new EnumTable(fidelityTabController));
   }
 

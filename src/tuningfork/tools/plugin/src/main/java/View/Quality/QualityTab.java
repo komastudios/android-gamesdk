@@ -16,21 +16,23 @@
 
 package View.Quality;
 
+import Controller.Enum.EnumController;
+import Controller.Fidelity.FidelityTabController;
 import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
+import Model.EnumDataModel;
 import View.TabLayout;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import java.util.Arrays;
-import java.util.HashSet;
-import javax.swing.JButton;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.jdesktop.swingx.VerticalLayout;
-
 
 public class QualityTab extends TabLayout {
 
@@ -43,70 +45,79 @@ public class QualityTab extends TabLayout {
           "You should have at least one quality level. <br>" +
           "Once you add a new level, you can edit/add data it by" +
           "modifying the text in the table below.</html> ");
-  private final static JButton saveSettingsButton = new JButton("Save settings");
-  private final JBLabel savedSettingsLabel = new JBLabel(
-      "Annotation Settings are successfully saved!");
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
   private QualityTabController qualityTabController;
+  private FidelityTabController fidelityTabController;
+  private EnumController enumController;
   private JPanel decoratorPanel;
-  private JPanel saveSettingsPanel;
-  private JPanel centerLabelPanel;
+  private Project project;
 
-  public QualityTab() {
+  public QualityTab(FidelityTabController fidelityTabController,
+      QualityTabController qualityTabController,
+      EnumController enumController,
+      Project project) {
     this.setLayout(new VerticalLayout());
+    this.qualityTabController = qualityTabController;
+    this.fidelityTabController = fidelityTabController;
+    this.enumController = enumController;
+    this.project = project;
     setSize();
     initComponents();
     addComponents();
+  }
+
+  public QualityTabController getQualityTabController() {
+    return qualityTabController;
   }
 
   private void addComponents() {
     this.add(title);
     this.add(aboutQualitySettings);
     this.add(scrollPane);
-    this.add(saveSettingsPanel);
-    this.add(centerLabelPanel);
+  }
+
+  private List<String> getMatchingEnumOptions(String enumName) {
+    EnumDataModel matchingEnum = enumController.getEnums().stream()
+        .filter(enumModel -> enumModel.getName().equals(enumName))
+        .collect(Collectors.toList())
+        .get(0);
+    return matchingEnum.getOptions();
   }
 
   private void setColumnsAndRenderers() {
-    HashSet<Integer> enumColumns = qualityTableModel.getEnumIndexes();
+    HashMap<Integer, String> enumColumns = qualityTableModel.getEnumNames();
     int columnCount = qualityTableModel.getColumnCount();
-    for (int i = 0; i < columnCount; i++) {
-      if (enumColumns.contains(i)) {
-        // TODO (targintaru) add enums from fidelity controller
-        initComboBoxColumns(qualityParametersTable, i,
-            Arrays.asList("option1", "option2", "option3"));
+    for (int i = 1; i < columnCount; i++) {
+      if (enumColumns.containsKey(i)) {
+        initComboBoxColumns(qualityParametersTable, i, getMatchingEnumOptions(enumColumns.get(i)));
       } else {
         initTextFieldColumns(qualityParametersTable, i);
       }
     }
   }
 
+  public boolean saveSettings() {
+    return qualityTabController.saveSettings(qualityParametersTable,
+        fidelityTabController.getFidelityDataModel(), enumController);
+  }
+
   private void initComponents() {
     title.setFont(getMainFont());
     aboutQualitySettings.setFont(getSecondaryLabel());
-    qualityTabController = new QualityTabController();
 
-    qualityTableModel = new QualityTableModel();
+    qualityTableModel = new QualityTableModel(fidelityTabController.getFidelityDataModel());
     qualityParametersTable = new JBTable(qualityTableModel);
+    qualityTabController.addInitialQuality(qualityParametersTable);
     decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
         .setAddAction(anActionButton -> QualityTabController.addRow(qualityParametersTable))
         .setRemoveAction(
-            anActionButton -> QualityTabController.removeRow(qualityParametersTable))
+            anActionButton -> QualityTabController.removeRow(qualityParametersTable, project))
         .createPanel();
     scrollPane = new JBScrollPane();
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, qualityParametersTable);
     setColumnsAndRenderers();
-
-    savedSettingsLabel.setVisible(false);
-    saveSettingsPanel = new JPanel();
-    saveSettingsPanel.add(saveSettingsButton);
-    saveSettingsButton.addActionListener(actionEvent ->
-        qualityTabController.saveSettings(qualityParametersTable, savedSettingsLabel));
-
-    centerLabelPanel = new JPanel();
-    centerLabelPanel.add(savedSettingsLabel);
   }
 }
