@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2020 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License
+ */
+
+
 package Utils.Validation;
 
 import Model.EnumDataModel;
@@ -9,20 +26,12 @@ import java.util.stream.IntStream;
 
 public final class ValidationTool {
 
-  private static ArrayList[] getQualityForOneField(
-      List<QualityDataModel> qualityDataModels) {
-    int fieldCount = qualityDataModels.get(0).getFieldCount();
-    ArrayList<String>[] qualityForOneField = new ArrayList[fieldCount];
-
-    for (int i = 0; i < fieldCount; i++) {
-      qualityForOneField[i] = new ArrayList<>();
-    }
+  private static ArrayList<String> getQualityForOneField(
+      List<QualityDataModel> qualityDataModels, int row) {
+    ArrayList<String> qualityForOneField = new ArrayList<>();
 
     for (QualityDataModel qualityDataModel : qualityDataModels) {
-      List<String> values = qualityDataModel.getFieldValues();
-      for (int field = 0; field < fieldCount; field++) {
-        qualityForOneField[field].add(values.get(field));
-      }
+      qualityForOneField.add(qualityDataModel.getFieldValues().get(row));
     }
 
     return qualityForOneField;
@@ -35,7 +44,7 @@ public final class ValidationTool {
   private static List<String> getEnumIndexes(List<String> optionsToBeTransformed,
       List<QualityDataModel> qualityDataModels, List<String> currentOptions) {
     return IntStream
-        .range(0, qualityDataModels.size() - 1)
+        .range(0, qualityDataModels.size())
         .mapToObj(settingsNumber -> IntStream
             .range(0, currentOptions.size())
             .filter(optionsIndex -> currentOptions.get(optionsIndex)
@@ -46,77 +55,48 @@ public final class ValidationTool {
         .collect(Collectors.toList());
   }
 
-  private static boolean hasZeroEnum(ArrayList<String> indexes) {
-    return indexes.stream().filter(index -> index.equals("0")).collect(Collectors.toList()).size()
-        > 0;
-  }
-
-  private static void transformEnumOptionsToIndex(List<QualityDataModel> qualityDataModels,
-      List<EnumDataModel> fidelityEnums, ArrayList[] qualityParams, ErrorCollector errors) {
-    int fieldCount = qualityDataModels.get(0).getFieldCount();
-    for (int qualityColumn = 0; qualityColumn < fieldCount; qualityColumn++) {
-      String firstValue = (String) qualityParams[qualityColumn].get(0);
-      if (!firstValue.matches("[-+]?[0-9]*\\.?[0-9]+")) {
-        String enumName = qualityDataModels.get(0).getFieldNames().get(qualityColumn);
-        EnumDataModel currentEnum = fidelityEnums.stream()
-            .filter(enumDataModel -> enumDataModel.getName().equals(enumName))
-            .collect(Collectors.toList())
-            .get(0);
-        ArrayList<String> indexes = (ArrayList<String>) getEnumIndexes(qualityParams[qualityColumn],
-            qualityDataModels,
-            currentEnum.getOptions());
-
-        if (hasZeroEnum(indexes)) {
-          errors.addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO,
-              "Enum fields can't have 0 values");
-        }
-
-        qualityParams[qualityColumn] = indexes;
-      }
-    }
-  }
-
-  /*
-   * Validate content of fidelity parameters from all dev_tuningfork_fidelityparams_*.bin files.
-   * These should be in either increasing/decreasing order.
-   */
-  public static void validateDevFidelityParamsOrder(
+  private static ArrayList<String> transformEnumToIndexSingleRow(
       List<QualityDataModel> qualityDataModels,
-      List<EnumDataModel> fidelityEnums,
-      ErrorCollector errors) {
-    ArrayList[] qualityParams = getQualityForOneField(qualityDataModels);
-    transformEnumOptionsToIndex(qualityDataModels, fidelityEnums, qualityParams, errors);
-    int qualitySettingsCount = qualityDataModels.size();
-    int fidelityParamsCount = qualityParams.length;
+      ArrayList<String> qualityParams, List<EnumDataModel> fidelityEnums,
+      int row) {
+    ArrayList<String> transformed = qualityParams;
+    String firstValue = qualityParams.get(0);
 
-    long isIncreasing = IntStream.range(0, fidelityParamsCount - 1)
-        .filter(fidelityParamIndex -> IntStream.range(0, qualitySettingsCount - 2)
-            .allMatch(
-                setting -> Float.parseFloat((String) qualityParams[fidelityParamIndex].get(setting))
-                    <= Float
-                    .parseFloat((String) qualityParams[fidelityParamIndex].get(setting + 1))))
-        .count();
-
-    long isDecreasing = IntStream.range(0, fidelityParamsCount - 1)
-        .filter(fidelityParamIndex -> IntStream.range(0, qualitySettingsCount - 2)
-            .allMatch(
-                setting -> Float.parseFloat((String) qualityParams[fidelityParamIndex].get(setting))
-                    <= Float
-                    .parseFloat((String) qualityParams[fidelityParamIndex].get(setting + 1))))
-        .count();
-
-    long allEqual = IntStream.range(0, fidelityParamsCount - 1)
-        .filter(fidelityParamIndex -> IntStream.range(0, qualitySettingsCount - 2)
-            .allMatch(
-                setting -> Float.parseFloat((String) qualityParams[fidelityParamIndex].get(setting))
-                    == Float
-                    .parseFloat((String) qualityParams[fidelityParamIndex].get(setting + 1))))
-        .count();
-
-    if (isIncreasing + isDecreasing - allEqual != fidelityParamsCount) {
-      errors
-          .addWarning(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER, "Fidelity parameters should be " +
-              "in either increasing or decreasing order.");
+    if (!firstValue.matches("[-+]?[0-9]*\\.?[0-9]+")) {
+      String enumName = qualityDataModels.get(0).getFieldNames().get(row);
+      EnumDataModel currentEnum = fidelityEnums.stream()
+          .filter(enumDataModel -> enumDataModel.getName().equals(enumName))
+          .collect(Collectors.toList())
+          .get(0);
+      transformed = (ArrayList<String>) getEnumIndexes(qualityParams,
+          qualityDataModels,
+          currentEnum.getOptions());
     }
+
+    return transformed;
+  }
+
+  public static boolean isIncreasingSingleField(List<QualityDataModel> qualityDataModels,
+      List<EnumDataModel> fidelityEnums, int row) {
+    ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
+    ArrayList<String> transformedQualityParams = transformEnumToIndexSingleRow(qualityDataModels,
+        qualityParams, fidelityEnums, row);
+
+    return IntStream.range(0, qualityDataModels.size() - 1)
+        .allMatch(setting -> Float.parseFloat(transformedQualityParams.get(setting))
+            <= Float
+            .parseFloat(transformedQualityParams.get(setting + 1)));
+  }
+
+  public static boolean isDecreasingSingleField(List<QualityDataModel> qualityDataModels,
+      List<EnumDataModel> fidelityEnums, int row) {
+    ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
+    ArrayList<String> transformedQualityParams = transformEnumToIndexSingleRow(qualityDataModels,
+        qualityParams, fidelityEnums, row);
+
+    return IntStream.range(0, qualityDataModels.size() - 1)
+        .allMatch(setting -> Float.parseFloat(transformedQualityParams.get(setting))
+            >= Float
+            .parseFloat(transformedQualityParams.get(setting + 1)));
   }
 }
