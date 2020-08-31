@@ -15,36 +15,43 @@
  */
 package View.Dialog;
 
+import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
+import static View.Decorator.TableRenderer.getRendererTextBoxWithValidation;
+
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
+import Utils.Validation.UIValidator;
+import View.Decorator.TableRenderer;
 import View.TabLayout;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
 
-  private static final String ENUM_PATTERN = "[a-zA-Z_]+$";
+  private static final String ILLEGAL_TEXT_PATTERN = "[{|}]";
   private EnumLayout enumLayout;
-  private EnumController controller;
+  private final EnumController controller;
   private boolean isEdit;
   private int editingRow;
   private EnumDataModel enumDataModel;
@@ -53,7 +60,6 @@ public class EnumDialogWrapper extends DialogWrapper {
     super(true);
     setTitle("Add Enum");
     this.controller = controller;
-    setValidationDelay(100);
     init();
   }
 
@@ -64,7 +70,6 @@ public class EnumDialogWrapper extends DialogWrapper {
     this.isEdit = true;
     this.editingRow = row;
     this.enumDataModel = enumDataModel;
-    setValidationDelay(100);
     init();
   }
 
@@ -72,60 +77,17 @@ public class EnumDialogWrapper extends DialogWrapper {
     if (!enumLayout.optionsTable.isEditing()) {
       return;
     }
-    int row = enumLayout.optionsTable.getSelectedRow();
     enumLayout.optionsTable.getCellEditor().stopCellEditing();
-    enumLayout.optionsTable.editCellAt(row, 0);
   }
 
-  @NotNull
-  @Override
-  protected List<ValidationInfo> doValidateAll() {
-    List<ValidationInfo> validationInfo = new ArrayList<>();
-    if (enumLayout.getName().isEmpty()) {
-      validationInfo.add(new ValidationInfo("Name can not be empty", enumLayout.nameTextField));
-    }
-    validateOptions(validationInfo);
-    validatePattern(validationInfo);
-    if (validationInfo.isEmpty()) {
-      return validationInfo;
-    }
-    // Show at most 3 errors at once.
-    return validationInfo.subList(0, Math.min(validationInfo.size(), 3));
-  }
-
-  private void validatePattern(List<ValidationInfo> validationInfo) {
-    if (!enumLayout.getName().matches(ENUM_PATTERN)) {
-      validationInfo.add(
-          new ValidationInfo("Name Must Match Pattern [a-zA-Z_]", enumLayout.nameTextField));
-    }
-    enumLayout.getOptions().stream()
-        .filter(option -> !option.matches(ENUM_PATTERN) && !option.isEmpty())
-        .forEach(s ->
-            validationInfo.add(
-                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_]")));
-  }
-
-  private void validateOptions(List<ValidationInfo> validationInfo) {
-    List<String> options = enumLayout.getOptions();
-    if (options.isEmpty()) {
-      validationInfo.add(new ValidationInfo("Options Table Can Not Be Empty"));
-      return;
-    }
-
-    boolean isOptionTextEmpty = options.stream().anyMatch(String::isEmpty);
-    if (isOptionTextEmpty) {
-      validationInfo.add(new ValidationInfo("Empty Fields Are Not Allowed"));
-    }
-    boolean isOptionDuplicate =
-        options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
-    if (isOptionDuplicate) {
-      validationInfo.add(new ValidationInfo("Repeated Fields Are Not Allowed"));
-    }
-  }
 
   @Override
   protected void doOKAction() {
     stopCellEditingMomentarily();
+    if (!enumLayout.isViewValid()) {
+      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      return;
+    }
     if (isEdit) {
       if (controller.editEnum(editingRow, enumLayout.getName(), enumLayout.getOptions())) {
         super.doOKAction();
@@ -146,7 +108,7 @@ public class EnumDialogWrapper extends DialogWrapper {
   @Override
   protected @Nullable
   JComponent createCenterPanel() {
-    enumLayout = new EnumLayout();
+    enumLayout = new EnumLayout(getDisposable());
     if (isEdit) {
       enumLayout.setData(enumDataModel);
     }
@@ -155,16 +117,18 @@ public class EnumDialogWrapper extends DialogWrapper {
 
   private static final class EnumLayout extends TabLayout {
 
-    private JBScrollPane scrollPane;
     private JTable optionsTable;
     private JPanel decoratorPanel;
     private JTextField nameTextField;
     private DefaultTableModel model;
     private final JLabel nameLabel = new JBLabel("Name");
+    private final Disposable disposable;
 
-    EnumLayout() {
+    EnumLayout(Disposable disposable) {
+      this.disposable = disposable;
       initComponents();
       addComponents();
+      initValidators();
     }
 
     private void addComponents() {
@@ -173,7 +137,7 @@ public class EnumDialogWrapper extends DialogWrapper {
       namePanel.add(nameTextField);
       this.add(namePanel);
       this.add(Box.createVerticalStrut(30));
-      this.add(scrollPane);
+      this.add(decoratorPanel);
     }
 
     public void setData(EnumDataModel enumDataModel) {
@@ -208,7 +172,6 @@ public class EnumDialogWrapper extends DialogWrapper {
             }
           };
       optionsTable = new JBTable();
-      scrollPane = new JBScrollPane();
       decoratorPanel =
           ToolbarDecorator.createDecorator(optionsTable)
               .setAddAction(it -> model.addRow(new String[]{""}))
@@ -222,10 +185,77 @@ public class EnumDialogWrapper extends DialogWrapper {
                   })
               .createPanel();
       setDecoratorPanelSize(decoratorPanel);
-      setTableSettings(scrollPane, decoratorPanel, optionsTable);
+      optionsTable.setFillsViewportHeight(true);
+      optionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      optionsTable.getTableHeader().setReorderingAllowed(false);
+      optionsTable.setRowSelectionAllowed(true);
+      optionsTable.setSelectionForeground(null);
+      optionsTable.setSelectionBackground(null);
+      optionsTable.setIntercellSpacing(new Dimension(0, 0));
       model.setColumnIdentifiers(new String[]{"Options"});
       optionsTable.setModel(model);
-      initTextFieldColumns(optionsTable, 0);
+    }
+
+    private void initValidators() {
+      new ComponentValidator(disposable).withValidator(() -> {
+        String name = nameTextField.getText();
+        if (name.isEmpty()) {
+          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+        }
+        if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(name).find()) {
+          return new ValidationInfo(name + " contains illegal characters", nameTextField);
+        }
+        return null;
+      }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
+
+      UIValidator.createTableValidator(disposable, optionsTable,
+          () -> {
+            if (optionsTable.getRowCount() == 0) {
+              return new ValidationInfo("Options Table Can Not Be Empty", optionsTable);
+            }
+            ArrayList<String> options = getOptions();
+            boolean isOptionDuplicate =
+                options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
+            if (isOptionDuplicate) {
+              return new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable);
+            }
+            return null;
+          });
+      model.addTableModelListener(
+          e -> ComponentValidator.getInstance(optionsTable)
+              .ifPresent(ComponentValidator::revalidate));
+      optionsTable.getColumnModel().getColumn(0).setCellEditor(getEditorTextBoxWithValidation(
+          disposable));
+      optionsTable.getColumnModel().getColumn(0)
+          .setCellRenderer(getRendererTextBoxWithValidation(
+              (value, row, column) -> {
+                String strVal = value.toString();
+                if (strVal.isEmpty()) {
+                  return new ValidationInfo("Field Can Not Be Empty!");
+                }
+                if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
+                  return new ValidationInfo(strVal + " contains illegal characters");
+                }
+                return null;
+              }));
+
+      TableRenderer.addCellToolTipManager(optionsTable, disposable);
+    }
+
+    public boolean isViewValid() {
+      return isTableCellsValidate() & isNameTextFieldValid() & isTableValid();
+    }
+
+    private boolean isTableCellsValidate() {
+      return UIValidator.isTableCellsValidate(optionsTable);
+    }
+
+    private boolean isNameTextFieldValid() {
+      return UIValidator.isComponentValidate(nameTextField);
+    }
+
+    private boolean isTableValid() {
+      return UIValidator.isComponentValidate(optionsTable);
     }
   }
 }
