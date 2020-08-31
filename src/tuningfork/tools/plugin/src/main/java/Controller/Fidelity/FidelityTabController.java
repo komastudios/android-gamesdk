@@ -28,8 +28,12 @@ public class FidelityTabController extends EnumController {
 
   private MessageDataModel fidelityDataModel;
 
-  public FidelityTabController(MessageDataModel fidelityDataModel){
+  public FidelityTabController(MessageDataModel fidelityDataModel) {
     this.fidelityDataModel = fidelityDataModel;
+  }
+
+  public MessageDataModel getFidelityDataModel() {
+    return fidelityDataModel;
   }
 
   public void addInitialFidelity(JTable table) {
@@ -76,9 +80,8 @@ public class FidelityTabController extends EnumController {
         .getFidelityParamNames();
     List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
         .getFidelityFieldValues();
-    fidelityDataModel = new MessageDataModel();
-    fidelityDataModel.setMessageType(Type.FIDELITY);
-    fidelityDataModel.addMultipleFields(fidelityParamNames, fidelityFieldValues);
+    fidelityDataModel = new MessageDataModel(fidelityParamNames, fidelityFieldValues,
+        Type.FIDELITY);
     return true;
   }
 }

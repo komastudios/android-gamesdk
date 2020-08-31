@@ -66,6 +66,7 @@ public class AnnotationTabController extends EnumController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+    System.out.println(model.getRowCount());
   }
 
   public boolean saveSettings(JTable jTable) {
@@ -73,10 +74,9 @@ public class AnnotationTabController extends EnumController {
         .getAnnotationEnumNames();
     List<String> annotationFieldNames = ((AnnotationTableModel) jTable.getModel())
         .getAnnotationFieldNames();
-    annotationDataModel = new MessageDataModel();
-    annotationDataModel.setMessageType(Type.ANNOTATION);
-
-    return annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames);
+    annotationDataModel = new MessageDataModel(annotationFieldNames, annotationEnumNames,
+        Type.ANNOTATION);
+    return true;
   }
 
   public MessageDataModel getAnnotationDataModel() {

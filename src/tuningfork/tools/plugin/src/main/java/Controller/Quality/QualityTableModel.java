@@ -16,54 +16,49 @@
 
 package Controller.Quality;
 
+import Model.MessageDataModel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 public class QualityTableModel extends AbstractTableModel {
 
-  private String[] columnNames = {"Quality level number",
-      "Field1 (int32)",
-      "Field2 (float)",
-      "Field3 (ENUM)"};
+  private String[] columnNames;
   private List<String[]> data;
-  private Set<Integer> enumIndexes;
+  private HashMap<Integer, String> enumNames;
 
-  public QualityTableModel() {
+  public QualityTableModel(MessageDataModel fidelityDataModel) {
     data = new ArrayList<>();
-    enumIndexes = new HashSet<>();
-    addEnumIndexes();
+    enumNames = new HashMap<>();
+    setColumnNames(fidelityDataModel);
   }
 
-  public QualityTableModel(String[] columnNames) {
-    data = new ArrayList<>();
-    enumIndexes = new HashSet<>();
-    this.columnNames = columnNames;
-    addEnumIndexes();
+  public void setColumnNames(MessageDataModel fidelityDataModel) {
+    List<String> names = fidelityDataModel.getFieldNames();
+    List<String> values = fidelityDataModel.getFieldValues();
+    int fieldCount = names.size();
+    columnNames = new String[fieldCount + 1];
+    columnNames[0] = "File no.";
+
+    for (int i = 0; i < fieldCount; i++) {
+      columnNames[i + 1] = names.get(i) + " - " + values.get(i);
+      if (!values.get(i).equals("int32") && !values.get(i).equals("float")) {
+        enumNames.put(i + 1, values.get(i));
+      }
+    }
   }
 
-  private void addEnumIndexes() {
-    ArrayList<String> fidelitySettingsTypes = (ArrayList<String>) Arrays.stream(columnNames)
-        .map(columnName -> columnName.split(" ")[1])
-        .collect(Collectors.toList());
-    enumIndexes = IntStream.range(0, fidelitySettingsTypes.size())
-        .filter(i -> fidelitySettingsTypes.get(i).equals("(ENUM)")).boxed()
-        .collect(Collectors.toSet());
-  }
 
-  public HashSet<Integer> getEnumIndexes() {
-    return (HashSet<Integer>) enumIndexes;
+  public HashMap<Integer, String> getEnumNames() {
+    return enumNames;
   }
 
   public void addRow(String[] row, JTable table) {
     data.add(row);
-    QualityTabController.increaseFilesCount();
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
 
@@ -113,7 +108,7 @@ public class QualityTableModel extends AbstractTableModel {
     List<List<String>> qualitySettings = new ArrayList<>();
 
     for (String[] row : data) {
-      qualitySettings.add(Arrays.asList(row));
+      qualitySettings.add(Arrays.asList(row).subList(1, getColumnCount()));
     }
 
     return qualitySettings;
