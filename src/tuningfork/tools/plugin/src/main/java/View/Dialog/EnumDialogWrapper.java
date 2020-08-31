@@ -15,22 +15,34 @@
  */
 package View.Dialog;
 
+import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
+import static View.Decorator.TableRenderer.getRendererTextBoxWithValidation;
+import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
+
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
 import View.TabLayout;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.cellvalidators.CellComponentProvider;
+import com.intellij.openapi.ui.cellvalidators.CellTooltipManager;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
@@ -38,8 +50,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
 
+  private static final String ENUM_PATTERN = "[a-zA-Z_]+$";
   private EnumLayout enumLayout;
-  private EnumController controller;
+  private final EnumController controller;
   private boolean isEdit;
   private int editingRow;
   private EnumDataModel enumDataModel;
@@ -48,69 +61,78 @@ public class EnumDialogWrapper extends DialogWrapper {
     super(true);
     setTitle("Add Enum");
     this.controller = controller;
-    this.enumLayout = new EnumLayout();
+    setValidationDelay(100);
     init();
   }
 
-  public EnumDialogWrapper(EnumController controller, int row,
-      EnumDataModel enumDataModel) {
+  public EnumDialogWrapper(EnumController controller, int row, EnumDataModel enumDataModel) {
     super(true);
+    setTitle("Edit Enum");
     this.controller = controller;
     this.isEdit = true;
     this.editingRow = row;
     this.enumDataModel = enumDataModel;
-    setTitle("Edit Enum");
+    setValidationDelay(100);
     init();
   }
 
-
-  @Nullable
-  @Override
-  protected ValidationInfo doValidate() {
-    if (enumLayout.optionsTable.isEditing()) {
-      enumLayout.optionsTable.getCellEditor().stopCellEditing();
+  private void stopCellEditingMomentarily() {
+    if (!enumLayout.optionsTable.isEditing()) {
+      return;
     }
-    if (enumLayout.getName().isEmpty()) {
-      return new ValidationInfo("Name can not be empty", enumLayout.nameTextField);
-    }
-    if (enumLayout.getOptions().isEmpty()) {
-      return new ValidationInfo("Options can not be empty", enumLayout.scrollPane);
-    }
-    return super.doValidate();
+    enumLayout.optionsTable.getCellEditor().stopCellEditing();
   }
+
 
   @Override
   protected void doOKAction() {
-    if (isEdit) {
-      controller.editEnum(editingRow, enumLayout.getName(), enumLayout.getOptions());
-    } else {
-      controller.addEnum(enumLayout.getName(), enumLayout.getOptions());
+    stopCellEditingMomentarily();
+    if (enumLayout.validateView().size() > 0) {
+      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      return;
     }
-    super.doOKAction();
+    if (isEdit) {
+      if (controller.editEnum(editingRow, enumLayout.getName(), enumLayout.getOptions())) {
+        super.doOKAction();
+      } else {
+        Messages.showInfoMessage(
+            "Conflicting enums names. Please change the enum name", "Unable to Edit Enum!");
+      }
+    } else {
+      if (controller.addEnum(enumLayout.getName(), enumLayout.getOptions())) {
+        super.doOKAction();
+      } else {
+        Messages.showInfoMessage(
+            "Enum name already exists. Please change the enum name", "Unable to Add Enum!");
+      }
+    }
   }
 
   @Override
   protected @Nullable
   JComponent createCenterPanel() {
-    enumLayout = new EnumLayout();
+    enumLayout = new EnumLayout(getDisposable());
     if (isEdit) {
       enumLayout.setData(enumDataModel);
     }
     return enumLayout;
   }
 
+  @SuppressWarnings("UnstableApiUsage")
   private static final class EnumLayout extends TabLayout {
 
-    private JBScrollPane scrollPane;
     private JTable optionsTable;
     private JPanel decoratorPanel;
     private JTextField nameTextField;
     private DefaultTableModel model;
     private final JLabel nameLabel = new JBLabel("Name");
+    private final Disposable disposable;
 
-    EnumLayout() {
+    EnumLayout(Disposable disposable) {
+      this.disposable = disposable;
       initComponents();
       addComponents();
+      initValidators();
     }
 
     private void addComponents() {
@@ -118,8 +140,8 @@ public class EnumDialogWrapper extends DialogWrapper {
       namePanel.add(nameLabel);
       namePanel.add(nameTextField);
       this.add(namePanel);
-      this.add(Box.createVerticalStrut(10));
-      this.add(scrollPane);
+      this.add(Box.createVerticalStrut(30));
+      this.add(decoratorPanel);
     }
 
     public void setData(EnumDataModel enumDataModel) {
@@ -145,31 +167,114 @@ public class EnumDialogWrapper extends DialogWrapper {
     private void initComponents() {
       this.setLayout(new VerticalLayout());
       nameTextField = new JTextField("", 30);
-      model = new DefaultTableModel() {
-        @Override
-        public void removeRow(int row) {
-          dataVector.remove(row);
-          fireTableDataChanged();
-        }
-      };
+      model =
+          new DefaultTableModel() {
+            @Override
+            public void removeRow(int row) {
+              dataVector.remove(row);
+              fireTableDataChanged();
+            }
+          };
       optionsTable = new JBTable();
-      scrollPane = new JBScrollPane();
       decoratorPanel =
           ToolbarDecorator.createDecorator(optionsTable)
-              .setAddAction(it -> model.addRow(new String[]{}))
-              .setRemoveAction(it -> {
-                int currentRow = optionsTable.getSelectedRow();
-                if (optionsTable.isEditing()) {
-                  optionsTable.getCellEditor().stopCellEditing();
-                }
-                model.removeRow(currentRow);
-              })
+              .setAddAction(it -> model.addRow(new String[]{""}))
+              .setRemoveAction(
+                  it -> {
+                    int currentRow = optionsTable.getSelectedRow();
+                    if (optionsTable.isEditing()) {
+                      optionsTable.getCellEditor().stopCellEditing();
+                    }
+                    model.removeRow(currentRow);
+                  })
               .createPanel();
       setDecoratorPanelSize(decoratorPanel);
-      setTableSettings(scrollPane, decoratorPanel, optionsTable);
+      optionsTable.setFillsViewportHeight(true);
+      optionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      optionsTable.getTableHeader().setReorderingAllowed(false);
+      optionsTable.setRowSelectionAllowed(true);
+      optionsTable.setIntercellSpacing(new Dimension(0, 0));
       model.setColumnIdentifiers(new String[]{"Options"});
       optionsTable.setModel(model);
-      initTextFieldColumns(optionsTable, 0);
+    }
+
+    private void initValidators() {
+      new ComponentValidator(disposable).withValidator(() -> {
+        String name = nameTextField.getText();
+        if (name.isEmpty()) {
+          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+        }
+        if (!name.matches(ENUM_PATTERN)) {
+          return new ValidationInfo(name + " Does Not Match The Pattern [a-zA-Z_]", nameTextField);
+        }
+        return null;
+      }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
+      optionsTable.getColumnModel().getColumn(0).setCellEditor(getEditorTextBoxWithValidation(
+          disposable));
+      optionsTable.getColumnModel().getColumn(0)
+          .setCellRenderer(getRendererTextBoxWithValidation(
+              (value, row, column) -> {
+                String strVal = value.toString();
+                if (strVal.isEmpty()) {
+                  return new ValidationInfo("Field Can Not Be Empty!");
+                }
+                if (!strVal.matches(ENUM_PATTERN)) {
+                  return new ValidationInfo(strVal + " Does Not Match The Pattern [a-zA-Z_]");
+                }
+                return null;
+              }));
+
+      new CellTooltipManager(disposable).
+          withCellComponentProvider(CellComponentProvider.forTable(optionsTable)).
+          installOn(optionsTable);
+    }
+
+    public List<ValidationInfo> validateView() {
+      List<ValidationInfo> validationInfo = new ArrayList<>();
+      if (ComponentValidator.getInstance(nameTextField).get().getValidationInfo() != null) {
+        validationInfo.add(ComponentValidator.getInstance(nameTextField).get().getValidationInfo());
+      }
+
+      validateOptions(validationInfo);
+      validatePattern(validationInfo);
+      validateTable(validationInfo);
+
+      return validationInfo;
+    }
+
+    private void validateTable(List<ValidationInfo> validationInfo) {
+      for (int i = 0; i < optionsTable.getRowCount(); i++) {
+        JComponent component = (JComponent) optionsTable
+            .getCellRenderer(i, 0).getTableCellRendererComponent(optionsTable,
+                model.getValueAt(i, 0), false, false, i, 0);
+        ValidationInfo cellInfo = component != null ? (ValidationInfo) component
+            .getClientProperty(CELL_VALIDATION_PROPERTY) : null;
+        if (cellInfo != null) {
+          validationInfo.add(cellInfo);
+        }
+      }
+    }
+
+    private void validatePattern(List<ValidationInfo> validationInfo) {
+      if (!getName().matches(ENUM_PATTERN)) {
+        validationInfo.add(
+            new ValidationInfo("Name Must Match Pattern [a-zA-Z_]", nameTextField));
+      }
+    }
+
+    private void validateOptions(List<ValidationInfo> validationInfo) {
+      List<String> options = getOptions();
+      if (options.isEmpty()) {
+        validationInfo
+            .add(new ValidationInfo("Options Table Can Not Be Empty", optionsTable));
+        return;
+      }
+      boolean isOptionDuplicate =
+          options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
+      if (isOptionDuplicate) {
+        validationInfo
+            .add(new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable));
+      }
     }
   }
 }
