@@ -16,6 +16,7 @@
 
 package View;
 
+import View.Decorator.DocumentFilters.NumberDocumentFilter;
 import View.Decorator.RoundedCornerBorder;
 import View.Decorator.TableRenderer;
 import com.intellij.openapi.ui.ComboBox;
@@ -29,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
+import javax.swing.text.AbstractDocument;
 
 public class TabLayout extends JPanel {
 
@@ -101,6 +103,16 @@ public class TabLayout extends JPanel {
 
   public DefaultCellEditor getTextFieldModel() {
     JTextField textFieldModel = new JTextField();
+    textFieldModel.setBorder(new RoundedCornerBorder());
+    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
+    textEditor.setClickCountToStart(1);
+    return textEditor;
+  }
+
+  public DefaultCellEditor getIntegerTextFieldModel() {
+    JTextField textFieldModel = new JTextField();
+    ((AbstractDocument) textFieldModel.getDocument())
+        .setDocumentFilter(new NumberDocumentFilter());
     textFieldModel.setBorder(new RoundedCornerBorder());
     DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
     textEditor.setClickCountToStart(1);
