@@ -20,7 +20,6 @@ import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.Validation.ValidationTool;
-import View.Fidelity.FieldType;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
@@ -90,7 +89,8 @@ public class QualityTabController {
 
   public OptionalInt getFidelityRowByEnumName(String name) {
     return IntStream.range(0, fidelityData.getFieldTypes().size())
-        .filter(i -> fidelityData.getFieldTypes().get(i).equals(name))
+        .filter(i -> fidelityData.getEnumData(i).isPresent() && fidelityData.getEnumData(i).get()
+            .getName().equals(name))
         .findFirst();
   }
 
@@ -100,14 +100,7 @@ public class QualityTabController {
   }
 
   public boolean isEnum(int row) {
-    String fieldType = fidelityData.getFieldTypes().get(row);
-    return !fieldType.equals(FieldType.INT32.getName())
-        && !fieldType.equals(FieldType.FLOAT.getName());
-  }
-
-  public boolean isInt(int row) {
-    String fieldType = fidelityData.getFieldTypes().get(row);
-    return fieldType.equals(FieldType.INT32.getName());
+    return fidelityData.getEnumData(row).isPresent();
   }
 
   public List<String> getEnumOptionsByIndex(int row) {
@@ -121,21 +114,11 @@ public class QualityTabController {
     return List.of("");
   }
 
-  // This should return true on going from (int32,float) to enum or EnumA -> enumB
-  public boolean shouldChangeValue(String oldType, String newType) {
-    boolean wasNotEnum =
-        oldType.equals(FieldType.FLOAT.getName()) || oldType.equals(FieldType.INT32.getName());
-    boolean isEnum =
-        !newType.equals(FieldType.FLOAT.getName()) && !newType.equals(FieldType.INT32.getName());
-    if (wasNotEnum && isEnum) {
-      return true;
-    }
-    return !wasNotEnum && isEnum;
-  }
-
   public String getNewTrendState(int row) {
-    boolean isIncreasing = ValidationTool.isIncreasingSingleField(qualityDataModels, enums, row);
-    boolean isDecreasing = ValidationTool.isDecreasingSingleField(qualityDataModels, enums, row);
+    boolean isIncreasing = ValidationTool
+        .isIncreasingSingleField(qualityDataModels, fidelityData, row);
+    boolean isDecreasing = ValidationTool
+        .isDecreasingSingleField(qualityDataModels, fidelityData, row);
     if (!isIncreasing && !isDecreasing) {
       return "none";
     } else if (!isIncreasing) {
@@ -145,29 +128,12 @@ public class QualityTabController {
     }
   }
 
-  public FieldType getTypeByIndex(int row) {
-    if (isEnum(row)) {
-      return FieldType.ENUM;
-    } else if (isInt(row)) {
-      return FieldType.INT32;
-    } else {
-      return FieldType.FLOAT;
-    }
-  }
-
   public String getDefaultValueByIndex(int index) {
-    FieldType fieldType = getTypeByIndex(index);
-    if (fieldType.equals(FieldType.INT32) || fieldType.equals(FieldType.FLOAT)) {
+    if (!fidelityData.getEnumData(index).isPresent()) {
       return "0";
     } else {
-      return getEnumOptionsByIndex(index).get(0);
+      return fidelityData.getEnumData(index).get().getOptions().get(0);
     }
-  }
-
-  public Integer getFieldIndexByName(String name) {
-    return IntStream.range(0, fidelityData.getFieldNames().size())
-        .filter(i -> fidelityData.getFieldNames().get(i).equals(name))
-        .findFirst().getAsInt();
   }
 }
 

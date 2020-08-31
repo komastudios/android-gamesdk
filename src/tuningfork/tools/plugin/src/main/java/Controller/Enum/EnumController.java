@@ -66,16 +66,16 @@ public abstract class EnumController {
   }
 
   public final boolean editEnum(int index, String name, ArrayList<String> options) {
-    EnumDataModel enumDataModel = new EnumDataModel(name, options);
     boolean conflictingEnumNames =
         enums.stream().map(EnumDataModel::getName).anyMatch(enumName -> enumName.equals(name));
     if (!name.equals(enums.get(index).getName()) && conflictingEnumNames) {
       return false;
     }
+    EnumDataModel enumDataModel = new EnumDataModel(name, options);
     String oldName = enums.get(index).getName();
     List<String> oldOptions = enums.get(index).getOptions();
     enums.set(index, enumDataModel);
-    onEnumTableChanged(ChangeType.EDIT, new String[]{oldName, name});
+    onEnumTableChanged(ChangeType.EDIT, new Object[]{oldName, enumDataModel});
     if (!oldOptions.equals(options)) {
       onEnumTableChanged(ChangeType.EDIT_OPTIONS, new Object[]{oldOptions, options, name});
     }
@@ -102,5 +102,6 @@ public abstract class EnumController {
     DefaultTableModel model = (DefaultTableModel) table.getModel();
     model.setValueAt(enums.get(row).getName(), row, 0);
   }
+
   public abstract void onEnumTableChanged(ChangeType changeType, Object[] changeList);
 }

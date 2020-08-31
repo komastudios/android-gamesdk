@@ -95,8 +95,8 @@ public class FidelityTableModel extends AbstractTableModel {
         data.get(row).setFieldEnumName(fidelityTableData.getFieldEnumName());
         data.get(row).setFieldParamName(fidelityTableData.getFieldParamName());
         controller.updateName(row, fidelityTableData.getFieldParamName());
-        controller.updateType(row, fidelityTableData.getFieldEnumName());
         controller.updateEnum(row, controller.findEnumByName(fidelityTableData.getFieldEnumName()));
+        controller.updateType(row, fidelityTableData.getFieldEnumName());
       } else {
         data.get(row).setFieldParamName(value.toString());
         controller.updateName(row, value.toString());
