@@ -107,7 +107,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return getTextFieldModel();
+            return getIntegerTextFieldModel();
           }
         }
 
