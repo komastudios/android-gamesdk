@@ -15,16 +15,25 @@
  */
 package View.Dialog;
 
+import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
+import static View.Decorator.TableRenderer.getRendererTextBoxWithValidation;
+import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
+
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
+import View.Decorator.TableRenderer;
 import View.TabLayout;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.cellvalidators.CellComponentProvider;
+import com.intellij.openapi.ui.cellvalidators.CellTooltipManager;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,17 +43,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
 
   private static final String ENUM_PATTERN = "[a-zA-Z_]+$";
   private EnumLayout enumLayout;
-  private EnumController controller;
+  private final EnumController controller;
   private boolean isEdit;
   private int editingRow;
   private EnumDataModel enumDataModel;
@@ -72,60 +81,17 @@ public class EnumDialogWrapper extends DialogWrapper {
     if (!enumLayout.optionsTable.isEditing()) {
       return;
     }
-    int row = enumLayout.optionsTable.getSelectedRow();
     enumLayout.optionsTable.getCellEditor().stopCellEditing();
-    enumLayout.optionsTable.editCellAt(row, 0);
   }
 
-  @NotNull
-  @Override
-  protected List<ValidationInfo> doValidateAll() {
-    List<ValidationInfo> validationInfo = new ArrayList<>();
-    if (enumLayout.getName().isEmpty()) {
-      validationInfo.add(new ValidationInfo("Name can not be empty", enumLayout.nameTextField));
-    }
-    validateOptions(validationInfo);
-    validatePattern(validationInfo);
-    if (validationInfo.isEmpty()) {
-      return validationInfo;
-    }
-    // Show at most 3 errors at once.
-    return validationInfo.subList(0, Math.min(validationInfo.size(), 3));
-  }
-
-  private void validatePattern(List<ValidationInfo> validationInfo) {
-    if (!enumLayout.getName().matches(ENUM_PATTERN)) {
-      validationInfo.add(
-          new ValidationInfo("Name Must Match Pattern [a-zA-Z_]", enumLayout.nameTextField));
-    }
-    enumLayout.getOptions().stream()
-        .filter(option -> !option.matches(ENUM_PATTERN) && !option.isEmpty())
-        .forEach(s ->
-            validationInfo.add(
-                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_]")));
-  }
-
-  private void validateOptions(List<ValidationInfo> validationInfo) {
-    List<String> options = enumLayout.getOptions();
-    if (options.isEmpty()) {
-      validationInfo.add(new ValidationInfo("Options Table Can Not Be Empty"));
-      return;
-    }
-
-    boolean isOptionTextEmpty = options.stream().anyMatch(String::isEmpty);
-    if (isOptionTextEmpty) {
-      validationInfo.add(new ValidationInfo("Empty Fields Are Not Allowed"));
-    }
-    boolean isOptionDuplicate =
-        options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
-    if (isOptionDuplicate) {
-      validationInfo.add(new ValidationInfo("Repeated Fields Are Not Allowed"));
-    }
-  }
 
   @Override
   protected void doOKAction() {
     stopCellEditingMomentarily();
+    if (enumLayout.validateView().size() > 0) {
+      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      return;
+    }
     if (isEdit) {
       if (controller.editEnum(editingRow, enumLayout.getName(), enumLayout.getOptions())) {
         super.doOKAction();
@@ -146,7 +112,7 @@ public class EnumDialogWrapper extends DialogWrapper {
   @Override
   protected @Nullable
   JComponent createCenterPanel() {
-    enumLayout = new EnumLayout();
+    enumLayout = new EnumLayout(getDisposable());
     if (isEdit) {
       enumLayout.setData(enumDataModel);
     }
@@ -155,16 +121,18 @@ public class EnumDialogWrapper extends DialogWrapper {
 
   private static final class EnumLayout extends TabLayout {
 
-    private JBScrollPane scrollPane;
     private JTable optionsTable;
     private JPanel decoratorPanel;
     private JTextField nameTextField;
     private DefaultTableModel model;
     private final JLabel nameLabel = new JBLabel("Name");
+    private final Disposable disposable;
 
-    EnumLayout() {
+    EnumLayout(Disposable disposable) {
+      this.disposable = disposable;
       initComponents();
       addComponents();
+      initValidators();
     }
 
     private void addComponents() {
@@ -173,7 +141,7 @@ public class EnumDialogWrapper extends DialogWrapper {
       namePanel.add(nameTextField);
       this.add(namePanel);
       this.add(Box.createVerticalStrut(30));
-      this.add(scrollPane);
+      this.add(decoratorPanel);
     }
 
     public void setData(EnumDataModel enumDataModel) {
@@ -208,7 +176,6 @@ public class EnumDialogWrapper extends DialogWrapper {
             }
           };
       optionsTable = new JBTable();
-      scrollPane = new JBScrollPane();
       decoratorPanel =
           ToolbarDecorator.createDecorator(optionsTable)
               .setAddAction(it -> model.addRow(new String[]{""}))
@@ -222,10 +189,101 @@ public class EnumDialogWrapper extends DialogWrapper {
                   })
               .createPanel();
       setDecoratorPanelSize(decoratorPanel);
-      setTableSettings(scrollPane, decoratorPanel, optionsTable);
+      optionsTable.setFillsViewportHeight(true);
+      optionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      optionsTable.getTableHeader().setReorderingAllowed(false);
+      optionsTable.setRowSelectionAllowed(true);
+      optionsTable.setSelectionForeground(null);
+      optionsTable.setSelectionBackground(null);
+      optionsTable.setIntercellSpacing(new Dimension(0, 0));
       model.setColumnIdentifiers(new String[]{"Options"});
       optionsTable.setModel(model);
-      initTextFieldColumns(optionsTable, 0);
+    }
+
+    private void initValidators() {
+      new ComponentValidator(disposable).withValidator(() -> {
+        String name = nameTextField.getText();
+        if (name.isEmpty()) {
+          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+        }
+        if (!name.matches(ENUM_PATTERN)) {
+          return new ValidationInfo(name + " Does Not Match The Pattern [a-zA-Z_]", nameTextField);
+        }
+        return null;
+      }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
+
+      TableRenderer.createTableValidator(disposable, optionsTable,
+          () -> {
+            if (optionsTable.getRowCount() == 0) {
+              return new ValidationInfo("Options Table Can Not Be Empty", optionsTable);
+            }
+            ArrayList<String> options = getOptions();
+            boolean isOptionDuplicate =
+                options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
+            if (isOptionDuplicate) {
+              return new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable);
+            }
+            return null;
+          });
+      model.addTableModelListener(
+          e -> ComponentValidator.getInstance(optionsTable)
+              .ifPresent(ComponentValidator::revalidate));
+      optionsTable.getColumnModel().getColumn(0).setCellEditor(getEditorTextBoxWithValidation(
+          disposable));
+      optionsTable.getColumnModel().getColumn(0)
+          .setCellRenderer(getRendererTextBoxWithValidation(
+              (value, row, column) -> {
+                String strVal = value.toString();
+                if (strVal.isEmpty()) {
+                  return new ValidationInfo("Field Can Not Be Empty!");
+                }
+                if (!strVal.matches(ENUM_PATTERN)) {
+                  return new ValidationInfo(strVal + " Does Not Match The Pattern [a-zA-Z_]");
+                }
+                return null;
+              }));
+
+      // Unstable API is used for table validation, Use with Cautious.
+      new CellTooltipManager(disposable).
+          withCellComponentProvider(CellComponentProvider.forTable(optionsTable)).
+          installOn(optionsTable);
+    }
+
+    public List<ValidationInfo> validateView() {
+      List<ValidationInfo> validationInfo = new ArrayList<>();
+      validateOptions(validationInfo);
+      validateNameTextField(validationInfo);
+      validateTable(validationInfo);
+
+      return validationInfo;
+    }
+
+    private void validateTable(List<ValidationInfo> validationInfo) {
+      for (int i = 0; i < optionsTable.getRowCount(); i++) {
+        JComponent component = (JComponent) optionsTable
+            .getCellRenderer(i, 0).getTableCellRendererComponent(optionsTable,
+                model.getValueAt(i, 0), false, false, i, 0);
+        ValidationInfo cellInfo = component != null ? (ValidationInfo) component
+            .getClientProperty(CELL_VALIDATION_PROPERTY) : null;
+        if (cellInfo != null) {
+          validationInfo.add(cellInfo);
+        }
+      }
+    }
+
+    private void validateNameTextField(List<ValidationInfo> validationInfo) {
+      ComponentValidator.getInstance(nameTextField).ifPresent(ComponentValidator::revalidate);
+      if (ComponentValidator.getInstance(nameTextField).get().getValidationInfo() != null) {
+        validationInfo.add(ComponentValidator.getInstance(nameTextField).get().getValidationInfo());
+      }
+    }
+
+    private void validateOptions(List<ValidationInfo> validationInfo) {
+      ComponentValidator.getInstance(optionsTable).ifPresent(ComponentValidator::revalidate);
+      if (ComponentValidator.getInstance(optionsTable).get().getValidationInfo() != null) {
+        validationInfo
+            .add(ComponentValidator.getInstance(optionsTable).get().getValidationInfo());
+      }
     }
   }
 }
