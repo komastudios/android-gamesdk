@@ -24,13 +24,8 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 
-import javax.swing.JScrollPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JTextField;
-import javax.swing.JProgressBar;
-import javax.swing.Box;
+import javax.swing.*;
+
 import org.jdesktop.swingx.VerticalLayout;
 
 public class ValidationSettingsTab extends TabLayout {
@@ -41,13 +36,18 @@ public class ValidationSettingsTab extends TabLayout {
     private JRadioButton radioButtonTimeBased;
     private JRadioButton radioButtonIntervalBased;
     private ButtonGroup radioButtonGroup;
+    private ValidationSettingsTabController validationSettingsTabController;
+
+    private JButton saveSettingsButton;
+    private JPanel saveSettingsPanel;
 
     private JTextField apiKey;
 
     private JProgressBar barUpload;
 
     private final JBLabel validationSettingsLabel = new JBLabel("Settings parameters");
-    private final JBLabel informationLabel = new JBLabel("<html> Choose your preferred settings for game analysis. <br>" +
+    private final JBLabel informationLabel = new JBLabel(
+            "<html> Choose your preferred settings for game analysis. <br>" +
             "Histograms:</html>");
 
     public ValidationSettingsTab() {
@@ -67,10 +67,14 @@ public class ValidationSettingsTab extends TabLayout {
         barUpload.setStringPainted(true);
         barUpload.setSize(250, 150);
         apiKey = new JTextField("api key");
+        saveSettingsButton = new JButton("Save settings");
+        validationSettingsTabController = new ValidationSettingsTabController();
         decoratorPanel =
                 ToolbarDecorator.createDecorator(validationSettingsTable)
-                        .setAddAction(it -> ValidationSettingsTabController.addRowAction(validationSettingsTable))
-                        .setRemoveAction(it -> ValidationSettingsTabController.removeRowAction(validationSettingsTable))
+                        .setAddAction(it ->
+                                ValidationSettingsTabController.addRowAction(validationSettingsTable))
+                        .setRemoveAction(it ->
+                                ValidationSettingsTabController.removeRowAction(validationSettingsTable))
                         .createPanel();
     }
 
@@ -94,6 +98,13 @@ public class ValidationSettingsTab extends TabLayout {
         this.add(radioButtonIntervalBased);
         this.add(apiKey);
         this.add(barUpload);
+        saveSettingsPanel = new JPanel();
+        saveSettingsPanel.add(saveSettingsButton);
+        saveSettingsButton.addActionListener(actionEvent ->
+                validationSettingsTabController.saveSettings(validationSettingsTable, apiKey.getText(),
+                        radioButtonTimeBased.isSelected() ?
+                                radioButtonTimeBased.getText(): radioButtonIntervalBased.getText()));
+        this.add(saveSettingsPanel);
 
         // this function will change
         tickExample(barUpload);
