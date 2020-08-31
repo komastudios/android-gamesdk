@@ -18,10 +18,13 @@ package View.Dialog;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Fidelity.FidelityTabController;
+import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.QualityDataModel;
 import Utils.Assets.AssetsFinder;
 import Utils.Assets.AssetsWriter;
+import Utils.Proto.ProtoCompiler;
 import View.PluginLayout;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
@@ -41,9 +44,12 @@ public class MainDialogWrapper extends DialogWrapper {
       new NotificationGroup("Android Performance Tuner", NotificationDisplayType.BALLOON, true);
   private AnnotationTabController annotationTabController;
   private FidelityTabController fidelityTabController;
+  private QualityTabController qualityTabController;
   private MessageDataModel annotationData;
   private MessageDataModel fidelityData;
   private List<EnumDataModel> enumData;
+  private List<QualityDataModel> qualityData;
+  private ProtoCompiler compiler;
 
   private void addNotification(String errorMessage) {
     Notification notification = NOTIFICATION_GROUP.createNotification(
@@ -58,6 +64,7 @@ public class MainDialogWrapper extends DialogWrapper {
         AssetsFinder.findAssets(project.getProjectFilePath().split(".idea")[0]).getAbsolutePath());
     annotationTabController = pluginLayout.getAnnotationTabController();
     fidelityTabController = pluginLayout.getFidelityTabController();
+    qualityTabController = pluginLayout.getQualityTabController();
 
     List<EnumDataModel> annotationEnums = annotationTabController.getEnums();
 
@@ -75,10 +82,17 @@ public class MainDialogWrapper extends DialogWrapper {
 
     MessageDataModel fidelityModel = fidelityTabController.getFidelityData();
     MessageDataModel annotationModel = annotationTabController.getAnnotationDataModel();
-
+    boolean writeOK = true;
+    annotationEnums.addAll(fidelityTabController.getEnums());
     if (!assetsWriter.saveDevTuningForkProto(annotationEnums, annotationModel, fidelityModel)) {
-      addNotification("Unable to write annotation and quality settings back to .proto files");
-    } else {
+      addNotification("Unable to write annotation and fidelity settings back to .proto files.");
+      writeOK = false;
+    }
+
+    List<QualityDataModel> qualityDataModels = qualityTabController.getQualityDataModels();
+    assetsWriter.saveDevFidelityParams(compiler, qualityDataModels);
+
+    if (writeOK) {
       Notification notification = NOTIFICATION_GROUP.createNotification(
           "Android Performance Tuner settings saved successfully!",
           NotificationType.INFORMATION);
@@ -88,12 +102,15 @@ public class MainDialogWrapper extends DialogWrapper {
   }
 
   public MainDialogWrapper(@Nullable Project project, MessageDataModel annotationData,
-      MessageDataModel fidelityData, List<EnumDataModel> enumData) {
+      MessageDataModel fidelityData, List<EnumDataModel> enumData,
+      List<QualityDataModel> qualityData, ProtoCompiler compiler) {
     super(project);
     this.annotationData = annotationData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
+    this.qualityData = qualityData;
     this.project = project;
+    this.compiler = compiler;
     setTitle("Android Performance Tuner Plugin");
     init();
   }
@@ -101,7 +118,7 @@ public class MainDialogWrapper extends DialogWrapper {
   @Override
   protected @Nullable
   JComponent createCenterPanel() {
-    pluginLayout = new PluginLayout(annotationData, fidelityData, enumData);
+    pluginLayout = new PluginLayout(annotationData, fidelityData, enumData, qualityData, project);
     return pluginLayout;
   }
 }

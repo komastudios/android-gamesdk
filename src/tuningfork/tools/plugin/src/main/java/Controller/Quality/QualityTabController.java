@@ -16,14 +16,18 @@
 
 package Controller.Quality;
 
+import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Assets.AssetsFinder;
+import com.intellij.openapi.project.Project;
+import java.io.File;
 import javax.swing.JTable;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JLabel;
 
 public class QualityTabController {
+
   private static int filesCount = 0;
   private List<QualityDataModel> qualityDataModels;
 
@@ -31,30 +35,40 @@ public class QualityTabController {
     qualityDataModels = new ArrayList<>();
   }
 
+  public QualityTabController(List<QualityDataModel> qualityDataModels) {
+    this.qualityDataModels = qualityDataModels;
+  }
+
+  public static void updateQualityColumnNames(JTable table, MessageDataModel fidelityModel) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.setColumnNames(fidelityModel);
+  }
+
+  public void addInitialQuality(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    filesCount = qualityDataModels.size();
+    for (int file = 0; file < qualityDataModels.size(); file++) {
+      List<String> rowToAdd = qualityDataModels.get(file).getFieldValues();
+      rowToAdd.add(0, Integer.toString(file + 1));
+      String rowArray[] = new String[rowToAdd.size()];
+      rowArray = rowToAdd.toArray(rowArray);
+      tableModel.addRow(rowArray, table);
+    }
+  }
+
   public static void addRow(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.addRow(new String[]{Integer.toString(++filesCount), "", "", ""}, table);
   }
 
-  public static void removeRow(JTable table) {
+  public static void removeRow(JTable table, Project project) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    int fileIndex = (int) table.getValueAt(table.getSelectedRow(), 0);
     tableModel.removeRow(table.getSelectedRow());
-  }
-
-  public boolean saveSettings(JTable table, JLabel savedSettingsLabel) {
-    List<String> fieldNames = ((QualityTableModel) table.getModel()).getColumnNames();
-    List<List<String>> qualitySettings = ((QualityTableModel) table.getModel()).getQualitySettings();
-
-    for (List<String> qualitySetting : qualitySettings) {
-      QualityDataModel qualityDataModel = new QualityDataModel(fieldNames, qualitySetting);
-
-      //TODO (targintaru) integrate validation
-
-      qualityDataModels.add(qualityDataModel);
-    }
-
-    savedSettingsLabel.setVisible(true);
-    return true;
+    String assetsDir =
+        AssetsFinder.findAssets(project.getProjectFilePath().split(".idea")[0]).getAbsolutePath();
+    File fileToRemove = new File(assetsDir, "/dev_tuningfork_fidelityparams_" + fileIndex + ".bin");
+    fileToRemove.delete();
   }
 
   public static int getFilesCount() {
@@ -67,6 +81,20 @@ public class QualityTabController {
 
   public static void increaseFilesCount() {
     filesCount++;
+  }
+
+  public boolean saveSettings(JTable jTable, MessageDataModel fidelityDataModel) {
+    List<List<String>> qualitySettings = ((QualityTableModel) jTable.getModel())
+        .getQualitySettings();
+    List<String> fieldNames = fidelityDataModel.getFieldNames();
+
+    for (List<String> qualitySetting : qualitySettings) {
+      qualityDataModels.add(new QualityDataModel(fieldNames, qualitySetting));
+    }
+
+    System.out.println(qualityDataModels.size());
+
+    return true;
   }
 }
 

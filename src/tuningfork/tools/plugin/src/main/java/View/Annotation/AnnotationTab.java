@@ -18,7 +18,7 @@ package View.Annotation;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
-import Model.EnumDataModel;
+import Controller.Enum.EnumController;
 import View.EnumTable;
 import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
@@ -37,15 +37,15 @@ public class AnnotationTab extends TabLayout {
   private JPanel decoratorPanel;
 
   private AnnotationTabController annotationController;
-  private List<EnumDataModel> enumData;
+  private EnumController enumController;
 
   private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
   private final JBLabel informationLabel =
       new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
 
-  public AnnotationTab(AnnotationTabController annotationController, List<EnumDataModel> enumData) {
+  public AnnotationTab(AnnotationTabController annotationController, EnumController enumController) {
     this.annotationController = annotationController;
-    this.enumData = enumData;
+    this.enumController = enumController;
     initVariables();
     initComponents();
   }
@@ -82,6 +82,7 @@ public class AnnotationTab extends TabLayout {
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
     annotationController.setAnnotationTab(this);
+    annotationController.addEnums(enumController.getEnums());
     // Initialize toolbar and table.
     AnnotationTableModel model = new AnnotationTableModel();
     annotationTable.setModel(model);
@@ -91,7 +92,6 @@ public class AnnotationTab extends TabLayout {
     setColumnsEditorsAndRenderers();
 
     this.add(scrollPane);
-    annotationController.addEnums(enumData);
     this.add(new EnumTable(annotationController));
   }
 
