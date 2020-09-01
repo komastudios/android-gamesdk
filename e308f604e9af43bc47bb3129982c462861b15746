@@ -16,6 +16,24 @@
       "revId": "e308f604e9af43bc47bb3129982c462861b15746",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d677e59_eb432e98",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/MessageDataModel.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-01T15:14:25Z",
+      "side": 1,
+      "message": "This is being relied upon in the UI. I can\u0027t add the contains. I\u0027ll keep it as returning true to fix both of our problems",
+      "parentUuid": "682d5cc9_bdb9d704",
+      "revId": "e308f604e9af43bc47bb3129982c462861b15746",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
