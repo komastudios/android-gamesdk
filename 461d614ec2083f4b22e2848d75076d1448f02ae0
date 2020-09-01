@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91ea61c1_ed0f3bf0",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/EnumDialogWrapper.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-01T12:18:34Z",
+      "side": 1,
+      "message": "since EnumLayout extends TabLayout, you could use lines 77-83 from TabLayout.java to avoid duplicated code",
+      "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
