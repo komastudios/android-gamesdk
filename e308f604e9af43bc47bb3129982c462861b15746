@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "682d5cc9_bdb9d704",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/MessageDataModel.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-01T12:24:51Z",
+      "side": 1,
+      "message": "Maybe this function could be void instead?\nAnd also, could you leave the contains check here for now? I relied on it for some of my CLs (not for UI validation issues)",
+      "revId": "e308f604e9af43bc47bb3129982c462861b15746",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
