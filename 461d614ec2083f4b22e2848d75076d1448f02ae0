@@ -34,6 +34,24 @@
       "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1fa6bc9_0adbba43",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/EnumDialogWrapper.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-01T12:28:54Z",
+      "side": 1,
+      "message": "Ok. maybe we can refactor all the tabs later if the scrollpane is not actually required",
+      "parentUuid": "d2f8ab81_29c156df",
+      "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
