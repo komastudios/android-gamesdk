@@ -16,6 +16,24 @@
       "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2f8ab81_29c156df",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/EnumDialogWrapper.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-01T12:20:55Z",
+      "side": 1,
+      "message": "setTableSettings in TabLayout requires a scrollPane. And I\u0027m not using one. So I\u0027ll have to change that in the tabLayout which will have be changed for all tabs\n\n*toolBarDecorator automatically creates a scrollPane for the Jtable implicitly",
+      "parentUuid": "91ea61c1_ed0f3bf0",
+      "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
