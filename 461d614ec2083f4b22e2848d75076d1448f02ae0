@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9ef4f801_70c2db65",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Decorator/RoundedCornerBorder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-02T07:01:21Z",
+      "side": 1,
+      "message": "nit: Enum instead?",
+      "range": {
+        "startLine": 42,
+        "startChar": 29,
+        "endLine": 42,
+        "endChar": 44
+      },
+      "revId": "461d614ec2083f4b22e2848d75076d1448f02ae0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "91ea61c1_ed0f3bf0",
         "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/EnumDialogWrapper.java",
         "patchSetId": 2
