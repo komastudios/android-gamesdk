@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e11a5a8_3b10bfd1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-02T13:53:46Z",
+      "side": 1,
+      "message": "Added a few nits and questions!",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc5ef622_cf701031",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-02T13:53:46Z",
+      "side": 1,
+      "message": "uber nit: generally when things are going alright (i.e: no discrepancy in states), I would expect the method to return true (so that you can\u0027t do if(!SetNewState(...)) { handle error }, which reads as \"if I could NOT set the new state without issues, then handle error\").",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "787bccd7_95865129",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-02T13:53:46Z",
+      "side": 1,
+      "message": "Is \"ToMemory\" implying that it\u0027s actually written on disk? By \"Memory\" I first thought this was getting saved somewhere in a variable. Maybe StoreStateToDisk?",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27c4fd67_8699f0fe",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-02T13:53:46Z",
+      "side": 1,
+      "message": "nit: should you store a std::string and just use the std::stringstream for building the string once?\nSeems like most calls to tf_lifecycle_path_str_ are tf_lifecycle_path_str_.str()",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61c2e9b8_c42caa28",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-02T13:53:46Z",
+      "side": 1,
+      "message": "I don\u0027t see this being set, is that normal?",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
