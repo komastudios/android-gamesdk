@@ -626,7 +626,9 @@ TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
 
 TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
     TuningFork_LifecycleState state) {
-    activity_lifecycle_state_.SetNewState(state);
+    if (!activity_lifecycle_state_.SetNewState(state)) {
+        current_session_->RecordCrash(CRASH_REASON_UNSPECIFIED);
+    }
     return TUNINGFORK_ERROR_OK;
 }
 
