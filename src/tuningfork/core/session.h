@@ -32,6 +32,11 @@ struct TimeInterval {
     std::chrono::system_clock::time_point start, end;
 };
 
+typedef enum CrashReason {
+    CRASH_REASON_UNSPECIFIED = 0,
+
+} CrashReason;
+
 // A recording session which stores histograms and time-series.
 // These are double-buffered inside tuning fork.
 class Session {
@@ -110,6 +115,9 @@ class Session {
             return 0;
     }
 
+    void RecordCrash(CrashReason reason);
+    std::vector<CrashReason> GetCrashReports() const;
+
    private:
     // Get an available metric that has been set up to work with this id.
     FrameTimeMetricData* TakeFrameTimeData(MetricId id) {
@@ -152,6 +160,7 @@ class Session {
     std::vector<LoadingTimeMetricData*> available_loading_time_data_;
     std::vector<MemoryMetricData*> available_memory_data_;
     std::unordered_map<MetricId, MetricData*> metric_data_;
+    std::vector<CrashReason> crash_data_;
     std::vector<InstrumentationKey> instrumentation_keys_;
     std::mutex mutex_;
 };

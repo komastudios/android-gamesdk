@@ -107,6 +107,9 @@ message SessionContext {
   // The period of time of this collection.
   // Required.
   TimePeriod time_period = 3;
+
+  // The list of crashes that happened during the last session.
+  repeated CrashReport crash_reports = 4;
 }
 
 // Telemetry report, containing a context and the associated metrics.
@@ -289,4 +292,20 @@ message MemoryHistogramConfig {
   // The range of the buckets in bytes.
   int64 bucket_min_bytes = 1;
   int64 bucket_max_bytes = 2;
+}
+
+// A report containing a single crash report
+message CrashReport {
+  // Enum listing possible crash reasons for the app.
+  enum CrashReason {
+    // Unspecified.
+    CRASH_REASON_UNSPECIFIED = 0;
+  }
+
+  // The reason for why the crash occurred.
+  CrashReason crash_reason = 1;
+
+  // The session during which the crash occurred (e.g. previous session).
+  string session_id = 2;
+
 }
