@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d212a6f7_f75df781",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Annotation/AnnotationDecorator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-02T10:40:45Z",
+      "side": 1,
+      "message": "final? (you can add in next cl)",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 31
+      },
+      "revId": "9fcec42ed23d8d167e33f2976dbb9998b10fb147",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
