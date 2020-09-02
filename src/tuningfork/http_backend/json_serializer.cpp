@@ -315,7 +315,8 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
         {"game_sdk_info", GameSdkInfoJson(request_info)},
         {"time_period",
          Json::object{{"start_time", TimeToRFC3339(session_.time().start)},
-                      {"end_time", TimeToRFC3339(session_.time().end)}}}};
+                      {"end_time", TimeToRFC3339(session_.time().end)}}},
+        {"crash_reports", CrashReportsJson()}};
     std::vector<Json::object> telemetry;
     // Loop over unique annotations
     std::set<AnnotationId> annotations;
@@ -351,6 +352,16 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
                      {"telemetry", telemetry}};
     evt_json_ser = upload_telemetry_request.dump();
 }
+
+std::vector<Json::object> JsonSerializer::CrashReportsJson() {
+    std::vector<Json::object> crash_reports_;
+
+    for (int i = 0; i < session_.GetCrashReports().size(); i++) {
+        crash_reports_.push_back(Json::object{
+            {"crash_reason", static_cast<int>(session_.GetCrashReports()[i])}});
+    }
+    return crash_reports_;
+};
 
 std::string Serialize(std::vector<uint32_t> vs) {
     std::stringstream str;
