@@ -21,7 +21,6 @@ import java.util.List;
 
 public class MessageDataModel {
 
-
   public enum Type {
     FIDELITY("FidelityParams"),
     ANNOTATION("Annotation");
@@ -49,6 +48,11 @@ public class MessageDataModel {
     this.fieldTypes = fieldTypes;
     this.fieldNames = fieldNames;
     this.messageType = messageType;
+  }
+
+  public String getType(String fieldName) {
+    int fieldNameIndex = fieldNames.indexOf(fieldName);
+    return fieldTypes.get(fieldNameIndex);
   }
 
   public boolean addMultipleFields(List<String> paramNames, List<String> paramValues) {
@@ -113,5 +117,9 @@ public class MessageDataModel {
     }
     stringBuilder.append("}\n\n");
     return stringBuilder.toString();
+  }
+
+  public int getFieldsCount() {
+    return fieldNames.size();
   }
 }
