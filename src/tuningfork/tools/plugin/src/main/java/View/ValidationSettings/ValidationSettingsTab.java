@@ -24,7 +24,13 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JProgressBar;
+import javax.swing.Box;
 
 import org.jdesktop.swingx.VerticalLayout;
 

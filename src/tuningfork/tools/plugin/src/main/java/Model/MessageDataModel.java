@@ -60,10 +60,8 @@ public class MessageDataModel {
     return true;
   }
 
+  // TODO(aymanm): Set the method return type to void.
   public boolean addField(String paramName, String paramValue) {
-    if (fieldNames.contains(paramName)) {
-      return false;
-    }
     fieldNames.add(paramName);
     fieldTypes.add(paramValue);
     return true;
@@ -73,7 +71,7 @@ public class MessageDataModel {
     return fieldNames;
   }
 
-  public List<String> getFieldValues() {
+  public List<String> getFieldTypes() {
     return fieldTypes;
   }
 
@@ -82,10 +80,8 @@ public class MessageDataModel {
     fieldTypes.remove(index);
   }
 
+  // TODO(aymanm): Set the method return type to void.
   public boolean updateName(int index, String name) {
-    if (fieldNames.contains(name)) {
-      return false;
-    }
     fieldNames.set(index, name);
     return true;
   }

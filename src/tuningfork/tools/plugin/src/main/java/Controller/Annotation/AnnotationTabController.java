@@ -16,50 +16,68 @@
 package Controller.Annotation;
 
 import Controller.Enum.EnumController;
+import Model.EnumDataModel;
 import Model.MessageDataModel;
-import Model.MessageDataModel.Type;
-import View.Annotation.AnnotationTab;
+import com.intellij.openapi.ui.ValidationInfo;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.JTable;
 
 public class AnnotationTabController extends EnumController {
 
-  private MessageDataModel annotationDataModel;
-  private AnnotationTab annotationTab;
+  private final MessageDataModel annotationDataModel;
+  private final PropertyChangeSupport propertyChangeSupport;
+  private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
 
-  public AnnotationTabController(MessageDataModel annotationDataModel) {
+  public AnnotationTabController(MessageDataModel annotationDataModel, List<EnumDataModel> enums) {
+    super(enums);
     this.annotationDataModel = annotationDataModel;
+    propertyChangeSupport = new PropertyChangeSupport(this);
+  }
+
+  public MessageDataModel getAnnotationData() {
+    return annotationDataModel;
   }
 
   public void addInitialAnnotation(JTable table) {
     List<String> enumNames = annotationDataModel.getFieldNames();
-    List<String> enumValues = annotationDataModel.getFieldValues();
+    List<String> enumValues = annotationDataModel.getFieldTypes();
     AnnotationTableModel model = (AnnotationTableModel) table.getModel();
+    List<String[]> data = new ArrayList<>();
     for (int i = 0; i < enumNames.size(); i++) {
-      model.addRow(new String[]{enumValues.get(i), enumNames.get(i)});
+      data.add(new String[]{enumValues.get(i), enumNames.get(i)});
     }
-  }
-
-  public void setAnnotationTab(AnnotationTab annotationTab) {
-    this.annotationTab = annotationTab;
+    model.setData(data);
   }
 
 
   @Override
-  public void onEnumTableChanged() {
-    annotationTab.initComboBoxColumns(annotationTab.getAnnotationTable(), 0, getEnumsNames());
+  public void onEnumTableChanged(ChangeType changeType,
+      Object[] changeList) {
+    if (changeType.equals(ChangeType.ADD)) {
+      propertyChangeSupport
+          .firePropertyChange("addEnum", changeList[0], "");
+    } else if (changeType.equals(ChangeType.EDIT)) {
+      propertyChangeSupport
+          .firePropertyChange("editEnum", changeList[0], changeList[1]);
+    } else if (changeType.equals(ChangeType.REMOVE)) {
+      propertyChangeSupport
+          .firePropertyChange("deleteEnum", changeList[0], "");
+    }
   }
 
-  public static void addRowAction(JTable jtable) {
+  public void addRowAction(JTable jtable) {
     AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
-    // TODO(mohanad): placeholder values used. Will be replaced later with default enum value.
-    model.addRow(new String[]{
-        "",
-        "",
-    });
+    model.addRow(
+        new String[]{
+            "", "",
+        });
   }
 
-  public static void removeRowAction(JTable jtable) {
+  public void removeRowAction(JTable jtable) {
     AnnotationTableModel model = (AnnotationTableModel) jtable.getModel();
     int row = jtable.getSelectedRow();
     if (jtable.getCellEditor() != null) {
@@ -68,18 +86,49 @@ public class AnnotationTabController extends EnumController {
     model.removeRow(row);
   }
 
-  public boolean saveSettings(JTable jTable) {
-    List<String> annotationEnumNames = ((AnnotationTableModel) jTable.getModel())
-        .getAnnotationEnumNames();
-    List<String> annotationFieldNames = ((AnnotationTableModel) jTable.getModel())
-        .getAnnotationFieldNames();
-    annotationDataModel = new MessageDataModel();
-    annotationDataModel.setMessageType(Type.ANNOTATION);
-
-    return annotationDataModel.addMultipleFields(annotationFieldNames, annotationEnumNames);
+  public void setEnumFieldType(int row, String enumType) {
+    annotationDataModel.updateType(row, enumType);
   }
 
-  public MessageDataModel getAnnotationDataModel() {
-    return annotationDataModel;
+  public void setEnumFieldName(int row, String enumType) {
+    annotationDataModel.updateName(row, enumType);
+  }
+
+  public void addEnumField() {
+    annotationDataModel.addField("", "");
+  }
+
+  public void removeEnumField(int row) {
+    annotationDataModel.removeSetting(row);
+  }
+
+  public void addPropertyChangeListener(
+      PropertyChangeListener propertyChangeListener) {
+    propertyChangeSupport
+        .addPropertyChangeListener(propertyChangeListener);
+  }
+
+  public List<ValidationInfo> validate() {
+    List<ValidationInfo> validationInfos = new ArrayList<>();
+    List<String> types = annotationDataModel.getFieldTypes();
+    boolean emptyType = types.stream().anyMatch(String::isEmpty);
+    if (emptyType) {
+      validationInfos.add(new ValidationInfo("Empty Field Type Is Not Allowed"));
+    }
+    List<String> names = annotationDataModel.getFieldNames();
+    boolean duplicateField =
+        names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
+    if (duplicateField) {
+      validationInfos.add(new ValidationInfo("Duplicate Fields Are Not Allowed"));
+    }
+    names.stream()
+        .filter(s -> !s.matches(FIELD_NAME_PATTERN) && !s.isEmpty())
+        .forEach(s ->
+            validationInfos.add(
+                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_].")));
+    if (names.stream().anyMatch(String::isEmpty)) {
+      validationInfos.add(new ValidationInfo("Empty Field Name Is Not Allowed."));
+    }
+    return validationInfos;
   }
 }

@@ -1,6 +1,5 @@
 package Model;
 
-import android.os.SystemPropertiesProto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,65 +20,64 @@ public class ValidationSettingsDataModel {
         this.method = method;
     }
 
-    private String getAggregationStrategy() {
-        String result = "";
-        result += "aggregation_strategy: {";
-        result += String.format("method: %s, ", this.method);
+    private StringBuilder getAggregationStrategy() {
+        StringBuilder result = new StringBuilder();
+        result.append("aggregation_strategy: {");
+        result.append("method: ").append(this.method).append(", ");
         int intervalms_or_count = 10000;
-        result += String.format("intervalms_or_count: %d, ", intervalms_or_count);
+        result.append("intervalms_or_count: ").append(intervalms_or_count).append(", ");
         int max_instrumentation_keys = 10;
-        result += String.format("max_instrumentation_keys: %d, ", max_instrumentation_keys);
+        result.append("max_instrumentation_keys: ").append(max_instrumentation_keys).append(", ");
         int first = 3;
         int second = 4;
-        result += String.format("annotation_enum_size: [%d,%d]", first, second);
-        result += "}";
+        result.append("annotation_enum_size: [").append(first).append(", ").append(second).append("], ");
+        result.append("}");
         return result;
     }
 
-    private String getHistograms() {
-        String result = "histograms: [";
+    private StringBuilder getHistograms() {
+        StringBuilder result = new StringBuilder();
+        result.append("histograms: [");
         for (int i = 0; i < validationSettings.size(); i++) {
-            result += "{";
+            result.append("{");
             for (int j = 0; j < fieldNames.size(); j++) {
-                result += fieldNames.get(j) + ": " + validationSettings.get(i).get(j);
+                result.append(fieldNames.get(j)).append(": ").append(validationSettings.get(i).get(j));
                 if (j != fieldNames.size() - 1) {
-                    result += ", ";
+                    result.append(", ");
                 }
             }
-            result += "}";
+            result.append("}");
             if (i != validationSettings.size() - 1) {
-                result += ", ";
+                result.append(", ");
             }
         }
-        result += "]\n";
+        result.append("]\n");
         return result;
     }
 
-    private String getOtherSettings() {
-        String result = "";
-        String base_url = "https://performanceparameters.googleapis.com/v1/";
-        result += String.format("base_url: %s,\n", base_url);
-        result += String.format("api_key: %s,\n", this.api_key);
-        String default_val_set_params_filename = "dev_tuningfork_validationsettingsparams.bin";
-        result += String.format("default_fidelity_parameters_filename: \"%s\"\n",
-                default_val_set_params_filename);
+    private StringBuilder getOtherSettings() {
+        StringBuilder result = new StringBuilder();
+        result.append("base_url: ").append("https://performanceparameters.googleapis.com/v1/").append(", \n");
+        result.append("api_key: ").append(this.api_key).append(", \n");
+        result.append("default_fidelity_parameters_filename: ")
+                .append("dev_tuningfork_validationsettingsparams.bin").append(", \n");
         int initial_request_timeout_ms = 1000;
-        result += String.format("initial_request_timeout_ms: %d,\n", initial_request_timeout_ms);
+        result.append("initial_request_timeout_ms: ").append(initial_request_timeout_ms).append(", \n");
         int ultimate_request_timeout_ms = 10000;
-        result += String.format("ultimate_request_timeout_ms: %d,\n", ultimate_request_timeout_ms);
+        result.append("ultimate_request_timeout_ms: ").append(ultimate_request_timeout_ms).append(", \n");
         int loading_annotation_index = 1;
-        result += String.format("loading_annotation_index: %d,\n", loading_annotation_index);
+        result.append("loading_annotation_index: ").append(loading_annotation_index).append(", \n");
         int level_annotation_index = 5;
-        result += String.format("level_annotation_index: %d\n", level_annotation_index);
+        result.append("level_annotation_index: ").append(level_annotation_index).append("\n");
         return result;
     }
 
     public String toString() {
-        String result = "";
-        result += getAggregationStrategy() + "\n";
-        result += getHistograms();
-        result += getOtherSettings();
-        System.out.println(result);
-        return result;
+        StringBuilder result = new StringBuilder();
+        result.append(getAggregationStrategy()).append("\n");
+        result.append(getHistograms());
+        result.append(getOtherSettings());
+        System.out.println(result.toString());
+        return result.toString();
     }
 }

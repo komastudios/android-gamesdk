@@ -90,9 +90,9 @@ public class AssetsWriter {
   public boolean saveDevValidationSettingsParams(ValidationSettingsDataModel validationSettingsDataModel) {
     File file = new File(assetsDirectory, "dev_tuningfork_validationsettingsparamst.txt");
     try (FileWriter fileWriter = new FileWriter(file)){
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
+      fileWriter.write(AUTO_GENERATED_PROTO);
       fileWriter.write(validationSettingsDataModel.toString());
-      fileWriter.write(AUTO_GENERATED_TEXTPROTO);
+      fileWriter.write(AUTO_GENERATED_PROTO);
       return true;
     } catch (IOException e) {
       e.printStackTrace();

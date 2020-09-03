@@ -16,6 +16,7 @@
 
 package Utils.Proto;
 
+import Utils.Proto.OsUtils.OS;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
@@ -54,6 +55,11 @@ public final class ProtoCompiler {
       protocBinary =
           new File(temporaryFolderRoot.getAbsolutePath(), PROTO_BINARY_PATH_RELATIVE_TO_JAR);
       protocBinary.setExecutable(true);
+      if (OsUtils.getOS().equals(OS.MAC)) {
+        File protocScript = new File(temporaryFolderRoot.getAbsolutePath(),
+                PROTO_FOLDER_PATH_RELATIVE_TO_JAR + "/bin/.libs/protoc");
+        protocScript.setExecutable(true);
+      }
       LOGGER.info("Loaded protocol buffer successfully");
     } catch (IOException e) {
       e.printStackTrace();
