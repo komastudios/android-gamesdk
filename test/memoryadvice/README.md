@@ -175,26 +175,39 @@ repo init -u https://android.googlesource.com/platform/manifest -b my-branch
 The Memory Advice library is found in folder
 [test/memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/).
 
-It is recommended to build the library from source as a dependency of your app,
-using Android Studio and Gradle integration.
+Currently the process is to first load the library project with Android Studio
+and publish it to the local Maven repository by running
+`gradle build publishToMavenLocal`.
 
-Add these lines to the settings.gradle file in the root of the project,
-replacing `..` with the path containing the memoryadvice project.
+In the application root `build.gradle` file, ensure ```mavenLocal()`` is
+specified as a repository for the project, as well as `jitpack.io` for its
+dependencies. For example:
 
 ```gradle
-include ':app', ':memoryadvice'
-project(':memoryadvice').projectDir = new File('../memoryadvice/memoryadvice')
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenLocal()
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+}
 ```
 
-In the main application `settings.gradle` file, add an `implementation` line to
+In the application module's `build.gradle` file, add an `implementation` line to
 the `dependencies` section:
 
 ```gradle
 dependencies {
     // ..
-    implementation project(':memoryadvice')
+    implementation 'com.google.android.apps.internal.games:memoryadvice:0.9'
+
 }
 ```
+
+### Code
 
 In your main activity, initialize a single memoryAdviser object for the lifetime
 of your app.

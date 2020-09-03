@@ -1,6 +1,7 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -237,7 +238,7 @@ public class MemoryAdvisor extends MemoryMonitor {
         JSONArray warnings = new JSONArray();
         JSONObject heuristics = params.getJSONObject("heuristics");
         if (heuristics.has("try")) {
-          if (!TryAllocTester.tryAlloc((int) Utils.getMemoryQuantity(heuristics.get("try")))) {
+          if (!TryAllocTester.tryAlloc((int) getMemoryQuantity(heuristics.get("try")))) {
             JSONObject warning = new JSONObject();
             warning.put("try", heuristics.get("try"));
             warning.put("level", "red");
@@ -316,8 +317,8 @@ public class MemoryAdvisor extends MemoryMonitor {
           // Example: "Active": {"fixed": {"red": "300M", "yellow": "400M"}}
           if (heuristic.has("fixed")) {
             JSONObject fixed = heuristic.getJSONObject("fixed");
-            long red = Utils.getMemoryQuantity(fixed.get("red"));
-            long yellow = Utils.getMemoryQuantity(fixed.get("yellow"));
+            long red = getMemoryQuantity(fixed.get("red"));
+            long yellow = getMemoryQuantity(fixed.get("yellow"));
             String level = null;
             if (increasing ? metricValue > red : metricValue < red) {
               level = "red";

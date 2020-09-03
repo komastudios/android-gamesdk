@@ -1,9 +1,9 @@
 package net.jimblackler.istresser;
 
-import static com.google.android.apps.internal.games.memoryadvice.Utils.getMemoryQuantity;
-import static com.google.android.apps.internal.games.memoryadvice.Utils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.readFile;
-import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
+import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;

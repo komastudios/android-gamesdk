@@ -1,2 +1,1 @@
-include ':app', ':memoryadvice'
-project(':memoryadvice').projectDir = new File('../memoryadvice/memoryadvice')
+include ':app'
