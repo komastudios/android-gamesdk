@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6147a99_6cc2f244",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTabController.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-03T10:48:18Z",
+      "side": 1,
+      "message": "I don\u0027t see this being declared anywhere?\n\nI\u0027d suggest deleting this as it\u0027s better to use observers and let each controller only control its own view.",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 47
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11a3dbf2_785dc816",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTabController.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-03T10:48:18Z",
+      "side": 1,
+      "message": "Deleting files should be done on finalizing everything(User hitting OK). Then Probably create all you need and delete the rest.",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 104,
+        "endChar": 3
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9617cf6c_b674ab52",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-03T10:48:18Z",
+      "side": 1,
+      "message": "fireTableDataChanged() does the job.",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 66,
+        "endChar": 59
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6e07c2b_a86e5477",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-03T10:48:18Z",
+      "side": 1,
+      "message": "Probably better to use dataModel for reading data.",
+      "range": {
+        "startLine": 108,
+        "startChar": 2,
+        "endLine": 118,
+        "endChar": 3
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
