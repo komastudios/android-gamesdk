@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "80a19668_5b29fe40",
+        "filename": "test/devicefarm/postprocessing/get_metrics_times.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-03T09:26:14Z",
+      "side": 1,
+      "message": "uber nit: put \u0027_logcat\u0027 in a variable and use its string length instead of the -7 magic number.",
+      "revId": "878f0d3db621060e5d40e93db8ebbd75b9ca8f87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
