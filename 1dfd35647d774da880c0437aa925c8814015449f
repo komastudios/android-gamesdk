@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ca6c8847_edb009e3",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTableModel.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-03T06:01:03Z",
+      "side": 1,
+      "message": "Why did you remove the getFidelityValues() method?\nI\u0027ve been using it in aosp/1415133 to insert new fields in the quality settings once a new fidelity field is added.",
+      "revId": "1dfd35647d774da880c0437aa925c8814015449f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
