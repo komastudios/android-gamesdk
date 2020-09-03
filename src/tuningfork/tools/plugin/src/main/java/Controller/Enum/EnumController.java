@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 
-public abstract class EnumController {
+public class EnumController {
 
   private List<EnumDataModel> enums;
 
@@ -44,8 +44,17 @@ public abstract class EnumController {
         Collectors.toList());
   }
 
-  public boolean addEnum(String name, ArrayList<String> options) {
-    EnumDataModel enumDataModel = new EnumDataModel(name, options);
+  public boolean addEnums(List<EnumDataModel> enumData) {
+    for(EnumDataModel enumDataModel : enumData) {
+      if (!addEnum(enumDataModel.getName(), enumDataModel.getOptions())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public boolean addEnum(String name, List<String> options) {
+    EnumDataModel enumDataModel = new EnumDataModel(name, (ArrayList<String>) options);
     if (enums.contains(enumDataModel)) {
       return false;
     }
@@ -53,8 +62,9 @@ public abstract class EnumController {
     return true;
   }
 
-  public void removeEnum(int index) {
+  public boolean removeEnum(int index) {
     enums.remove(index);
+    return true;
   }
 
   public boolean editEnum(int index, String name, ArrayList<String> options) {
@@ -64,6 +74,12 @@ public abstract class EnumController {
     }
     enums.set(index, enumDataModel);
     return true;
+  }
+
+  public void addEnumsToModel(DefaultTableModel tableModel) {
+    for (EnumDataModel enumDataModel : enums) {
+      tableModel.addRow(new Object[]{enumDataModel.getName()});
+    }
   }
 
   public void addEnumToTable(JBTable table) {
@@ -84,5 +100,6 @@ public abstract class EnumController {
     onEnumTableChanged();
   }
 
-  public abstract void onEnumTableChanged();
+  public void onEnumTableChanged(){}
+
 }

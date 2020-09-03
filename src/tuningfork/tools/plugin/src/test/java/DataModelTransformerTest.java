@@ -14,12 +14,14 @@
  * limitations under the License
  */
 
+import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
@@ -28,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import javax.xml.crypto.Data;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -131,5 +134,34 @@ public class DataModelTransformerTest {
         .transformToQuality(dynamicMessage).get();
 
     Assert.assertEquals(qualityDataModel.getFieldValues().size(), 2);
+  }
+
+  @Test
+  public void getEnumsTest() throws IOException, CompilationException {
+    File file = helper.getFile("annotation_valid.proto");
+    FileDescriptor fDesc = compiler.compile(file, Optional.empty());
+    List<EnumDescriptor> enumDesc = fDesc.getEnumTypes();
+    List<EnumDataModel> enumDataModels = DataModelTransformer.getEnums(enumDesc);
+    List<String> options1 = enumDataModels.get(0).getOptions();
+    List<String> options2 = enumDataModels.get(1).getOptions();
+    List<String> options3 = enumDataModels.get(2).getOptions();
+    List<String> options4 = enumDataModels.get(3).getOptions();
+
+    Assert.assertEquals(enumDataModels.size(), 4);
+    Assert.assertEquals(enumDataModels.get(0).getName(), "LoadingState");
+    Assert.assertEquals(enumDataModels.get(1).getName(), "State");
+    Assert.assertEquals(enumDataModels.get(2).getName(), "QualitySettings");
+    Assert.assertEquals(enumDataModels.get(3).getName(), "UnusedEnum");
+    Assert.assertEquals(enumDataModels.get(0).getName(), "LoadingState");
+    Assert.assertEquals(options1.get(0), "NOT_LOADING");
+    Assert.assertEquals(options2.get(0), "STATE_ONE");
+    Assert.assertEquals(options2.get(1), "STATE_TWO");
+    Assert.assertEquals(options3.get(0), "FAST");
+    Assert.assertEquals(options3.get(1), "SIMPLE");
+    Assert.assertEquals(options3.get(2), "GOOD");
+    Assert.assertEquals(options3.get(3), "BEAUTIFUL");
+    Assert.assertEquals(options3.get(4), "FANTASTIC");
+    Assert.assertEquals(options4.get(0), "VALUE2");
+    Assert.assertEquals(options4.get(1), "VALUE3");
   }
 }
