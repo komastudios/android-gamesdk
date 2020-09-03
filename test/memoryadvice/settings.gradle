@@ -1,1 +1,12 @@
+
+pluginManagement {
+    repositories {
+        maven { url "https://jitpack.io" }
+        mavenLocal();
+        google()
+        jcenter()
+    }
+}
+
+include ':memoryadvice_common'
 include ':memoryadvice'

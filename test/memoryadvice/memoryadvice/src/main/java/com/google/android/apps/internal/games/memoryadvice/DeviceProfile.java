@@ -1,6 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice.Utils.readStream;
+import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
 import android.content.res.AssetManager;
 import android.os.Build;

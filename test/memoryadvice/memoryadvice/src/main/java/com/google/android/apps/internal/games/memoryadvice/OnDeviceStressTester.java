@@ -1,5 +1,8 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -94,8 +97,7 @@ class OnDeviceStressTester {
           sendMessage(message);
         }
         {
-          int toAllocate =
-              (int) Utils.getMemoryQuantity(Utils.getOrDefault(params, "segmentSize", "4M"));
+          int toAllocate = (int) getMemoryQuantity(getOrDefault(params, "segmentSize", "4M"));
           Message message = Message.obtain(null, OCCUPY_MEMORY, toAllocate, 0);
           message.replyTo = new Messenger(new Handler(new Handler.Callback() {
             @Override
