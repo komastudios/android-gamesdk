@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "bf8f3579_d87aafd7",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-03T09:09:14Z",
+      "side": 1,
+      "message": "Just thinking about this, there might be a reason for the ifstream (or the ofstream in StoreStateToMemory) to fail (not sure why, I just know that it will happen sooner or later 😬), so we should probably be robust against these eventualities :) \nProbably considering the state as uninitialised then, like when the file does not exist?",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "787bccd7_95865129",
         "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
         "patchSetId": 1
