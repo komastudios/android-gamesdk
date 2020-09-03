@@ -1,0 +1,12 @@
+Autosubmit+1: Kseniia Taraimovich <kseniia@google.com>
+Code-Review+1: Anastasiia Volobueva <volobushek@google.com>
+Code-Review+1: Teodora Argintaru <targintaru@google.com>
+Code-Review+2: Kseniia Taraimovich <kseniia@google.com>
+Bypass-Presubmit+1: Henry Daitx <daitx@google.com>
+Open-Source-Licensing+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Submitted-by: Henry Daitx <daitx@google.com>
+Submitted-at: Thu, 03 Sep 2020 17:29:40 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1418328
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
