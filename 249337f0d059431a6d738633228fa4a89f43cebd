@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "dbffad32_1479bc7b",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-03T11:48:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc5ef622_cf701031",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf8f3579_d87aafd7",
         "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
         "patchSetId": 1
@@ -50,6 +68,24 @@
       "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "241c6402_a1ec2735",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-03T11:48:17Z",
+      "side": 1,
+      "message": "Well GetStoredState checks if the file exists and handles properly if it isn\u0027t there, and in case nothing is read from the file, GetStateFromString has an else clause to return TUNINGFORK_STATE_UNINITIALIZED. \n\nFor StoreStateToDisk, the ofstream creates the file itself, and overwrites if there is already a file. I feel like these make the code robust for the failures you mentioned.",
+      "parentUuid": "bf8f3579_d87aafd7",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -70,6 +106,24 @@
     },
     {
       "key": {
+        "uuid": "a0626252_a312bd56",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-03T11:48:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "787bccd7_95865129",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "27c4fd67_8699f0fe",
         "filename": "src/tuningfork/core/activity_lifecycle_state.h",
         "patchSetId": 1
@@ -87,6 +141,24 @@
     },
     {
       "key": {
+        "uuid": "e7dacb36_6cab055f",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-03T11:48:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27c4fd67_8699f0fe",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "61c2e9b8_c42caa28",
         "filename": "src/tuningfork/proto/performanceparameters.proto",
         "patchSetId": 1
@@ -101,6 +173,24 @@
       "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be8b79c1_56c1c983",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-03T11:48:17Z",
+      "side": 1,
+      "message": "I was planning on adding it as the next cl",
+      "parentUuid": "61c2e9b8_c42caa28",
+      "revId": "249337f0d059431a6d738633228fa4a89f43cebd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
