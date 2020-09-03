@@ -18,15 +18,14 @@ import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.Assets.AssetsWriter;
+import Utils.DataModelTransformer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
-import com.google.protobuf.Descriptors.EnumValueDescriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor.Type;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
+import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -42,13 +41,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 public class AssetsWriterTest {
 
   private static final File PROTOC_BINARY = ProtocBinary.get();
-  @ClassRule public static TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @ClassRule
+  public static TemporaryFolder temporaryFolder = new TemporaryFolder();
   private static EnumDataModel levelEnum;
   private static EnumDataModel loadingStateEnum;
   private static MessageDataModel annotationMessage;
@@ -90,61 +89,20 @@ public class AssetsWriterTest {
     return enums;
   }
 
-  // TODO(mohanad): Use DataTransformer Class for parsing descriptors.
-  private MessageDataModel parseFileDescriptorMessage(
-      FileDescriptor fileDescriptor, MessageDataModel.Type messageType) {
-    MessageDataModel messageDataModel = new MessageDataModel();
-    messageDataModel.setMessageType(messageType);
-    Descriptor descriptor = fileDescriptor.findMessageTypeByName(messageType.getMessageName());
-    for (FieldDescriptor fieldDescriptor : descriptor.getFields()) {
-      String fieldType;
-      switch (fieldDescriptor.getType()) {
-        case INT32:
-          fieldType = "int32";
-          break;
-        case FLOAT:
-          fieldType = "float";
-          break;
-        default:
-          fieldType = fieldDescriptor.getEnumType().getName();
-          break;
-      }
-      String fieldName = fieldDescriptor.getName();
-      messageDataModel.addField(fieldName, fieldType);
-    }
-    return messageDataModel;
-  }
-
-  // TODO(mohanad): Use DataTransformer Class for parsing descriptors.
-  private QualityDataModel parseDynamicMessage(DynamicMessage message) {
-    QualityDataModel qualityDataModel = new QualityDataModel();
-    for (Entry<FieldDescriptor, Object> entry : message.getAllFields().entrySet()) {
-      FieldDescriptor fieldDescriptor = entry.getKey();
-      String fieldName = entry.getKey().getName();
-      String fieldValue = entry.getValue().toString();
-      if (fieldDescriptor.getType().equals(Type.ENUM)) {
-        int index = ((EnumValueDescriptor) entry.getValue()).getIndex();
-        fieldValue = fieldDescriptor.getEnumType().getValues().get(index).getName();
-      }
-      qualityDataModel.addField(fieldName, fieldValue);
-    }
-    return qualityDataModel;
-  }
-
   private FileDescriptor saveDevTuningFork() throws IOException, CompilationException {
     AssetsWriter assetsWriter = new AssetsWriter(temporaryFolder.getRoot().getAbsolutePath());
     assetsWriter.saveDevTuningForkProto(
-            Arrays.asList(levelEnum, loadingStateEnum), annotationMessage, fidelityMessage);
+        Arrays.asList(levelEnum, loadingStateEnum), annotationMessage, fidelityMessage);
     return compiler.compile(new File(devTuningforkProto.toString()), Optional.empty());
   }
 
   private DynamicMessage parseBinaryDynamicFile(
-          FileDescriptor fileDescriptor, File devFile, String content)
-          throws IOException, CompilationException {
+      FileDescriptor fileDescriptor, File devFile, String content)
+      throws IOException, CompilationException {
 
     Descriptor descriptor = fileDescriptor.findMessageTypeByName("FidelityParams");
     compiler.encodeFromTextprotoFile(
-            descriptor.getFullName(), devFile, content, devFidelityBinary.toString(), Optional.empty());
+        descriptor.getFullName(), devFile, content, devFidelityBinary.toString(), Optional.empty());
     return compiler.decodeFromBinary(descriptor, Files.readAllBytes(devFidelityBinary));
   }
 
@@ -154,10 +112,10 @@ public class AssetsWriterTest {
     FileDescriptor fileDescriptor = saveDevTuningFork();
     String content = String.join("\n", Files.readAllLines(devTuningforkProto));
     List<EnumDataModel> enums = parseFileDescriptorEnums(fileDescriptor);
-    MessageDataModel resultAnnotation =
-            parseFileDescriptorMessage(fileDescriptor, MessageDataModel.Type.ANNOTATION);
-    MessageDataModel resultFidelity =
-        parseFileDescriptorMessage(fileDescriptor, MessageDataModel.Type.FIDELITY);
+    MessageDataModel resultAnnotation = DataModelTransformer
+        .transformToAnnotation(fileDescriptor.findMessageTypeByName("Annotation")).get();
+    MessageDataModel resultFidelity = DataModelTransformer
+        .transformToFidelity(fileDescriptor.findMessageTypeByName("FidelityParams")).get();
     assetsWriter.saveDevTuningForkProto(enums, resultAnnotation, resultFidelity);
     String resultContent = String.join("\n", Files.readAllLines(devTuningforkProto));
     Assert.assertEquals(content, resultContent);
@@ -170,21 +128,24 @@ public class AssetsWriterTest {
     qualityDataModel.addField("num_sphere", "3");
     qualityDataModel.addField("tesselation_percent", "22.5");
     qualityDataModel.addField("current_level", "LEVEL_1");
+
     // Initialize asset writer and write qualityDataModel to disk
     AssetsWriter assetsWriter = new AssetsWriter(temporaryFolder.getRoot().getAbsolutePath());
-    assetsWriter.saveDevFidelityParams(qualityDataModel, 1);
+    assetsWriter.saveDevFidelityParams(compiler, qualityDataModel, 1);
 
     // read quality data model using protocol buffer compiler
-    File devFile = new File(devTuningforkProto.toString());
-    String expectedMessage = String.join("\n", Files.readAllLines(devFidelityText));
-    DynamicMessage message = parseBinaryDynamicFile(fileDescriptor, devFile, expectedMessage);
+    byte[] fileContent = Files.readAllBytes(devFidelityBinary);
+    String expectedMessage = new String(fileContent, StandardCharsets.UTF_8);
+    Descriptor messageDesc = fileDescriptor.findMessageTypeByName("FidelityParams");
+    DynamicMessage message = compiler.decodeFromBinary(messageDesc, fileContent);
 
     // Parse the message read again to the disk.
-    QualityDataModel parsedQualityModel = parseDynamicMessage(message);
-    assetsWriter.saveDevFidelityParams(parsedQualityModel, 1);
+    QualityDataModel parsedQualityModel = DataModelTransformer.transformToQuality(message).get();
+    assetsWriter.saveDevFidelityParams(compiler, parsedQualityModel, 1);
 
     // Compare both messages.
-    String actualMessage = String.join("\n", Files.readAllLines(devFidelityText));
+    fileContent = Files.readAllBytes(devFidelityBinary);
+    String actualMessage = new String(fileContent, StandardCharsets.UTF_8);
     Assert.assertEquals(expectedMessage, actualMessage);
   }
 }

@@ -23,16 +23,28 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class AssetsFinder {
+public final class AssetsFinder {
+
+  private static File createDir(Optional<File> foundDirectory, String absolutePath) {
+    if (foundDirectory.isPresent()) {
+      return foundDirectory.get();
+    } else {
+      File tuningforkDir = new File(absolutePath + "/src/assets/tuningfork");
+      tuningforkDir.mkdirs();
+      return tuningforkDir;
+    }
+  }
 
   public static Optional<File> findAssets() {
     File currentDirectory = new File(new File(".").getAbsolutePath());
     return findAssets(currentDirectory);
   }
 
-  public static Optional<File> findAssets(String projectPath) {
-    File currentDirectory = new File(projectPath);
-    return findAssets(currentDirectory);
+  public static File findAssets(String projectPath) {
+    String absolutePath = projectPath.split(".idea")[0];
+    File currentDirectory = new File(absolutePath);
+    Optional<File> foundDirectory = findAssets(currentDirectory);
+    return createDir(foundDirectory, absolutePath);
   }
 
   public static Optional<File> findAssets(File currentDirectory) {
