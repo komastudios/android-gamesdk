@@ -16,6 +16,24 @@
       "revId": "878f0d3db621060e5d40e93db8ebbd75b9ca8f87",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d971144a_7a598e50",
+        "filename": "test/devicefarm/postprocessing/get_metrics_times.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-09-03T09:44:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80a19668_5b29fe40",
+      "revId": "878f0d3db621060e5d40e93db8ebbd75b9ca8f87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
