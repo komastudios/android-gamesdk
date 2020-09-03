@@ -31,6 +31,11 @@ public class EnumController {
     enums = new ArrayList<>();
   }
 
+
+  public EnumController(List<EnumDataModel> enums) {
+    this.enums = enums;
+  }
+
   public List<EnumDataModel> getEnums() {
     return enums;
   }

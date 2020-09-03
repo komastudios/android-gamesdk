@@ -17,6 +17,7 @@
 package Controller.Fidelity;
 
 import Controller.Enum.EnumController;
+import Controller.Quality.QualityTabController;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
 import View.Fidelity.FidelityTableData;
@@ -30,6 +31,10 @@ public class FidelityTabController extends EnumController {
 
   public FidelityTabController(MessageDataModel fidelityDataModel){
     this.fidelityDataModel = fidelityDataModel;
+  }
+
+  public MessageDataModel getFidelityDataModel() {
+    return fidelityDataModel;
   }
 
   public void addInitialFidelity(JTable table) {
@@ -68,6 +73,7 @@ public class FidelityTabController extends EnumController {
     if (jtable.getCellEditor() != null) {
       jtable.getCellEditor().stopCellEditing();
     }
+    QualityTabController.decreaseFieldsCount();
     model.removeRow(row);
   }
 
@@ -76,9 +82,9 @@ public class FidelityTabController extends EnumController {
         .getFidelityParamNames();
     List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
         .getFidelityFieldValues();
-    fidelityDataModel = new MessageDataModel();
-    fidelityDataModel.setMessageType(Type.FIDELITY);
-    fidelityDataModel.addMultipleFields(fidelityParamNames, fidelityFieldValues);
+
+    fidelityDataModel = new MessageDataModel(fidelityParamNames, fidelityFieldValues,
+        Type.FIDELITY);
     return true;
   }
 }
