@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a238ed80_187efc70",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-03T13:01:54Z",
+      "side": 1,
+      "message": "uber nit: technically it\u0027s not this function responsibility to say \"reporting as a crash\", but it\u0027s the caller job to log this if we want to (maybe other calls to SetNewState in the future will do something different). So I would move this log in TuningForkImpl::ReportLifecycleEvent",
+      "revId": "f3dd4ea03d0dcff5c8f2f1c045664f385f4296d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce7ef3a6_59fe61dd",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-03T13:01:54Z",
+      "side": 1,
+      "message": "nit: prefer to pass by const ref to avoid a useless copy of the name: const std::string\u0026 name",
+      "revId": "f3dd4ea03d0dcff5c8f2f1c045664f385f4296d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee3a7234_16b62e1b",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-03T13:01:54Z",
+      "side": 1,
+      "message": "nit: Can you just use operator\u003d\u003d here? `name \u003d\u003d \"onCreate\"` should work.",
+      "revId": "f3dd4ea03d0dcff5c8f2f1c045664f385f4296d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
