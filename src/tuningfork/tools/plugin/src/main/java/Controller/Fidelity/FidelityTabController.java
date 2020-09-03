@@ -29,21 +29,21 @@ import javax.swing.JTable;
 
 public class FidelityTabController {
 
-  private final MessageDataModel fidelityMessage;
+  private final MessageDataModel fidelityDataModel;
   private final List<EnumDataModel> enums;
   private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
 
-  public FidelityTabController(MessageDataModel fidelityMessage, List<EnumDataModel> enums) {
+  public FidelityTabController(MessageDataModel fidelityDataModel, List<EnumDataModel> enums) {
     super();
-    this.fidelityMessage = fidelityMessage;
+    this.fidelityDataModel = fidelityDataModel;
     this.enums = enums;
   }
 
   public void addInitialFidelity(JTable table) {
-    List<String> fieldNames = fidelityMessage.getFieldNames();
-    List<String> fieldValues = fidelityMessage.getFieldTypes();
+    List<String> fieldNames = fidelityDataModel.getFieldNames();
+    List<String> fieldValues = fidelityDataModel.getFieldTypes();
     FidelityTableModel model = (FidelityTableModel) table.getModel();
-    List<FidelityTableData> data = new ArrayList<>();
+    ArrayList<FidelityTableData> data = new ArrayList<>();
     for (int i = 0; i < fieldNames.size(); i++) {
       if (fieldValues.get(i).equals("int32")) {
         data.add(new FidelityTableData(FieldType.INT32, "", fieldNames.get(i)));
@@ -57,21 +57,21 @@ public class FidelityTabController {
   }
 
   public void addFidelityField(String name, String type) {
-    fidelityMessage.addField(name, type);
+    fidelityDataModel.addField(name, type);
   }
   public void removeFidelityField(int index) {
-    fidelityMessage.removeSetting(index);
+    fidelityDataModel.removeSetting(index);
   }
 
   public void updateName(int index, String newName) {
-    fidelityMessage.updateName(index, newName);
+    fidelityDataModel.updateName(index, newName);
   }
 
   public void updateType(int index, String type) {
-    fidelityMessage.updateType(index, type);
+    fidelityDataModel.updateType(index, type);
   }
   public MessageDataModel getFidelityData() {
-    return fidelityMessage;
+    return fidelityDataModel;
   }
 
   public void addRowAction(JTable jtable) {
@@ -95,7 +95,12 @@ public class FidelityTabController {
 
   public List<ValidationInfo> validate() {
     List<ValidationInfo> validationInfos = new ArrayList<>();
-    List<String> names = fidelityMessage.getFieldNames();
+    List<String> types = fidelityDataModel.getFieldTypes();
+    boolean emptyType = types.stream().anyMatch(String::isEmpty);
+    if (emptyType) {
+      validationInfos.add(new ValidationInfo("Empty Field Type Is Not Allowed"));
+    }
+    List<String> names = fidelityDataModel.getFieldNames();
     boolean duplicateField =
         names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
     if (duplicateField) {
