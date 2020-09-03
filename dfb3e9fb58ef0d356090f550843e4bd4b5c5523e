@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5430385e_e9d6c6f9",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Fidelity/FidelityTabController.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-03T13:18:20Z",
+      "side": 1,
+      "message": "It\u0027s declared in QualityTabController:122.\nI\u0027ve seen you already implemented this in another CL. I will wait for the merge and then update this one.",
+      "parentUuid": "d6147a99_6cc2f244",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 47
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11a3dbf2_785dc816",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTabController.java",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ee10354_91873432",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTabController.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-03T13:18:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11a3dbf2_785dc816",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 104,
+        "endChar": 3
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "0b71701e_53277fd4",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-03T13:18:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9617cf6c_b674ab52",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 66,
+        "endChar": 59
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c6e07c2b_a86e5477",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
         "patchSetId": 6
@@ -91,6 +163,30 @@
       "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eabccc12_c628a783",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Quality/QualityTableModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-03T13:18:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c6e07c2b_a86e5477",
+      "range": {
+        "startLine": 108,
+        "startChar": 2,
+        "endLine": 118,
+        "endChar": 3
+      },
+      "revId": "dfb3e9fb58ef0d356090f550843e4bd4b5c5523e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
