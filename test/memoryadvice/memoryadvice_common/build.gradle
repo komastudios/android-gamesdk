@@ -1,0 +1,32 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation 'org.json:json:20200518'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier 'sources'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                description = 'Parts of the Memory Advice library that are written in Java and make ' +
+                        'sense being run in desktop application as well as Android. ' +
+                        'This enables desktop tools written in Java to use these functions, for ' +
+                        'example to interpret output from the library.'
+                groupId = 'com.google.android.apps.internal.games'
+                artifactId = 'memoryadvice_common'
+                version = '0.9'
+                artifact(sourceJar)
+                from components.java
+            }
+        }
+    }
+}
