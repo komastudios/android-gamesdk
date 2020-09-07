@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "94ad73cb_23cfbdc6",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "nit: this could be\nreturn !(the condition)",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b03014f_fbad1020",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "nit: not needed, the file is closed automatically in the destructor of the fstream",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e112426f_ed691add",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "Should we report an error if the file couldn\u0027t be opened here? See ALOGE_ONCE_IF  in src/common/Log.h.",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e8b565e_2e07d0d7",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "nit: you don\u0027t need sstream in the header",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "decef64e_d7982dcd",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "It\u0027s extremely unlikely, but there\u0027s a possible race here if this push happens at the same time as GetCrashReports is called: you could get reallocation of the vector and corruption. Either use a lock or construct the vector with enough capacity that you know reallocation will not occur.",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7cd84dc_98440d48",
+        "filename": "src/tuningfork/core/session.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "See my comment on making access to this thread-safe.",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a380ab6c_f9d3c1bb",
+        "filename": "src/tuningfork/http_backend/json_serializer.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "nit: GetCrashReports is being called twice and each time it is creating copies of the vector. The vector is small, I know, but it would be better to copy to a temporary.",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec5aa401_7afc56a5",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-07T10:02:10Z",
+      "side": 1,
+      "message": "Have you talked to Luis about making these CrashReports events rather than putting them in the SessionContext? He said it would make his life easier on the back-end, IIRC. Please check if what you have here is OK with him and make the change to performanceparameters.proto, getting his approval of the CL.",
+      "revId": "b9307a929e2bb2929feae007d9aab9f7f308114a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
