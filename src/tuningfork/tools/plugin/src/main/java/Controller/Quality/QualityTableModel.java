@@ -27,12 +27,10 @@ public class QualityTableModel extends AbstractTableModel {
 
   private List<String> columnNames;
   private List<List<String>> data;
-  private Set<Integer> enumIndexes;
   private QualityTabController qualityTabController;
 
   public QualityTableModel(QualityTabController qualityTabController) {
     data = new ArrayList<>();
-    enumIndexes = new HashSet<>();
     columnNames = new ArrayList<>(Arrays.asList("Parameter name", "Trend"));
     this.qualityTabController = qualityTabController;
   }
@@ -56,6 +54,23 @@ public class QualityTableModel extends AbstractTableModel {
     fireTableStructureChanged();
   }
 
+  public void setFidelityNames(List<String> fidelityNames) {
+    for (String fidelityName : fidelityNames) {
+      List<String> toAdd = new ArrayList<>();
+      toAdd.add(fidelityName);
+      toAdd.add("");
+      data.add(toAdd);
+    }
+  }
+
+  public void addColumn(int fileNumber, List<String> columnData) {
+    columnNames.add(String.valueOf(fileNumber));
+    for (int i = 0; i < getRowCount(); i++) {
+      data.get(i).add(columnData.get(i));
+    }
+    fireTableStructureChanged();
+  }
+
   public void removeColumn(int column) {
     columnNames.remove(column);
     for (int i = 0; i < getRowCount(); i++) {
@@ -65,6 +80,7 @@ public class QualityTableModel extends AbstractTableModel {
   }
 
   public void removeRow(int row) {
+    fireTableRowsDeleted(getRowCount(), getRowCount() - 1);
     data.remove(row);
     fireTableDataChanged();
   }
@@ -108,5 +124,4 @@ public class QualityTableModel extends AbstractTableModel {
   public List<String> getColumnNames() {
     return columnNames;
   }
-
 }
