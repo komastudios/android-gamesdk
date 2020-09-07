@@ -45,9 +45,9 @@ public class OpenPluginAction extends AnAction {
                 progressIndicator.setIndeterminate(true);
                 progressIndicator.setText("Loading Assets");
 
-                DataModelTransformer transformer = new DataModelTransformer(projectPath,
-                    protoCompiler);
                 try {
+                  DataModelTransformer transformer = new DataModelTransformer(projectPath,
+                      protoCompiler);
                   MessageDataModel annotationData = transformer.initAnnotationData();
                   MessageDataModel fidelityTableData = transformer.initFidelityData();
                   List<EnumDataModel> enumData = transformer.initEnumData();
