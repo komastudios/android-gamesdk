@@ -19,12 +19,13 @@ package Controller.Quality;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import javax.swing.JTable;
+
 import View.Fidelity.FieldType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
-import javax.swing.JTable;
 
 public class QualityTabController {
 
@@ -39,6 +40,25 @@ public class QualityTabController {
     this.qualityDataModels = qualityDataModels;
     this.fidelityData = fidelityData;
     this.enums = enums;
+  }
+
+  public List<QualityDataModel> getQualityDataModels() {
+    return qualityDataModels;
+  }
+
+  public MessageDataModel getFidelityData() {
+    return fidelityData;
+  }
+
+  public void addInitialQuality(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.setFidelityNames(fidelityData.getFieldNames());
+    filesCount = qualityDataModels.size() + 1;
+
+    for (int file = 0; file < qualityDataModels.size(); file++) {
+      List<String> columnToAdd = qualityDataModels.get(file).getFieldValues();
+      tableModel.addColumn(file + 1, columnToAdd);
+    }
   }
 
   public void addColumn(JTable table) {
