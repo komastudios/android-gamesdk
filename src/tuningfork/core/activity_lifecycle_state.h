@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "tuningfork_internal.h"
 
 namespace tuningfork {
@@ -23,16 +25,20 @@ namespace tuningfork {
 class ActivityLifecycleState {
    public:
     ActivityLifecycleState();
-    void SetNewState(TuningFork_LifecycleState newState);
+    bool SetNewState(TuningFork_LifecycleState newState);
     TuningFork_LifecycleState GetCurrentState();
     bool IsAppOnForeground();
     virtual ~ActivityLifecycleState();
 
    private:
     bool app_on_foreground_ = false;
+    std::string tf_lifecycle_path_str_;
     TuningFork_LifecycleState current_state_ = TUNINGFORK_STATE_UNINITIALIZED;
 
-    const char *GetStateName(TuningFork_LifecycleState state);
+    const char* GetStateName(TuningFork_LifecycleState state);
+    TuningFork_LifecycleState GetStateFromString(const std::string& name);
+    TuningFork_LifecycleState GetStoredState();
+    void StoreStateToDisk(TuningFork_LifecycleState state);
 };
 
 }  // namespace tuningfork
