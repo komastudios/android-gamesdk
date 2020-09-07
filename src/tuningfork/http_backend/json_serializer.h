@@ -55,7 +55,8 @@ class JsonSerializer {
                                              const Duration& duration,
                                              bool& empty);
     json11::Json::object LoadingTimeMetadataJson(const LoadingTimeMetadata& md);
-    std::vector<json11::Json::object> CrashReportsJson();
+    std::vector<json11::Json::object> CrashReportsJson(
+        const RequestInfo& request_info);
 
     const Session& session_;
     IdProvider* id_provider_;
