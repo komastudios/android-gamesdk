@@ -18,6 +18,7 @@ package Controller.Fidelity;
 
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.MessageDataModel.Type;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -32,7 +33,7 @@ import javax.swing.JTable;
 
 public class FidelityTabController {
 
-  private final MessageDataModel fidelityDataModel;
+  private MessageDataModel fidelityDataModel;
   private final List<EnumDataModel> enums;
   private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
   private final PropertyChangeSupport propertyChangeSupport;
@@ -48,6 +49,10 @@ public class FidelityTabController {
       PropertyChangeListener propertyChangeListener) {
     propertyChangeSupport
         .addPropertyChangeListener(propertyChangeListener);
+  }
+
+  public MessageDataModel getFidelityDataModel() {
+    return fidelityDataModel;
   }
 
   public void addInitialFidelity(JTable table) {
@@ -116,6 +121,17 @@ public class FidelityTabController {
       jtable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
+  }
+
+  public boolean saveSettings(JTable jTable) {
+    List<String> fidelityParamNames = ((FidelityTableModel) jTable.getModel())
+        .getFidelityParamNames();
+    List<String> fidelityFieldValues = ((FidelityTableModel) jTable.getModel())
+        .getFidelityFieldValues();
+
+    fidelityDataModel = new MessageDataModel(fidelityParamNames, fidelityFieldValues,
+        Type.FIDELITY);
+    return true;
   }
 
   public List<String> getEnumNames() {
