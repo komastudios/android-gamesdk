@@ -32,10 +32,8 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
-
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-
     ProgressManager.getInstance()
         .run(
             new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
@@ -51,6 +49,7 @@ public class OpenPluginAction extends AnAction {
                   MessageDataModel annotationData = transformer.initAnnotationData();
                   MessageDataModel fidelityTableData = transformer.initFidelityData();
                   List<EnumDataModel> enumData = transformer.initEnumData();
+
                   SwingUtilities.invokeLater(() -> {
                     MainDialogWrapper dialogWrapper = new MainDialogWrapper(e.getProject(),
                         annotationData,
