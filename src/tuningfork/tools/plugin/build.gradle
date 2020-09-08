@@ -1,7 +1,10 @@
 plugins {
     id 'java'
+    id 'idea'
     id 'org.jetbrains.intellij' version '0.4.21'
+    id 'com.google.protobuf' version '0.8.8'
 }
+
 
 group 'org.example'
 version '1.0-SNAPSHOT'
@@ -22,10 +25,14 @@ jar {
 }
 
 dependencies {
-    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '2.4.1'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.13.0'
+    compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.12.4'
+    compile group: 'io.grpc', name: 'grpc-all', version: '1.25.0'
     testCompile 'junit:junit:4.12'
     testCompile 'com.google.truth:truth:0.43'
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
+    implementation 'com.google.protobuf:protobuf-javalite:3.9.1'
+    protobuf files('src/main/java/Utils/Monitoring/proto/performanceparameters.proto')
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -36,11 +43,11 @@ intellij {
 }
 
 // testing on Android studio -- uncomment next 3 lines and change path
-/*
-   runIde {
-    ideDirectory <path_to_android-studio>
+
+runIde {
+    ideDirectory '/usr/local/google/home/targintaru/Desktop/android-studio'
 }
-*/
+
 
 /* running tests on building/running -- uncomment next 2 lines
 runIde.dependsOn(':test')
@@ -53,4 +60,25 @@ patchPluginXml {
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
+}
+
+
+idea {
+    module {
+        sourceDirs += file("${projectDir}/src/generated/main/java/Utils/Monitoring");
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            include 'src/main/java/Utils/Monitoring/proto/performanceparameters.proto'
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.12.4'
+    }
 }
