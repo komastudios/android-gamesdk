@@ -18,9 +18,12 @@ package Action;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Utils.DataModelTransformer;
+import Utils.Monitoring.PerformanceParameters.UploadTelemetryRequest;
+import Utils.Monitoring.RequestServer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import View.Dialog.MainDialogWrapper;
+import View.Monitoring.MonitoringTab;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -32,10 +35,8 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
-
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-
     ProgressManager.getInstance()
         .run(
             new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
@@ -51,6 +52,7 @@ public class OpenPluginAction extends AnAction {
                   MessageDataModel annotationData = transformer.initAnnotationData();
                   MessageDataModel fidelityTableData = transformer.initFidelityData();
                   List<EnumDataModel> enumData = transformer.initEnumData();
+
                   SwingUtilities.invokeLater(() -> {
                     MainDialogWrapper dialogWrapper = new MainDialogWrapper(e.getProject(),
                         annotationData,
