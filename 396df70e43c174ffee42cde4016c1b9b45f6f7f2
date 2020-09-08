@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4052ff0f_69624ca7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/proto/performanceparameters.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-08T16:02:57Z",
+      "side": 1,
+      "message": "Can you instead of copying this file, use the original one? e.g change the path to .proto in build.gradle or create a symlink instead of copy.\n\nIf original file will change we would not need to maintain in sync these two files.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "396df70e43c174ffee42cde4016c1b9b45f6f7f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
