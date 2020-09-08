@@ -18,6 +18,8 @@ package Action;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Utils.DataModelTransformer;
+import Utils.Monitoring.PerformanceParameters.UploadTelemetryRequest;
+import Utils.Monitoring.RequestServer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import View.Dialog.MainDialogWrapper;
@@ -28,13 +30,27 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
 
+  Optional<UploadTelemetryRequest> telemetryRequest = Optional.empty();
+
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    ProgressManager.getInstance().run(
+        new Task.Backgroundable(e.getProject(), "Retrieving telemetry uploads") {
+          @Override
+          public void run(@NotNull ProgressIndicator indicator) {
+            try {
+              telemetryRequest = RequestServer.listen();
+            } catch (IOException ex) {
+              ex.printStackTrace();
+            }
+          }
+        });
 
     ProgressManager.getInstance()
         .run(
@@ -63,5 +79,6 @@ public class OpenPluginAction extends AnAction {
                 }
               }
             });
+
   }
 }
