@@ -27,6 +27,7 @@ class MemoryMonitor {
   private final JSONObject metrics;
   private final CanaryProcessTester canaryProcessTester;
   private int latestOnTrimLevel;
+  private int pid = Process.myPid();
 
   /**
    * Create an Android memory metrics fetcher.
@@ -168,7 +169,6 @@ class MemoryMonitor {
         latestOnTrimLevel = 0;
       }
 
-      int pid = android.os.Process.myPid();
       if (fields.has("proc")) {
         Object procFieldsValue = fields.get("proc");
         JSONObject procFields =
