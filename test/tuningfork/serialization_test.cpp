@@ -34,6 +34,7 @@ RequestInfo test_device_info{
     "expt" /*experiment_id*/,
     {} /*current_fidelity_parameters*/,
     "sess" /*session_id*/,
+    "prev_sess" /*previous_session_id*/,
     2387 /*total_memory_bytes*/,
     349587 /*gl_es_version*/,
     "fing" /*build_fingerprint*/,
