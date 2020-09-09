@@ -1,0 +1,12 @@
+Open-Source-Licensing+1: Lint 🤖 <android-build-ayeaye@system.gserviceaccount.com>
+Autosubmit+1: Jim Blackler <jimblackler@google.com>
+Lint+1: Lint 🤖 <android-build-ayeaye@system.gserviceaccount.com>
+Lint+1: Lint 🤖 <android-build-prod-ayeaye@system.gserviceaccount.com>
+Code-Review+2: Henry Daitx <daitx@google.com>
+Presubmit-Verified-1: Treehugger Robot <treehugger-gerrit@google.com>
+Bypass-Presubmit+1: Jim Blackler <jimblackler@google.com>
+Submitted-by: Jim Blackler <jimblackler@google.com>
+Submitted-at: Wed, 09 Sep 2020 21:18:10 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1423529
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
