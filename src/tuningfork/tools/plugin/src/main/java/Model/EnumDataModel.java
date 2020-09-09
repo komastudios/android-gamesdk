@@ -39,6 +39,10 @@ public class EnumDataModel {
     }
   }
 
+  public int size() {
+    return options.size();
+  }
+
   public List<String> getOptions() {
     return options;
   }

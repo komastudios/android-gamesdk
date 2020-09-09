@@ -16,8 +16,12 @@
 
 package View.ValidationSettings;
 
+import Controller.Annotation.AnnotationTabController;
 import Controller.ValidationSettings.ValidationSettingsTabController;
 import Controller.ValidationSettings.ValidationSettingsTableModel;
+import Model.EnumDataModel;
+import Model.MessageDataModel;
+import View.Annotation.AnnotationTab;
 import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
@@ -34,6 +38,8 @@ import javax.swing.Box;
 
 import org.jdesktop.swingx.VerticalLayout;
 
+import java.util.List;
+
 public class ValidationSettingsTab extends TabLayout {
     private JBScrollPane scrollPane;
     private JBTable validationSettingsTable;
@@ -43,11 +49,14 @@ public class ValidationSettingsTab extends TabLayout {
     private JRadioButton radioButtonIntervalBased;
     private ButtonGroup radioButtonGroup;
     private ValidationSettingsTabController validationSettingsTabController;
+    private List<EnumDataModel> enumDataModelList;
 
     private JButton saveSettingsButton;
     private JPanel saveSettingsPanel;
 
     private JTextField apiKey;
+    private JBLabel intervals = new JBLabel("intervalms_or_count");
+    private JTextField intervalms_or_count;
 
     private JProgressBar barUpload;
 
@@ -56,12 +65,12 @@ public class ValidationSettingsTab extends TabLayout {
             "<html> Choose your preferred settings for game analysis. <br>" +
             "Histograms:</html>");
 
-    public ValidationSettingsTab() {
-        initVariables();
+    public ValidationSettingsTab(List<EnumDataModel> enumDataModelList) {
+        initVariables(enumDataModelList);
         initComponents();
     }
 
-    private void initVariables() {
+    private void initVariables(List<EnumDataModel> enumDataModelList) {
         scrollPane = new JBScrollPane();
         validationSettingsTable = new JBTable();
         radioButtonGroup = new ButtonGroup();
@@ -71,10 +80,12 @@ public class ValidationSettingsTab extends TabLayout {
         barUpload.setBounds(40,40,160,30);
         barUpload.setValue(0);
         barUpload.setStringPainted(true);
+        this.enumDataModelList = enumDataModelList;
         barUpload.setSize(250, 150);
         apiKey = new JTextField("api key");
+        intervalms_or_count = new JTextField("1000");
         saveSettingsButton = new JButton("Save settings");
-        validationSettingsTabController = new ValidationSettingsTabController();
+        validationSettingsTabController = new ValidationSettingsTabController(enumDataModelList);
         decoratorPanel =
                 ToolbarDecorator.createDecorator(validationSettingsTable)
                         .setAddAction(it ->
@@ -103,13 +114,16 @@ public class ValidationSettingsTab extends TabLayout {
         this.add(radioButtonTimeBased);
         this.add(radioButtonIntervalBased);
         this.add(apiKey);
+        this.add(intervals);
+        this.add(intervalms_or_count);
         this.add(barUpload);
         saveSettingsPanel = new JPanel();
         saveSettingsPanel.add(saveSettingsButton);
         saveSettingsButton.addActionListener(actionEvent ->
                 validationSettingsTabController.saveSettings(validationSettingsTable, apiKey.getText(),
                         radioButtonTimeBased.isSelected() ?
-                                radioButtonTimeBased.getText(): radioButtonIntervalBased.getText()));
+                                radioButtonTimeBased.getText(): radioButtonIntervalBased.getText(),
+                        intervalms_or_count.getText()));
         this.add(saveSettingsPanel);
 
         // this function will change

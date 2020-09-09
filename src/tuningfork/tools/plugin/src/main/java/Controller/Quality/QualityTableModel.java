@@ -21,50 +21,47 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 public class QualityTableModel extends AbstractTableModel {
 
-  private String[] columnNames = {"Quality level number",
-      "Field1 (int32)",
-      "Field2 (float)",
-      "Field3 (ENUM)"};
-  private List<String[]> data;
+  private List<String> columnNames;
+  private List<List<String>> data;
   private Set<Integer> enumIndexes;
+  private QualityTabController qualityTabController;
 
-  public QualityTableModel() {
+  public QualityTableModel(QualityTabController qualityTabController) {
     data = new ArrayList<>();
     enumIndexes = new HashSet<>();
-    addEnumIndexes();
+    columnNames = new ArrayList<>(Arrays.asList("Parameter name", "Trend"));
+    this.qualityTabController = qualityTabController;
   }
 
-  public QualityTableModel(String[] columnNames) {
-    data = new ArrayList<>();
-    enumIndexes = new HashSet<>();
-    this.columnNames = columnNames;
-    addEnumIndexes();
-  }
-
-  private void addEnumIndexes() {
-    ArrayList<String> fidelitySettingsTypes = (ArrayList<String>) Arrays.stream(columnNames)
-        .map(columnName -> columnName.split(" ")[1])
-        .collect(Collectors.toList());
-    enumIndexes = IntStream.range(0, fidelitySettingsTypes.size())
-        .filter(i -> fidelitySettingsTypes.get(i).equals("(ENUM)")).boxed()
-        .collect(Collectors.toSet());
-  }
-
-  public HashSet<Integer> getEnumIndexes() {
-    return (HashSet<Integer>) enumIndexes;
-  }
-
-  public void addRow(String[] row, JTable table) {
+  public void addRow() {
+    List<String> row = new ArrayList<>();
+    for (int i = 0; i < getColumnCount(); i++) {
+      row.add("");
+    }
     data.add(row);
-    QualityTabController.increaseFilesCount();
+    qualityTabController.addNewFieldToAllFiles();
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
+  }
+
+  public void addColumn(int fileNumber) {
+    columnNames.add(String.valueOf(fileNumber));
+    for (int i = 0; i < getRowCount(); i++) {
+      data.get(i).add("");
+    }
+    qualityTabController.addNewQualityFile();
+    fireTableStructureChanged();
+  }
+
+  public void removeColumn(int column) {
+    columnNames.remove(column);
+    for (int i = 0; i < getRowCount(); i++) {
+      data.get(i).remove(column);
+    }
+    fireTableStructureChanged();
   }
 
   public void removeRow(int row) {
@@ -74,7 +71,7 @@ public class QualityTableModel extends AbstractTableModel {
 
   @Override
   public String getColumnName(int i) {
-    return columnNames[i];
+    return columnNames.get(i);
   }
 
   @Override
@@ -84,38 +81,32 @@ public class QualityTableModel extends AbstractTableModel {
 
   @Override
   public int getColumnCount() {
-    return columnNames.length;
+    return columnNames.size();
   }
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return column >= 1;
+    return column >= 2;
   }
 
   @Override
   public Object getValueAt(int row, int column) {
-    return data.get(row)[column];
+    return data.get(row).get(column);
   }
 
   @Override
-  public void setValueAt(Object o, int row, int column) {
-    data.get(row)[column] = o.toString();
+  public void setValueAt(Object object, int row, int column) {
+    data.get(row).set(column, object.toString());
+    if (column == 0) {
+      qualityTabController.updateFieldName(row, object.toString());
+    } else {
+      qualityTabController.updateFieldValue(column - 2, row, object.toString());
+    }
     fireTableCellUpdated(row, column);
   }
 
   public List<String> getColumnNames() {
-    return Arrays.stream(columnNames)
-        .map(columnName -> columnName.split(" ")[0])
-        .collect(Collectors.toList());
+    return columnNames;
   }
 
-  public List<List<String>> getQualitySettings() {
-    List<List<String>> qualitySettings = new ArrayList<>();
-
-    for (String[] row : data) {
-      qualitySettings.add(Arrays.asList(row));
-    }
-
-    return qualitySettings;
-  }
 }

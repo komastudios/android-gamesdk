@@ -57,7 +57,7 @@ public final class ProtoCompiler {
       protocBinary.setExecutable(true);
       if (OsUtils.getOS().equals(OS.MAC)) {
         File protocScript = new File(temporaryFolderRoot.getAbsolutePath(),
-                PROTO_FOLDER_PATH_RELATIVE_TO_JAR + "/bin/.libs/protoc");
+            PROTO_FOLDER_PATH_RELATIVE_TO_JAR + "/bin/.libs/protoc");
         protocScript.setExecutable(true);
       }
       LOGGER.info("Loaded protocol buffer successfully");

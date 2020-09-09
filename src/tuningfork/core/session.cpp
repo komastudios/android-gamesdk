@@ -71,6 +71,16 @@ MemoryMetricData* Session::CreateMemoryHistogram(
     return p;
 }
 
+void Session::RecordCrash(CrashReason reason) {
+    std::lock_guard<std::mutex> lock(crash_mutex_);
+    crash_data_.push_back(reason);
+}
+
+std::vector<CrashReason> Session::GetCrashReports() const {
+    std::lock_guard<std::mutex> lock(crash_mutex_);
+    return crash_data_;
+}
+
 void Session::ClearData() {
     std::lock_guard<std::mutex> lock(mutex_);
     metric_data_.clear();

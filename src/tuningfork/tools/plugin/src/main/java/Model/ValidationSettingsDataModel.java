@@ -1,6 +1,8 @@
 package Model;
 
 
+import Controller.Annotation.AnnotationTabController;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,29 +11,40 @@ public class ValidationSettingsDataModel {
     private List<List<String>> validationSettings;
     private String api_key;
     private String method;
+    private AnnotationTabController annotationTabController;
+    private int intervalms_or_count;
+    private List<EnumDataModel> enumDataModelList;
 
     public ValidationSettingsDataModel(List<String> fieldNames,
                                        List<List<String>> validationSettings,
-                                       String api_key, String method) {
+                                       String api_key, String method,
+                                       String intervalms_or_count,
+                                       List<EnumDataModel> enumDataModelList) {
         this.fieldNames = fieldNames.stream().map((s) ->
                 s.split(" ")[0]).collect(Collectors.toList());
         this.validationSettings = validationSettings;
         this.api_key = api_key;
         this.method = method;
+        // TODO: add check that it is int or recreate another ui for that
+        this.intervalms_or_count = Integer.parseInt(intervalms_or_count);
+        this.enumDataModelList = enumDataModelList;
     }
 
     private StringBuilder getAggregationStrategy() {
         StringBuilder result = new StringBuilder();
         result.append("aggregation_strategy: {");
         result.append("method: ").append(this.method).append(", ");
-        int intervalms_or_count = 10000;
-        result.append("intervalms_or_count: ").append(intervalms_or_count).append(", ");
+        result.append("intervalms_or_count: ").append(this.intervalms_or_count).append(", ");
         int max_instrumentation_keys = 10;
         result.append("max_instrumentation_keys: ").append(max_instrumentation_keys).append(", ");
-        int first = 3;
-        int second = 4;
-        result.append("annotation_enum_size: [").append(first).append(", ").append(second).append("], ");
-        result.append("}");
+        result.append("annotation_enum_size: [");
+        for (int i = 0; i < enumDataModelList.size(); i++) {
+            result.append(enumDataModelList.get(i).size());
+            if (i != enumDataModelList.size() - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]}");
         return result;
     }
 
