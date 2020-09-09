@@ -19,8 +19,11 @@ package Utils.Assets;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+<<<<<<< HEAD   (b15eb7 Merge branch 'master' of https://android.googlesource.com/pl)
 import Model.ValidationSettingsDataModel;
 
+=======
+>>>>>>> BRANCH (bd68e9 Introduced previous session id to RequestInfo.)
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import java.io.File;
@@ -48,6 +51,7 @@ public class AssetsWriter {
     try (FileWriter fileWriter = new FileWriter(file)) {
       fileWriter.write(AUTO_GENERATED_PROTO);
       fileWriter.write("syntax = \"proto3\";\n\n");
+      fileWriter.write("package com.google.tuningfork;\n\n");
       for (EnumDataModel enumDataModel : enums) {
         fileWriter.write(enumDataModel.toString());
       }

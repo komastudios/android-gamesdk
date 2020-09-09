@@ -1,7 +1,7 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice.Utils.getMemoryQuantity;
-import static com.google.android.apps.internal.games.memoryadvice.Utils.getOrDefault;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 
 import android.content.ComponentName;
 import android.content.Context;

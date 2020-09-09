@@ -33,6 +33,7 @@ struct RequestInfo {
     std::string experiment_id;
     ProtobufSerialization current_fidelity_parameters;
     std::string session_id;
+    std::string previous_session_id;
     uint64_t total_memory_bytes;
     uint32_t gl_es_version;
     std::string build_fingerprint;

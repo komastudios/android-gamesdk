@@ -16,57 +16,106 @@
 
 package Controller.Quality;
 
+import Model.EnumDataModel;
+import Model.MessageDataModel;
 import Model.QualityDataModel;
-import javax.swing.JTable;
-
+import View.Fidelity.FieldType;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JLabel;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
+import javax.swing.JTable;
 
 public class QualityTabController {
-  private static int filesCount = 0;
-  private List<QualityDataModel> qualityDataModels;
 
-  public QualityTabController() {
-    qualityDataModels = new ArrayList<>();
+  private static int filesCount = 1;
+  private final List<QualityDataModel> qualityDataModels;
+  private final MessageDataModel fidelityData;
+  private final List<EnumDataModel> enums;
+
+  public QualityTabController(List<QualityDataModel> qualityDataModels,
+      MessageDataModel fidelityData,
+      List<EnumDataModel> enums) {
+    this.qualityDataModels = qualityDataModels;
+    this.fidelityData = fidelityData;
+    this.enums = enums;
   }
 
-  public static void addRow(JTable table) {
+  public void addColumn(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.addRow(new String[]{Integer.toString(++filesCount), "", "", ""}, table);
+    tableModel.addColumn(filesCount++);
   }
 
-  public static void removeRow(JTable table) {
+  public void removeColumn(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.removeRow(table.getSelectedRow());
-  }
-
-  public boolean saveSettings(JTable table, JLabel savedSettingsLabel) {
-    List<String> fieldNames = ((QualityTableModel) table.getModel()).getColumnNames();
-    List<List<String>> qualitySettings = ((QualityTableModel) table.getModel()).getQualitySettings();
-
-    for (List<String> qualitySetting : qualitySettings) {
-      QualityDataModel qualityDataModel = new QualityDataModel(fieldNames, qualitySetting);
-
-      //TODO (targintaru) integrate validation
-
-      qualityDataModels.add(qualityDataModel);
+    int column = table.getSelectedColumn();
+    if (table.isEditing()) {
+      table.getCellEditor().stopCellEditing();
     }
-
-    savedSettingsLabel.setVisible(true);
-    return true;
+    tableModel.removeColumn(column);
   }
 
-  public static int getFilesCount() {
-    return filesCount;
+  public List<EnumDataModel> getEnums() {
+    return enums;
   }
 
-  public List<QualityDataModel> getQualityDataModels() {
-    return qualityDataModels;
+  public void addNewQualityFile() {
+    QualityDataModel qualityDataModel = new QualityDataModel();
+    fidelityData.getFieldNames().forEach(fieldName -> qualityDataModel.addField(fieldName, ""));
+    qualityDataModels.add(qualityDataModel);
   }
 
-  public static void increaseFilesCount() {
-    filesCount++;
+  public void addNewFieldToAllFiles() {
+    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.addField("", ""));
+  }
+
+  public void updateFieldName(final int row, final String newName) {
+    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.updateName(row, newName));
+  }
+
+  public void updateFieldValue(final int fileID, final int row, final String value) {
+    qualityDataModels.get(fileID).updateValue(row, value);
+  }
+
+  public void addRow(JTable table) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.addRow();
+  }
+
+  public void removeRow(JTable table, int row) {
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    tableModel.removeRow(row);
+  }
+
+  public boolean isEnum(String name) {
+    OptionalInt index = IntStream.range(0, fidelityData.getFieldNames().size())
+        .filter(i -> fidelityData.getFieldNames().get(i).equals(name))
+        .findFirst();
+
+    if (index.isPresent()) {
+      String fieldType = fidelityData.getFieldTypes().get(index.getAsInt());
+      return !fieldType.equals(FieldType.INT32.getName())
+          && !fieldType.equals(FieldType.FLOAT.getName());
+    }
+    return false;
+  }
+
+  public List<String> getEnumOptionsByName(String name) {
+    if (isEnum(name)) {
+      int index = getFieldIndexByName(name);
+      for (EnumDataModel anEnum : enums) {
+        if (anEnum.getName().equals(fidelityData.getFieldTypes().get(index))) {
+          return anEnum.getOptions();
+        }
+      }
+    }
+    return new ArrayList<>();
+  }
+
+  public Integer getFieldIndexByName(String name) {
+    return IntStream.range(0, fidelityData.getFieldNames().size())
+        .filter(i -> fidelityData.getFieldNames().get(i).equals(name))
+        .findFirst().getAsInt();
   }
 }
 

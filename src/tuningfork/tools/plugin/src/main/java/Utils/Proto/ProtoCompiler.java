@@ -57,7 +57,11 @@ public final class ProtoCompiler {
       protocBinary.setExecutable(true);
       if (OsUtils.getOS().equals(OS.MAC)) {
         File protocScript = new File(temporaryFolderRoot.getAbsolutePath(),
+<<<<<<< HEAD   (b15eb7 Merge branch 'master' of https://android.googlesource.com/pl)
                 PROTO_FOLDER_PATH_RELATIVE_TO_JAR + "/bin/.libs/protoc");
+=======
+            PROTO_FOLDER_PATH_RELATIVE_TO_JAR + "/bin/.libs/protoc");
+>>>>>>> BRANCH (bd68e9 Introduced previous session id to RequestInfo.)
         protocScript.setExecutable(true);
       }
       LOGGER.info("Loaded protocol buffer successfully");

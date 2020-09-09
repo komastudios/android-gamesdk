@@ -27,6 +27,9 @@
 #include "jni/jni_wrap.h"
 #include "tuningfork_utils.h"
 
+#define LOG_TAG "TuningFork"
+#include "Log.h"
+
 namespace {
 
 std::string slurpFile(const char* fname) {
@@ -113,7 +116,29 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     info.build_version_sdk = getSystemProp("ro.build.version.sdk");
     info.build_fingerprint = getSystemProp("ro.build.fingerprint");
 
-    if (jni::IsValid()) info.session_id = UniqueId();
+    if (jni::IsValid()) {
+        std::stringstream session_id_path;
+        session_id_path << file_utils::GetAppCacheDir() << "/tuningfork";
+        file_utils::CheckAndCreateDir(session_id_path.str());
+        session_id_path << "/session_id.bin";
+        std::string session_id_file = session_id_path.str();
+
+        if (!file_utils::FileExists(session_id_file)) {
+            info.previous_session_id = "";
+        } else {
+            std::ifstream file(session_id_file);
+            file >> info.previous_session_id;
+        }
+
+        info.session_id = UniqueId();
+
+        std::ofstream file(session_id_file);
+        if (file.is_open()) {
+            file << info.session_id;
+        } else {
+            ALOGE_ONCE("Session id couldn't be stored.");
+        }
+    }
 
     info.cpu_max_freq_hz.clear();
     for (int index = 1;; ++index) {

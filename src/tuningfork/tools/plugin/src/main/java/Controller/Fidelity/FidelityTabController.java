@@ -21,9 +21,12 @@ import Model.MessageDataModel;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.ValidationInfo;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.JTable;
 
@@ -32,11 +35,19 @@ public class FidelityTabController {
   private final MessageDataModel fidelityDataModel;
   private final List<EnumDataModel> enums;
   private static final String FIELD_NAME_PATTERN = "[a-zA-Z_]+$";
+  private final PropertyChangeSupport propertyChangeSupport;
 
   public FidelityTabController(MessageDataModel fidelityDataModel, List<EnumDataModel> enums) {
     super();
     this.fidelityDataModel = fidelityDataModel;
     this.enums = enums;
+    this.propertyChangeSupport = new PropertyChangeSupport(this);
+  }
+
+  public void addPropertyChangeListener(
+      PropertyChangeListener propertyChangeListener) {
+    propertyChangeSupport
+        .addPropertyChangeListener(propertyChangeListener);
   }
 
   public void addInitialFidelity(JTable table) {
@@ -58,20 +69,39 @@ public class FidelityTabController {
 
   public void addFidelityField(String name, String type) {
     fidelityDataModel.addField(name, type);
+    propertyChangeSupport.firePropertyChange("addField", null, name);
   }
+
   public void removeFidelityField(int index) {
     fidelityDataModel.removeSetting(index);
+    propertyChangeSupport.firePropertyChange("removeField", null, index);
   }
 
   public void updateName(int index, String newName) {
+    propertyChangeSupport
+        .firePropertyChange("nameChange", fidelityDataModel.getFieldNames().get(index), newName);
     fidelityDataModel.updateName(index, newName);
+  }
+
+  public void updateEnum(int index, EnumDataModel enumDataModel) {
+    fidelityDataModel.setEnumData(index, Optional.ofNullable(enumDataModel));
+  }
+
+  public EnumDataModel findEnumByName(String name) {
+    return enums.stream().filter(enumDataModel -> enumDataModel.getName().equals(name))
+        .findFirst().get();
   }
 
   public void updateType(int index, String type) {
     fidelityDataModel.updateType(index, type);
   }
+
   public MessageDataModel getFidelityData() {
     return fidelityDataModel;
+  }
+
+  public boolean hasEnums() {
+    return enums.size() > 0;
   }
 
   public void addRowAction(JTable jtable) {
@@ -91,6 +121,10 @@ public class FidelityTabController {
   public List<String> getEnumNames() {
     return enums.stream().map(EnumDataModel::getName)
         .collect(Collectors.toList());
+  }
+
+  public List<EnumDataModel> getEnums() {
+    return enums;
   }
 
   public List<ValidationInfo> validate() {
