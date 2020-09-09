@@ -22,6 +22,30 @@
       "revId": "396df70e43c174ffee42cde4016c1b9b45f6f7f2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "833f1904_95c13616",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/proto/performanceparameters.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-09T04:45:47Z",
+      "side": 1,
+      "message": "I think the original file is not fully updated with what is sent to the local server/google play console.\nI added some fields (LoadingMetadata, and 6 and 7 in DeviceSpec) that weren\u0027t in the original file because I got a parsing error otherwise.",
+      "parentUuid": "4052ff0f_69624ca7",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "396df70e43c174ffee42cde4016c1b9b45f6f7f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
