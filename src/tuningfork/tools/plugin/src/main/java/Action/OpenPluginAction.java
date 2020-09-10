@@ -17,6 +17,7 @@ package Action;
 
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
@@ -51,11 +52,15 @@ public class OpenPluginAction extends AnAction {
                   MessageDataModel annotationData = transformer.initAnnotationData();
                   MessageDataModel fidelityTableData = transformer.initFidelityData();
                   List<EnumDataModel> enumData = transformer.initEnumData();
+                  List<QualityDataModel> qualityData = transformer.initQualityData();
+
                   SwingUtilities.invokeLater(() -> {
                     MainDialogWrapper dialogWrapper = new MainDialogWrapper(e.getProject(),
                         annotationData,
                         fidelityTableData,
-                        enumData);
+                        enumData,
+                        qualityData,
+                        protoCompiler);
                     dialogWrapper.show();
                   });
                 } catch (IOException | CompilationException ex) {
