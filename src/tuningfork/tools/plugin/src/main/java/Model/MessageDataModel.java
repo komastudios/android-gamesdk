@@ -117,6 +117,10 @@ public class MessageDataModel {
     return fieldTypes;
   }
 
+  public Type getMessageType() {
+    return messageType;
+  }
+
   public void removeSetting(int index) {
     fieldNames.remove(index);
     fieldTypes.remove(index);
