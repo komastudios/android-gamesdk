@@ -21,6 +21,7 @@ import Controller.Fidelity.FidelityTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
+import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
@@ -59,11 +60,13 @@ public class PluginLayout extends JPanel {
   private final MessageDataModel annotationData;
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enumData;
+  private final List<QualityDataModel> qualityData;
 
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
-      List<EnumDataModel> enumData) {
+      List<EnumDataModel> enumData, List<QualityDataModel> qualityData) {
     panels = new ArrayList<>();
     this.annotationData = annotationData;
+    this.qualityData = qualityData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
     fidelityData.setEnumData(enumData);
@@ -155,7 +158,7 @@ public class PluginLayout extends JPanel {
     // Fidelity initialization.
     fidelityTabController = new FidelityTabController(fidelityData,
         annotationTabController.getEnums());
-    fidelitySettingsLayout = new FidelityTab(fidelityTabController, enumData);
+    fidelitySettingsLayout = new FidelityTab(fidelityTabController);
     annotationTabController.addPropertyChangeListener(
         fidelitySettingsLayout);
     fidelitySettingsLayout.setVisible(false);
@@ -163,7 +166,7 @@ public class PluginLayout extends JPanel {
         new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
 
     // Quality Setting Initialization.
-    QualityTabController qualityTabController = new QualityTabController(new ArrayList<>(),
+    QualityTabController qualityTabController = new QualityTabController(qualityData,
         fidelityData, annotationTabController.getEnums());
     qualitySettingsLayout = new QualityTab(qualityTabController);
     fidelityTabController.addPropertyChangeListener(qualitySettingsLayout);
@@ -252,5 +255,9 @@ public class PluginLayout extends JPanel {
   public void saveSettings() {
     fidelitySettingsLayout.saveSettings();
     annotationsLayout.saveSettings();
+  }
+
+  public QualityTabController getQualityTabController() {
+    return qualitySettingsLayout.getQualityTabController();
   }
 }
