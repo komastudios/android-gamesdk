@@ -24,6 +24,7 @@ import Model.MessageDataModel;
 import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
+import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
 import View.ValidationSettings.ValidationSettingsTab;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -51,6 +52,7 @@ public class PluginLayout extends JPanel {
   private AnnotationTab annotationsLayout;
   private FidelityTab fidelitySettingsLayout;
   private JPanel validationSettingsLayout;
+  private MonitoringTab monitoringTab;
   private FidelityTabController fidelityTabController;
   private AnnotationTabController annotationTabController;
   private JPanel menuPanel;
@@ -88,6 +90,7 @@ public class PluginLayout extends JPanel {
     this.add(annotationsLayout);
     this.add(qualitySettingsLayout);
     this.add(validationSettingsLayout);
+    this.add(monitoringTab);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -118,8 +121,15 @@ public class PluginLayout extends JPanel {
 
     DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
 
+    DefaultMutableTreeNode monitoringRoot = new DefaultMutableTreeNode("Monitoring");
+    DefaultMutableTreeNode telemetryNode =
+        new DefaultMutableTreeNode("Telemetry Reports");
+
+    monitoringRoot.add(telemetryNode);
+
     root.add(settingsRoot);
     root.add(validationRoot);
+    root.add(monitoringRoot);
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
@@ -137,6 +147,8 @@ public class PluginLayout extends JPanel {
         changeLayoutVisibility(qualitySettingsLayout);
       } else if (node.equals(validationSettings)) {
         changeLayoutVisibility(validationSettingsLayout);
+      } else if (node.equals(telemetryNode)) {
+        changeLayoutVisibility(monitoringTab);
       } else if (!node.isLeaf()) {
         menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
       }
@@ -179,12 +191,19 @@ public class PluginLayout extends JPanel {
         .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     validationSettingsLayout.setVisible(false);
 
+    // Monitoring initialization.
+    monitoringTab = new MonitoringTab();
+    monitoringTab
+        .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    monitoringTab.setVisible(false);
+
     menuPanel = new JPanel();
 
     panels.add(qualitySettingsLayout);
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
     panels.add(validationSettingsLayout);
+    panels.add(monitoringTab);
 
     initMenuTree();
   }
