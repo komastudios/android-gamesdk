@@ -70,6 +70,30 @@
       "revId": "396df70e43c174ffee42cde4016c1b9b45f6f7f2",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37523d6d_7714ffd2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/proto/performanceparameters.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-10T12:12:25Z",
+      "side": 1,
+      "message": "Yes, if the original file is out of sync you can update it (can you do it in separate cl?) and then point here to that file",
+      "parentUuid": "db8add99_1e74400d",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 18
+      },
+      "revId": "396df70e43c174ffee42cde4016c1b9b45f6f7f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
