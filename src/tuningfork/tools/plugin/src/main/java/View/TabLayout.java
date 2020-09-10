@@ -45,7 +45,7 @@ public class TabLayout extends JPanel {
     return MAIN_FONT;
   }
 
-  public static Font getSecondaryLabel() {
+  public static Font getSecondaryFont() {
     return SECONDARY_FONT;
   }
 
