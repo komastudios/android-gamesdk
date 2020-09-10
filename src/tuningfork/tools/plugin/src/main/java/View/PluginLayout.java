@@ -24,6 +24,7 @@ import Model.MessageDataModel;
 import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
+import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
 import View.ValidationSettings.ValidationSettingsTab;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -51,6 +52,7 @@ public class PluginLayout extends JPanel {
   private AnnotationTab annotationsLayout;
   private FidelityTab fidelitySettingsLayout;
   private JPanel validationSettingsLayout;
+  private MonitoringTab monitoringTab;
   private FidelityTabController fidelityTabController;
   private AnnotationTabController annotationTabController;
   private JPanel menuPanel;
@@ -61,6 +63,9 @@ public class PluginLayout extends JPanel {
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enumData;
   private final List<QualityDataModel> qualityData;
+  private final Dimension panelSize = new Dimension(5 * SCREEN_SIZE.width / 6,
+      SCREEN_SIZE.height / 2);
+  private final Dimension menuSize = new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2);
 
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
       List<EnumDataModel> enumData, List<QualityDataModel> qualityData) {
@@ -88,6 +93,7 @@ public class PluginLayout extends JPanel {
     this.add(annotationsLayout);
     this.add(qualitySettingsLayout);
     this.add(validationSettingsLayout);
+    this.add(monitoringTab);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -118,8 +124,15 @@ public class PluginLayout extends JPanel {
 
     DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
 
+    DefaultMutableTreeNode monitoringRoot = new DefaultMutableTreeNode("Monitoring");
+    DefaultMutableTreeNode telemetryNode =
+        new DefaultMutableTreeNode("Telemetry Reports");
+
+    monitoringRoot.add(telemetryNode);
+
     root.add(settingsRoot);
     root.add(validationRoot);
+    root.add(monitoringRoot);
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
@@ -137,14 +150,16 @@ public class PluginLayout extends JPanel {
         changeLayoutVisibility(qualitySettingsLayout);
       } else if (node.equals(validationSettings)) {
         changeLayoutVisibility(validationSettingsLayout);
+      } else if (node.equals(telemetryNode)) {
+        changeLayoutVisibility(monitoringTab);
       } else if (!node.isLeaf()) {
-        menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+        menu.setMinimumSize(menuSize);
       }
     });
-    menu.setMinimumSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    menu.setMinimumSize(menuSize);
     menu.setPreferredSize(new Dimension(150, this.getPreferredSize().height));
     menu.setSelectionModel(new LeafOnlySelectionModel());
-    menuPanel.setSize(new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    menuPanel.setSize(menuSize);
     menuPanel.add(menu);
   }
 
@@ -152,7 +167,7 @@ public class PluginLayout extends JPanel {
     // Annotation Initialization.
     annotationTabController = new AnnotationTabController(annotationData, enumData);
     annotationsLayout = new AnnotationTab(annotationTabController);
-    annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    annotationsLayout.setSize(panelSize);
     annotationsLayout.setVisible(true);
 
     // Fidelity initialization.
@@ -162,22 +177,25 @@ public class PluginLayout extends JPanel {
     annotationTabController.addPropertyChangeListener(
         fidelitySettingsLayout);
     fidelitySettingsLayout.setVisible(false);
-    fidelitySettingsLayout.setSize(
-        new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    fidelitySettingsLayout.setSize(panelSize);
 
     // Quality Setting Initialization.
     QualityTabController qualityTabController = new QualityTabController(qualityData,
         fidelityData, annotationTabController.getEnums());
     qualitySettingsLayout = new QualityTab(qualityTabController);
     fidelityTabController.addPropertyChangeListener(qualitySettingsLayout);
-    qualitySettingsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    qualitySettingsLayout.setSize(panelSize);
     qualitySettingsLayout.setVisible(false);
 
     // Validation settings initialization.
     validationSettingsLayout = new ValidationSettingsTab();
-    validationSettingsLayout
-        .setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
+    validationSettingsLayout.setSize(panelSize);
     validationSettingsLayout.setVisible(false);
+
+    // Monitoring initialization.
+    monitoringTab = new MonitoringTab();
+    monitoringTab.setSize(panelSize);
+    monitoringTab.setVisible(false);
 
     menuPanel = new JPanel();
 
@@ -185,6 +203,7 @@ public class PluginLayout extends JPanel {
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
     panels.add(validationSettingsLayout);
+    panels.add(monitoringTab);
 
     initMenuTree();
   }
