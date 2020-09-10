@@ -32,10 +32,13 @@ import java.util.regex.Pattern;
 public class RequestServer {
 
   private static Thread serverThread;
+  private static ServerSocket serverSocket;
+  private static boolean isListening = false;
 
   public static void listen(Consumer<UploadTelemetryRequest> consumer)
       throws IOException {
-    ServerSocket serverSocket = new ServerSocket(9000);
+    isListening = true;
+    serverSocket = new ServerSocket(9000);
     serverThread = new Thread("Device Listener") {
       public void run() {
         try {
@@ -57,8 +60,12 @@ public class RequestServer {
     serverThread.start();
   }
 
-  public static void stopListening() {
-    serverThread.interrupt();
+  public static void stopListening() throws IOException {
+    if (isListening) {
+      serverSocket.close();
+      serverThread.interrupt();
+      isListening = false;
+    }
   }
 
   private static Optional<String> replaceExponentSubstrings(String jsonString) {

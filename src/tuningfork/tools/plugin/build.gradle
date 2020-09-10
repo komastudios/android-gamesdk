@@ -32,6 +32,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'com.google.truth:truth:0.43'
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
+    protobuf files('src/main/java/Utils/Monitoring/proto/performanceparameters.proto')
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -65,7 +66,7 @@ patchPluginXml {
 sourceSets {
     main {
         proto {
-            "performanceparameters.proto"
+            include 'src/main/java/Utils/Monitoring/proto/performanceparameters.proto'
         }
     }
 }
