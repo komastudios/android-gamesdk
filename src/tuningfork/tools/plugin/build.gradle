@@ -28,20 +28,23 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
 }
 
+def getAndroidStudioPath() {
+    Properties properties = new Properties()
+    if (project.rootProject.file('local.properties').canRead()) {
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    }
+    return properties.getProperty('android.studio.dir').toString()
+}
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '193.6911.18'
-    type 'IC'
-    plugins 'android'
+    setLocalPath(getAndroidStudioPath())
 }
-
-// testing on Android studio -- uncomment next 3 lines and change path
 /*
-   runIde {
-    ideDirectory <path_to_android-studio>
+runIde {
+    ideDirectory '/Applications/Android Studio.app/Contents'
 }
 */
-
 /* running tests on building/running -- uncomment next 2 lines
 runIde.dependsOn(':test')
 buildPlugin.dependsOn(":test")
