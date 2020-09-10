@@ -17,7 +17,6 @@ package View.Fidelity;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
-import Model.EnumDataModel;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
 import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
@@ -27,7 +26,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -43,11 +41,9 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
-  private List<EnumDataModel> enumData;
 
-  public FidelityTab(FidelityTabController controller, List<EnumDataModel> enumData) {
+  public FidelityTab(FidelityTabController controller) {
     this.fidelityTabController = controller;
-    this.enumData = enumData;
     initVariables();
     initComponents();
   }
@@ -100,9 +96,11 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
+
     FidelityTableModel model = new FidelityTableModel(fidelityTabController);
     fidelityTable.setModel(model);
     fidelityTabController.addInitialFidelity(fidelityTable);
+
     TableColumn enumColumn = fidelityTable.getColumnModel().getColumn(1);
     enumColumn.setCellEditor(new FidelityTableDecorators.TextBoxEditor());
     enumColumn.setCellRenderer(new FidelityTableDecorators.TextBoxRenderer());
@@ -112,6 +110,7 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     typeColumn.setCellEditor(
         new ComboBoxEditor(new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM}));
     typeColumn.setCellRenderer(new ComboBoxRenderer());
+
     setDecoratorPanelSize(fidelityDecoratorPanel);
     setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
     this.add(scrollPane);
