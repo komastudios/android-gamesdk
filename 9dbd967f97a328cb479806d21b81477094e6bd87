@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a0d185cc_1b620f87",
+        "filename": "src/tuningfork/tools/plugin/build.gradle",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-11T11:56:12Z",
+      "side": 1,
+      "message": "What is this needed for?",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 95
+      },
+      "revId": "9dbd967f97a328cb479806d21b81477094e6bd87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
