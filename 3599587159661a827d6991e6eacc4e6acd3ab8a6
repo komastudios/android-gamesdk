@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "27142c40_c29946c5",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/ValidationSettingsDataModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-11T10:17:30Z",
+      "side": 1,
+      "message": "open source license? :D",
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27e520dc_ec6a7837",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-11T10:17:30Z",
+      "side": 1,
+      "message": "this could also be final",
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
