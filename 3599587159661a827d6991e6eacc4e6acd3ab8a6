@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "8f08c16d_04b9ad62",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/ValidationSettingsDataModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-11T12:24:53Z",
+      "side": 1,
+      "message": "Should these be final?",
+      "range": {
+        "startLine": 10,
+        "startChar": 12,
+        "endLine": 16,
+        "endChar": 50
+      },
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "27e520dc_ec6a7837",
         "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
         "patchSetId": 6
