@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "857f6976_0541da34",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-11T13:13:44Z",
+      "side": 1,
+      "message": "You need a Test: line in every CL description to say how you tested it.\nDoes this build and run?\n",
+      "revId": "ef56bd8101852261fee31d1c8de58b79b1675438",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "03d4a44d_41a10052",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/src/main/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-11T13:13:44Z",
+      "side": 1,
+      "message": "These imports should be ordered alphabetically. How did they change order from those in https://source.corp.google.com/piper///depot/google3/google/android/performanceparameters/v1/performanceparameters.proto\n?",
+      "revId": "ef56bd8101852261fee31d1c8de58b79b1675438",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
