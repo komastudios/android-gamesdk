@@ -25,15 +25,9 @@ import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
-import java.nio.charset.StandardCharsets;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,6 +36,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class AssetsWriterTest {
 
@@ -140,7 +139,8 @@ public class AssetsWriterTest {
     DynamicMessage message = compiler.decodeFromBinary(messageDesc, fileContent);
 
     // Parse the message read again to the disk.
-    QualityDataModel parsedQualityModel = DataModelTransformer.transformToQuality(message).get();
+    QualityDataModel parsedQualityModel = DataModelTransformer.transformToQuality(message,
+        messageDesc.getFields()).get();
     assetsWriter.saveDevFidelityParams(compiler, parsedQualityModel, 1);
 
     // Compare both messages.
