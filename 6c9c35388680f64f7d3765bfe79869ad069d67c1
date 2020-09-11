@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "90068618_453071ac",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/PluginLayout.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-11T14:33:22Z",
+      "side": 1,
+      "message": "I can see these are repeated few times (here and above). Maybe move it to constant?",
+      "range": {
+        "startLine": 197,
+        "startChar": 17,
+        "endLine": 197,
+        "endChar": 81
+      },
+      "revId": "6c9c35388680f64f7d3765bfe79869ad069d67c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
