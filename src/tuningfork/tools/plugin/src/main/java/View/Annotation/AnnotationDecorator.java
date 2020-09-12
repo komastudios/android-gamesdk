@@ -17,10 +17,10 @@
 package View.Annotation;
 
 import Model.EnumDataModel;
+import View.ValidatableComboBox;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -31,12 +31,13 @@ public class AnnotationDecorator {
       implements TableCellEditor, TableCellRenderer {
 
     final List<EnumDataModel> enums;
-    final JComboBox<String> comboBox;
+    final ValidatableComboBox<String> comboBox;
 
     public EnumComboBoxDecorator(List<EnumDataModel> enumsTemp) {
       this.enums = enumsTemp;
-      this.comboBox = new JComboBox<>();
+      this.comboBox = new ValidatableComboBox<>();
     }
+
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,

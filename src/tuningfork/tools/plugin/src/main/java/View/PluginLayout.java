@@ -26,7 +26,7 @@ import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.Quality.QualityTab;
 import View.ValidationSettings.ValidationSettingsTab;
-import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.Disposable;
 import com.intellij.ui.treeStructure.Tree;
 import java.awt.Color;
 import java.awt.Component;
@@ -62,13 +62,16 @@ public class PluginLayout extends JPanel {
   private final List<EnumDataModel> enumData;
   private final List<QualityDataModel> qualityData;
 
+  private final Disposable disposable;
+
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
-      List<EnumDataModel> enumData, List<QualityDataModel> qualityData) {
-    panels = new ArrayList<>();
+      List<EnumDataModel> enumData, List<QualityDataModel> qualityData, Disposable disposable) {
     this.annotationData = annotationData;
     this.qualityData = qualityData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
+    this.disposable = disposable;
+    panels = new ArrayList<>();
     fidelityData.setEnumData(enumData);
     this.setPreferredSize(new Dimension(SCREEN_SIZE.width / 2, SCREEN_SIZE.height / 2));
     this.setLayout(new HorizontalLayout());
@@ -76,10 +79,8 @@ public class PluginLayout extends JPanel {
     addComponents();
   }
 
-  public List<ValidationInfo> validateData() {
-    List<ValidationInfo> validationInfo = getFidelityTabController().validate();
-    validationInfo.addAll(getAnnotationTabController().validate());
-    return validationInfo;
+  public boolean isViewValid() {
+    return annotationsLayout.isViewValid();
   }
 
   private void addComponents() {
@@ -151,7 +152,7 @@ public class PluginLayout extends JPanel {
   private void initComponents() {
     // Annotation Initialization.
     annotationTabController = new AnnotationTabController(annotationData, enumData);
-    annotationsLayout = new AnnotationTab(annotationTabController);
+    annotationsLayout = new AnnotationTab(annotationTabController, disposable);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
 
