@@ -17,6 +17,7 @@
 package View.Annotation;
 
 import Model.EnumDataModel;
+import View.Decorator.ValidationComboBoxEditor;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.AbstractCellEditor;
@@ -36,11 +37,14 @@ public class AnnotationDecorator {
     public EnumComboBoxDecorator(List<EnumDataModel> enumsTemp) {
       this.enums = enumsTemp;
       this.comboBox = new JComboBox<>();
+      this.comboBox.setEditable(true);
     }
+
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
         int row, int column) {
+      this.comboBox.setEditor(new ValidationComboBoxEditor());
       String strValue = value.toString();
       setComboBoxChoices(enums);
       comboBox.setSelectedItem(strValue);
@@ -69,6 +73,7 @@ public class AnnotationDecorator {
       } else {
         comboBox.setSelectedIndex(-1);
       }
+      this.comboBox.setEditor(new ValidationComboBoxEditor());
       return comboBox;
     }
   }
