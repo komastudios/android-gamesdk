@@ -16,18 +16,29 @@
 
 package View.Annotation;
 
+import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
+
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
+import Utils.Validation.UIValidator;
 import Model.EnumDataModel;
 import View.Annotation.AnnotationDecorator.EnumComboBoxDecorator;
+import View.Decorator.TableRenderer;
+import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.EnumTable;
 import View.TabLayout;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ComponentValidator;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumn;
@@ -44,11 +55,14 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
   private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
   private final JBLabel informationLabel =
       new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
+  private final Disposable disposable;
 
-  public AnnotationTab(AnnotationTabController annotationController) {
+  public AnnotationTab(AnnotationTabController annotationController, Disposable disposable) {
     this.annotationController = annotationController;
+    this.disposable = disposable;
     initVariables();
     initComponents();
+    initValidators();
   }
 
   public AnnotationTabController getAnnotationController() {
@@ -81,18 +95,67 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
     // Initialize toolbar and table.
     annotationTable.setModel(model);
     TableColumn enumColumn = annotationTable.getColumnModel().getColumn(0);
-    enumColumn.setCellRenderer(new EnumComboBoxDecorator(
-        annotationController.getEnums()));
     enumColumn.setCellEditor(new EnumComboBoxDecorator(
         annotationController.getEnums()));
+    //noinspection UnstableApiUsage
+    enumColumn
+        .setCellRenderer(TableRenderer.getRendererComboBoxWithValidation(new EnumComboBoxDecorator(
+                annotationController.getEnums()),
+            (value, row, column) -> {
+              String strVal = value.toString();
+              if (strVal.isEmpty()) {
+                return new ValidationInfo("Field Can Not Be Empty");
+              }
+              return null;
+            })
+        );
     annotationController.addInitialAnnotation(annotationTable);
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(scrollPane, decoratorPanel, annotationTable);
-    initTextFieldColumns(annotationTable, 1);
-
+    TableColumn nameColumn = annotationTable.getColumnModel().getColumn(1);
+    //noinspection UnstableApiUsage
+    nameColumn.setCellRenderer(
+        TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+            (value, row, column) -> {
+              String strVal = value.toString();
+              if (strVal.isEmpty()) {
+                return new ValidationInfo("Field Can Not Be Empty");
+              }
+              if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
+                return new ValidationInfo(strVal + " contains illegal characters");
+              }
+              return null;
+            }));
+    nameColumn.setCellEditor(TableRenderer.getEditorTextBoxWithValidation(disposable));
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
     this.add(new EnumTable(annotationController));
+  }
+
+  public boolean isViewValid() {
+    return UIValidator.isComponentValid(annotationTable) && UIValidator
+        .isTableCellsValid(annotationTable);
+  }
+
+  private void initValidators() {
+    TableRenderer.addCellToolTipManager(annotationTable, disposable);
+    UIValidator.createTableValidator(disposable, annotationTable, () -> {
+      List<String> fieldNames = annotationController.getAnnotationData().getFieldNames();
+      List<String> fieldTypes = annotationController.getAnnotationData().getFieldTypes();
+      boolean isNamesDuplicate =
+          fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
+      boolean isTypesDuplicate =
+          fieldTypes.stream().anyMatch(option -> Collections.frequency(fieldTypes, option) > 1);
+      if (isNamesDuplicate) {
+        return new ValidationInfo("Repeated Fields Names Are Not Allowed.", annotationTable);
+      }
+      if (isTypesDuplicate) {
+        return new ValidationInfo("Repeated Field Type Is Not Recommended.", annotationTable)
+            .asWarning();
+      }
+      return null;
+    });
+
   }
 
   public void saveSettings() {

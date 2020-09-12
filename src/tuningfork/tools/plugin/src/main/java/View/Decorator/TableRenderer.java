@@ -18,6 +18,7 @@ package View.Decorator;
 
 import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
 
+import Utils.Validation.ValidatingComboBoxTableCellWrapper;
 import View.Decorator.RoundedCornerBorder.BorderType;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -97,10 +98,16 @@ public class TableRenderer {
   // Unstable API is used for validation. Use with cautious.
   @SuppressWarnings("UnstableApiUsage")
   public static TableCellRenderer getRendererTextBoxWithValidation(
+      TableCellRenderer tableCellRenderer,
       TableCellValidator tableCellValidator) {
-    return new ValidatingTableCellRendererWrapper(new TableRenderer.RoundedCornerRenderer())
+    return new ValidatingTableCellRendererWrapper(tableCellRenderer)
         .withCellValidator(tableCellValidator);
   }
 
-
+  public static TableCellRenderer getRendererComboBoxWithValidation(
+      TableCellRenderer tableCellRenderer,
+      TableCellValidator tableCellValidator) {
+    return new ValidatingComboBoxTableCellWrapper(tableCellRenderer)
+        .withCellValidator(tableCellValidator);
+  }
 }

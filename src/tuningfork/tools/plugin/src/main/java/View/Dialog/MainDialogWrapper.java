@@ -32,7 +32,7 @@ import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.Messages;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -59,8 +59,16 @@ public class MainDialogWrapper extends DialogWrapper {
     notification.notify(project);
   }
 
+  private boolean isValid() {
+    return pluginLayout.isValid();
+  }
+
   @Override
   protected void doOKAction() {
+    if (!pluginLayout.isViewValid()) {
+      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      return;
+    }
     AssetsWriter assetsWriter = new AssetsWriter(
         AssetsFinder.findAssets(project.getProjectFilePath().split(".idea")[0]).getAbsolutePath());
     annotationTabController = pluginLayout.getAnnotationTabController();
@@ -114,7 +122,8 @@ public class MainDialogWrapper extends DialogWrapper {
   @Override
   @Nullable
   protected JComponent createCenterPanel() {
-    pluginLayout = new PluginLayout(annotationData, fidelityData, enumData, qualityData);
+    pluginLayout = new PluginLayout(annotationData, fidelityData, enumData, qualityData,
+        getDisposable());
     return pluginLayout;
   }
 }
