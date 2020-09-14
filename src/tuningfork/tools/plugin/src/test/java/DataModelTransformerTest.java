@@ -70,7 +70,7 @@ public class DataModelTransformerTest {
     Assert.assertEquals(enums.get(0), "LoadingState");
     Assert.assertEquals(enums.get(1), "State");
     Assert.assertEquals(enums.get(2), "QualitySettings");
-    Assert.assertEquals (enums.get(3), "NestedEnum");
+    Assert.assertEquals(enums.get(3), "NestedEnum");
   }
 
   @Test
@@ -107,7 +107,7 @@ public class DataModelTransformerTest {
         .setField(fieldDescriptors.get(2), (float) 1.2) // float field
         .build();
     QualityDataModel qualityDataModel = DataModelTransformer
-        .transformToQuality(dynamicMessage).get();
+        .transformToQuality(dynamicMessage, messageDesc.getFields()).get();
     List<String> qualityValues = qualityDataModel.getFieldValues();
 
     Assert.assertEquals(qualityValues.size(), 3);
@@ -130,9 +130,9 @@ public class DataModelTransformerTest {
         .setField(fieldDescriptors.get(1), 12) // float field
         .build();
     QualityDataModel qualityDataModel = DataModelTransformer
-        .transformToQuality(dynamicMessage).get();
+        .transformToQuality(dynamicMessage, messageDesc.getFields()).get();
 
-    Assert.assertEquals(qualityDataModel.getFieldValues().size(), 2);
+    Assert.assertEquals(qualityDataModel.getFieldValues().size(), 3);
   }
 
   @Test

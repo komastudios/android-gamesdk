@@ -36,8 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -85,14 +83,12 @@ public final class DataModelTransformer {
     return Optional.of(annotationDataModel);
   }
 
-  public static Optional<QualityDataModel> transformToQuality(DynamicMessage message) {
-    Map<FieldDescriptor, Object> fieldsMap = message.getAllFields();
+  public static Optional<QualityDataModel> transformToQuality(DynamicMessage message,
+      List<FieldDescriptor> fieldDescriptors) {
     QualityDataModel qualityDataModel = new QualityDataModel();
 
-    for (Entry<FieldDescriptor, Object> entry : fieldsMap.entrySet()) {
-      Object fieldValue = entry.getValue();
-      FieldDescriptor fieldDescriptor = entry.getKey();
-
+    for (FieldDescriptor fieldDescriptor : fieldDescriptors) {
+      Object fieldValue = message.getField(fieldDescriptor);
       if (fieldValue instanceof EnumValueDescriptor) {
         int index = ((EnumValueDescriptor) fieldValue).getIndex();
         fieldValue = fieldDescriptor.getEnumType().getValues().get(index).getName();
@@ -159,6 +155,7 @@ public final class DataModelTransformer {
     if (messageDesc == null) {
       return new MessageDataModel(new ArrayList<>(), new ArrayList<>(), Type.FIDELITY);
     }
+
     return transformToFidelity(messageDesc).get();
   }
 
@@ -182,7 +179,8 @@ public final class DataModelTransformer {
       for (File qualityFile : qualityFilesList) {
         byte[] fileContent = Files.toByteArray(qualityFile);
         DynamicMessage fidelityMessage = compiler.decodeFromBinary(fidelityDesc, fileContent);
-        qualityDataModelList.add(transformToQuality(fidelityMessage).get());
+        qualityDataModelList
+            .add(transformToQuality(fidelityMessage, fidelityDesc.getFields()).get());
       }
     }
 
