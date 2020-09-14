@@ -34,6 +34,24 @@
       "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a95e248_f6169375",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-14T14:57:07Z",
+      "side": 1,
+      "message": "OK, but now if someone adds another proto in src/tuningfork/proto we\u0027ll need to exclude it here too. I\u0027d prefer to add the files we specifically need to this file.",
+      "parentUuid": "15fedcc2_fc82fb4a",
+      "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
