@@ -37,6 +37,10 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    configurations {
+        implementation.exclude module:'proto-google-common-protos'
+    }
 }
 
 dependencies {
@@ -49,6 +53,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
     implementation 'com.google.protobuf:protobuf-lite:3.0.0'
+    implementation 'com.google.api.grpc:proto-google-common-protos:1.18.1'
 
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     testImplementation 'junit:junit:4.12'
