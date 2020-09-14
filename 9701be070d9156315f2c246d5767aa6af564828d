@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c1f3532_582cca6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-14T10:04:47Z",
+      "side": 1,
+      "message": "Sorry I didn\u0027t notice it before, but we also have a performanceparameters.proto in src/tuningfork/proto. Can you make your changes to the one there and make the TuningForkMonitor one be a soft link to it, like tuningfork.proto, please?",
+      "revId": "9701be070d9156315f2c246d5767aa6af564828d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
