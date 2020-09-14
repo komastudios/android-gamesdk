@@ -54,4 +54,26 @@ Version 1.1.0
  - In expert mode, quality settings are remotely setable using the Play console.
 - A Unity plugin incorporating the Tuning Fork library is available separately.
 
+Version 1.2.0
+=============
+This release includes several bug fixes for Swappy and new features for APT.
+- Android Frame Pacing (Swappy) v 1.7
+ - Auto-mode refresh rate switching support.
+ - Auto-mode bug fixes.
+ - Vulkan bug fixes.
+-Android Performance Tuner (Tuning Fork) v 1.1
+ - Loading time 
+   - New functions: TuningFork_recordLoadingTime, TuningFork_startRecordingLoadingTime,
+     TuningFork_stopRecordingLoadingTime should be called to record annotated loading time events.
+     Time from app startup to TuningFork_init and the first tick recorded by TuningFork are
+     automatically recorded.
+   - The previous method of setting a loading time annotation will no longer work.
+ - Memory metrics. More memory metrics are now recorded when TuningFork_enableMemoryRecording(true)
+   is called.
+ - Lifecycle events. TuningFork_reportLifecycleEvent should be called upon the appropriate Java
+   onCreate, etc. being called. This enables detailed crash reporting from within Tuning Fork.
+ - Memory model change: the maximum number of metrics of each type is now specified at start-up,
+   rather than allocating space for all possible annotation combinations.
+   See TuningFork_MetricLimits in tuningfork.h.
+
 For more information, see https://developer.android.com/games/sdk/.
