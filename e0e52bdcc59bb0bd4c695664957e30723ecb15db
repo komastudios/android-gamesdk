@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "927ec451_b2573a87",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-14T10:32:16Z",
+      "side": 1,
+      "message": "Is this correct? Where is this path relative to? I\u0027d have thought it needs a proto/ in there and I\u0027m actually surprised we don\u0027t need the soft links.",
+      "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
