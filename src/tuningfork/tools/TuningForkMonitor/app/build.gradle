@@ -29,13 +29,23 @@ android {
         main.java.srcDirs += "${protobuf.generatedFilesBaseDir}/main/javalite"
         main {
             proto {
-                "tuningfork.proto"
-                "performanceparameters.proto"
+                srcDir "${project.rootDir}/../../proto/"
+                exclude "descriptor.proto"
+                exclude "example_tuningfork.proto"
+                exclude "tuningfork_clearcut_log.proto"
             }
         }
     }
     lintOptions {
         abortOnError false
+    }
+
+    defaultConfig {
+        multiDexEnabled true
+    }
+
+    configurations {
+        implementation.exclude module:'protobuf-java'
     }
 }
 
@@ -49,6 +59,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
     implementation 'com.google.protobuf:protobuf-lite:3.0.0'
+    implementation 'com.google.api.grpc:proto-google-common-protos:1.18.1'
 
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     testImplementation 'junit:junit:4.12'
