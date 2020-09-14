@@ -31,7 +31,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -39,11 +38,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
-
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
   private final static JLabel title = new JLabel("Quality levels");
-  private JScrollPane scrollPane;
 
   private final static JLabel aboutQualitySettings = new JLabel(
       "<html> All quality settings are saved into " +
@@ -63,6 +60,10 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     setSize();
     initComponents();
     addComponents();
+  }
+
+  public QualityTabController getQualityTabController() {
+    return qualityTabController;
   }
 
   private void addComponents() {
@@ -116,6 +117,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
 
       }
     };
+    qualityTabController.addInitialQuality(qualityParametersTable);
     decoratorPanel = ToolbarDecorator.createDecorator(qualityParametersTable)
         .setAddAction(anActionButton -> qualityTabController.addColumn(qualityParametersTable))
         .setRemoveAction(
