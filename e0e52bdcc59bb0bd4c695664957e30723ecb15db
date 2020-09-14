@@ -52,6 +52,24 @@
       "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72d760d5_4b4025e7",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-14T15:31:03Z",
+      "side": 1,
+      "message": "I tried adding only the two paths (\"${project.rootDir}/../../proto/performanceparameters\", \"${project.rootDir}/../../proto/tuningfork.proto\") both with/without \u0027include\u0027 in sourceSets, and also as dependencies, but the java classes aren\u0027t generated if the paths are set like this.\nAny suggestions on what other solution I could try?",
+      "parentUuid": "7a95e248_f6169375",
+      "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
