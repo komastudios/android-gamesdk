@@ -16,6 +16,24 @@
       "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15fedcc2_fc82fb4a",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-14T14:37:29Z",
+      "side": 1,
+      "message": "You\u0027re right, the paths were not correct.\nI tried only adding the paths to the 2 files, but the java classes weren\u0027t generated, so I added the directory and excluded the files we\u0027re not interested in.",
+      "parentUuid": "927ec451_b2573a87",
+      "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
