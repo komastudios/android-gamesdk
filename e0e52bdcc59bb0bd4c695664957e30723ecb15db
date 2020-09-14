@@ -70,6 +70,24 @@
       "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe2edd67_5bc91722",
+        "filename": "src/tuningfork/tools/TuningForkMonitor/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-14T15:39:32Z",
+      "side": 1,
+      "message": "Make them both softlinks like tuningfork.proto was already?",
+      "parentUuid": "72d760d5_4b4025e7",
+      "revId": "e0e52bdcc59bb0bd4c695664957e30723ecb15db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
