@@ -16,10 +16,10 @@
 
 package Files;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -95,7 +95,7 @@ public class AssetsParser {
             return Optional.empty();
         }
         String content =
-            String.join("\n", Files.readAllLines(Paths.get(file.getAbsolutePath()), UTF_8));
+                String.join("\n", Files.readAllLines(Paths.get(file.getAbsolutePath()), ISO_8859_1));
         return Optional.of(content);
     }
 
