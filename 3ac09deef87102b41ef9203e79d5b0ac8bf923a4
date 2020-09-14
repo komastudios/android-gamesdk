@@ -16,6 +16,23 @@
       "revId": "3ac09deef87102b41ef9203e79d5b0ac8bf923a4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c1ca581_fb7aa7fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-14T15:42:10Z",
+      "side": 1,
+      "message": "Release notes and version bumps looks good to me",
+      "revId": "3ac09deef87102b41ef9203e79d5b0ac8bf923a4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
