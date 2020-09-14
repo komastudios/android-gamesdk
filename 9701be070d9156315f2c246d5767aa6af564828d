@@ -16,6 +16,24 @@
       "revId": "9701be070d9156315f2c246d5767aa6af564828d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dab1c4bc_b25a4140",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-14T10:25:59Z",
+      "side": 1,
+      "message": "It turns out the files from src/tuningfork/proto were already updated. So I only changed the paths to both .proto files in build.gradle.",
+      "parentUuid": "3c1f3532_582cca6a",
+      "revId": "9701be070d9156315f2c246d5767aa6af564828d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
