@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e9e8755_720b932b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-14T15:30:52Z",
+      "side": 1,
+      "message": "Please confirm that all the features and fixes you would like in this release are there by +1ing this CL. Also, feel free to recommend any changes to the RELEASE_NOTES.\nThanks,\nWill",
+      "revId": "3ac09deef87102b41ef9203e79d5b0ac8bf923a4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
