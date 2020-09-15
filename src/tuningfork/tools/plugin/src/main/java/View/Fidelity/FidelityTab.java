@@ -86,14 +86,14 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
             .createPanel();
 
     fidelityLabel.setFont(TabLayout.getMainFont());
-    informationLabel.setFont(TabLayout.getSecondaryLabel());
+    informationLabel.setFont(TabLayout.getSecondaryFont());
   }
 
   private void initComponents() {
     this.setLayout(new VerticalLayout());
     setSize();
     fidelityLabel.setFont(TabLayout.getMainFont());
-    informationLabel.setFont(TabLayout.getSecondaryLabel());
+    informationLabel.setFont(TabLayout.getSecondaryFont());
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
@@ -157,8 +157,9 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
       for (int i = 0; i < fidelityTableModel.getRowCount(); i++) {
         FidelityTableData rowData = (FidelityTableData) fidelityTableModel.getValueAt(i, 0);
         if (rowData.getFieldEnumName().equals(name)) {
-          rowData.setFieldEnumName("");
-          fidelityTabController.updateType(i, "");
+          rowData.setFieldType(FieldType.INT32);
+          fidelityTabController.updateType(i, FieldType.INT32.getName());
+          fidelityTabController.updateEnum(i, null);
         }
       }
     }

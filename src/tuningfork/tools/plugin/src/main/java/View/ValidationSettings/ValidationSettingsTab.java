@@ -48,7 +48,7 @@ public class ValidationSettingsTab extends TabLayout {
 
     private final JBLabel validationSettingsLabel = new JBLabel("Settings parameters");
     private final JBLabel informationLabel = new JBLabel("<html> Choose your preferred settings for game analysis. <br>" +
-            "Histograms:</html>");
+        "Histograms:</html>");
 
     public ValidationSettingsTab() {
         initVariables();
@@ -68,10 +68,10 @@ public class ValidationSettingsTab extends TabLayout {
         barUpload.setSize(250, 150);
         apiKey = new JTextField("api key");
         decoratorPanel =
-                ToolbarDecorator.createDecorator(validationSettingsTable)
-                        .setAddAction(it -> ValidationSettingsTabController.addRowAction(validationSettingsTable))
-                        .setRemoveAction(it -> ValidationSettingsTabController.removeRowAction(validationSettingsTable))
-                        .createPanel();
+            ToolbarDecorator.createDecorator(validationSettingsTable)
+                .setAddAction(it -> ValidationSettingsTabController.addRowAction(validationSettingsTable))
+                .setRemoveAction(it -> ValidationSettingsTabController.removeRowAction(validationSettingsTable))
+                .createPanel();
     }
 
     private void initComponents() {
@@ -79,7 +79,7 @@ public class ValidationSettingsTab extends TabLayout {
         setSize();
 
         validationSettingsLabel.setFont(getMainFont());
-        informationLabel.setFont(getSecondaryLabel());
+        informationLabel.setFont(getSecondaryFont());
         this.add(validationSettingsLabel);
         this.add(Box.createVerticalStrut(10));
         this.add(informationLabel);

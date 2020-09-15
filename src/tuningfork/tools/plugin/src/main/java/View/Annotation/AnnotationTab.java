@@ -74,7 +74,7 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
 
     // Add labels.
     annotationLabel.setFont(getMainFont());
-    informationLabel.setFont(getSecondaryLabel());
+    informationLabel.setFont(getSecondaryFont());
     this.add(annotationLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);

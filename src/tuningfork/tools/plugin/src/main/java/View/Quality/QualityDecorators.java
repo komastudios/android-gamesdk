@@ -85,7 +85,8 @@ public class QualityDecorators {
         label.setIcon(AllIcons.Actions.FindAndShowNextMatches);
       } else {
         label.setIcon(Actions.IntentionBulb);
-        label.setToolTipText("Warning: The current field is not monotonic");
+        label.setToolTipText(
+            "Warning: The current field values are neither increasing or decreasing");
       }
       return label;
     }
@@ -100,6 +101,8 @@ public class QualityDecorators {
     public EnumOptionsDecorator(List<String> enumsTemp) {
       this.enumOptions = enumsTemp;
       this.comboBox = new JComboBox<>();
+      // Used to update the UI.
+      comboBox.addItemListener(itemEvent -> fireEditingStopped());
     }
 
     @Override
