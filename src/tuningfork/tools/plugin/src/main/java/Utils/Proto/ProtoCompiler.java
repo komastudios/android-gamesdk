@@ -151,7 +151,6 @@ public final class ProtoCompiler {
     if (errorFile.isPresent()) {
       builder.redirectError(errorFile.get());
     }
-    System.out.println(command.toString());
     runCommand(builder);
     temporaryTextProtoFile.delete();
     return binFile;

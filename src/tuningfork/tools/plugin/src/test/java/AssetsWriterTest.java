@@ -95,15 +95,6 @@ public class AssetsWriterTest {
     return compiler.compile(new File(devTuningforkProto.toString()), Optional.empty());
   }
 
-  private DynamicMessage parseBinaryDynamicFile(
-      FileDescriptor fileDescriptor, File devFile, String content)
-      throws IOException, CompilationException {
-
-    Descriptor descriptor = fileDescriptor.findMessageTypeByName("FidelityParams");
-    compiler.encodeFromTextprotoFile(
-        descriptor.getFullName(), devFile, content, devFidelityBinary.toString(), Optional.empty());
-    return compiler.decodeFromBinary(descriptor, Files.readAllBytes(devFidelityBinary));
-  }
 
   @Test
   public void testSaveDevTuningFork() throws IOException, CompilationException {
@@ -112,9 +103,11 @@ public class AssetsWriterTest {
     String content = String.join("\n", Files.readAllLines(devTuningforkProto));
     List<EnumDataModel> enums = parseFileDescriptorEnums(fileDescriptor);
     MessageDataModel resultAnnotation = DataModelTransformer
-        .transformToAnnotation(fileDescriptor.findMessageTypeByName("Annotation")).get();
+        .transformToAnnotation(
+            fileDescriptor.findMessageTypeByName("Annotation")).get();
     MessageDataModel resultFidelity = DataModelTransformer
-        .transformToFidelity(fileDescriptor.findMessageTypeByName("FidelityParams")).get();
+        .transformToFidelity(
+            fileDescriptor.findMessageTypeByName("FidelityParams")).get();
     assetsWriter.saveDevTuningForkProto(enums, resultAnnotation, resultFidelity);
     String resultContent = String.join("\n", Files.readAllLines(devTuningforkProto));
     Assert.assertEquals(content, resultContent);
@@ -135,7 +128,8 @@ public class AssetsWriterTest {
     // read quality data model using protocol buffer compiler
     byte[] fileContent = Files.readAllBytes(devFidelityBinary);
     String expectedMessage = new String(fileContent, StandardCharsets.UTF_8);
-    Descriptor messageDesc = fileDescriptor.findMessageTypeByName("FidelityParams");
+    Descriptor messageDesc = fileDescriptor
+        .findMessageTypeByName("FidelityParams");
     DynamicMessage message = compiler.decodeFromBinary(messageDesc, fileContent);
 
     // Parse the message read again to the disk.

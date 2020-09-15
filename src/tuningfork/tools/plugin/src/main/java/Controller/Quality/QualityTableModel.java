@@ -18,9 +18,7 @@ package Controller.Quality;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 public class QualityTableModel extends AbstractTableModel {
@@ -37,18 +35,20 @@ public class QualityTableModel extends AbstractTableModel {
 
   public void addRow() {
     List<String> row = new ArrayList<>();
-    for (int i = 0; i < getColumnCount(); i++) {
-      row.add("");
+    row.add("");
+    row.add("");
+    for (int i = 2; i < getColumnCount(); i++) {
+      row.add(qualityTabController.getDefaultValueByIndex(getRowCount()));
     }
+    qualityTabController.addNewFieldToAllFiles(getRowCount());
     data.add(row);
-    qualityTabController.addNewFieldToAllFiles();
     fireTableRowsInserted(getRowCount() - 1, getRowCount());
   }
 
-  public void addColumn(int fileNumber) {
-    columnNames.add(String.valueOf(fileNumber));
+  public void addColumn() {
+    columnNames.add(String.valueOf(columnNames.size() - 1));
     for (int i = 0; i < getRowCount(); i++) {
-      data.get(i).add("");
+      data.get(i).add(qualityTabController.getDefaultValueByIndex(i));
     }
     qualityTabController.addNewQualityFile();
     fireTableStructureChanged();
@@ -63,12 +63,18 @@ public class QualityTableModel extends AbstractTableModel {
     }
   }
 
-  public void addColumn(int fileNumber, List<String> columnData) {
-    columnNames.add(String.valueOf(fileNumber));
+  public void addColumn(List<String> columnData) {
+    columnNames.add(String.valueOf(columnNames.size() - 1));
     for (int i = 0; i < getRowCount(); i++) {
       data.get(i).add(columnData.get(i));
     }
     fireTableStructureChanged();
+  }
+
+  public void setRowValue(int row, String value) {
+    for (int i = 2; i < getColumnCount(); i++) {
+      setValueAt(value, row, i);
+    }
   }
 
   public void removeColumn(int column) {

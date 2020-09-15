@@ -19,17 +19,15 @@ package Controller.Quality;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
-import javax.swing.JTable;
-
 import View.Fidelity.FieldType;
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
+import javax.swing.JTable;
 
 public class QualityTabController {
 
-  private static int filesCount = 1;
   private final List<QualityDataModel> qualityDataModels;
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enums;
@@ -46,24 +44,19 @@ public class QualityTabController {
     return qualityDataModels;
   }
 
-  public MessageDataModel getFidelityData() {
-    return fidelityData;
-  }
-
   public void addInitialQuality(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.setFidelityNames(fidelityData.getFieldNames());
-    filesCount = qualityDataModels.size() + 1;
 
-    for (int file = 0; file < qualityDataModels.size(); file++) {
-      List<String> columnToAdd = qualityDataModels.get(file).getFieldValues();
-      tableModel.addColumn(file + 1, columnToAdd);
+    for (QualityDataModel qualityDataModel : qualityDataModels) {
+      List<String> columnToAdd = qualityDataModel.getFieldValues();
+      tableModel.addColumn(columnToAdd);
     }
   }
 
   public void addColumn(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
-    tableModel.addColumn(filesCount++);
+    tableModel.addColumn();
   }
 
   public void removeColumn(JTable table) {
@@ -81,12 +74,17 @@ public class QualityTabController {
 
   public void addNewQualityFile() {
     QualityDataModel qualityDataModel = new QualityDataModel();
-    fidelityData.getFieldNames().forEach(fieldName -> qualityDataModel.addField(fieldName, ""));
+    for (int i = 0; i < fidelityData.getFieldNames().size(); i++) {
+      qualityDataModel.addField(fidelityData.getFieldNames().get(i), getDefaultValueByIndex(i));
+    }
     qualityDataModels.add(qualityDataModel);
   }
 
-  public void addNewFieldToAllFiles() {
-    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.addField("", ""));
+  public void addNewFieldToAllFiles(int row) {
+    qualityDataModels.forEach(qualityDataModel -> {
+      qualityDataModel.addField("",
+          getDefaultValueByIndex(row));
+    });
   }
 
   public void updateFieldName(final int row, final String newName) {
@@ -102,34 +100,67 @@ public class QualityTabController {
     tableModel.addRow();
   }
 
+  public OptionalInt getFidelityRowByEnumName(String name) {
+    return IntStream.range(0, fidelityData.getFieldTypes().size())
+        .filter(i -> fidelityData.getFieldTypes().get(i).equals(name))
+        .findFirst();
+  }
+
   public void removeRow(JTable table, int row) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.removeRow(row);
   }
 
-  public boolean isEnum(String name) {
-    OptionalInt index = IntStream.range(0, fidelityData.getFieldNames().size())
-        .filter(i -> fidelityData.getFieldNames().get(i).equals(name))
-        .findFirst();
-
-    if (index.isPresent()) {
-      String fieldType = fidelityData.getFieldTypes().get(index.getAsInt());
-      return !fieldType.equals(FieldType.INT32.getName())
-          && !fieldType.equals(FieldType.FLOAT.getName());
-    }
-    return false;
+  public boolean isEnum(int row) {
+    String fieldType = fidelityData.getFieldTypes().get(row);
+    return !fieldType.equals(FieldType.INT32.getName())
+        && !fieldType.equals(FieldType.FLOAT.getName());
   }
 
-  public List<String> getEnumOptionsByName(String name) {
-    if (isEnum(name)) {
-      int index = getFieldIndexByName(name);
+  public boolean isInt(int row) {
+    String fieldType = fidelityData.getFieldTypes().get(row);
+    return fieldType.equals(FieldType.INT32.getName());
+  }
+
+  public List<String> getEnumOptionsByIndex(int row) {
+    if (isEnum(row)) {
       for (EnumDataModel anEnum : enums) {
-        if (anEnum.getName().equals(fidelityData.getFieldTypes().get(index))) {
+        if (anEnum.getName().equals(fidelityData.getFieldTypes().get(row))) {
           return anEnum.getOptions();
         }
       }
     }
-    return new ArrayList<>();
+    return ImmutableList.of("");
+  }
+
+  public boolean shouldChangeValue(String oldType, String newType) {
+    boolean wasNotEnum =
+        oldType.equals(FieldType.FLOAT.getName()) || oldType.equals(FieldType.INT32.getName());
+    boolean isEnum =
+        !newType.equals(FieldType.FLOAT.getName()) && !newType.equals(FieldType.INT32.getName());
+    if (wasNotEnum ^ isEnum) {
+      return true;
+    }
+    return true;
+  }
+
+  public FieldType getTypeByIndex(int row) {
+    if (isEnum(row)) {
+      return FieldType.ENUM;
+    } else if (isInt(row)) {
+      return FieldType.INT32;
+    } else {
+      return FieldType.FLOAT;
+    }
+  }
+
+  public String getDefaultValueByIndex(int index) {
+    FieldType fieldType = getTypeByIndex(index);
+    if (fieldType.equals(FieldType.INT32) || fieldType.equals(FieldType.FLOAT)) {
+      return "0";
+    } else {
+      return getEnumOptionsByIndex(index).get(0);
+    }
   }
 
   public Integer getFieldIndexByName(String name) {
