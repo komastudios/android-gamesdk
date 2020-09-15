@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1890a30_56fe4731",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-15T10:55:10Z",
+      "side": 1,
+      "message": "nit: your Test: line says \u0027manual build\u0027 but doesn\u0027t say what you have tested building",
+      "revId": "a41f29707b1f5e1d15787812761828505fe992ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
