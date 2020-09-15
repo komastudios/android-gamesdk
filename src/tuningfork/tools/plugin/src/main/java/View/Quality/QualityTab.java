@@ -110,7 +110,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return getTextFieldModel();
+            return getIntegerTextFieldModel();
           }
         }
 
@@ -167,8 +167,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         qualityTabController.addRow(qualityParametersTable);
         break;
       case "nameChange":
-        String newName = evt.getNewValue().toString();
-        int fieldRow = qualityTabController.getFieldIndexByName(evt.getOldValue().toString());
+        int fieldRow = (int) ((Object[]) evt.getNewValue())[0];
+        String newName = ((Object[]) evt.getNewValue())[1].toString();
         qualityTableModel.setValueAt(newName, fieldRow, 0);
         break;
       case "removeField":
@@ -176,13 +176,9 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         qualityTabController.removeRow(qualityParametersTable, row);
         break;
       case "typeChange":
-        String oldType = evt.getOldValue().toString();
-        int index = (int) ((Object[]) evt.getNewValue())[0];
-        String newType = String.valueOf(((Object[]) evt.getNewValue())[1]);
-        if (qualityTabController.shouldChangeValue(oldType, newType)) {
-          qualityTableModel
-              .setRowValue(index, qualityTabController.getDefaultValueByIndex(index));
-        }
+        int index = (int) evt.getNewValue();
+        qualityTableModel
+            .setRowValue(index, qualityTabController.getDefaultValueByIndex(index));
         break;
       case "editOptions":
         OptionalInt currentIndex = qualityTabController.getFidelityRowByEnumName(
