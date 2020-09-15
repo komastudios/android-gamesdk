@@ -56,6 +56,11 @@ public class MessageDataModel {
     enumData = new ArrayList<>();
   }
 
+  public String getType(String fieldName) {
+    int fieldNameIndex = fieldNames.indexOf(fieldName);
+    return fieldTypes.get(fieldNameIndex);
+  }
+
   public boolean addMultipleFields(List<String> paramNames, List<String> paramValues) {
     for (int i = 0; i < paramNames.size(); i++) {
       if (!addField(paramNames.get(i), paramValues.get(i))) {
@@ -146,5 +151,9 @@ public class MessageDataModel {
     }
     stringBuilder.append("}\n\n");
     return stringBuilder.toString();
+  }
+
+  public int getFieldsCount() {
+    return fieldNames.size();
   }
 }
