@@ -33,10 +33,8 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
-
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-
     ProgressManager.getInstance()
         .run(
             new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
