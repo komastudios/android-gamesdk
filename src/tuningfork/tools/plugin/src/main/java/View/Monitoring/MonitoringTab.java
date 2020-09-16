@@ -14,6 +14,7 @@
  * limitations under the License
  */
 package View.Monitoring;
+
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.RenderTimeHistogram;
 import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -51,6 +54,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class MonitoringTab extends TabLayout {
+
   private final JLabel title = new JLabel("Telemetry reports");
   private final JLabel nameInfo = new JLabel("APK name: ");
   private final JLabel brand = new JLabel("Brand: ");
@@ -63,12 +67,14 @@ public class MonitoringTab extends TabLayout {
           + "</html>");
   private final JButton startMonitoring = new JButton("Start monitoring");
   private final JButton stopMonitoring = new JButton("Stop monitoring");
+
   private static final Font MAIN_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 18);
   private static final Font MIDDLE_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 12);
   private static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
-  private final Dimension chartSize = new Dimension(2 * SCREEN_SIZE.width / 3,
+  private final Dimension chartSize = new Dimension(SCREEN_SIZE.width / 4,
       SCREEN_SIZE.height / 4);
+
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
   private JPanel graphPanel;
@@ -82,32 +88,19 @@ public class MonitoringTab extends TabLayout {
   private LinkedHashMap<String, List<Integer>> renderTimeHistograms;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private ByteString previousFidelityParams = null;
+
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
     setSize();
     initComponents();
     addComponents();
   }
-  private void addComboBoxData(UploadTelemetryRequest telemetryRequest) {
-    LinkedHashSet<String> uniqueIDs = new LinkedHashSet<>();
-    List<Telemetry> telemetry = telemetryRequest.getTelemetryList();
-    List<RenderTimeHistogram> histograms = new ArrayList<>();
-    renderTimeHistograms = new LinkedHashMap<>();
-    for (Telemetry telemetryElem : telemetry) {
-      histograms.addAll(telemetryElem.getReport().getRendering().getRenderTimeHistogramList());
-    }
-    for (RenderTimeHistogram histogram : histograms) {
-      String idToAdd = Integer.toString(histogram.getInstrumentId());
-      uniqueIDs.add(idToAdd);
-      List<Integer> histogramCounts = histogram.getCountsList();
-      if (!renderTimeHistograms.containsKey(idToAdd)) {
-        renderTimeHistograms.put(idToAdd, new ArrayList<>());
-      }
-      renderTimeHistograms.get(idToAdd).addAll(histogramCounts);
-    }
+
+  private void addComboBoxData(LinkedHashSet<String> uniqueIDs) {
     Vector<String> uniqueIdVector = new Vector<>();
     uniqueIdVector.addAll(uniqueIDs);
     uniqueIdVector.add(0, "Instrument ID");
+
     String selectedObject = null;
     if (uniqueIDs.contains(instrumentIDComboBox.getSelectedItem())) {
       selectedObject = (String) instrumentIDComboBox.getSelectedItem();
@@ -117,37 +110,82 @@ public class MonitoringTab extends TabLayout {
       instrumentIDComboBox.setSelectedItem(selectedObject);
     }
   }
+
+  private void mergeHistograms(List<RenderTimeHistogram> histograms,
+      LinkedHashSet<String> uniqueIDs) {
+    for (RenderTimeHistogram histogram : histograms) {
+      String idToAdd = Integer.toString(histogram.getInstrumentId());
+      uniqueIDs.add(idToAdd);
+
+      if (!renderTimeHistograms.containsKey(idToAdd)) {
+        renderTimeHistograms.put(idToAdd, histogram.getCountsList());
+      } else {
+        List<Integer> existingHistograms = renderTimeHistograms.get(idToAdd);
+        List<Integer> mergedHistograms = IntStream.range(0, existingHistograms.size())
+            .mapToObj(i -> existingHistograms.get(i) + histogram.getCounts(i))
+            .collect(Collectors.toList());
+        renderTimeHistograms.put(idToAdd, mergedHistograms);
+      }
+    }
+  }
+
+  /*
+   * Each telemetryRequest has more than one histogram for each instrument ID.
+   * IDs are added to uniqueIDs hashset.
+   * Histograms for the same fidelity parameters and the same instrument ID are merged, and added
+   * to renderTimeHIstograms map.
+   */
+  private void processTelemetryData(UploadTelemetryRequest telemetryRequest) {
+    LinkedHashSet<String> uniqueIDs = new LinkedHashSet<>();
+    List<Telemetry> telemetry = telemetryRequest.getTelemetryList();
+    List<RenderTimeHistogram> histograms = new ArrayList<>();
+    renderTimeHistograms = new LinkedHashMap<>();
+
+    for (Telemetry telemetryElem : telemetry) {
+      histograms.addAll(telemetryElem.getReport().getRendering().getRenderTimeHistogramList());
+    }
+
+    mergeHistograms(histograms, uniqueIDs);
+    addComboBoxData(uniqueIDs);
+  }
+
   private void deleteExistingGraphs() {
     for (ChartPanel panel : histogramsGraphPanels) {
       graphPanel.remove(panel);
     }
     histogramsGraphPanels = new ArrayList<>();
   }
+
   private void plotData() {
     deleteExistingGraphs();
     for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms.entrySet()) {
-      XYSeries histogramDataset = new XYSeries("bucket counts");
+      XYSeries histogramDataset = new XYSeries("");
       List<Integer> fpsList = entry.getValue();
       for (int i = 0; i < fpsList.size(); i++) {
         histogramDataset.add(i, fpsList.get(i));
       }
+
       JFreeChart histogram = ChartFactory.createXYBarChart("Render time histogram",
-          "bucket number", false, "render time (ms)", new XYSeriesCollection(histogramDataset),
+          "frame time", false, "counts", new XYSeriesCollection(histogramDataset),
           PlotOrientation.VERTICAL, true, false, false);
+
       ChartPanel chartPanel = new ChartPanel(histogram);
       chartPanel.setMaximumSize(chartSize);
       chartPanel.setMinimumSize(chartSize);
       chartPanel.setPreferredSize(chartSize);
+
       if (instrumentIDComboBox.getSelectedItem().equals(entry.getKey())) {
         chartPanel.setVisible(true);
       } else {
         chartPanel.setVisible(false);
       }
+
       graphPanel.add(chartPanel);
       histogramsGraphPanels.add(chartPanel);
     }
     graphPanel.revalidate();
   }
+
   private void changePanelVisibility(int index) {
     for (int i = 0; i < histogramsGraphPanels.size(); i++) {
       if (i == index) {
@@ -157,18 +195,22 @@ public class MonitoringTab extends TabLayout {
       }
     }
   }
+
   private void refreshUI() {
     plotData();
     retrievedInformationPanel.setVisible(true);
     loadingPanel.setVisible(false);
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
+
   private void checkFidelityParams(UploadTelemetryRequest telemetryRequest) {
     if (telemetryRequest.getTelemetry(0) == null) {
       return;
     }
+
     ByteString currentFidelityParams = telemetryRequest.getTelemetry(0).getContext()
         .getTuningParameters().getSerializedFidelityParameters();
+
     if (previousFidelityParams == null) {
       previousFidelityParams = currentFidelityParams;
     } else if (!previousFidelityParams.equals(currentFidelityParams)) {
@@ -178,6 +220,7 @@ public class MonitoringTab extends TabLayout {
       previousFidelityParams = currentFidelityParams;
     }
   }
+
   public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
     checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
@@ -186,11 +229,12 @@ public class MonitoringTab extends TabLayout {
     brandData.setText(deviceSpec.getBrand());
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
-    addComboBoxData(telemetryRequest);
+    processTelemetryData(telemetryRequest);
     startMonitoring.setVisible(false);
     stopMonitoring.setVisible(true);
     refreshUI();
   }
+
   private void setNoData() {
     nameData.setText("N/A");
     totalMemData.setText("N/A");
@@ -198,6 +242,7 @@ public class MonitoringTab extends TabLayout {
     deviceData.setText("N/A");
     cpuFreqsData.setText("N/A");
   }
+
   private void addComponents() {
     this.add(title);
     this.add(Box.createVerticalStrut(10));
@@ -210,6 +255,7 @@ public class MonitoringTab extends TabLayout {
     buttonPanel2.add(stopMonitoring);
     this.add(buttonPanel2);
     this.add(loadingPanel);
+
     gridPanel.add(nameInfo);
     gridPanel.add(nameData);
     gridPanel.add(brand);
@@ -220,11 +266,14 @@ public class MonitoringTab extends TabLayout {
     gridPanel.add(deviceData);
     gridPanel.add(totalMem);
     gridPanel.add(totalMemData);
+
     retrievedInformationPanel.add(gridPanel);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
+
     this.add(retrievedInformationPanel);
   }
+
   private void initComponents() {
     title.setFont(MAIN_FONT);
     nameInfo.setFont(MIDDLE_FONT);
@@ -233,17 +282,20 @@ public class MonitoringTab extends TabLayout {
     device.setFont(MIDDLE_FONT);
     totalMem.setFont(MIDDLE_FONT);
     warningLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 12));
+
     nameData = new JLabel();
     brandData = new JLabel();
     cpuFreqsData = new JLabel();
     deviceData = new JLabel();
     totalMemData = new JLabel();
     setNoData();
+
     nameData.setFont(SMALL_FONT);
     brandData.setFont(SMALL_FONT);
     cpuFreqsData.setFont(SMALL_FONT);
     deviceData.setFont(SMALL_FONT);
     totalMemData.setFont(SMALL_FONT);
+
     instrumentIDComboBox = new ComboBox<>();
     DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
     comboBoxModel.addElement("Instrument ID");
@@ -254,6 +306,7 @@ public class MonitoringTab extends TabLayout {
       }
       changePanelVisibility(instrumentIDComboBox.getSelectedIndex() - 1);
     });
+
     gridPanel = new JPanel(new GridLayout(5, 2));
     Consumer<UploadTelemetryRequest> requestConsumer = this::setMonitoringTabData;
     startMonitoring.addActionListener(actionEvent -> {
@@ -265,20 +318,27 @@ public class MonitoringTab extends TabLayout {
         e.printStackTrace();
       }
     });
+
     stopMonitoring.addActionListener(actionEvent -> {
       retrievedInformationPanel.setVisible(false);
-      RequestServer.stopListening();
+      try {
+        RequestServer.stopListening();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       setNoData();
       startMonitoring.setVisible(true);
       stopMonitoring.setVisible(false);
     });
+
     stopMonitoring.setVisible(false);
+
     loadingPanel = new JPanel();
     // TODO(@targintaru) add loading gif
     retrievedInformationPanel = new JPanel(new VerticalLayout());
     retrievedInformationPanel.setVisible(false);
     graphPanel = new JPanel(new VerticalLayout());
-    graphPanel.setMaximumSize(new Dimension(500,200));
+    graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
   }
 }
