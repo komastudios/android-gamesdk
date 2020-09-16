@@ -401,3 +401,239 @@ class MyActivity extends Activity {
 
 Email [jimblackler@google.com](mailto:jimblackler@google.com) Please include the
 output from memoryAdvisor.getDeviceInfo().toString().
+
+# Appendix
+
+## Metrics groups
+
+This is a comprehensive list of all the memory groups available, and the metrics
+contained in those groups.
+
+### "debug"
+
+Metrics obtained from `android.os.debug`.
+
+*   `nativeHeapAllocatedSize`
+
+    From `Debug.getNativeHeapAllocatedSize()`
+
+*   `NativeHeapFreeSize`
+
+    From `Debug.getNativeHeapFreeSize()`
+
+*   `NativeHeapSize`
+
+    From `Debug.getNativeHeapSize()`
+
+*   `Pss`
+
+    From `Debug.getNativeHeapSize()`
+
+#### Timing
+
+Average 0.388 milliseconds.
+
+### "MemoryInfo"
+
+Metrics obtained from `android.app.ActivityManager.MemoryInfo`.
+
+*   `availMem`
+
+    From `memoryInfo.availMem`
+
+*   `lowMemory`
+
+    From `memoryInfo.lowMemory`
+
+*   `totalMem`
+
+    From `memoryInfo.totalMem`
+
+*   `threshold`
+
+    From `memoryInfo.threshold`
+
+#### Timing
+
+Average 0.907 milliseconds.
+
+### "ActivityManager"
+
+From `android.app.ActivityManager`.
+
+*   `MemoryClass`
+
+    From `activityManager.getMemoryClass()`
+
+*   `LargeMemoryClass`
+
+    From `activityManager.getLargeMemoryClass()`
+
+*   `LowRamDevice`
+
+    From `activityManager.isLowRamDevice()`
+
+These values are all constant so only taken at startup.
+
+### "proc"
+
+*   `oom_score`
+
+    From `proc/oom_score`.
+
+#### Timing
+
+Average 0.711 milliseconds.
+
+### "summary"
+
+From `android.os.Debug.MemoryInfo[]`.
+
+This metric group is not recommended for use as it is very expensive to obtain
+and is only availble in a throttled form on newer Android versions.
+
+All fields via `android.app.ActivityManager.getProcessMemoryInfo`
+
+*   `summary.java-heap`
+
+*   `summary.native-heap`
+
+*   `summary.code`
+
+*   `summary.stack`
+
+*   `summary.graphics`
+
+*   `summary.private-other`
+
+*   `summary.system`
+
+*   `summary.total-pss`
+
+*   `summary.total-swap`
+
+#### Timing
+
+Average 76.485 milliseconds.
+
+### "memInfo"
+
+From `/proc/meminfo`.
+
+Fields are different per device, but examples include:
+
+*   `Active`
+
+*   `Active(anon)`
+
+*   `Active(file)`
+
+*   `AnonPages`
+
+*   `Bounce`
+
+*   `Buffers`
+
+*   `Cached`
+
+*   `CmaTotal`
+
+*   `CommitLimit`
+
+*   `Committed_AS`
+
+*   `Dirty`
+
+*   `Inactive`
+
+*   `Inactive(anon)`
+
+*   `Inactive(file)`
+
+*   `KernelStack`
+
+*   `Mapped`
+
+*   `MemAvailable`
+
+*   `MemFree`
+
+*   `MemTotal`
+
+*   `Mlocked`
+
+*   `NFS_Unstable`
+
+*   `PageTables`
+
+*   `SReclaimable`
+
+*   `SUnreclaim`
+
+*   `Shmem`
+
+*   `Slab`
+
+*   `SwapCached`
+
+*   `SwapFree`
+
+*   `SwapTotal`
+
+*   `Unevictable`
+
+*   `VmallocChunk`
+
+*   `VmallocTotal`
+
+*   `VmallocUsed`
+
+*   `Writeback`
+
+*   `WritebackTmp`
+
+#### Timing
+
+Average 3.313 milliseconds.
+
+### "status"
+
+From `/proc/(pid)/status`.
+
+Fields are different per device, but examples include:
+
+*   `VmData`
+
+*   `VmExe`
+
+*   `VmHWM`
+
+*   `VmLck`
+
+*   `VmLib`
+
+*   `VmPMD`
+
+*   `VmPTE`
+
+*   `VmPeak`
+
+*   `VmPin`
+
+*   `VmRSS`
+
+*   `VmSize`
+
+*   `VmStk`
+
+*   `VmSwap`
+
+#### Timing
+
+Average 4.318 milliseconds.
+
+### Notes on timing
+
+Figures are based on 150+ lab devices, excluding outlier. The measurement is the
+average time it takes for the library to obtain all these metrics is xxx
+milliseconds.
