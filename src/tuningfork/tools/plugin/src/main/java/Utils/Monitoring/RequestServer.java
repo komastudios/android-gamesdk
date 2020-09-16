@@ -17,13 +17,13 @@
 package Utils.Monitoring;
 
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
+import com.google.common.io.ByteStreams;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -32,17 +32,21 @@ import java.util.regex.Pattern;
 public class RequestServer {
 
   private static Thread serverThread;
+  private static ServerSocket serverSocket;
+  private static boolean isBound = false;
 
   public static void listen(Consumer<UploadTelemetryRequest> consumer)
       throws IOException {
-    ServerSocket serverSocket = new ServerSocket(9000);
+    serverSocket = new ServerSocket(9000);
+    if (serverSocket.isBound()) {
+      isBound = true;
+    }
     serverThread = new Thread("Device Listener") {
       public void run() {
         try {
           Socket socket = null;
           while ((socket = serverSocket.accept()) != null) {
-            String stringResponse = new String(socket.getInputStream().readAllBytes(),
-                StandardCharsets.UTF_8);
+            String stringResponse = new String(ByteStreams.toByteArray(socket.getInputStream()));
             if (stringResponse.contains("uploadTelemetry HTTP/1.1")) {
               String jsonFromResponse = "{" + stringResponse.split("\\{", 2)[1];
               consumer.accept(parseJsonTelemetry(jsonFromResponse));
@@ -57,27 +61,32 @@ public class RequestServer {
     serverThread.start();
   }
 
-  public static void stopListening() {
-    serverThread.interrupt();
+  public static void stopListening() throws IOException {
+    if (isBound) {
+      serverSocket.close();
+      serverThread.interrupt();
+      isBound = false;
+    }
   }
 
   private static Optional<String> replaceExponentSubstrings(String jsonString) {
-    String exponentPattern = "[-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)";
+    String exponentPattern = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
     Pattern pattern = Pattern.compile(exponentPattern);
-    StringBuilder stringBuilder = new StringBuilder();
+    StringBuffer stringBuffer = new StringBuffer();
     Matcher matcher = pattern.matcher(jsonString);
 
     boolean found = false;
     while (matcher.find()) {
       found = true;
       String stringToReplace = matcher.group(0);
+      stringToReplace = stringToReplace.substring(13, stringToReplace.length() - 2);
       BigDecimal bigDecimal = new BigDecimal(stringToReplace);
-      matcher.appendReplacement(stringBuilder, Long.toString(bigDecimal.longValue()));
+      matcher.appendReplacement(stringBuffer, "\"duration\": " + bigDecimal.longValue() + "s");
     }
-    matcher.appendTail(stringBuilder);
+    matcher.appendTail(stringBuffer);
 
     if (found) {
-      return Optional.of(stringBuilder.toString());
+      return Optional.of(stringBuffer.toString());
     }
     return Optional.empty();
   }
