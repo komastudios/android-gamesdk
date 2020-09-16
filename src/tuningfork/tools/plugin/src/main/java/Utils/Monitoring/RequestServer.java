@@ -32,10 +32,15 @@ import java.util.regex.Pattern;
 public class RequestServer {
 
   private static Thread serverThread;
+  private static ServerSocket serverSocket;
+  private static boolean isBound = false;
 
   public static void listen(Consumer<UploadTelemetryRequest> consumer)
       throws IOException {
-    ServerSocket serverSocket = new ServerSocket(9000);
+    serverSocket = new ServerSocket(9000);
+    if (serverSocket.isBound()) {
+      isBound = true;
+    }
     serverThread = new Thread("Device Listener") {
       public void run() {
         try {
@@ -57,12 +62,16 @@ public class RequestServer {
     serverThread.start();
   }
 
-  public static void stopListening() {
-    serverThread.interrupt();
+  public static void stopListening() throws IOException {
+    if (isBound) {
+      serverSocket.close();
+      serverThread.interrupt();
+      isBound = false;
+    }
   }
 
   private static Optional<String> replaceExponentSubstrings(String jsonString) {
-    String exponentPattern = "[-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)";
+    String exponentPattern = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
     Pattern pattern = Pattern.compile(exponentPattern);
     StringBuilder stringBuilder = new StringBuilder();
     Matcher matcher = pattern.matcher(jsonString);
@@ -71,8 +80,11 @@ public class RequestServer {
     while (matcher.find()) {
       found = true;
       String stringToReplace = matcher.group(0);
+      stringToReplace = stringToReplace.substring(13, stringToReplace.length() - 2);
+      System.out.println(stringToReplace);
       BigDecimal bigDecimal = new BigDecimal(stringToReplace);
-      matcher.appendReplacement(stringBuilder, Long.toString(bigDecimal.longValue()));
+      matcher.appendReplacement(stringBuilder, "\"duration\": " +
+          Long.toString(bigDecimal.longValue()) + "s");
     }
     matcher.appendTail(stringBuilder);
 

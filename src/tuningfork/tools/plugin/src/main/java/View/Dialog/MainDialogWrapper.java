@@ -24,6 +24,7 @@ import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.Assets.AssetsFinder;
 import Utils.Assets.AssetsWriter;
+import Utils.Monitoring.RequestServer;
 import Utils.Proto.ProtoCompiler;
 import View.PluginLayout;
 import com.intellij.notification.Notification;
@@ -32,7 +33,7 @@ import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.ValidationInfo;
+import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +58,16 @@ public class MainDialogWrapper extends DialogWrapper {
         errorMessage,
         NotificationType.ERROR);
     notification.notify(project);
+  }
+
+  @Override
+  public void doCancelAction() {
+    try {
+      RequestServer.stopListening();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    super.doCancelAction();
   }
 
   @Override
