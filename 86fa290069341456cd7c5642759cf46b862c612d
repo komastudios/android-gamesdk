@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33e07545_caa1feb8",
+        "filename": "samples/tuningfork/experimentsdemo/app/src/main/cpp/experimentsdemo.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-16T15:38:27Z",
+      "side": 1,
+      "message": "sLoading will be always true there, is this what you want?",
+      "revId": "86fa290069341456cd7c5642759cf46b862c612d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
