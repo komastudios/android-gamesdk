@@ -79,7 +79,7 @@ public class ValidationSettingsTab extends TabLayout {
         setSize();
 
         validationSettingsLabel.setFont(getMainFont());
-        informationLabel.setFont(getSecondaryLabel());
+        informationLabel.setFont(getSecondaryFont());
         this.add(validationSettingsLabel);
         this.add(Box.createVerticalStrut(10));
         this.add(informationLabel);

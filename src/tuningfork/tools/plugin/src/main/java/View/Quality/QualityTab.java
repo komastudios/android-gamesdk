@@ -75,7 +75,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
 
   private void initComponents() {
     title.setFont(getMainFont());
-    aboutQualitySettings.setFont(getSecondaryLabel());
+    aboutQualitySettings.setFont(getSecondaryFont());
 
     qualityTableModel = new QualityTableModel(qualityTabController);
     qualityParametersTable = new JBTable(qualityTableModel) {
