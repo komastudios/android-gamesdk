@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1da5399c_2b97bebf",
+        "filename": "src/tuningfork/tools/plugin/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-16T13:39:32Z",
+      "side": 1,
+      "message": "Can you add more description, why / how / example and maybe inside the new section \"Setup\".",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 72
+      },
+      "revId": "437e85aad807c8def9e4e2f126ab0d96caf9768a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49050194_15dbc931",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Generation/TuningForkMethodsGeneration.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-16T13:39:32Z",
+      "side": 1,
+      "message": "I think you can do multiply appends at the same time e.g\n    stringBuilder\n         .append(...)\n         .append(...)\n         .append(...)",
+      "range": {
+        "startLine": 144,
+        "startChar": 6,
+        "endLine": 145,
+        "endChar": 69
+      },
+      "revId": "437e85aad807c8def9e4e2f126ab0d96caf9768a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
