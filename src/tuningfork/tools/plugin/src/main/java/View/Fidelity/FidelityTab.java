@@ -86,14 +86,14 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
             .createPanel();
 
     fidelityLabel.setFont(TabLayout.getMainFont());
-    informationLabel.setFont(TabLayout.getSecondaryLabel());
+    informationLabel.setFont(TabLayout.getSecondaryFont());
   }
 
   private void initComponents() {
     this.setLayout(new VerticalLayout());
     setSize();
     fidelityLabel.setFont(TabLayout.getMainFont());
-    informationLabel.setFont(TabLayout.getSecondaryLabel());
+    informationLabel.setFont(TabLayout.getSecondaryFont());
     this.add(fidelityLabel);
     this.add(Box.createVerticalStrut(10));
     this.add(informationLabel);
