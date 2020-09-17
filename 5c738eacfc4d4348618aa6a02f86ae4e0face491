@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "71affbd2_ef4dc0a2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/RequestServer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-17T12:45:51Z",
+      "side": 1,
+      "message": "Pattern can be moved outside of the method to the const",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 55
+      },
+      "revId": "5c738eacfc4d4348618aa6a02f86ae4e0face491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71c04ec3_5aaf75fe",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-17T12:45:51Z",
+      "side": 1,
+      "message": "Can you add comment / javadoc about how exactly histograms are processed?",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 78
+      },
+      "revId": "5c738eacfc4d4348618aa6a02f86ae4e0face491",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
