@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0b5683c2_c6c15362",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Action/GenerateAnnotationAction.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-17T14:30:41Z",
+      "side": 1,
+      "message": "Could you split it? e.g move \"Task\" or \"run\" into separate method?",
+      "range": {
+        "startLine": 80,
+        "startChar": 4,
+        "endLine": 106,
+        "endChar": 15
+      },
+      "revId": "0f4951d4fc9e80cf9a73ccb419f302d1b6299afd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
