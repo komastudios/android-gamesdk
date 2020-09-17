@@ -5,5 +5,3 @@ api_key: "enter-your-api-key-here-"
 default_fidelity_parameters_filename: "dev_tuningfork_fidelityparams_3.bin"
 initial_request_timeout_ms: 1000
 ultimate_request_timeout_ms: 100000
-loading_annotation_index: 1
-level_annotation_index: 2
