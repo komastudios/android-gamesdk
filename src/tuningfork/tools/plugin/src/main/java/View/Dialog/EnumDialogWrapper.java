@@ -15,13 +15,14 @@
  */
 package View.Dialog;
 
+import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
 import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
-import static View.Decorator.TableRenderer.getRendererTextBoxWithValidation;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
+import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.TabLayout;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ComponentValidator;
@@ -49,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
 
-  private static final String ILLEGAL_TEXT_PATTERN = "[{|}]";
+
   private EnumLayout enumLayout;
   private final EnumController controller;
   private boolean isEdit;
@@ -221,41 +222,41 @@ public class EnumDialogWrapper extends DialogWrapper {
             }
             return null;
           });
-      model.addTableModelListener(
-          e -> ComponentValidator.getInstance(optionsTable)
-              .ifPresent(ComponentValidator::revalidate));
-      optionsTable.getColumnModel().getColumn(0).setCellEditor(getEditorTextBoxWithValidation(
-          disposable));
       optionsTable.getColumnModel().getColumn(0)
-          .setCellRenderer(getRendererTextBoxWithValidation(
-              (value, row, column) -> {
-                String strVal = value.toString();
-                if (strVal.isEmpty()) {
-                  return new ValidationInfo("Field Can Not Be Empty!");
-                }
-                if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
-                  return new ValidationInfo(strVal + " contains illegal characters");
-                }
-                return null;
-              }));
+          .setCellEditor(getEditorTextBoxWithValidation(disposable));
+
+      //noinspection UnstableApiUsage
+      optionsTable.getColumnModel().getColumn(0)
+          .setCellRenderer(
+              TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+                  (value, row, column) -> {
+                    String strVal = value.toString();
+                    if (strVal.isEmpty()) {
+                      return new ValidationInfo("Field Can Not Be Empty!");
+                    }
+                    if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
+                      return new ValidationInfo(strVal + " contains illegal characters");
+                    }
+                    return null;
+                  }));
 
       TableRenderer.addCellToolTipManager(optionsTable, disposable);
     }
 
     public boolean isViewValid() {
-      return isTableCellsValidate() & isNameTextFieldValid() & isTableValid();
+      return isTableCellsValid() & isNameTextFieldValid() & isTableValid();
     }
 
-    private boolean isTableCellsValidate() {
-      return UIValidator.isTableCellsValidate(optionsTable);
+    private boolean isTableCellsValid() {
+      return UIValidator.isTableCellsValid(optionsTable);
     }
 
     private boolean isNameTextFieldValid() {
-      return UIValidator.isComponentValidate(nameTextField);
+      return UIValidator.isComponentValid(nameTextField);
     }
 
     private boolean isTableValid() {
-      return UIValidator.isComponentValidate(optionsTable);
+      return UIValidator.isComponentValid(optionsTable);
     }
   }
 }

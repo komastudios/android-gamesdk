@@ -30,8 +30,13 @@ import javax.swing.table.TableModel;
 
 public class UIValidator {
 
+  public static final String ILLEGAL_TEXT_PATTERN = "[{|}]";
+
   public static ComponentValidator createTableValidator(Disposable disposable, JTable table,
       Supplier<? extends ValidationInfo> validationMethod) {
+    table.getModel().addTableModelListener(
+        e -> ComponentValidator.getInstance(table)
+            .ifPresent(ComponentValidator::revalidate));
     return new ComponentValidator(disposable).withValidator(() -> {
       if (validationMethod.get() != null) {
         if (validationMethod.get().warning) {
@@ -51,7 +56,7 @@ public class UIValidator {
         .getClientProperty(CELL_VALIDATION_PROPERTY) : null;
   }
 
-  public static boolean isTableCellsValidate(JTable jTable) {
+  public static boolean isTableCellsValid(JTable jTable) {
     TableModel tableModel = jTable.getModel();
     for (int i = 0; i < jTable.getRowCount(); i++) {
       for (int j = 0; j < jTable.getColumnCount(); j++) {
@@ -59,7 +64,7 @@ public class UIValidator {
             .getCellRenderer(i, j).getTableCellRendererComponent(jTable,
                 tableModel.getValueAt(i, j), false, false, i, 0);
         ValidationInfo cellInfo = UIValidator.hasValidationInfo(component);
-        if (cellInfo != null) {
+        if (cellInfo != null && !cellInfo.warning) {
           return false;
         }
       }
@@ -67,8 +72,13 @@ public class UIValidator {
     return true;
   }
 
-  public static boolean isComponentValidate(JComponent component) {
-    ComponentValidator.getInstance(component).ifPresent(ComponentValidator::revalidate);
-    return ComponentValidator.getInstance(component).get().getValidationInfo() == null;
+  public static boolean isComponentValid(JComponent component) {
+    if (!ComponentValidator.getInstance(component).isPresent()) {
+      return true;
+    }
+    ComponentValidator componentValidator = ComponentValidator.getInstance(component).get();
+    componentValidator.revalidate();
+    return componentValidator.getValidationInfo() == null || componentValidator
+        .getValidationInfo().warning;
   }
 }
