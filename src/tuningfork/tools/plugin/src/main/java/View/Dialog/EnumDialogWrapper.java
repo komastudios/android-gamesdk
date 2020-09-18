@@ -223,7 +223,7 @@ public class EnumDialogWrapper extends DialogWrapper {
             return null;
           });
       optionsTable.getColumnModel().getColumn(0)
-          .setCellEditor(getEditorTextBoxWithValidation(disposable));
+          .setCellEditor(getEditorTextBoxWithValidation(new JTextField(), disposable));
 
       //noinspection UnstableApiUsage
       optionsTable.getColumnModel().getColumn(0)

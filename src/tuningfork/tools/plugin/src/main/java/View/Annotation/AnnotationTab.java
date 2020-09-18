@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -125,7 +126,8 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
               }
               return null;
             }));
-    nameColumn.setCellEditor(TableRenderer.getEditorTextBoxWithValidation(disposable));
+    nameColumn
+        .setCellEditor(TableRenderer.getEditorTextBoxWithValidation(new JTextField(), disposable));
     this.add(scrollPane);
     this.add(Box.createVerticalStrut(10));
     this.add(new EnumTable(annotationController));
@@ -140,7 +142,6 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
     TableRenderer.addCellToolTipManager(annotationTable, disposable);
     UIValidator.createTableValidator(disposable, annotationTable, () -> {
       List<String> fieldNames = annotationController.getAnnotationData().getFieldNames();
-      List<String> fieldTypes = annotationController.getAnnotationData().getFieldTypes();
       boolean isNamesDuplicate =
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {

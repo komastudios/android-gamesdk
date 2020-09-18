@@ -150,7 +150,9 @@ public class QualityTableModel extends AbstractTableModel {
   }
 
   public void updateTrend(int row) {
-    setValueAt(qualityTabController.getNewTrendState(row), row, 1);
+    if (qualityTabController.isRowValid(row)) {
+      setValueAt(qualityTabController.getNewTrendState(row), row, 1);
+    }
   }
 
 }

@@ -47,7 +47,7 @@ public final class RoundedCornerBorder extends AbstractBorder {
     }
   }
 
-  private final Color ALPHA_ZERO = UIUtil.getWindowColor();
+  private final Color ALPHA_ZERO = UIUtil.getTableBackground();
   BorderType borderType = BorderType.NORMAL;
 
   public RoundedCornerBorder() {

@@ -79,6 +79,7 @@ public class MainDialogWrapper extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
+    pluginLayout.saveSettings();
     if (!pluginLayout.isViewValid()) {
       Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
       return;
@@ -88,7 +89,6 @@ public class MainDialogWrapper extends DialogWrapper {
     annotationTabController = pluginLayout.getAnnotationTabController();
     fidelityTabController = pluginLayout.getFidelityTabController();
     qualityTabController = pluginLayout.getQualityTabController();
-
     List<EnumDataModel> annotationEnums = annotationTabController.getEnums();
 
     if (annotationEnums == null) {
@@ -97,10 +97,10 @@ public class MainDialogWrapper extends DialogWrapper {
       return;
     }
 
-    pluginLayout.saveSettings();
     MessageDataModel fidelityModel = fidelityTabController.getFidelityData();
     MessageDataModel annotationModel = annotationTabController.getAnnotationData();
     boolean writeOK = true;
+    System.out.println(fidelityModel);
 
     if (!assetsWriter.saveDevTuningForkProto(annotationEnums, annotationModel, fidelityModel)) {
       addNotification("Unable to write annotation and fidelity settings back to .proto files.");
@@ -108,6 +108,7 @@ public class MainDialogWrapper extends DialogWrapper {
     }
 
     List<QualityDataModel> qualityDataModels = qualityTabController.getQualityDataModels();
+    System.out.println(qualityDataModels);
     assetsWriter.saveDevFidelityParams(compiler, qualityDataModels);
 
     if (writeOK) {

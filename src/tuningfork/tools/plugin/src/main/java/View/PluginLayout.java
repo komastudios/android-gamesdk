@@ -48,7 +48,7 @@ import org.jdesktop.swingx.HorizontalLayout;
 
 public class PluginLayout extends JPanel {
 
-  private QualityTab qualitySettingsLayout;
+  private QualityTab qualityLayout;
   private AnnotationTab annotationsLayout;
   private FidelityTab fidelitySettingsLayout;
   private JPanel validationSettingsLayout;
@@ -86,14 +86,14 @@ public class PluginLayout extends JPanel {
   }
 
   public boolean isViewValid() {
-    return annotationsLayout.isViewValid();
+    return annotationsLayout.isViewValid() && qualityLayout.isViewValid();
   }
 
   private void addComponents() {
     this.add(menuPanel);
     this.add(fidelitySettingsLayout);
     this.add(annotationsLayout);
-    this.add(qualitySettingsLayout);
+    this.add(qualityLayout);
     this.add(validationSettingsLayout);
     this.add(monitoringTab);
   }
@@ -148,7 +148,7 @@ public class PluginLayout extends JPanel {
       } else if (node.equals(fidelityNode)) {
         changeLayoutVisibility(fidelitySettingsLayout);
       } else if (node.equals(qualitySettingsNode)) {
-        changeLayoutVisibility(qualitySettingsLayout);
+        changeLayoutVisibility(qualityLayout);
       } else if (node.equals(validationSettings)) {
         changeLayoutVisibility(validationSettingsLayout);
       } else if (node.equals(telemetryNode)) {
@@ -183,11 +183,11 @@ public class PluginLayout extends JPanel {
     // Quality Setting Initialization.
     QualityTabController qualityTabController = new QualityTabController(qualityData,
         fidelityData, enumData);
-    qualitySettingsLayout = new QualityTab(qualityTabController);
-    fidelityTabController.addPropertyChangeListener(qualitySettingsLayout);
-    annotationTabController.addPropertyChangeListener(qualitySettingsLayout);
-    qualitySettingsLayout.setSize(panelSize);
-    qualitySettingsLayout.setVisible(false);
+    qualityLayout = new QualityTab(qualityTabController, disposable);
+    fidelityTabController.addPropertyChangeListener(qualityLayout);
+    annotationTabController.addPropertyChangeListener(qualityLayout);
+    qualityLayout.setSize(panelSize);
+    qualityLayout.setVisible(false);
 
     // Validation settings initialization.
     validationSettingsLayout = new ValidationSettingsTab();
@@ -201,7 +201,7 @@ public class PluginLayout extends JPanel {
 
     menuPanel = new JPanel();
 
-    panels.add(qualitySettingsLayout);
+    panels.add(qualityLayout);
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
     panels.add(validationSettingsLayout);
@@ -276,9 +276,10 @@ public class PluginLayout extends JPanel {
   public void saveSettings() {
     fidelitySettingsLayout.saveSettings();
     annotationsLayout.saveSettings();
+    qualityLayout.saveSettings();
   }
 
   public QualityTabController getQualityTabController() {
-    return qualitySettingsLayout.getQualityTabController();
+    return qualityLayout.getQualityTabController();
   }
 }
