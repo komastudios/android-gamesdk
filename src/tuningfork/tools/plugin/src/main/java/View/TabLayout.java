@@ -109,14 +109,12 @@ public class TabLayout extends JPanel {
     return textEditor;
   }
 
-  public DefaultCellEditor getIntegerTextFieldModel() {
+  public JTextField getIntegerTextFieldModel() {
     JTextField textFieldModel = new JTextField();
     ((AbstractDocument) textFieldModel.getDocument())
         .setDocumentFilter(new NumberDocumentFilter());
     textFieldModel.setBorder(new RoundedCornerBorder());
-    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
-    textEditor.setClickCountToStart(1);
-    return textEditor;
+    return textFieldModel;
   }
 
   public void initTextFieldColumns(JTable table, int col) {

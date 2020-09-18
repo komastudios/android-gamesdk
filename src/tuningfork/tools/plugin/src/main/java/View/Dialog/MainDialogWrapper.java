@@ -33,11 +33,13 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
 import java.io.IOException;
+import com.intellij.openapi.ui.Messages;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -74,6 +76,7 @@ public class MainDialogWrapper extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
+    pluginLayout.saveSettings();
     if (!pluginLayout.isViewValid()) {
       Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
       return;
@@ -93,6 +96,7 @@ public class MainDialogWrapper extends DialogWrapper {
           "Unable to write annotation and quality settings back to .proto files. You must add some settings first.1");
       return;
     }
+
     MessageDataModel fidelityModel = fidelityTabController.getFidelityData();
     MessageDataModel annotationModel = annotationTabController.getAnnotationData();
     boolean writeOK = true;
