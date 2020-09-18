@@ -140,7 +140,6 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
     TableRenderer.addCellToolTipManager(annotationTable, disposable);
     UIValidator.createTableValidator(disposable, annotationTable, () -> {
       List<String> fieldNames = annotationController.getAnnotationData().getFieldNames();
-      List<String> fieldTypes = annotationController.getAnnotationData().getFieldTypes();
       boolean isNamesDuplicate =
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {

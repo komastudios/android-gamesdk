@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2020 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License
+ */
+
+package View.Fidelity;
+
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class FidelityValidatableTextField extends JPanel {
+
+  private JTextField jTextField;
+  private JLabel errorLabel;
+
+  public FidelityValidatableTextField() {
+    jTextField = new JTextField();
+    errorLabel = new JLabel();
+    this.setLayout(new BorderLayout(0, 0));
+    this.add(jTextField, BorderLayout.CENTER);
+    this.add(errorLabel, BorderLayout.EAST);
+    this.setBackground(null);
+    this.setForeground(null);
+    this.setOpaque(false);
+    this.setFocusable(false);
+  }
+
+  public JLabel getErrorLabel() {
+    return errorLabel;
+  }
+
+  public JTextField getTextField() {
+    return jTextField;
+  }
+
+  @Override
+  protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+  }
+}
