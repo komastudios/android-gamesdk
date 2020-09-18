@@ -27,11 +27,11 @@ import com.intellij.openapi.ui.cellvalidators.CellTooltipManager;
 import com.intellij.openapi.ui.cellvalidators.StatefulValidatingCellEditor;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper;
-import com.intellij.ui.components.fields.ExtendableTextField;
 import java.awt.Component;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -72,9 +72,9 @@ public class TableRenderer {
         installOn(table);
   }
 
-  public static TableCellEditor getEditorTextBoxWithValidation(Disposable disposable) {
-    ExtendableTextField cellEditor = new ExtendableTextField();
-    StatefulValidatingCellEditor validatingCellEditor = new StatefulValidatingCellEditor(cellEditor,
+  public static TableCellEditor getEditorTextBoxWithValidation(JTextField jTextField,
+      Disposable disposable) {
+    StatefulValidatingCellEditor validatingCellEditor = new StatefulValidatingCellEditor(jTextField,
         disposable) {
       @Override
       public Component getTableCellEditorComponent(JTable table, Object value,

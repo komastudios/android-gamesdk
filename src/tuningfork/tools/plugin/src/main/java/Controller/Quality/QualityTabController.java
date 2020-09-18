@@ -20,6 +20,7 @@ import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.Validation.ValidationTool;
+import View.Fidelity.FieldType;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +113,10 @@ public class QualityTabController {
         .findFirst();
   }
 
+  public void removeFieldRowData(int row) {
+    qualityDataModels.forEach(qualityDataModel -> qualityDataModel.removeSetting(row));
+  }
+
   public void removeRow(JTable table, int row) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.removeRow(row);
@@ -132,6 +137,10 @@ public class QualityTabController {
     return ImmutableList.of("");
   }
 
+  public boolean isRowValid(int row) {
+    return ValidationTool.isRowValid(qualityDataModels, row, getFieldTypeByRow(row));
+  }
+
   public String getNewTrendState(int row) {
     boolean isIncreasing = ValidationTool
         .isIncreasingSingleField(qualityDataModels, fidelityData, row);
@@ -143,6 +152,16 @@ public class QualityTabController {
       return "decrease";
     } else {
       return "increase";
+    }
+  }
+
+  public FieldType getFieldTypeByRow(int row) {
+    if (fidelityData.getEnumData(row).isPresent()) {
+      return FieldType.ENUM;
+    } else if (fidelityData.getFieldTypes().get(row).equals(FieldType.INT32.getName())) {
+      return FieldType.INT32;
+    } else {
+      return FieldType.FLOAT;
     }
   }
 

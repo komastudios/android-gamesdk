@@ -20,6 +20,8 @@ package Utils.Validation;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.ValidationInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +72,41 @@ public final class ValidationTool {
     }
 
     return transformed;
+  }
+
+  public static ValidationInfo getIntegerValueValidationInfo(String strValue) {
+    if (strValue.isEmpty()) {
+      return new ValidationInfo("empty field is not allowed");
+    }
+    if (!strValue.matches("-?\\d+")) {
+      return new ValidationInfo(String.format("\"%s\" is not a valid integer", strValue));
+    }
+    return null;
+  }
+
+  public static ValidationInfo getFloatValueValidationInfo(String strValue) {
+    if (strValue.isEmpty()) {
+      return new ValidationInfo("empty field is not allowed");
+    }
+    if (!strValue.matches("-?\\d+(\\.\\d+)?")) {
+      return new ValidationInfo(String.format("\"%s\" is not a valid number", strValue));
+    }
+    return null;
+  }
+
+  public static boolean isRowValid(List<QualityDataModel> qualityDataModels, int row,
+      FieldType fieldType) {
+    ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
+    if (fieldType.equals(FieldType.INT32)) {
+      return IntStream.range(0, qualityDataModels.size())
+          .allMatch(i -> getIntegerValueValidationInfo(qualityParams.get(i)) == null);
+    } else if (fieldType.equals(FieldType.FLOAT)) {
+      return IntStream.range(0, qualityDataModels.size())
+          .allMatch(i -> getFloatValueValidationInfo(qualityParams.get(i)) == null);
+    } else {
+      return IntStream.range(0, qualityDataModels.size())
+          .noneMatch(i -> qualityParams.get(i).isEmpty());
+    }
   }
 
   public static boolean isIncreasingSingleField(List<QualityDataModel> qualityDataModels,
