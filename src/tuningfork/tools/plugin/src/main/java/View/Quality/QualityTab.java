@@ -18,14 +18,22 @@ package View.Quality;
 
 import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
+import Utils.Validation.UIValidator;
+import Utils.Validation.ValidationTool;
+import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
+import View.Fidelity.FieldType;
 import View.Quality.QualityDecorators.EnumOptionsDecorator;
 import View.Quality.QualityDecorators.HeaderCenterLabel;
 import View.Quality.QualityDecorators.ParameterNameRenderer;
 import View.Quality.QualityDecorators.TrendRenderer;
 import View.TabLayout;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -55,12 +63,16 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
   private final QualityTabController qualityTabController;
   private JPanel decoratorPanel;
 
-  public QualityTab(QualityTabController qualityTabController) {
+  private final Disposable disposable;
+
+  public QualityTab(QualityTabController qualityTabController, Disposable disposable) {
     this.setLayout(new VerticalLayout());
     this.qualityTabController = qualityTabController;
+    this.disposable = disposable;
     setSize();
     initComponents();
     addComponents();
+    initValidators();
   }
 
   public QualityTabController getQualityTabController() {
@@ -96,7 +108,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return new RoundedCornerRenderer();
+            return TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+                new NumberTextFieldValidator());
           }
         }
 
@@ -110,10 +123,10 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return getIntegerTextFieldModel();
+            return TableRenderer
+                .getEditorTextBoxWithValidation(getIntegerTextFieldModel(), disposable);
           }
         }
-
       }
     };
     qualityTabController.addInitialQuality(qualityParametersTable);
@@ -135,8 +148,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     qualityParametersTable.setRowSelectionAllowed(false);
     qualityParametersTable.setCellSelectionEnabled(false);
     qualityParametersTable.setColumnSelectionAllowed(true);
-    qualityParametersTable.setSelectionBackground(null);
-    qualityParametersTable.setSelectionForeground(null);
+    qualityParametersTable.setSelectionBackground(UIUtil.getTableBackground());
+    qualityParametersTable.setSelectionForeground(UIUtil.getTableForeground());
     qualityParametersTable.setIntercellSpacing(new Dimension(0, 0));
     qualityParametersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     qualityParametersTable.setRowHeight(25);
@@ -174,6 +187,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
       case "removeField":
         int row = Integer.parseInt(evt.getNewValue().toString());
         qualityTabController.removeRow(qualityParametersTable, row);
+        qualityTabController.removeFieldRowData(row);
         break;
       case "typeChange":
         int index = (int) evt.getNewValue();
@@ -187,6 +201,34 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         currentIndex.ifPresent(value -> qualityTableModel
             .setRowValue(value, qualityTabController.getDefaultValueByIndex(value)));
 
+    }
+  }
+
+  private void initValidators() {
+    TableRenderer.addCellToolTipManager(qualityParametersTable, disposable);
+  }
+
+  public boolean isViewValid() {
+    return UIValidator.isTableCellsValid(qualityParametersTable);
+  }
+
+  public void saveSettings() {
+    qualityParametersTable.clearSelection();
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private final class NumberTextFieldValidator implements TableCellValidator {
+
+    @Override
+    public ValidationInfo validate(Object value, int row, int column) {
+      FieldType fieldType = qualityTabController.getFieldTypeByRow(row);
+      if (fieldType.equals(FieldType.INT32)) {
+        return ValidationTool.getIntegerValueValidationInfo(value.toString());
+      } else if (fieldType.equals(FieldType.FLOAT)) {
+        return ValidationTool.getFloatValueValidationInfo(value.toString());
+      } else {
+        return null;
+      }
     }
   }
 }
