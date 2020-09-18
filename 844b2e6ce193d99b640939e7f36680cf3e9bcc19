@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005026972",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1428628?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "91cf3102_999ab6a9",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/RequestServer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-18T10:55:46Z",
+      "side": 1,
+      "message": "Wrong casing for \"exponentPattern\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 37,
+        "startChar": 10,
+        "endLine": 37,
+        "endChar": 45
+      },
+      "revId": "844b2e6ce193d99b640939e7f36680cf3e9bcc19",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
