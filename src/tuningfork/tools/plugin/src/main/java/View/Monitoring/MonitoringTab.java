@@ -15,30 +15,25 @@
  */
 package View.Monitoring;
 
-import Utils.Monitoring.TelemetryProcessing;
+import Controller.Monitoring.MonitoringController;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
-import com.google.android.performanceparameters.v1.PerformanceParameters.RenderTimeHistogram;
-import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import Utils.Monitoring.RequestServer;
 import View.TabLayout;
-import com.google.protobuf.ByteString;
 import com.intellij.openapi.ui.ComboBox;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -47,14 +42,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.VerticalLayout;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
-public class MonitoringTab extends TabLayout {
+public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private final JLabel title = new JLabel("Telemetry reports");
   private final JLabel nameInfo = new JLabel("APK name: ");
@@ -86,9 +76,8 @@ public class MonitoringTab extends TabLayout {
   private JLabel totalMemData;
   private JPanel gridPanel;
   private JComboBox<String> instrumentIDComboBox;
-  private LinkedHashMap<String, List<Integer>> renderTimeHistograms;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
-  private ByteString previousFidelityParams = null;
+  private MonitoringController controller;
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -97,8 +86,8 @@ public class MonitoringTab extends TabLayout {
     addComponents();
   }
 
-  private void addComboBoxData(LinkedHashMap<String, List<Integer>> renderTimeHistograms) {
-    List<String> uniqueIDs = new ArrayList<>(renderTimeHistograms.keySet());
+  private void addComboBoxData(Set<String> renderTimeHistogramsKeys) {
+    List<String> uniqueIDs = new ArrayList<>(renderTimeHistogramsKeys);
     Vector<String> uniqueIdVector = new Vector<>();
     uniqueIdVector.addAll(uniqueIDs);
     uniqueIdVector.add(0, "Instrument ID");
@@ -122,31 +111,7 @@ public class MonitoringTab extends TabLayout {
 
   private void plotData() {
     deleteExistingGraphs();
-    for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms.entrySet()) {
-      XYSeries histogramDataset = new XYSeries("");
-      List<Integer> fpsList = entry.getValue();
-      for (int i = 0; i < fpsList.size(); i++) {
-        histogramDataset.add(i, fpsList.get(i));
-      }
-
-      JFreeChart histogram = ChartFactory.createXYBarChart("Render time histogram",
-          "frame time", false, "counts", new XYSeriesCollection(histogramDataset),
-          PlotOrientation.VERTICAL, true, false, false);
-
-      ChartPanel chartPanel = new ChartPanel(histogram);
-      chartPanel.setMaximumSize(chartSize);
-      chartPanel.setMinimumSize(chartSize);
-      chartPanel.setPreferredSize(chartSize);
-
-      if (instrumentIDComboBox.getSelectedItem().equals(entry.getKey())) {
-        chartPanel.setVisible(true);
-      } else {
-        chartPanel.setVisible(false);
-      }
-
-      graphPanel.add(chartPanel);
-      histogramsGraphPanels.add(chartPanel);
-    }
+    controller.createChartPanels();
     graphPanel.revalidate();
   }
 
@@ -167,26 +132,11 @@ public class MonitoringTab extends TabLayout {
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
 
-  private void checkFidelityParams(UploadTelemetryRequest telemetryRequest) {
-    if (telemetryRequest.getTelemetry(0) == null) {
-      return;
-    }
-
-    ByteString currentFidelityParams = telemetryRequest.getTelemetry(0).getContext()
-        .getTuningParameters().getSerializedFidelityParameters();
-
-    if (previousFidelityParams == null) {
-      previousFidelityParams = currentFidelityParams;
-    } else if (!previousFidelityParams.equals(currentFidelityParams)) {
-      instrumentIDComboBox.setModel(new DefaultComboBoxModel<>());
-      renderTimeHistograms = new LinkedHashMap<>();
-      deleteExistingGraphs();
-      previousFidelityParams = currentFidelityParams;
-    }
-  }
-
   public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
-    checkFidelityParams(telemetryRequest);
+    if (!controller.checkFidelityParams(telemetryRequest)) {
+      instrumentIDComboBox.setModel(new DefaultComboBoxModel<>());
+      deleteExistingGraphs();
+    }
     nameData.setText(telemetryRequest.getName());
 
     DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
@@ -195,8 +145,8 @@ public class MonitoringTab extends TabLayout {
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
 
-    renderTimeHistograms = TelemetryProcessing.processTelemetryData(telemetryRequest);
-    addComboBoxData(renderTimeHistograms);
+    controller.setRenderTimeHistograms(telemetryRequest);
+    addComboBoxData(controller.getRenderTimeHistogramsKeys());
 
     startMonitoring.setVisible(false);
     stopMonitoring.setVisible(true);
@@ -243,6 +193,9 @@ public class MonitoringTab extends TabLayout {
   }
 
   private void initComponents() {
+    controller = new MonitoringController();
+    controller.addPropertyChangeListener(this);
+
     title.setFont(MAIN_FONT);
     nameInfo.setFont(MIDDLE_FONT);
     brand.setFont(MIDDLE_FONT);
@@ -308,5 +261,25 @@ public class MonitoringTab extends TabLayout {
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    if (propertyChangeEvent.getPropertyName().equals("addChart")) {
+      ChartPanel chartPanel = (ChartPanel) propertyChangeEvent.getNewValue();
+      chartPanel.setMaximumSize(chartSize);
+      chartPanel.setMinimumSize(chartSize);
+      chartPanel.setPreferredSize(chartSize);
+
+      String instrumentID = (String) propertyChangeEvent.getOldValue();
+      if (instrumentIDComboBox.getSelectedItem().equals(instrumentID)) {
+        chartPanel.setVisible(true);
+      } else {
+        chartPanel.setVisible(false);
+      }
+
+      graphPanel.add(chartPanel);
+      histogramsGraphPanels.add(chartPanel);
+    }
   }
 }
