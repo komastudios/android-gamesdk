@@ -22,6 +22,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.JBColor;
+import java.awt.Component;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -56,6 +57,14 @@ public class UIValidator {
         .getClientProperty(CELL_VALIDATION_PROPERTY) : null;
   }
 
+  private static boolean isTableCellValid(JComponent jComponent) {
+    ValidationInfo cellInfo = UIValidator.hasValidationInfo(jComponent);
+    if (cellInfo != null && !cellInfo.warning) {
+      return false;
+    }
+    return true;
+  }
+
   public static boolean isTableCellsValid(JTable jTable) {
     TableModel tableModel = jTable.getModel();
     for (int i = 0; i < jTable.getRowCount(); i++) {
@@ -63,8 +72,7 @@ public class UIValidator {
         JComponent component = (JComponent) jTable
             .getCellRenderer(i, j).getTableCellRendererComponent(jTable,
                 tableModel.getValueAt(i, j), false, false, i, 0);
-        ValidationInfo cellInfo = UIValidator.hasValidationInfo(component);
-        if (cellInfo != null && !cellInfo.warning) {
+        if (!isTableCellValid(component)) {
           return false;
         }
       }
@@ -80,5 +88,25 @@ public class UIValidator {
     componentValidator.revalidate();
     return componentValidator.getValidationInfo() == null || componentValidator
         .getValidationInfo().warning;
+  }
+
+  public static boolean isTableCellsValidDeep(JTable jTable) {
+    TableModel tableModel = jTable.getModel();
+    for (int i = 0; i < jTable.getRowCount(); i++) {
+      for (int j = 0; j < jTable.getColumnCount(); j++) {
+        JComponent component = (JComponent) jTable
+            .getCellRenderer(i, j).getTableCellRendererComponent(jTable,
+                tableModel.getValueAt(i, j), false, false, i, 0);
+        if (!isTableCellValid(component)) {
+          return false;
+        }
+        for (Component childComp : component.getComponents()) {
+          if (childComp instanceof JComponent && !isTableCellValid((JComponent) childComp)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 }
