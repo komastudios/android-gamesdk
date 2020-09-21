@@ -153,7 +153,7 @@ def getPackagePath() {
 
 def getDistPath() {
     if (project.hasProperty("distPath")) {
-        return new File(project.distPath).getPath()
+        return new File(project.distPath.trim()).getPath()
     }
 
     return getPackagePath()
