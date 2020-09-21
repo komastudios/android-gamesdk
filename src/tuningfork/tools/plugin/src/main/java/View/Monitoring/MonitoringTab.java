@@ -20,6 +20,7 @@ import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceS
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import Utils.Monitoring.RequestServer;
 import View.TabLayout;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.ui.ComboBox;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -132,11 +133,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
 
-  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
-    if (!controller.checkFidelityParams(telemetryRequest)) {
-      instrumentIDComboBox.setModel(new DefaultComboBoxModel<>());
-      deleteExistingGraphs();
-    }
+  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest)
+      throws InvalidProtocolBufferException {
+    controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
 
     DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
@@ -229,7 +228,15 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     gridPanel = new JPanel(new GridLayout(5, 2));
-    Consumer<UploadTelemetryRequest> requestConsumer = this::setMonitoringTabData;
+
+    Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest -> {
+      try {
+        setMonitoringTabData(uploadTelemetryRequest);
+      } catch (InvalidProtocolBufferException e) {
+        e.printStackTrace();
+      }
+    };
+
     startMonitoring.addActionListener(actionEvent -> {
       try {
         RequestServer.listen(requestConsumer);
