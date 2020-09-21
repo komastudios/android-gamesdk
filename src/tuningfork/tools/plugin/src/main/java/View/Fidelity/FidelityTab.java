@@ -20,6 +20,7 @@ import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
 import Model.EnumDataModel;
+import Utils.Resources.ResourceLoader;
 import Utils.Validation.CellCustomDataEditorValidatorWrapper;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
@@ -48,14 +49,16 @@ import org.jdesktop.swingx.VerticalLayout;
 
 public class FidelityTab extends TabLayout implements PropertyChangeListener {
 
-  private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
-  private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+  private final JBLabel fidelityLabel = new JBLabel(resourceLoader.get("fidelity_settings"));
+  private final JBLabel informationLabel = new JBLabel(resourceLoader.get("fidelity_info"));
   FidelityTabController fidelityTabController;
   private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
 
   private final Disposable disposable;
+
 
   public FidelityTab(FidelityTabController controller, Disposable disposable) {
     this.fidelityTabController = controller;
@@ -171,7 +174,7 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
       boolean isNamesDuplicate =
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {
-        return new ValidationInfo("Repeated Fields Names Are Not Allowed.", fidelityTable);
+        return new ValidationInfo(resourceLoader.get("repeated_fields_error"), fidelityTable);
       }
       return null;
     });
@@ -205,19 +208,22 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
       }
     }
   }
-  
+
   @SuppressWarnings("UnstableApiUsage")
   private static class FidelityTextCellValidation implements TableCellValidator {
+
+    private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
     @Override
     public ValidationInfo validate(Object value, int row, int column) {
       FidelityTableData data1 = (FidelityTableData) value;
       String strVal = data1.getFieldParamName();
       if (strVal.isEmpty()) {
-        return new ValidationInfo("Field Can Not Be Empty");
+        return new ValidationInfo(resourceLoader.get("field_empty_error"));
       }
       if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
-        return new ValidationInfo(strVal + " contains illegal characters");
+        return new ValidationInfo(
+            String.format(resourceLoader.get("field_illegal_character_error"), strVal));
       }
       return null;
     }

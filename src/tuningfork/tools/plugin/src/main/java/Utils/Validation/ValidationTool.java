@@ -20,6 +20,7 @@ package Utils.Validation;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Resources.ResourceLoader;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.ValidationInfo;
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class ValidationTool {
+
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
+  private final static String INTEGER_REGEX = "-?\\d+";
+  private final static String NUMBER_REGEX = "-?\\d+(\\.\\d+)?";
 
   private static ArrayList<String> getQualityForOneField(
       List<QualityDataModel> qualityDataModels, int row) {
@@ -76,20 +81,22 @@ public final class ValidationTool {
 
   public static ValidationInfo getIntegerValueValidationInfo(String strValue) {
     if (strValue.isEmpty()) {
-      return new ValidationInfo("empty field is not allowed");
+      return new ValidationInfo(RESOURCE_LOADER.get("field_empty_error"));
     }
-    if (!strValue.matches("-?\\d+")) {
-      return new ValidationInfo(String.format("\"%s\" is not a valid integer", strValue));
+    if (!strValue.matches(INTEGER_REGEX)) {
+      return new ValidationInfo(
+          String.format(RESOURCE_LOADER.get("invalid_integer_error"), strValue));
     }
     return null;
   }
 
   public static ValidationInfo getFloatValueValidationInfo(String strValue) {
     if (strValue.isEmpty()) {
-      return new ValidationInfo("empty field is not allowed");
+      return new ValidationInfo(RESOURCE_LOADER.get("field_empty_error"));
     }
-    if (!strValue.matches("-?\\d+(\\.\\d+)?")) {
-      return new ValidationInfo(String.format("\"%s\" is not a valid number", strValue));
+    if (!strValue.matches(NUMBER_REGEX)) {
+      return new ValidationInfo(
+          String.format(RESOURCE_LOADER.get("invalid_number_error"), strValue));
     }
     return null;
   }

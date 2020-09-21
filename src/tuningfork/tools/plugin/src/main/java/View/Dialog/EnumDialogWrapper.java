@@ -20,6 +20,7 @@ import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
+import Utils.Resources.ResourceLoader;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
@@ -124,6 +125,7 @@ public class EnumDialogWrapper extends DialogWrapper {
     private DefaultTableModel model;
     private final JLabel nameLabel = new JBLabel("Name");
     private final Disposable disposable;
+    private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
     EnumLayout(Disposable disposable) {
       this.disposable = disposable;
@@ -201,10 +203,13 @@ public class EnumDialogWrapper extends DialogWrapper {
       new ComponentValidator(disposable).withValidator(() -> {
         String name = nameTextField.getText();
         if (name.isEmpty()) {
-          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+          return new ValidationInfo(resourceLoader.get("field_empty_error"),
+              nameTextField);
         }
         if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(name).find()) {
-          return new ValidationInfo(name + " contains illegal characters", nameTextField);
+          return new ValidationInfo(
+              String.format(resourceLoader.get("field_illegal_character_error"), name),
+              nameTextField);
         }
         return null;
       }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
@@ -212,13 +217,15 @@ public class EnumDialogWrapper extends DialogWrapper {
       UIValidator.createTableValidator(disposable, optionsTable,
           () -> {
             if (optionsTable.getRowCount() == 0) {
-              return new ValidationInfo("Options Table Can Not Be Empty", optionsTable);
+              return new ValidationInfo(resourceLoader.get("options_table_empty_error"),
+                  optionsTable);
             }
             ArrayList<String> options = getOptions();
             boolean isOptionDuplicate =
                 options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
             if (isOptionDuplicate) {
-              return new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable);
+              return new ValidationInfo(resourceLoader.get("repeated_fields_error"),
+                  optionsTable);
             }
             return null;
           });
