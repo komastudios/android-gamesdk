@@ -44,7 +44,7 @@ public final class DataModelTransformer {
   private File assetsDir;
   private Optional<File> devTuningfork;
   private Optional<List<File>> qualityFiles;
-  private FileDescriptor devTuningforkDesc;
+  private static FileDescriptor devTuningforkDesc;
   private ProtoCompiler compiler;
 
 
@@ -60,6 +60,10 @@ public final class DataModelTransformer {
     if (devTuningfork.isPresent()) {
       devTuningforkDesc = compiler.compile(devTuningfork.get(), Optional.empty());
     }
+  }
+
+  public static FileDescriptor getDevTuningforkDesc() {
+    return devTuningforkDesc;
   }
 
   public static List<EnumDataModel> getEnums(List<EnumDescriptor> enumDescriptors) {

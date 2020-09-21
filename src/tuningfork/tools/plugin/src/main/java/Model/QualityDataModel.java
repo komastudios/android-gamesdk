@@ -17,6 +17,7 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class QualityDataModel {
 
@@ -76,5 +77,33 @@ public class QualityDataModel {
       stringBuilder.append(fieldNames.get(i)).append(": ").append(fieldValues.get(i)).append("\n");
     }
     return stringBuilder.toString();
+  }
+
+  @Override
+  public boolean equals(Object objectToCompare) {
+    if (objectToCompare instanceof QualityDataModel) {
+      QualityDataModel qualityDataModel = (QualityDataModel) objectToCompare;
+      if (this.fieldNames.size() != qualityDataModel.fieldNames.size()) {
+        return false;
+      }
+
+      for (int i = 0; i < getFieldCount(); i++) {
+        if (!fieldNames.get(i).equals(qualityDataModel.fieldNames.get(i))) {
+          return false;
+        }
+      }
+
+      if (this.fieldValues.size() != qualityDataModel.fieldValues.size()) {
+        return false;
+      }
+
+      for (int i = 0; i < getFieldCount(); i++) {
+        if (!fieldValues.get(i).equals(qualityDataModel.fieldValues.get(i))) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 }
