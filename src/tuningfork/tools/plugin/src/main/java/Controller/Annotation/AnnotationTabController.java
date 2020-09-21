@@ -18,11 +18,9 @@ package Controller.Annotation;
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
-import com.intellij.openapi.ui.ValidationInfo;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.JTable;
 
@@ -109,29 +107,5 @@ public class AnnotationTabController extends EnumController {
       PropertyChangeListener propertyChangeListener) {
     propertyChangeSupport
         .addPropertyChangeListener(propertyChangeListener);
-  }
-
-  public List<ValidationInfo> validate() {
-    List<ValidationInfo> validationInfos = new ArrayList<>();
-    List<String> types = annotationDataModel.getFieldTypes();
-    boolean emptyType = types.stream().anyMatch(String::isEmpty);
-    if (emptyType) {
-      validationInfos.add(new ValidationInfo("Empty Field Type Is Not Allowed"));
-    }
-    List<String> names = annotationDataModel.getFieldNames();
-    boolean duplicateField =
-        names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
-    if (duplicateField) {
-      validationInfos.add(new ValidationInfo("Duplicate Fields Are Not Allowed"));
-    }
-    names.stream()
-        .filter(s -> !s.matches(FIELD_NAME_PATTERN) && !s.isEmpty())
-        .forEach(s ->
-            validationInfos.add(
-                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_].")));
-    if (names.stream().anyMatch(String::isEmpty)) {
-      validationInfos.add(new ValidationInfo("Empty Field Name Is Not Allowed."));
-    }
-    return validationInfos;
   }
 }

@@ -26,6 +26,7 @@ import Utils.Assets.AssetsFinder;
 import Utils.Assets.AssetsWriter;
 import Utils.Monitoring.RequestServer;
 import Utils.Proto.ProtoCompiler;
+import Utils.Resources.ResourceLoader;
 import View.PluginLayout;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
@@ -37,16 +38,19 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.Disposer;
 import java.io.IOException;
 import com.intellij.openapi.ui.Messages;
+import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class MainDialogWrapper extends DialogWrapper {
 
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
   private static PluginLayout pluginLayout;
   private final Project project;
   private final NotificationGroup NOTIFICATION_GROUP =
-      new NotificationGroup("Android Performance Tuner", NotificationDisplayType.BALLOON, true);
+      new NotificationGroup(resourceLoader.get("android_performance_tuner"),
+          NotificationDisplayType.BALLOON, true);
   private AnnotationTabController annotationTabController;
   private FidelityTabController fidelityTabController;
   private QualityTabController qualityTabController;
@@ -63,10 +67,6 @@ public class MainDialogWrapper extends DialogWrapper {
     notification.notify(project);
   }
 
-  private boolean isValid() {
-    return pluginLayout.isValid();
-  }
-
   @Override
   public void doCancelAction() {
     try {
@@ -81,7 +81,9 @@ public class MainDialogWrapper extends DialogWrapper {
   protected void doOKAction() {
     pluginLayout.saveSettings();
     if (!pluginLayout.isViewValid()) {
-      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      Messages
+          .showErrorDialog(resourceLoader.get("fix_errors_first"),
+              resourceLoader.get("unable_to_close_title"));
       return;
     }
     AssetsWriter assetsWriter = new AssetsWriter(
@@ -92,8 +94,7 @@ public class MainDialogWrapper extends DialogWrapper {
     List<EnumDataModel> annotationEnums = annotationTabController.getEnums();
 
     if (annotationEnums == null) {
-      addNotification(
-          "Unable to write annotation and quality settings back to .proto files. You must add some settings first.1");
+      addNotification(resourceLoader.get("unable_to_save_annotation_and_quality_empty_error"));
       return;
     }
 
@@ -103,7 +104,7 @@ public class MainDialogWrapper extends DialogWrapper {
     System.out.println(fidelityModel);
 
     if (!assetsWriter.saveDevTuningForkProto(annotationEnums, annotationModel, fidelityModel)) {
-      addNotification("Unable to write annotation and fidelity settings back to .proto files.");
+      addNotification(resourceLoader.get("unable_to_save_annotation_and_quality"));
       writeOK = false;
     }
 
@@ -112,9 +113,8 @@ public class MainDialogWrapper extends DialogWrapper {
     assetsWriter.saveDevFidelityParams(compiler, qualityDataModels);
 
     if (writeOK) {
-      Notification notification = NOTIFICATION_GROUP.createNotification(
-          "Android Performance Tuner settings saved successfully!",
-          NotificationType.INFORMATION);
+      Notification notification = NOTIFICATION_GROUP
+          .createNotification(resourceLoader.get("save_successful"), NotificationType.INFORMATION);
       notification.notify(project);
 
       try {
@@ -138,9 +138,7 @@ public class MainDialogWrapper extends DialogWrapper {
     this.qualityData = qualityData;
     this.project = project;
     this.compiler = compiler;
-
-    setTitle("Android Performance Tuner Plugin");
-
+    setTitle(resourceLoader.get("android_performance_tuner_plugin"));
     Disposer.register(this.getDisposable(), () -> {
       try {
         RequestServer.stopListening();
@@ -148,7 +146,6 @@ public class MainDialogWrapper extends DialogWrapper {
         e.printStackTrace();
       }
     });
-
     init();
   }
 
