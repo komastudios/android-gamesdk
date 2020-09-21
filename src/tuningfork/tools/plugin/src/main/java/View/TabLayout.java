@@ -116,10 +116,4 @@ public class TabLayout extends JPanel {
     textFieldModel.setBorder(new RoundedCornerBorder());
     return textFieldModel;
   }
-
-  public void initTextFieldColumns(JTable table, int col) {
-    TableColumn column = table.getColumnModel().getColumn(col);
-    column.setCellEditor(getTextFieldModel());
-    column.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
-  }
 }

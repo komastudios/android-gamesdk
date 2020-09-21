@@ -18,6 +18,7 @@ package View.Quality;
 
 import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
+import Utils.Resources.ResourceLoader;
 import Utils.Validation.UIValidator;
 import Utils.Validation.ValidationTool;
 import View.Decorator.TableRenderer;
@@ -49,14 +50,10 @@ import org.jdesktop.swingx.VerticalLayout;
 
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
-  private final static JLabel title = new JLabel("Quality levels");
-
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
+  private final static JLabel title = new JLabel(RESOURCE_LOADER.get("quality_levels"));
   private final static JLabel aboutQualitySettings = new JLabel(
-      "<html> All quality settings are saved into " +
-          "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>" +
-          "You should have at least one quality level. <br>" +
-          "Once you add a new level, you can edit/add data it by" +
-          "modifying the text in the table below.</html> ");
+      RESOURCE_LOADER.get("quality_info"));
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
