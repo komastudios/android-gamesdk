@@ -21,6 +21,7 @@ import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
+import Utils.Resources.ResourceLoader;
 import View.Dialog.MainDialogWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,16 +34,19 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
+
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     ProgressManager.getInstance()
         .run(
-            new Task.Backgroundable(e.getProject(), "Starting Android Performance Tuner Plugin") {
+            new Task.Backgroundable(e.getProject(), resourceLoader.get("start_apt")) {
               public void run(@NotNull ProgressIndicator progressIndicator) {
                 ProtoCompiler protoCompiler = ProtoCompiler.getInstance();
                 String projectPath = e.getProject().getProjectFilePath().split(".idea")[0];
                 progressIndicator.setIndeterminate(true);
-                progressIndicator.setText("Loading Assets");
+                progressIndicator.setText(resourceLoader.get("load_assets"));
 
                 try {
                   DataModelTransformer transformer = new DataModelTransformer(projectPath,
