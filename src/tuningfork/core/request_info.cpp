@@ -141,7 +141,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     }
 
     info.cpu_max_freq_hz.clear();
-    for (int index = 1;; ++index) {
+    for (int index = 0;; ++index) {
         std::stringstream str;
         str << "/sys/devices/system/cpu/cpu" << index
             << "/cpufreq/cpuinfo_max_freq";
