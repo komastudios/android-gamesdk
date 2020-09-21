@@ -16,6 +16,24 @@
       "revId": "fce9306d4a977d36007d7175e1f86bf777b7ee20",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "614cc7d2_ad9ac4fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159783
+      },
+      "writtenOn": "2020-09-21T12:51:49Z",
+      "side": 1,
+      "message": "I really hope so :) I had already passes 3 times before I broke it again by trying to export the artifacts.",
+      "parentUuid": "7604ae4a_ec525647",
+      "revId": "fce9306d4a977d36007d7175e1f86bf777b7ee20",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
