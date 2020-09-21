@@ -18,6 +18,7 @@
 
 #include <json11/json11.hpp>
 #include <string>
+#include <vector>
 
 #include "core/id_provider.h"
 #include "core/session.h"
@@ -53,6 +54,10 @@ class JsonSerializer {
                                              const RequestInfo& request_info,
                                              const Duration& duration,
                                              bool& empty);
+    json11::Json::object LoadingTimeMetadataJson(const LoadingTimeMetadata& md);
+    std::vector<json11::Json::object> CrashReportsJson(
+        const RequestInfo& request_info);
+
     const Session& session_;
     IdProvider* id_provider_;
 };

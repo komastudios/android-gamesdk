@@ -1,2 +1,2 @@
-quality_settings: FANTASTIC
+quality_settings: FAST
 int_field: 10

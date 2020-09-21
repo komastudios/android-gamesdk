@@ -175,26 +175,39 @@ repo init -u https://android.googlesource.com/platform/manifest -b my-branch
 The Memory Advice library is found in folder
 [test/memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/).
 
-It is recommended to build the library from source as a dependency of your app,
-using Android Studio and Gradle integration.
+Currently the process is to first load the library project with Android Studio
+and publish it to the local Maven repository by running
+`gradle build publishToMavenLocal`.
 
-Add these lines to the settings.gradle file in the root of the project,
-replacing `..` with the path containing the memoryadvice project.
+In the application root `build.gradle` file, ensure ```mavenLocal()`` is
+specified as a repository for the project, as well as `jitpack.io` for its
+dependencies. For example:
 
 ```gradle
-include ':app', ':memoryadvice'
-project(':memoryadvice').projectDir = new File('../memoryadvice/memoryadvice')
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenLocal()
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+}
 ```
 
-In the main application `settings.gradle` file, add an `implementation` line to
+In the application module's `build.gradle` file, add an `implementation` line to
 the `dependencies` section:
 
 ```gradle
 dependencies {
     // ..
-    implementation project(':memoryadvice')
+    implementation 'com.google.android.apps.internal.games:memoryadvice:0.9'
+
 }
 ```
+
+### Code
 
 In your main activity, initialize a single memoryAdviser object for the lifetime
 of your app.
@@ -388,3 +401,239 @@ class MyActivity extends Activity {
 
 Email [jimblackler@google.com](mailto:jimblackler@google.com) Please include the
 output from memoryAdvisor.getDeviceInfo().toString().
+
+# Appendix
+
+## Metrics groups
+
+This is a comprehensive list of all the memory groups available, and the metrics
+contained in those groups.
+
+### "debug"
+
+Metrics obtained from `android.os.debug`.
+
+*   `nativeHeapAllocatedSize`
+
+    From `Debug.getNativeHeapAllocatedSize()`
+
+*   `NativeHeapFreeSize`
+
+    From `Debug.getNativeHeapFreeSize()`
+
+*   `NativeHeapSize`
+
+    From `Debug.getNativeHeapSize()`
+
+*   `Pss`
+
+    From `Debug.getNativeHeapSize()`
+
+#### Timing
+
+Average 0.388 milliseconds.
+
+### "MemoryInfo"
+
+Metrics obtained from `android.app.ActivityManager.MemoryInfo`.
+
+*   `availMem`
+
+    From `memoryInfo.availMem`
+
+*   `lowMemory`
+
+    From `memoryInfo.lowMemory`
+
+*   `totalMem`
+
+    From `memoryInfo.totalMem`
+
+*   `threshold`
+
+    From `memoryInfo.threshold`
+
+#### Timing
+
+Average 0.907 milliseconds.
+
+### "ActivityManager"
+
+From `android.app.ActivityManager`.
+
+*   `MemoryClass`
+
+    From `activityManager.getMemoryClass()`
+
+*   `LargeMemoryClass`
+
+    From `activityManager.getLargeMemoryClass()`
+
+*   `LowRamDevice`
+
+    From `activityManager.isLowRamDevice()`
+
+These values are all constant so only taken at startup.
+
+### "proc"
+
+*   `oom_score`
+
+    From `proc/oom_score`.
+
+#### Timing
+
+Average 0.711 milliseconds.
+
+### "summary"
+
+From `android.os.Debug.MemoryInfo[]`.
+
+This metric group is not recommended for use as it is very expensive to obtain
+and is only availble in a throttled form on newer Android versions.
+
+All fields via `android.app.ActivityManager.getProcessMemoryInfo`
+
+*   `summary.java-heap`
+
+*   `summary.native-heap`
+
+*   `summary.code`
+
+*   `summary.stack`
+
+*   `summary.graphics`
+
+*   `summary.private-other`
+
+*   `summary.system`
+
+*   `summary.total-pss`
+
+*   `summary.total-swap`
+
+#### Timing
+
+Average 76.485 milliseconds.
+
+### "memInfo"
+
+From `/proc/meminfo`.
+
+Fields are different per device, but examples include:
+
+*   `Active`
+
+*   `Active(anon)`
+
+*   `Active(file)`
+
+*   `AnonPages`
+
+*   `Bounce`
+
+*   `Buffers`
+
+*   `Cached`
+
+*   `CmaTotal`
+
+*   `CommitLimit`
+
+*   `Committed_AS`
+
+*   `Dirty`
+
+*   `Inactive`
+
+*   `Inactive(anon)`
+
+*   `Inactive(file)`
+
+*   `KernelStack`
+
+*   `Mapped`
+
+*   `MemAvailable`
+
+*   `MemFree`
+
+*   `MemTotal`
+
+*   `Mlocked`
+
+*   `NFS_Unstable`
+
+*   `PageTables`
+
+*   `SReclaimable`
+
+*   `SUnreclaim`
+
+*   `Shmem`
+
+*   `Slab`
+
+*   `SwapCached`
+
+*   `SwapFree`
+
+*   `SwapTotal`
+
+*   `Unevictable`
+
+*   `VmallocChunk`
+
+*   `VmallocTotal`
+
+*   `VmallocUsed`
+
+*   `Writeback`
+
+*   `WritebackTmp`
+
+#### Timing
+
+Average 3.313 milliseconds.
+
+### "status"
+
+From `/proc/(pid)/status`.
+
+Fields are different per device, but examples include:
+
+*   `VmData`
+
+*   `VmExe`
+
+*   `VmHWM`
+
+*   `VmLck`
+
+*   `VmLib`
+
+*   `VmPMD`
+
+*   `VmPTE`
+
+*   `VmPeak`
+
+*   `VmPin`
+
+*   `VmRSS`
+
+*   `VmSize`
+
+*   `VmStk`
+
+*   `VmSwap`
+
+#### Timing
+
+Average 4.318 milliseconds.
+
+### Notes on timing
+
+Figures are based on 150+ lab devices, excluding outlier. The measurement is the
+average time it takes for the library to obtain all these metrics is xxx
+milliseconds.

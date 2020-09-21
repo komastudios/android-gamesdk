@@ -40,6 +40,8 @@ static FileCache sFileCache;
 constexpr char kPerformanceParametersBaseUri[] =
     "https://performanceparameters.googleapis.com/v1/";
 
+constexpr uint64_t kDefaultFrameTimeAnnotationCombinationLimit = 64;
+
 // Forward declaration
 static bool GetEnumSizesFromDescriptors(std::vector<uint32_t>& enum_sizes);
 
@@ -48,12 +50,7 @@ static void CheckPersister(const TuningFork_Cache*& persister,
                            std::string save_dir) {
     if (persister == nullptr) {
         if (save_dir.empty()) {
-            // If the save_dir is empty, try the app's cache dir or tmp storage.
-            if (jni::IsValid()) {
-                save_dir = file_utils::GetAppCacheDir();
-            }
-            if (save_dir.empty()) save_dir = "/data/local/tmp";
-            save_dir += "/tuningfork";
+            save_dir = DefaultTuningForkSaveDirectory();
         }
         ALOGI("Using local file cache at %s", save_dir.c_str());
         sFileCache.SetDir(save_dir);
@@ -78,6 +75,37 @@ void Settings::Check(const std::string& save_dir) {
     }
     if (initial_request_timeout_ms == 0) initial_request_timeout_ms = 1000;
     if (ultimate_request_timeout_ms == 0) ultimate_request_timeout_ms = 100000;
+
+    if (c_settings.max_num_metrics.frame_time == 0) {
+        auto num_annotation_combinations = NumAnnotationCombinations();
+        if (num_annotation_combinations >
+            kDefaultFrameTimeAnnotationCombinationLimit)
+            ALOGI(
+                "You have a large number of annotation combinations. Check "
+                "that %" PRIu64
+                " is enough for a typical session. If not, set "
+                "Settings.max_num_metrics.frame_time.",
+                kDefaultFrameTimeAnnotationCombinationLimit);
+        c_settings.max_num_metrics.frame_time =
+            std::min(kDefaultFrameTimeAnnotationCombinationLimit,
+                     num_annotation_combinations) *
+            aggregation_strategy.max_instrumentation_keys;
+    }
+    if (c_settings.max_num_metrics.loading_time == 0)
+        c_settings.max_num_metrics.loading_time = 32;
+    if (c_settings.max_num_metrics.memory == 0)
+        c_settings.max_num_metrics.memory = 15;
+}
+
+uint64_t Settings::NumAnnotationCombinations() {
+    uint64_t n = 1;
+    for (auto x : aggregation_strategy.annotation_enum_size) {
+        uint64_t m = n;
+        n *= x;
+        // Check for overflow
+        if (n < m) return std::numeric_limits<uint64_t>::max();
+    }
+    return n;
 }
 
 static bool decodeAnnotationEnumSizes(pb_istream_t* stream,

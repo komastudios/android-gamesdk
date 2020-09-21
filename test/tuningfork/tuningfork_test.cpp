@@ -149,6 +149,8 @@ class TestTimeProvider : public ITimeProvider {
         Reset();
     }
 
+    const Duration kStartupTime = std::chrono::milliseconds(100);
+
     TimePoint t;
     SystemTimePoint st;
     Duration tick_size;
@@ -157,6 +159,11 @@ class TestTimeProvider : public ITimeProvider {
     TimePoint Now() override { return t; }
 
     SystemTimePoint SystemNow() override { return st; }
+
+    Duration TimeSinceProcessStart() override {
+        return Now() - TimePoint{} + kStartupTime;
+    }
+
     void Reset() {
         t = TimePoint();
         st = SystemTimePoint();
@@ -223,6 +230,7 @@ class TuningForkTest {
           time_provider_(tick_size),
           meminfo_provider_(enable_meminfo) {
         RequestInfo info = {};
+        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0);
         init_return_value_ =
             tuningfork::Init(settings, &info, &test_backend_, &time_provider_,
                              &meminfo_provider_);
@@ -246,7 +254,9 @@ class TuningForkTest {
             std::this_thread::sleep_for(milliseconds(10));
         }
     }
-    void IncrementTime() { time_provider_.Increment(); }
+    void IncrementTime(int count = 1) {
+        for (int i = 0; i < count; ++i) time_provider_.Increment();
+    }
 };
 
 const TuningFork_CProtobufSerialization* TrainingModeParams() {
@@ -261,7 +271,8 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
                       int n_ticks, int n_keys,
                       std::vector<uint32_t> annotation_size,
                       const std::vector<Settings::Histogram>& hists = {},
-                      int num_frame_time_histograms = 0) {
+                      int num_frame_time_histograms = 0,
+                      int num_loading_time_histograms = 0) {
     Settings s{};
     s.aggregation_strategy.method = method;
     s.aggregation_strategy.intervalms_or_count = n_ticks;
@@ -272,7 +283,9 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
     s.Check(kCacheDir);
     s.initial_request_timeout_ms = 5;
     s.ultimate_request_timeout_ms = 50;
-    s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
+    if (num_frame_time_histograms != 0)
+        s.c_settings.max_num_metrics.frame_time = num_frame_time_histograms;
+    s.c_settings.max_num_metrics.loading_time = num_loading_time_histograms;
     s.loading_annotation_index = -1;
     s.level_annotation_index = -1;
     return s;
@@ -356,6 +369,41 @@ TuningForkLogEvent TestEndToEndWithLimits() {
 
     return test.Result();
 }
+
+TuningForkLogEvent TestEndToEndWithLoadingTimes() {
+    const int NTICKS =
+        101;  // note the first tick doesn't add anything to the histogram
+    const uint64_t kOneGigaBitPerSecond = 1000000000L;
+    auto settings =
+        TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED,
+                     NTICKS - 1, 2, {}, {}, 0 /* use default */, 3);
+    TuningForkTest test(settings, milliseconds(10));
+    SerializedAnnotation loading_annotation = {1, 2, 3};
+    Annotation ann;
+    LoadingHandle loading_handle;
+    tuningfork::StartRecordingLoadingTime(
+        {LoadingTimeMetadata::LoadingState::WARM_START,
+         LoadingTimeMetadata::LoadingSource::NETWORK, 100,
+         LoadingTimeMetadata::NetworkConnectivity::WIFI, kOneGigaBitPerSecond,
+         0},
+        loading_annotation, loading_handle);
+    test.IncrementTime(10);
+    tuningfork::StopRecordingLoadingTime(loading_handle);
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
+        ann.set_level(com::google::tuningfork::LEVEL_1);
+        tuningfork::SetCurrentAnnotation(Serialize(ann));
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+    }
+    // Wait for the upload thread to complete writing the string
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                std::cv_status::no_timeout)
+        << "Timeout";
+
+    return test.Result();
+}
+
 TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
@@ -406,9 +454,11 @@ TuningForkLogEvent TestEndToEndWithMemory() {
 
 bool CheckStrings(const std::string& name, const std::string& result,
                   const std::string& expected) {
-    bool comp = CompareIgnoringWhitespace(result, expected);
+    std::string error_message;
+    bool comp = CompareIgnoringWhitespace(result, expected, &error_message);
     EXPECT_TRUE(comp) << "\nResult:\n"
-                      << result << "\n!=\nExpected:" << expected;
+                      << result << "\n!=\nExpected:" << expected << "\n\n"
+                      << error_message;
     return comp;
 }
 
@@ -440,6 +490,34 @@ static const std::string session_context = R"TF(
   "time_period": {
     "end_time": "1970-01-01T00:00:02.020000Z",
     "start_time": "1970-01-01T00:00:00.020000Z"
+  }
+}
+)TF";
+
+// This has extra time for the app and asset loading
+static const std::string session_context_loading = R"TF(
+{
+  "device": {
+    "brand": "",
+    "build_version": "",
+    "cpu_core_freqs_hz": [],
+    "device": "",
+    "fingerprint": "",
+    "gles_version": {
+      "major": 0,
+      "minor": 0
+    },
+    "model": "",
+    "product": "",
+    "total_memory_bytes": 0
+  },
+  "game_sdk_info": {
+    "session_id": "",
+    "version": "1.0"
+  },
+  "time_period": {
+    "end_time": "1970-01-01T00:00:02.220000Z",
+    "start_time": "1970-01-01T00:00:00.220000Z"
   }
 }
 )TF";
@@ -524,6 +602,95 @@ TEST(TuningForkTest, TestEndToEndWithLimits) {
     // This should be the same since we try to record 2 annotations but limit
     // to 1.
     CheckStrings("AnnotationWithLimits", result, expected_for_annotation_test);
+}
+TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
+    auto result = TestEndToEndWithLoadingTimes();
+    static TuningForkLogEvent expected = R"TF(
+{
+  "name": "applications//apks/0",
+  "session_context":)TF" + session_context_loading +
+                                         R"TF(,
+  "telemetry":[
+    {
+      "context":{
+        "annotations":"",
+        "duration":"0.31s",
+        "tuning_parameters":{
+          "experiment_id":"",
+          "serialized_fidelity_parameters":""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events":[
+            {
+              "loading_metadata":{
+                "source":8,
+                "state":2
+              },
+              "times_ms":[210]
+            },
+            {
+              "loading_metadata":{
+                "source":7,
+                "state":2
+              },
+              "times_ms":[100]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "context":{
+        "annotations": "AQID",
+        "duration": "0.1s",
+        "tuning_parameters":{
+          "experiment_id": "",
+          "serialized_fidelity_parameters": ""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events": [{
+            "loading_metadata": {
+              "compression_level": 100,
+              "network_info": {
+                "bandwidth_bps": "1000000000",
+                "connectivity": 1
+              },
+              "source": 5,
+              "state": 3
+            },
+            "times_ms": [100]
+          }]
+        }
+      }
+    },
+    {
+      "context":{
+        "annotations":"CAE=",
+        "duration":"1s",
+        "tuning_parameters":{
+          "experiment_id":"",
+          "serialized_fidelity_parameters":""
+        }
+      },
+      "report":{
+        "rendering":{
+          "render_time_histogram":[
+            {
+              "counts":[**],
+              "instrument_id":64001
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+)TF";
+    CheckStrings("LoadingTimes", result, expected);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
@@ -722,14 +889,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     "report": {
       "rendering": {
         "render_time_histogram": [{
-         "counts": [
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "counts": [**],
          "instrument_id": 64000
         }]
       }
@@ -747,14 +907,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
       "memory": {
         "memory_histogram": [
         {
-          "counts": [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
-                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0,
-                     1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1,
-                     0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0,
-                     0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,
-                     1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1,
-                     0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 121],
+          "counts": [**],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
@@ -763,14 +916,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
          "type": 1
         },
         {
-          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "counts": [**],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"
@@ -779,14 +925,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
          "type": 2
         },
         {
-          "counts": [0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "counts": [**],
          "histogram_config": {
           "bucket_max_bytes": "8000000000",
           "bucket_min_bytes": "0"

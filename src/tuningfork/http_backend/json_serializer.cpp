@@ -77,11 +77,21 @@ using namespace json11;
 using namespace std::chrono;
 using namespace date;
 
-Json::object GameSdkInfoJson(const RequestInfo& request_info) {
+static std::string GetVersionString(uint32_t ver) {
     std::stringstream version_str;
-    version_str << TUNINGFORK_MAJOR_VERSION << "." << TUNINGFORK_MINOR_VERSION;
-    return Json::object{{"version", version_str.str()},
-                        {"session_id", request_info.session_id}};
+    uint32_t major_version = ver >> 16;
+    uint32_t minor_version = ver & 0xffff;
+    version_str << major_version << "." << minor_version;
+    return version_str.str();
+}
+Json::object GameSdkInfoJson(const RequestInfo& request_info) {
+    Json::object info{
+        {"version", GetVersionString(request_info.tuningfork_version)},
+        {"session_id", request_info.session_id}};
+    if (request_info.swappy_version != 0) {
+        info["swappy_version"] = GetVersionString(request_info.swappy_version);
+    }
+    return info;
 }
 
 std::string TimeToRFC3339(system_clock::time_point tp) {
@@ -156,11 +166,46 @@ Json::object JsonSerializer::TelemetryContextJson(
         {"duration", DurationToSecondsString(duration)}};
 }
 
+#define SET_METADATA_FIELD(OBJ, KEY) \
+    if (md.KEY != 0) OBJ[#KEY] = md.KEY;
+
+static std::string DurationJsonFromNanos(uint64_t ns) {
+    // For JSON, we should return a string with the number of seconds.
+    // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/duration.proto
+    double dns = ns;
+    dns /= 1000000000.0;
+    std::stringstream str;
+    str << dns << "s";
+    return str.str();
+}
+
+Json::object JsonSerializer::LoadingTimeMetadataJson(
+    const LoadingTimeMetadata& md) {
+    Json::object ret;
+    SET_METADATA_FIELD(ret, state);
+    SET_METADATA_FIELD(ret, source);
+    SET_METADATA_FIELD(ret, compression_level);
+    if (md.network_connectivity != 0 || md.network_transfer_speed_bps != 0 ||
+        md.network_latency_ns != 0) {
+        Json::object network_info;
+        if (md.network_connectivity != 0)
+            network_info["connectivity"] = md.network_connectivity;
+        if (md.network_transfer_speed_bps != 0)
+            network_info["bandwidth_bps"] =
+                JsonUint64(md.network_transfer_speed_bps);
+        if (md.network_latency_ns != 0)
+            network_info["latency"] =
+                DurationJsonFromNanos(md.network_latency_ns);
+        ret["network_info"] = network_info;
+    }
+    return ret;
+}
+
 Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
                                                  bool& empty,
                                                  Duration& duration) {
     std::vector<Json::object> render_histograms;
-    std::vector<int> loading_events_times;  // Ignore fractional milliseconds
+    std::vector<Json::object> loading_events;
     duration = Duration::zero();
     for (const auto& th :
          session_.GetNonEmptyHistograms<FrameTimeMetricData>()) {
@@ -177,13 +222,23 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     for (const auto& th :
          session_.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
         if (th->metric_id_.detail.annotation != annotation) continue;
+        std::vector<int>
+            loading_events_times;  // Ignore fractional milliseconds
         for (auto c : th->histogram_.samples()) {
             auto v = static_cast<int>(c);
             if (v != 0) loading_events_times.push_back(v);
         }
-        duration += th->duration_;
+        LoadingTimeMetadata md;
+        if (id_provider_->MetricIdToLoadingTimeMetadata(th->metric_id_, md) ==
+            TUNINGFORK_ERROR_OK) {
+            Json::object o({});
+            o["times_ms"] = loading_events_times;
+            o["loading_metadata"] = LoadingTimeMetadataJson(md);
+            loading_events.push_back(o);
+            duration += th->duration_;
+        }
     }
-    int total_size = render_histograms.size() + loading_events_times.size();
+    int total_size = render_histograms.size() + loading_events.size();
     empty = (total_size == 0);
     Json::object ret;
     if (render_histograms.size() > 0) {
@@ -191,13 +246,8 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             Json::object{{"render_time_histogram", render_histograms}};
     }
     // Loading events
-    if (loading_events_times.size() > 0) {
-        Json::object loading;
-        if (loading_events_times.size() > 0) {
-            loading["loading_events"] =
-                Json::object{{"times_ms", loading_events_times}};
-        }
-        ret["loading"] = loading;
+    if (loading_events.size() > 0) {
+        ret["loading"] = Json::object{{"loading_events", loading_events}};
     }
     return ret;
 }
@@ -211,20 +261,23 @@ Json::object JsonSerializer::MemoryTelemetryReportJson(bool& empty) {
               });
     for (const auto& th : histograms) {
         MemoryMetric mh;
-        id_provider_->MetricIdToMemoryMetric(th->metric_id_, mh);
-        auto& h = th->histogram_;
-        if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
-            const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
-        std::vector<int32_t> counts;
-        for (auto c : h.buckets()) counts.push_back(static_cast<int32_t>(c));
-        Json::object histogram_config{
-            {"bucket_min_bytes", JsonUint64(h.BucketStart())},
-            {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
-        Json::object o{{"type", mh.memory_record_type_},
-                       {"period_ms", static_cast<int>(mh.period_ms_)},
-                       {"histogram_config", histogram_config},
-                       {"counts", counts}};
-        memory_histograms.push_back(o);
+        if (id_provider_->MetricIdToMemoryMetric(th->metric_id_, mh) ==
+            TUNINGFORK_ERROR_OK) {
+            auto& h = th->histogram_;
+            if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
+                const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
+            std::vector<int32_t> counts;
+            for (auto c : h.buckets())
+                counts.push_back(static_cast<int32_t>(c));
+            Json::object histogram_config{
+                {"bucket_min_bytes", JsonUint64(h.BucketStart())},
+                {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
+            Json::object o{{"type", mh.memory_record_type_},
+                           {"period_ms", static_cast<int>(mh.period_ms_)},
+                           {"histogram_config", histogram_config},
+                           {"counts", counts}};
+            memory_histograms.push_back(o);
+        }
     }
     // Memory histogram
     Json::object ret;
@@ -262,7 +315,8 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
         {"game_sdk_info", GameSdkInfoJson(request_info)},
         {"time_period",
          Json::object{{"start_time", TimeToRFC3339(session_.time().start)},
-                      {"end_time", TimeToRFC3339(session_.time().end)}}}};
+                      {"end_time", TimeToRFC3339(session_.time().end)}}},
+        {"crash_reports", CrashReportsJson(request_info)}};
     std::vector<Json::object> telemetry;
     // Loop over unique annotations
     std::set<AnnotationId> annotations;
@@ -298,6 +352,18 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
                      {"telemetry", telemetry}};
     evt_json_ser = upload_telemetry_request.dump();
 }
+
+std::vector<Json::object> JsonSerializer::CrashReportsJson(
+    const RequestInfo& request_info) {
+    std::vector<Json::object> crash_reports;
+    std::vector<CrashReason> session_crash_reports = session_.GetCrashReports();
+    for (int i = 0; i < session_crash_reports.size(); i++) {
+        crash_reports.push_back(Json::object{
+            {"crash_reason", static_cast<int>(session_crash_reports[i])},
+            {"session_id", request_info.previous_session_id}});
+    }
+    return crash_reports;
+};
 
 std::string Serialize(std::vector<uint32_t> vs) {
     std::stringstream str;

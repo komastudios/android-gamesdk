@@ -36,13 +36,14 @@ void UserInterface::DrawUserInterface(VkRenderPass render_pass) {
 
     for (auto& text_field : text_fields_) {
         text_field.update();
-        font_->DrawString(text_field.text,
-                         text_field.text_size,
-                         text_field.x_corner,
-                         text_field.y_corner,
-                         renderer_->GetCurrentCommandBuffer(),
-                         render_pass,
-                         renderer_->GetCurrentImage());
+        font_->DrawString(renderer_->GetCurrentCommandBuffer(),
+                          render_pass,
+                          renderer_->GetCurrentImage(),
+                          text_field.text,
+                          text_field.text_size,
+                          text_field.x_corner,
+                          text_field.y_corner
+                          );
     }
 }
 

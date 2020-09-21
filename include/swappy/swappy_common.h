@@ -25,6 +25,8 @@
 #include <android/native_window.h>
 #include <stdint.h>
 
+#include "common/gamesdk_common.h"
+
 /** @brief Swap interval for 60fps, in nanoseconds. */
 #define SWAPPY_SWAP_60FPS (16666667L)
 
@@ -42,7 +44,7 @@
 #define SWAPPY_MAJOR_VERSION 1
 #define SWAPPY_MINOR_VERSION 7
 #define SWAPPY_PACKED_VERSION \
-    ((SWAPPY_MAJOR_VERSION << 16) | (SWAPPY_MINOR_VERSION))
+    ANDROID_GAMESDK_PACKED_VERSION(SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION)
 
 // Internal macros to generate a symbol to track Swappy version, do not use
 // directly.

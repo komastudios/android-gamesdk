@@ -707,7 +707,7 @@ bool InitVulkan(android_app *app) {
 
     CreateFramebuffers(render_pass, depth_buffer.image_view);
 
-    font = new Font(*renderer, *android_app_ctx, FONT_SDF_PATH, FONT_INFO_PATH);
+    font = new Font(*renderer, *android_app_ctx, kFontSDFPath, kFontInfoPath);
 
     CreateUserInterface();
 

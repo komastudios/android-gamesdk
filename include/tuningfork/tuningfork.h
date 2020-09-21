@@ -39,6 +39,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "common/gamesdk_common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,9 +48,10 @@ extern "C" {
 /** @cond INTERNAL */
 
 #define TUNINGFORK_MAJOR_VERSION 1
-#define TUNINGFORK_MINOR_VERSION 0
-#define TUNINGFORK_PACKED_VERSION \
-    ((TUNINGFORK_MAJOR_VERSION << 16) | (TUNINGFORK_MINOR_VERSION))
+#define TUNINGFORK_MINOR_VERSION 1
+#define TUNINGFORK_PACKED_VERSION                            \
+    ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
+                                   TUNINGFORK_MINOR_VERSION)
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
@@ -97,6 +100,8 @@ typedef struct TuningFork_CProtobufSerialization {
 typedef uint16_t TuningFork_InstrumentKey;
 /// A trace handle used in TuningFork_startTrace
 typedef uint64_t TuningFork_TraceHandle;
+/// A  handle used in TuningFork_startRecordingLoadingTime
+typedef uint64_t TuningFork_LoadingEventHandle;
 /// A time as milliseconds past the epoch.
 typedef uint64_t TuningFork_TimePoint;
 /// A duration in nanoseconds.
@@ -122,7 +127,7 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_INVALID_INSTRUMENT_KEY =
         7,  ///< Invalid instrument key passed to a tick function.
     TUNINGFORK_ERROR_INVALID_TRACE_HANDLE =
-        8,  ///< Invalid handle passed to `TuningFork_endTrace`.
+        8,  ///< Invalid handle passed to `TuningFork_startTrace`.
     TUNINGFORK_ERROR_TIMEOUT =
         9,  ///< Timeout in request for fidelity parameters.
     TUNINGFORK_ERROR_BAD_PARAMETER = 10,      ///< Generic bad parameter.
@@ -170,6 +175,12 @@ typedef enum TuningFork_ErrorCode {
         32,  ///< Not enough space for metric data was allocated at start-up:
     ///< increase Settings.max_num_metrics.frame_time or check
     ///< max_num_instrument_keys
+    TUNINGFORK_ERROR_INVALID_LOADING_HANDLE =
+        33,  ///< Invalid handle passed to
+             ///< `TuningFork_startRecordingLoadingTime`.
+    TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT =
+        34,  ///< TuningFork_startRecordingLoadingTime was called with the same
+             ///< parameters twice without a stop function inbetween.
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -263,10 +274,13 @@ typedef void (*SwappyTracerFn)(const struct SwappyTracer*);
 /**
  * @brief Limits on the number of metrics of each type.
  * Zero any values to get the default for that type:
- *  Frame time: the maximum number of annotation combinations.
- *  Loading time: the number of loading time annotations + 10 possible other
- *  loading times.
- *  Memory: 15 possible memory metrics.
+
+ * Frame time: min(64, the maximum number of annotation combinations) *
+ num_instrument_keys.
+
+ * Loading time: 32.
+
+ * Memory: 15 possible memory metrics.
  */
 typedef struct TuningFork_MetricLimits {
     uint32_t frame_time;
@@ -537,24 +551,34 @@ typedef struct TuningFork_LoadingTimeMetadata {
         HOT_START = 4,
         // Asset loading between levels
         INTER_LEVEL = 5
-    } loadingState;
-    enum Source {
+    } state;
+    enum LoadingSource {
         UNKNOWN_SOURCE = 0,
+        // Uncompressing data.
         MEMORY = 1,
+        // Reading assets from APK bundle.
         APK = 2,
-        DEVICE_STORAGE = 2,
-        EXTERNAL_STORAGE = 3,  // e.g. SD card
-        NETWORK = 4,
-        SHADER_COMPILATION = 5
+        // Reading assets from device storage.
+        DEVICE_STORAGE = 3,
+        // Reading assets from external storage, e.g. SD card.
+        EXTERNAL_STORAGE = 4,
+        // Loading assets from the network.
+        NETWORK = 5,
+        // Shader compilation.
+        SHADER_COMPILATION = 6,
+        // Time spent between process starting and onCreate.
+        PRE_ACTIVITY = 7,
+        // Total time spent between process starting and first render frame.
+        FIRST_TOUCH_TO_FIRST_FRAME = 8
     } source;
-    int32_t compressionLevel;  // 0 = no compression, 100 = max compression
+    int32_t compression_level;  // 0 = no compression, 100 = max compression
     enum NetworkConnectivity {
         UNKNOWN = 0,
         WIFI = 1,
-        MOBILE_NETWORK = 2
-    } networkConnectivity;
-    uint64_t networkTransferSpeed_bps;  // bandwidth in bits per second
-    uint64_t networkLatency_ns;         // latency in nanoseconds
+        CELLULAR_NETWORK = 2
+    } network_connectivity;
+    uint64_t network_transfer_speed_bps;  // bandwidth in bits per second
+    uint64_t network_latency_ns;          // latency in nanoseconds
 } TuningFork_LoadingTimeMetadata;
 
 /**
@@ -562,10 +586,59 @@ typedef struct TuningFork_LoadingTimeMetadata {
  * @param time_ns The time taken for loading event in nanoseconds
  * @param eventMetadata A LoadingTimeMetadata structure
  * @param eventMetadataSize Size in bytes of the LoadingTimeMetadata structure
+ * @param annotation The annotation to use with this event.
  **/
 TuningFork_ErrorCode TuningFork_recordLoadingTime(
     uint64_t time_ns, const TuningFork_LoadingTimeMetadata* eventMetadata,
-    uint32_t eventMetadataSize);
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization* annotation);
+
+/**
+ * @brief Record the start of a loading event.
+ * @param eventMetadata A LoadingTimeMetadata structure.
+ * @param eventMetadataSize Size in bytes of the LoadingTimeMetadata structure
+ *(for versioning of the structure).
+ * @param annotation The annotation to use with this event.
+ * @param[out] handle A handle for this event.
+ **/
+TuningFork_ErrorCode TuningFork_startRecordingLoadingTime(
+    const TuningFork_LoadingTimeMetadata* eventMetadata,
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization* annotation,
+    TuningFork_LoadingEventHandle* handle);
+
+/**
+ * @brief Record the end of a loading event.
+ * @param handle A handle generated by startRecordingLoadingTime
+ **/
+TuningFork_ErrorCode TuningFork_stopRecordingLoadingTime(
+    TuningFork_LoadingEventHandle handle);
+
+/**
+ * @brief The set of states that the TuningFork_reportLifecycleEvent method
+ * accepts.
+ */
+typedef enum TuningFork_LifecycleState {
+    TUNINGFORK_STATE_UNINITIALIZED = 0,
+    TUNINGFORK_STATE_ONCREATE = 1,
+    TUNINGFORK_STATE_ONSTART = 2,
+    TUNINGFORK_STATE_ONSTOP = 3,
+    TUNINGFORK_STATE_ONDESTROY = 4,
+
+} TuningFork_LifecycleState;
+
+/**
+ * @brief Record the state change of the app's lifecycle.
+ * This method should be called every time the onCreate(), onStart(), onStop()
+ * and onDestroy() methods are triggered for the app. This will help tuning
+ * fork keep track of exactly when the app is on foreground or background.
+ * @param state The new lifecycle state of the app
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't
+ * initialized.
+ */
+TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
+    TuningFork_LifecycleState state);
 
 #ifdef __cplusplus
 }

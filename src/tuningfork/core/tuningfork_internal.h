@@ -25,26 +25,25 @@
 #include "core/time_provider.h"
 #include "core/tuningfork_extra.h"
 #include "proto/protobuf_util.h"
-#include "tuningfork/tuningfork.h"
-#include "tuningfork/tuningfork_extra.h"
 
 // These functions are implemented in tuningfork.cpp.
 // They are mostly the same as the C interface, but take C++ types.
 
 namespace tuningfork {
 
-typedef TuningFork_LoadingTimeMetadata LoadingTimeMetadata;
-
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google
 // http endpoint is used. If no timeProvider is passed,
 // std::chrono::steady_clock is used. If no env is passed, there can be no
 // upload or download.
+// first_run should be set to true if this is the first time the app has been
+// run after installation.
 TuningFork_ErrorCode Init(const Settings& settings,
                           const RequestInfo* request_info = nullptr,
                           IBackend* backend = nullptr,
                           ITimeProvider* time_provider = nullptr,
-                          IMemInfoProvider* meminfo_provider = nullptr);
+                          IMemInfoProvider* meminfo_provider = nullptr,
+                          bool first_run = false);
 
 // Blocking call to get fidelity parameters from the server.
 // Returns true if parameters could be downloaded within the timeout, false
@@ -97,6 +96,22 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
 // Record a loading time event
 TuningFork_ErrorCode RecordLoadingTime(Duration duration,
-                                       const LoadingTimeMetadata& d);
+                                       const LoadingTimeMetadata& d,
+                                       const ProtobufSerialization& annotation);
+
+// Start recording a loading time event
+TuningFork_ErrorCode StartRecordingLoadingTime(
+    const LoadingTimeMetadata& d, const ProtobufSerialization& annotation,
+    LoadingHandle& handle);
+
+// Record a loading time event
+TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
+
+TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
+
+// Check if we have recorded a file in the app's cache dir yet.
+bool CheckIfFirstRun();
+
+std::string DefaultTuningForkSaveDirectory();
 
 }  // namespace tuningfork

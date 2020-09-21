@@ -21,6 +21,8 @@
 #include <chrono>
 
 #include "proto/protobuf_util.h"
+#include "tuningfork/tuningfork.h"
+#include "tuningfork/tuningfork_extra.h"
 
 // Common type definitions
 
@@ -31,8 +33,10 @@ namespace tuningfork {
 typedef uint16_t InstrumentationKey;
 typedef uint32_t AnnotationId;
 typedef uint64_t TraceHandle;
+typedef uint64_t LoadingHandle;
 typedef uint16_t LoadingTimeMetadataId;
 typedef ProtobufSerialization SerializedAnnotation;
+typedef TuningFork_LoadingTimeMetadata LoadingTimeMetadata;
 
 typedef std::chrono::steady_clock::time_point TimePoint;
 typedef std::chrono::steady_clock::duration Duration;

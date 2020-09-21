@@ -111,7 +111,9 @@ class EGL {
         ~FenceWaiter();
 
         void onFenceCreation(EGLDisplay display, EGLSyncKHR syncFence);
-        void waitForIdle();
+        // Wait and return true if the fence was signalled.
+        // The fence will NOT be destroyed in this case.
+        bool waitForIdle();
         std::chrono::nanoseconds getFencePendingTime() const;
 
        private:

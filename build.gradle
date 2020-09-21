@@ -37,7 +37,7 @@ def joinPath(String first, String... more) {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
-        .setAarLibrary("games-frame-pacing", "1.5.0-alpha02")
+        .setAarLibrary("games-frame-pacing", "1.7.0-alpha01")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -55,7 +55,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
-        .setAarLibrary("games-performance-tuner", "1.0.0-alpha02")
+        .setAarLibrary("games-performance-tuner", "1.1.0-alpha01")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
                         .copySourcesTo("samples/tuningfork/insightsdemo")
@@ -153,7 +153,7 @@ def getPackagePath() {
 
 def getDistPath() {
     if (project.hasProperty("distPath")) {
-        return new File(project.distPath).getPath()
+        return new File(project.distPath.trim()).getPath()
     }
 
     return getPackagePath()
@@ -381,6 +381,13 @@ def copyIncludes(outFolder, Collection<NativeLibrary> libraries) {
             includeEmptyDirs = false
         }
     })
+    // Copy common headers
+    copy {
+        from file(headerFolder)
+        include "common/*.h"
+        into file(includeBuildFolder)
+        includeEmptyDirs = false
+    }
 }
 
 def copyDocs(outFolder) {
@@ -570,7 +577,6 @@ class BuildTask extends DefaultTask {
 }
 
 task build(type: BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
@@ -579,7 +585,6 @@ task build(type: BuildTask) {
 }
 
 task buildUnity(type: BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
     ext.flattenLibs = true
     ext.withSharedLibs = true
     ext.withStaticLibs = true
@@ -588,7 +593,6 @@ task buildUnity(type: BuildTask) {
 }
 
 task buildLocal(type: BuildTask) {
-    dependsOn ':extras:assembleRelease'
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
@@ -597,7 +601,6 @@ task buildLocal(type: BuildTask) {
 }
 
 task buildSpecific(type: BuildTask) {
-    dependsOn ':extras:assembleRelease'
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
@@ -608,6 +611,7 @@ task buildSpecific(type: BuildTask) {
 }
 
 tasks.withType(BuildTask) {
+    dependsOn ':extras:assembleRelease', prepare_proto
     doFirst {
         // Ensure some libraries to build were set
         def libraries = filterLibraries(allLibraries)

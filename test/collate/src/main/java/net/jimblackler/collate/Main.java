@@ -23,7 +23,7 @@ class Main {
         JSONArray result = results.getJSONArray(0);
         JSONObject first = result.getJSONObject(0);
         JSONObject params = first.getJSONObject("params");
-        JSONObject deviceInfo = first.getJSONObject("deviceInfo");
+        JSONObject deviceInfo = ReportUtils.getDeviceInfo(result);
         JSONObject build = deviceInfo.getJSONObject("build");
         JSONObject fields = build.getJSONObject("fields");
         int count = 0;

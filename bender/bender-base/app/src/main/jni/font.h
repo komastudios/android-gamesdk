@@ -10,27 +10,25 @@
 #import "shader_state.h"
 #import "texture.h"
 #import "renderer.h"
+#import "push_consts_app.h"
 
 #import <unordered_map>
 
-#define FONT_SDF_PATH "textures/font_sdf.png"
-#define FONT_INFO_PATH "textures/font_sdf.fnt"
-#define FONT_SDF_INDEX 0
-#define FONT_STRING_SIZE 200
-#define FONT_NUM_QUAD_INDICES 6
-#define FONT_ATTR_COUNT 4
-#define FONT_VERTEX_BUFFER_SIZE sizeof(float) * FONT_STRING_SIZE * FONT_NUM_QUAD_INDICES * FONT_ATTR_COUNT
-#define FONT_SCREEN_TOP -1.0f
-#define FONT_SCREEN_LEFT -1.0f
+const std::string kFontSDFPath = "textures/font_sdf.png";
+const std::string kFontInfoPath = "textures/font_sdf.fnt";
+constexpr size_t kFontNumQuadIndices = 6;
 
 class Font {
+    // Stateless font rendering using SDF fonts.
+    // To generate SDF fonts, please refer to
+    // https://github.com/libgdx/libgdx/wiki/Distance-field-fonts
 public:
-    Font(Renderer& renderer, android_app &androidAppCtx,
+    Font(Renderer& renderer, android_app& androidAppCtx,
          const std::string& font_texture_path, const std::string& font_info_path);
     ~Font();
 
-    void DrawString(const std::string& text, float text_size, float x, float y,
-                    VkCommandBuffer cmd_buffer, VkRenderPass render_pass, uint_t frame_index);
+    void DrawString(VkCommandBuffer cmd_buffer, VkRenderPass render_pass, uint_t frame_index,
+                    const std::string& text, float text_size, float x, float y, glm::vec4 color = glm::vec4(1.0));
 private:
     Renderer& renderer_;
 
@@ -48,25 +46,36 @@ private:
     VkPipelineCache cache_;
     VkPipeline pipeline_ = VK_NULL_HANDLE;
 
-    VkBuffer vertexBuf_;
-    VkDeviceMemory vertexBufferDeviceMemory_;
+    struct map_character {
+        uint16_t x, y;
+        int8_t  x_offset;
+        uint8_t width, height, y_offset, x_advance;
+    } ;
 
-    VkDeviceSize offset_;
-    int current_frame_;
+    struct font_data {
+        /*
+         * Currently we are using a character set of 97 characters.
+         * The ascii value of the set ranges from 0 to 126
+         * So having a size of 128 should be enough to hold them without another layer of mapping
+         */
+        glm::vec4 positions[128][2];
+    };
 
-    typedef struct Character {
-        int x, y, width, height, x_offset, y_offset, x_advance;
-    } Character;
+    uint32_t max_push_const_size;
 
-    std::unordered_map<int, Font::Character> char_map_;
+    std::unique_ptr<UniformBufferObject<Font::font_data>> font_data_ubo_;
+
+    std::unordered_map<int, Font::map_character> char_map_;
 
     void CreateFontShaders(android_app &android_app_ctx);
     void ParseFontInfo(const char* info_file_path, android_app &android_app_ctx);
+    void UpdateFontUBO();
     void CreateSampler();
     void CreateDescriptorSetLayout();
     void CreateDescriptors(Renderer& renderer);
     void CreateFontPipeline(VkRenderPass render_pass);
     void UpdatePipeline(VkRenderPass render_pass);
+    void GetPushConstSize();
 };
 
 #endif //BENDER_BASE_FONT_H_
