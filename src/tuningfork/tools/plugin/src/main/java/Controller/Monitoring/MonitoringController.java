@@ -95,7 +95,8 @@ public class MonitoringController {
 
     if (!previousQualitySettings.contains(currentQualitySettings)) {
       qualitySettingsList.add(newQuality);
-      // TODO (@targintaru) fire property change and display info about Quality Settings in MonitoringTab
+      propertyChangeSupport
+          .firePropertyChange("addFidelity", qualitySettingsList.size(), newQuality);
       previousQualitySettings.add(currentQualitySettings);
       isNewQuality = true;
     } else {
