@@ -16,6 +16,7 @@
 
 package View.Quality;
 
+import Utils.Resources.ResourceLoader;
 import com.intellij.icons.AllIcons;
 import com.intellij.icons.AllIcons.Actions;
 import java.awt.Component;
@@ -78,15 +79,14 @@ public class QualityDecorators {
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       label.setHorizontalAlignment(SwingConstants.CENTER);
       String strValue = value.toString();
-      label.setToolTipText("");
+      label.setToolTipText(null);
       if (strValue.equals("increase")) {
         label.setIcon(AllIcons.Actions.FindAndShowPrevMatches);
       } else if (strValue.equals("decrease")) {
         label.setIcon(AllIcons.Actions.FindAndShowNextMatches);
       } else {
         label.setIcon(Actions.IntentionBulb);
-        label.setToolTipText(
-            "Warning: The current field values are neither increasing or decreasing");
+        label.setToolTipText(ResourceLoader.getInstance().get("quality_settings_not_monotonic"));
       }
       return label;
     }

@@ -33,8 +33,8 @@ import java.util.Optional;
 
 public class TuningForkMethodsGeneration {
 
-  private OCFile psiFile;
-  private Project project;
+  private final OCFile psiFile;
+  private final Project project;
   private final CppFileUtils cppFileUtils;
 
   public TuningForkMethodsGeneration(PsiFile psiFile, Project project) {
