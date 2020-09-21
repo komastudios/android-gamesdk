@@ -80,9 +80,9 @@ VertexFormat::VertexFormat(std::initializer_list<std::initializer_list<VertexEle
 void VertexFormat::FillVertexInputState() {
   vertex_input_state_ = {
           .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-          .vertexBindingDescriptionCount = static_cast<u_int32_t>(bindings_.size()),
-          .pVertexBindingDescriptions = bindings_.data(),
-          .vertexAttributeDescriptionCount = static_cast<u_int32_t>(attributes_.size()),
-          .pVertexAttributeDescriptions = attributes_.data()
+          .vertexBindingDescriptionCount = static_cast<uint32_t>(bindings_.size()),
+          .pVertexBindingDescriptions = bindings_.size() == 0 ? nullptr : bindings_.data(),
+          .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributes_.size()),
+          .pVertexAttributeDescriptions = attributes_.size() == 0 ? nullptr : attributes_.data()
   };
 }

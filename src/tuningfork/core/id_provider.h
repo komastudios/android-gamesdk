@@ -20,6 +20,7 @@
 #include "metric.h"
 #include "proto/protobuf_util.h"
 #include "tuningfork/tuningfork.h"
+#include "tuningfork_internal.h"
 
 class AAsset;
 
@@ -35,8 +36,7 @@ class IdProvider {
     // Decode <ser> into an AnnotationId. If loading is non-null, it sets it
     // according to whether the annotation is a loading annotation.
     virtual TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
-        const ProtobufSerialization& ser, AnnotationId& id,
-        bool* loading = nullptr) const = 0;
+        const ProtobufSerialization& ser, AnnotationId& id) = 0;
 
     // Return a new id that is made up of <annotation_id> and <k>.
     // Gives an error if the id is out-of-bounds.
@@ -49,6 +49,9 @@ class IdProvider {
 
     virtual TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
                                                         MemoryMetric& m) = 0;
+
+    virtual TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata& md) = 0;
 };
 
 }  // namespace tuningfork

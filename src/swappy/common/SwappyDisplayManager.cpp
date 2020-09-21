@@ -110,8 +110,8 @@ std::shared_ptr<SwappyDisplayManager::RefreshPeriodMap>
 SwappyDisplayManager::getSupportedRefreshPeriods() {
     std::unique_lock<std::mutex> lock(mMutex);
 
-    mCondition.wait(lock,
-                    [&]() { return mSupportedRefreshPeriods.get() != nullptr; });
+    mCondition.wait(
+        lock, [&]() { return mSupportedRefreshPeriods.get() != nullptr; });
     return mSupportedRefreshPeriods;
 }
 
@@ -141,9 +141,9 @@ void SwappyDisplayManagerJNI::onSetSupportedRefreshPeriods(
 }
 
 void SwappyDisplayManagerJNI::onRefreshPeriodChanged(jlong /*cookie*/,
-                                                   long refreshPeriod,
-                                                   long appOffset,
-                                                   long sfOffset) {
+                                                     long refreshPeriod,
+                                                     long appOffset,
+                                                     long sfOffset) {
     ALOGV("onRefreshPeriodChanged: refresh rate: %.0fHz", 1e9f / refreshPeriod);
     using std::chrono::nanoseconds;
     Settings::DisplayTimings displayTimings;
@@ -173,7 +173,7 @@ Java_com_google_androidgamesdk_SwappyDisplayManager_nSetSupportedRefreshPeriods(
     env->ReleaseIntArrayElements(modeIds, modeIdsArr, 0);
 
     SwappyDisplayManagerJNI::onSetSupportedRefreshPeriods(cookie,
-                                                        refreshPeriodsMap);
+                                                          refreshPeriodsMap);
 }
 
 JNIEXPORT void JNICALL
@@ -181,7 +181,7 @@ Java_com_google_androidgamesdk_SwappyDisplayManager_nOnRefreshPeriodChanged(
     JNIEnv *env, jobject /* this */, jlong cookie, jlong refreshPeriod,
     jlong appOffset, jlong sfOffset) {
     SwappyDisplayManagerJNI::onRefreshPeriodChanged(cookie, refreshPeriod,
-                                                  appOffset, sfOffset);
+                                                    appOffset, sfOffset);
 }
 
 }  // extern "C"

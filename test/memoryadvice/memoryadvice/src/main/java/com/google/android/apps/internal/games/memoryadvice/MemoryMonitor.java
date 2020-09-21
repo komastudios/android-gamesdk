@@ -1,5 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
+import static com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor.getDefaultParams;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
@@ -8,6 +9,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Debug;
+import android.os.Process;
 import android.util.Log;
 import java.util.Map;
 import org.json.JSONException;
@@ -22,7 +24,10 @@ class MemoryMonitor {
   private final MapTester mapTester;
   protected final JSONObject baseline;
   private final ActivityManager activityManager;
+  private final JSONObject metrics;
+  private final CanaryProcessTester canaryProcessTester;
   private int latestOnTrimLevel;
+  private int pid = Process.myPid();
 
   /**
    * Create an Android memory metrics fetcher.
@@ -32,16 +37,48 @@ class MemoryMonitor {
    */
   MemoryMonitor(Context context, JSONObject metrics) {
     mapTester = new MapTester(context.getCacheDir());
+
+    JSONObject variable = metrics.optJSONObject("variable");
+    JSONObject canaryProcessParams =
+        variable == null ? null : variable.optJSONObject("canaryProcessTester");
+    if (canaryProcessParams == null) {
+      canaryProcessTester = null;
+    } else {
+      canaryProcessTester = new CanaryProcessTester(context, canaryProcessParams);
+    }
+
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
 
+    this.metrics = metrics;
     try {
-      baseline = getMemoryMetrics(metrics.getJSONObject("variable"));
+      baseline = getMemoryMetrics();
       JSONObject constant = metrics.optJSONObject("constant");
       if (constant != null) {
         baseline.put("constant", getMemoryMetrics(constant));
       }
     } catch (JSONException e) {
-      throw new IllegalStateException(e);
+      throw new MemoryAdvisorException(e);
+    }
+  }
+
+  /**
+   * Create an Android memory metrics fetcher to collect the default selection of metrics.
+   *
+   * @param context  The Android context to employ.
+   */
+  public MemoryMonitor(Context context) {
+    this(context, getDefaultParams(context.getAssets()).optJSONObject("metrics"));
+  }
+
+  /**
+   * Gets Android memory metrics using the default fields.
+   * @return A JSONObject containing current memory metrics.
+   */
+  public JSONObject getMemoryMetrics() {
+    try {
+      return getMemoryMetrics(metrics.getJSONObject("variable"));
+    } catch (JSONException e) {
+      throw new MemoryAdvisorException(e);
     }
   }
 
@@ -122,12 +159,16 @@ class MemoryMonitor {
         mapTester.reset();
       }
 
+      if (canaryProcessTester != null && canaryProcessTester.warning()) {
+        report.put("canaryProcessTester", true);
+        canaryProcessTester.reset();
+      }
+
       if (latestOnTrimLevel > 0) {
         report.put("onTrim", latestOnTrimLevel);
         latestOnTrimLevel = 0;
       }
 
-      int pid = android.os.Process.myPid();
       if (fields.has("proc")) {
         Object procFieldsValue = fields.get("proc");
         JSONObject procFields =

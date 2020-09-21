@@ -24,12 +24,16 @@
 
 namespace tuningfork {
 
+// Forward declaration.
+class Settings;
+
 // Extra information that is sent with requests including device information,
 // game package information and session information.
 struct RequestInfo {
     std::string experiment_id;
     ProtobufSerialization current_fidelity_parameters;
     std::string session_id;
+    std::string previous_session_id;
     uint64_t total_memory_bytes;
     uint32_t gl_es_version;
     std::string build_fingerprint;
@@ -42,10 +46,11 @@ struct RequestInfo {
     std::string brand;
     std::string product;
     std::string device;
+    uint32_t swappy_version;
 
     // Note that this will include an empty experiment_id and
     // current_fidelity_parameters.
-    static RequestInfo ForThisGameAndDevice();
+    static RequestInfo ForThisGameAndDevice(const Settings& settings);
 
     // We have a globally accessible cached value
     static RequestInfo& CachedValue();

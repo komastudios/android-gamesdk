@@ -18,6 +18,7 @@
 
 #include <chrono>
 
+#include "common/gamesdk_common.h"
 #include "core/tuningfork_utils.h"
 #include "http_backend/json_serializer.h"
 #include "tf_test_utils.h"
@@ -29,9 +30,25 @@ using namespace json11;
 using namespace test;
 using namespace std::chrono;
 
-RequestInfo test_device_info{"expt", {},      "sess",    2387,       349587,
-                             "fing", "6.3",   {1, 2, 3}, "packname", 0,
-                             10,     "MODEL", "BRAND",   "PRODUCT",  "DEVICE"};
+RequestInfo test_device_info{
+    "expt" /*experiment_id*/,
+    {} /*current_fidelity_parameters*/,
+    "sess" /*session_id*/,
+    "prev_sess" /*previous_session_id*/,
+    2387 /*total_memory_bytes*/,
+    349587 /*gl_es_version*/,
+    "fing" /*build_fingerprint*/,
+    "6.3" /*build_version_sdk*/,
+    {1, 2, 3} /*cpu_max_freq_hz*/,
+    "packname" /*apk_package_name*/,
+    0 /*apk_version_code*/,
+    ANDROID_GAMESDK_PACKED_VERSION(0, 10) /*tuningfork_version*/,
+    "MODEL" /*model*/,
+    "BRAND" /*brand*/,
+    "PRODUCT" /*product*/,
+    "DEVICE" /*device*/,
+    ANDROID_GAMESDK_PACKED_VERSION(2, 7) /*swappy_version*/};
+
 std::string test_device_info_ser = R"TF({
   "brand": "BRAND",
   "build_version": "6.3",
@@ -75,7 +92,8 @@ std::string report_start = R"TF({
     },
     "game_sdk_info": {
       "session_id": "sess",
-      "version": "1.0"
+      "swappy_version": "2.7",
+      "version": "0.10"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:00.000000Z",
@@ -96,9 +114,18 @@ std::string single_tick_with_loading = R"TF({
   },
   "report": {
     "loading": {
-      "loading_events": {
+      "loading_events": [{
+        "loading_metadata": {
+          "network_info": {
+            "bandwidth_bps": "1000000000",
+            "connectivity": 1,
+            "latency": "0.05s"
+          },
+          "source":5,
+          "state":1
+        },
         "times_ms": [1500]
-      }
+      }]
     },
     "rendering": {
       "render_time_histogram": [{"counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -120,8 +147,7 @@ std::string single_tick_with_loading = R"TF({
 
 class IdMap : public IdProvider {
     TuningFork_ErrorCode SerializedAnnotationToAnnotationId(
-        const ProtobufSerialization& ser, AnnotationId& id,
-        bool* loading = nullptr) const override {
+        const ProtobufSerialization& ser, AnnotationId& id) override {
         id = 0;
         return TUNINGFORK_ERROR_OK;
     }
@@ -144,6 +170,16 @@ class IdMap : public IdProvider {
                                                 MemoryMetric& m) override {
         // Not used
         m = {};
+        return TUNINGFORK_ERROR_OK;
+    }
+    TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
+        MetricId id, LoadingTimeMetadata& m) override {
+        m = {};
+        m.state = LoadingTimeMetadata::FIRST_RUN;
+        m.source = LoadingTimeMetadata::NETWORK;
+        m.network_latency_ns = 50000000;  // 50ms
+        m.network_connectivity = LoadingTimeMetadata::NetworkConnectivity::WIFI;
+        m.network_transfer_speed_bps = 1000000000;  // 1Gb/s
         return TUNINGFORK_ERROR_OK;
     }
 };

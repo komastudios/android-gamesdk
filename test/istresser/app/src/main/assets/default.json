@@ -53,8 +53,14 @@
               "MemoryClass": true,
               "LargeMemoryClass": true,
               "LowRamDevice": true
+            },
+            "canaryProcessTester": {
+              "memory": "1M"
             }
           }
+        },
+        "heuristics": {
+          "canaryProcessTester": true
         },
         "predictions": {
           "oom_score": true

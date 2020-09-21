@@ -59,12 +59,12 @@ class hash<tuningfork::LoadingTimeMetadata> {
    public:
     size_t operator()(const tuningfork::LoadingTimeMetadata& x) const {
         size_t result = 0;
-        hash_combine(result, (uint64_t)x.loadingState);
+        hash_combine(result, (uint64_t)x.state);
         hash_combine(result, (uint64_t)x.source);
-        hash_combine(result, x.compressionLevel);
-        hash_combine(result, (uint64_t)x.networkConnectivity);
-        hash_combine(result, x.networkTransferSpeed_bps);
-        hash_combine(result, x.networkLatency_ns);
+        hash_combine(result, x.compression_level);
+        hash_combine(result, (uint64_t)x.network_connectivity);
+        hash_combine(result, x.network_transfer_speed_bps);
+        hash_combine(result, x.network_latency_ns);
         return result;
     }
 };
@@ -73,9 +73,9 @@ class hash<tuningfork::LoadingTimeMetadata> {
 // Operator== for custom LoadingTimeMetadata struct
 inline bool operator==(const tuningfork::LoadingTimeMetadata& x,
                        const tuningfork::LoadingTimeMetadata& y) {
-    return x.loadingState == y.loadingState && x.source == y.source &&
-           x.compressionLevel == y.compressionLevel &&
-           x.networkConnectivity == y.networkConnectivity &&
-           x.networkTransferSpeed_bps == y.networkTransferSpeed_bps &&
-           x.networkLatency_ns == y.networkLatency_ns;
+    return x.state == y.state && x.source == y.source &&
+           x.compression_level == y.compression_level &&
+           x.network_connectivity == y.network_connectivity &&
+           x.network_transfer_speed_bps == y.network_transfer_speed_bps &&
+           x.network_latency_ns == y.network_latency_ns;
 }

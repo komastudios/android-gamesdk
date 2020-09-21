@@ -20,12 +20,17 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
-
+import com.google.protobuf.Descriptors.EnumValueDescriptor;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.DynamicMessage;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import com.google.tuningfork.Tuningfork.Settings.Histogram;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +57,84 @@ public final class ValidationUtilTest {
   final String tuningforkPath = "assets/tuningfork";
 
   private final ErrorCollector errors = new ParserErrorCollector();
+
+  @Test
+  public void validateSettingsHistogramValid() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(6.54f)
+        .setBucketMax(60f)
+        .setNBuckets(30)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void validateSettingsHistogramNegativeCoverage() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(-10f)
+        .setBucketMax(10f)
+        .setNBuckets(30)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void validateSettingsHistogramNegativeNBuckets() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(0f)
+        .setBucketMax(100f)
+        .setNBuckets(-10)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramCoversNothing() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(100f)
+        .setBucketMax(1000f)
+        .setNBuckets(30)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramCoversOne() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(0f)
+        .setBucketMax(20f)
+        .setNBuckets(30)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void validateSettingsHistogramWrongMinMaxOrder() throws Exception {
+    Histogram histogram = Histogram.newBuilder()
+        .setBucketMin(100f)
+        .setBucketMax(0f)
+        .setNBuckets(30)
+        .setInstrumentKey(0)
+        .build();
+    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
+    ValidationUtil.validateSettingsHistograms(settings, errors);
+    assertThat(errors.getWarningCount()).isEqualTo(2);
+  }
 
   @Test
   public void settingsWithHistogramsValid() throws Exception {
@@ -334,82 +417,66 @@ public final class ValidationUtilTest {
   }
 
   @Test
-  public void validateSettingsHistogramValid() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(6.54f)
-            .setBucketMax(60f)
-            .setNBuckets(30)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(0);
+  public void checkZeroEnumWarning() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "dev_tuningfork.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+
+    List<FieldDescriptor> fieldDescriptors = desc.getFields();
+    List<EnumValueDescriptor> enumValues = fieldDescriptors.get(0).getEnumType().getValues();
+    DynamicMessage message1 = DynamicMessage.newBuilder(desc)
+        .setField(fieldDescriptors.get(0), enumValues.get(2))
+        .setField(fieldDescriptors.get(1), 10) // int field
+        .setField(fieldDescriptors.get(2), (float) 1.2) // float field
+        .build();
+    DynamicMessage message2 = DynamicMessage.newBuilder(desc)
+        .setField(fieldDescriptors.get(0), enumValues.get(0))
+        .setField(fieldDescriptors.get(1), 9) //int field
+        .setField(fieldDescriptors.get(2), (float) 1.24) // float field
+        .build();
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    dynamicMessages.add(message1);
+    dynamicMessages.add(message2);
+
+    ValidationUtil.validateDevFidelityParamsZero(desc, dynamicMessages, errors);
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ENUMS_ZERO)).isEqualTo(1);
   }
 
   @Test
-  public void validateSettingsHistogramNegativeCoverage() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(-10f)
-            .setBucketMax(10f)
-            .setNBuckets(30)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(2);
+  public void devParamsCorrectOrder() throws Exception {
+    Descriptor desc =
+        helper.getDescriptor(
+            "dev_tuningfork.proto",
+            "Getting FidelityParams field from proto",
+            "FidelityParams");
+
+    List<FieldDescriptor> fieldDescriptors = desc.getFields();
+    List<EnumValueDescriptor> enumValues = fieldDescriptors.get(0).getEnumType().getValues();
+    DynamicMessage message1 = DynamicMessage.newBuilder(desc)
+        .setField(fieldDescriptors.get(0), enumValues.get(2))
+        .setField(fieldDescriptors.get(1), 10) // int field
+        .setField(fieldDescriptors.get(2), (float) 1.2) // float field
+        .build();
+    DynamicMessage message2 = DynamicMessage.newBuilder(desc)
+        .setField(fieldDescriptors.get(0), enumValues.get(2))
+        .setField(fieldDescriptors.get(1), 9) //int field
+        .setField(fieldDescriptors.get(2), (float) 1.24) // float field
+        .build();
+    DynamicMessage message3 = DynamicMessage.newBuilder(desc)
+        .setField(fieldDescriptors.get(0), enumValues.get(3))
+        .setField(fieldDescriptors.get(1), 8) //intfield
+        .setField(fieldDescriptors.get(2), (float) 1.29) // float field
+        .build();
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    dynamicMessages.add(message1);
+    dynamicMessages.add(message2);
+    dynamicMessages.add(message3);
+
+    ValidationUtil.validateDevFidelityParamsOrder(desc, dynamicMessages, errors);
+
+    assertThat(errors.getWarningCount(ErrorType.DEV_FIDELITY_PARAMETERS_ORDER)).isEqualTo(0);
   }
-
-  @Test
-  public void validateSettingsHistogramNegativeNBuckets() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(0f)
-            .setBucketMax(100f)
-            .setNBuckets(-10)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(1);
-  }
-
-  @Test
-  public void validateSettingsHistogramCoversNothing() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(100f)
-            .setBucketMax(1000f)
-            .setNBuckets(30)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(1);
-  }
-
-  @Test
-  public void validateSettingsHistogramCoversOne() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(0f)
-            .setBucketMax(20f)
-            .setNBuckets(30)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(1);
-  }
-
-  @Test
-  public void validateSettingsHistogramWrongMinMaxOrder() throws Exception {
-    Histogram histogram = Histogram.newBuilder()
-            .setBucketMin(100f)
-            .setBucketMax(0f)
-            .setNBuckets(30)
-            .setInstrumentKey(0)
-            .build();
-    Settings settings = Settings.newBuilder().addHistograms(histogram).build();
-    ValidationUtil.validateSettingsHistograms(settings, errors);
-    assertThat(errors.getWarningCount()).isEqualTo(2);
-  }
-
-
 }

@@ -18,6 +18,14 @@
 
 namespace test {
 
-bool CompareIgnoringWhitespace(std::string s0, std::string s1);
+const std::string kArrayWildcard = "[**]";
+const std::string kRegexPattern = "!REGEX";
 
-}
+// Compare two strings, ignoring any whitespace. Also, the following patterns in
+// s1 can be used:
+// '[**]' is an array wildcard - it matches nested arrays.
+// '!REGEX(.*) will match the regex in brackets.
+bool CompareIgnoringWhitespace(std::string s0, std::string s1,
+                               std::string* error_msg = nullptr);
+
+}  // namespace test

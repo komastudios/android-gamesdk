@@ -129,6 +129,7 @@ void InitTf(JNIEnv* env, jobject activity) {
 #endif
     TuningFork_ErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TUNINGFORK_ERROR_OK) {
+        TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONCREATE);
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
         // Test disabling and enabling memory recording
@@ -167,9 +168,11 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_initTuningFork(
     }
 }
 
+static TuningFork_LoadingEventHandle inter_level_loading_handle;
+static TuningFork_LoadingTimeMetadata inter_level_loading_metadata;
 JNIEXPORT void JNICALL
 Java_com_tuningfork_experimentsdemo_TFTestActivity_onChoreographer(JNIEnv */*env*/, jclass clz,
-                                                                   jlong /*frameTimeNanos*/) {
+                                                                jlong /*frameTimeNanos*/) {
     TuningFork_frameTick(TFTICK_CHOREOGRAPHER);
     // Switch levels and loading state according to the number of ticks we've had.
     constexpr int COUNT_NEXT_LEVEL_START_LOADING = 80;
@@ -179,14 +182,28 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_onChoreographer(JNIEnv */*env
     if(tick_count>=COUNT_NEXT_LEVEL_START_LOADING) {
         if(tick_count>=COUNT_NEXT_LEVEL_STOP_LOADING) {
             // Loading finished
+            TuningFork_stopRecordingLoadingTime(inter_level_loading_handle);
             sLoading = false;
             tick_count = 0;
         }
         else {
-            // Loading next level
-            sLoading = true;
-            ++sLevel;
-            if(sLevel>proto_tf::Level_MAX) sLevel = proto_tf::LEVEL_1;
+            if (!sLoading) {
+                // Loading next level
+                sLoading = true;
+                Annotation a;
+                a.set_loading(proto_tf::LOADING);
+                ++sLevel;
+                if (sLevel > proto_tf::Level_MAX) sLevel = proto_tf::LEVEL_1;
+                a.set_level((proto_tf::Level) sLevel);
+                auto ser = tf::TuningFork_CProtobufSerialization_Alloc(a);
+                inter_level_loading_metadata.state =
+                        TuningFork_LoadingTimeMetadata::LoadingState::INTER_LEVEL;
+                TuningFork_startRecordingLoadingTime(&inter_level_loading_metadata,
+                                                     sizeof(TuningFork_LoadingTimeMetadata),
+                                                     &ser,
+                                                     &inter_level_loading_handle);
+                TuningFork_CProtobufSerialization_free(&ser);
+            }
         }
         SetAnnotations();
     }
@@ -206,14 +223,21 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_clearSurface(JNIEnv */*env*/,
 }
 JNIEXPORT void JNICALL
 Java_com_tuningfork_experimentsdemo_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONSTART);
     Renderer::getInstance()->start();
 }
 JNIEXPORT void JNICALL
 Java_com_tuningfork_experimentsdemo_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONSTOP);
     Renderer::getInstance()->stop();
     // Call flush here to upload any histograms when the app goes to the background.
     auto ret = TuningFork_flush();
     ALOGI("TuningFork_flush returned %d", ret);
+}
+
+JNIEXPORT void JNICALL
+Java_com_tuningfork_experimentsdemo_TFTestActivity_destroy(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONDESTROY);
 }
 
 JNIEXPORT void JNICALL

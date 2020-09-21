@@ -46,4 +46,5 @@ public interface ErrorCollector {
 
   Integer getWarningCount();
 
+  Integer getWarningCount(ErrorType errorType);
 };

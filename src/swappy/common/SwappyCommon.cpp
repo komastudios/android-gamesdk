@@ -35,6 +35,7 @@ using std::chrono::nanoseconds;
 // NB These are only needed for C++14
 constexpr nanoseconds SwappyCommon::FrameDuration::MAX_DURATION;
 constexpr nanoseconds SwappyCommon::FRAME_MARGIN;
+constexpr nanoseconds SwappyCommon::DURATION_ROUNDING_MARGIN;
 constexpr nanoseconds SwappyCommon::REFRESH_RATE_MARGIN;
 constexpr int SwappyCommon::NON_PIPELINE_PERCENT;
 constexpr int SwappyCommon::FRAME_DROP_THRESHOLD;
@@ -278,8 +279,7 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mChoreographerThread = ChoreographerThread::createChoreographerThread(
             ChoreographerThread::Type::App, nullptr, nullptr,
             [this] { mChoreographerFilter->onChoreographer(); },
-            [this] { onRefreshRateChanged(); },
-            mCommonSettings.sdkVersion);
+            [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     }
 
     mChoreographerThread->postFrameCallbacks();
@@ -326,7 +326,8 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 void SwappyCommon::updateDisplayTimings() {
     // grab a pointer to the latest supported refresh rates
     if (mDisplayManager) {
-        mSupportedRefreshPeriods = mDisplayManager->getSupportedRefreshPeriods();
+        mSupportedRefreshPeriods =
+            mDisplayManager->getSupportedRefreshPeriods();
     }
 
     std::lock_guard<std::mutex> lock(mMutex);
@@ -535,9 +536,7 @@ bool SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
 bool SwappyCommon::swapFaster(int newSwapInterval) {
     bool swappedFaster = false;
     int originalAutoSwapInterval = mAutoSwapInterval;
-    while (newSwapInterval < mAutoSwapInterval &&
-           mSwapDuration <=
-               mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1)) {
+    while (newSwapInterval < mAutoSwapInterval && swapFasterCondition()) {
         mAutoSwapInterval--;
     }
 
@@ -604,9 +603,7 @@ bool SwappyCommon::updateSwapInterval() {
     // So we shouldn't miss any frames with this config but maybe we can go
     // faster ? we check the pipeline frame time here as we prefer lower swap
     // interval than no pipelining
-    else if (missedFramesPercent == 0 &&
-             mSwapDuration <=
-                 mCommonSettings.refreshPeriod * (mAutoSwapInterval - 1) &&
+    else if (missedFramesPercent == 0 && swapFasterCondition() &&
              pipelineFrameTime < lowerBoundForThisRefresh) {
         if (swapFaster(newSwapInterval)) configChanged = true;
     }
@@ -751,10 +748,11 @@ void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
         if (!mDisplayManager || !mSupportedRefreshPeriods) {
             return;
         }
-        // Loop across all supported refresh periods to find the best refresh period.
-        // Best refresh period means:
-        //      Shortest swap period that can still accommodate the frame time and that
-        //      has the longest refresh period possible to optimize power consumption.
+        // Loop across all supported refresh periods to find the best refresh
+        // period. Best refresh period means:
+        //      Shortest swap period that can still accommodate the frame time
+        //      and that has the longest refresh period possible to optimize
+        //      power consumption.
         std::pair<nanoseconds, int> bestRefreshConfig;
         nanoseconds minSwapDuration = 1s;
         for (const auto& refreshConfig : *mSupportedRefreshPeriods) {
@@ -763,13 +761,15 @@ void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
                 calculateSwapInterval(frameTime, period);
             const nanoseconds swapDuration = period * swapIntervalForPeriod;
 
-            // Don't allow swapping faster than mSwapDuration (see public header)
+            // Don't allow swapping faster than mSwapDuration (see public
+            // header)
             if (swapDuration + FRAME_MARGIN < mSwapDuration) {
                 continue;
             }
 
-            // We iterate in ascending order of refresh period, so accepting any better or
-            // equal-within-margin duration here chooses the longest refresh period possible.
+            // We iterate in ascending order of refresh period, so accepting any
+            // better or equal-within-margin duration here chooses the longest
+            // refresh period possible.
             if (swapDuration < minSwapDuration + FRAME_MARGIN) {
                 minSwapDuration = swapDuration;
                 bestRefreshConfig = refreshConfig;

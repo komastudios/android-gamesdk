@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <chrono>
+#include "common.h"
 
 namespace tuningfork {
 
@@ -25,8 +25,9 @@ namespace tuningfork {
 //   it to Init. Useful in tests.
 class ITimeProvider {
    public:
-    virtual std::chrono::steady_clock::time_point Now() = 0;
-    virtual std::chrono::system_clock::time_point SystemNow() = 0;
+    virtual TimePoint Now() = 0;
+    virtual SystemTimePoint SystemNow() = 0;
+    virtual Duration TimeSinceProcessStart() = 0;
 };
 
 }  // namespace tuningfork

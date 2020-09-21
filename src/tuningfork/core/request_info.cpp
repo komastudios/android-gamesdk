@@ -16,6 +16,7 @@
 
 #include "request_info.h"
 
+#include <android/api-level.h>
 #include <sys/system_properties.h>
 
 #include <cmath>
@@ -25,6 +26,9 @@
 
 #include "jni/jni_wrap.h"
 #include "tuningfork_utils.h"
+
+#define LOG_TAG "TuningFork"
+#include "Log.h"
 
 namespace {
 
@@ -42,6 +46,25 @@ const char* skipSpace(const char* q) {
     while (*q && (*q == ' ' || *q == '\t')) ++q;
     return q;
 }
+
+#if __ANDROID_API__ >= 26
+std::string getSystemPropViaCallback(const char* key) {
+    const prop_info* prop = __system_property_find(key);
+    if (!prop) {
+        return "";
+    }
+    std::string return_value;
+    auto thunk = [](void* cookie, const char* /*name*/, const char* value,
+                    uint32_t /*serial*/) {
+        if (value != nullptr) {
+            std::string* r = static_cast<std::string*>(cookie);
+            *r = value;
+        }
+    };
+    __system_property_read_callback(prop, thunk, &return_value);
+    return return_value;
+}
+#else
 std::string getSystemPropViaGet(const char* key) {
     char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
     int bufferLen = __system_property_get(key, buffer);
@@ -50,13 +73,22 @@ std::string getSystemPropViaGet(const char* key) {
     else
         return "";
 }
+#endif
+
+std::string getSystemProp(const char* key) {
+#if __ANDROID_API__ >= 26
+    return getSystemPropViaCallback(key);
+#else
+    return getSystemPropViaGet(key);
+#endif
+}
 
 }  // anonymous namespace
 
 namespace tuningfork {
 
 /* static */
-RequestInfo RequestInfo::ForThisGameAndDevice() {
+RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     RequestInfo info;
     // Total memory
     std::string s = slurpFile("/proc/meminfo");
@@ -81,13 +113,35 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
             info.total_memory_bytes = x * mult;
         }
     }
-    info.build_version_sdk = getSystemPropViaGet("ro.build.version.sdk");
-    info.build_fingerprint = getSystemPropViaGet("ro.build.fingerprint");
+    info.build_version_sdk = getSystemProp("ro.build.version.sdk");
+    info.build_fingerprint = getSystemProp("ro.build.fingerprint");
 
-    if (jni::IsValid()) info.session_id = UniqueId();
+    if (jni::IsValid()) {
+        std::stringstream session_id_path;
+        session_id_path << file_utils::GetAppCacheDir() << "/tuningfork";
+        file_utils::CheckAndCreateDir(session_id_path.str());
+        session_id_path << "/session_id.bin";
+        std::string session_id_file = session_id_path.str();
+
+        if (!file_utils::FileExists(session_id_file)) {
+            info.previous_session_id = "";
+        } else {
+            std::ifstream file(session_id_file);
+            file >> info.previous_session_id;
+        }
+
+        info.session_id = UniqueId();
+
+        std::ofstream file(session_id_file);
+        if (file.is_open()) {
+            file << info.session_id;
+        } else {
+            ALOGE_ONCE("Session id couldn't be stored.");
+        }
+    }
 
     info.cpu_max_freq_hz.clear();
-    for (int index = 1;; ++index) {
+    for (int index = 0;; ++index) {
         std::stringstream str;
         str << "/sys/devices/system/cpu/cpu" << index
             << "/cpufreq/cpuinfo_max_freq";
@@ -108,6 +162,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice() {
         info.device = jni::android::os::Build::DEVICE().C();
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
+    info.swappy_version = settings.c_settings.swappy_version;
     return info;
 }
 

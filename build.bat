@@ -1,5 +1,5 @@
-set ANDROID_HOME=%CD%\..\prebuilts\sdk
-set ANDROID_NDK_HOME=%CD%\..\prebuilts\ndk\r20
+set ANDROID_HOME=C:\win_build_extras\sdk
 
-if "%1"=="full" (set TARGET=fullSdkZip) else (set TARGET=gamesdkZip)
-gradlew.bat %TARGET%
+if not defined DIST_DIR set DIST_DIR="%CD%\..\package"
+
+gradlew packageLocalZip -Plibraries=swappy,tuningfork -PincludeSampleArtifacts -PdistPath="%DIST_DIR%" -Pndk=21.3.6528147 --no-daemon

@@ -130,9 +130,8 @@ EGL::~EGL() {
 }
 void EGL::resetSyncFence(EGLDisplay display) {
     std::lock_guard<std::mutex> lock(mSyncFenceMutex);
-    mFenceWaiter.waitForIdle();
 
-    if (mSyncFence != EGL_NO_SYNC_KHR) {
+    if (mFenceWaiter.waitForIdle() && mSyncFence != EGL_NO_SYNC_KHR) {
         EGLBoolean result = eglDestroySyncKHR(display, mSyncFence);
         if (result == EGL_FALSE) {
             ALOGE("Failed to destroy sync fence");
@@ -144,6 +143,8 @@ void EGL::resetSyncFence(EGLDisplay display) {
     if (mSyncFence != EGL_NO_SYNC_KHR) {
         // kick of the thread work to wait for the fence and measure its time
         mFenceWaiter.onFenceCreation(display, mSyncFence);
+    } else {
+        ALOGE("Failed to create sync fence");
     }
 }
 
@@ -275,11 +276,12 @@ EGL::FenceWaiter::~FenceWaiter() {
     mFenceWaiter.join();
 }
 
-void EGL::FenceWaiter::waitForIdle() {
+bool EGL::FenceWaiter::waitForIdle() {
     std::lock_guard<std::mutex> lock(mFenceWaiterLock);
     mFenceWaiterCondition.wait(
         mFenceWaiterLock,
         [this]() REQUIRES(mFenceWaiterLock) { return !mFenceWaiterPending; });
+    return mSyncFence != EGL_NO_SYNC_KHR;
 }
 
 void EGL::FenceWaiter::onFenceCreation(EGLDisplay display,
@@ -317,7 +319,10 @@ void EGL::FenceWaiter::threadMain() {
                 break;
         }
         if (result != EGL_CONDITION_SATISFIED_KHR) {
-            eglDestroySyncKHR(mDisplay, mSyncFence);
+            result = eglDestroySyncKHR(mDisplay, mSyncFence);
+            if (result == EGL_FALSE) {
+                ALOGE("Failed to destroy sync fence");
+            }
             mSyncFence = EGL_NO_SYNC_KHR;
         }
 
