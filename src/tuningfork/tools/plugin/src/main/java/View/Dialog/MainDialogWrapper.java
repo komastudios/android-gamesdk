@@ -31,8 +31,10 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.util.Disposer;
 import java.io.IOException;
 import com.intellij.openapi.ui.Messages;
 import java.util.List;
@@ -121,13 +123,24 @@ public class MainDialogWrapper extends DialogWrapper {
       MessageDataModel fidelityData, List<EnumDataModel> enumData,
       List<QualityDataModel> qualityData, ProtoCompiler compiler) {
     super(project);
+
     this.annotationData = annotationData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
     this.qualityData = qualityData;
     this.project = project;
     this.compiler = compiler;
+
     setTitle("Android Performance Tuner Plugin");
+
+    Disposer.register(this.getDisposable(), () -> {
+      try {
+        RequestServer.stopListening();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
+
     init();
   }
 
