@@ -76,6 +76,16 @@ public class MainDialogWrapper extends DialogWrapper {
   }
 
   @Override
+  protected void dispose() {
+    try {
+      RequestServer.stopListening();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    super.dispose();
+  }
+
+  @Override
   protected void doOKAction() {
     if (!pluginLayout.isViewValid()) {
       Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
