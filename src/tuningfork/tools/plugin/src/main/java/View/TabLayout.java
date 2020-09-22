@@ -25,10 +25,10 @@ import java.awt.Font;
 import java.util.List;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
@@ -61,27 +61,14 @@ public class TabLayout extends JPanel {
     this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
   }
 
-  /*
-   * Dynamically resizes when current row number is greater than initial height.
-   */
-  private void resizePanelToFit(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
-    int oldWidth = scrollPane.getWidth();
-    int newHeight =
-        Math.max(
-            decoratorPanel.getMinimumSize().height + 2,
-            Math.min(this.getHeight() - 100, table.getRowHeight() * table.getRowCount() + 30));
-    scrollPane.setSize(new Dimension(oldWidth, newHeight));
-    scrollPane.revalidate();
-  }
-
-  public void setTableSettings(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
-    scrollPane.setViewportView(decoratorPanel);
+  public void setTableSettings(JTable table) {
     table.setFillsViewportHeight(true);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.getTableHeader().setReorderingAllowed(false);
     table.setRowSelectionAllowed(true);
     table.setSelectionBackground(null);
     table.setSelectionForeground(null);
+    table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
     table.setIntercellSpacing(new Dimension(0, 0));
   }
 
@@ -101,7 +88,7 @@ public class TabLayout extends JPanel {
     return boxEditor;
   }
 
-  public DefaultCellEditor getTextFieldModel() {
+  public static DefaultCellEditor getTextFieldModel() {
     JTextField textFieldModel = new JTextField();
     textFieldModel.setBorder(new RoundedCornerBorder());
     DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
@@ -109,11 +96,13 @@ public class TabLayout extends JPanel {
     return textEditor;
   }
 
-  public JTextField getIntegerTextFieldModel() {
+  public TableCellEditor getIntegerTextFieldModel() {
     JTextField textFieldModel = new JTextField();
+    DefaultCellEditor defaultCellEditor = new DefaultCellEditor(textFieldModel);
     ((AbstractDocument) textFieldModel.getDocument())
         .setDocumentFilter(new NumberDocumentFilter());
     textFieldModel.setBorder(new RoundedCornerBorder());
-    return textFieldModel;
+    defaultCellEditor.setClickCountToStart(1);
+    return defaultCellEditor;
   }
 }

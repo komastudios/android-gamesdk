@@ -16,14 +16,16 @@
 
 package View;
 
-import View.Decorator.ValidationComboBoxEditor;
+import View.Decorator.ValidationComboBoxRenderer;
 import javax.swing.JComboBox;
-
+/*
+A combobox that has a label as a renderer only for the chosen item where it sets the label as
+error icon only if it has validation info as client property.
+ */
 public class ValidatableComboBox<T> extends JComboBox<T> {
 
   public ValidatableComboBox() {
     super();
-    this.setEditable(true);
-    this.setEditor(new ValidationComboBoxEditor());
+    this.setRenderer(new ValidationComboBoxRenderer(this));
   }
 }
