@@ -45,6 +45,8 @@ public class AnnotationDecorator {
       String strValue = value.toString();
       setComboBoxChoices(enums);
       comboBox.setSelectedItem(strValue);
+      comboBox.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+      comboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
       return comboBox;
     }
 
@@ -70,6 +72,8 @@ public class AnnotationDecorator {
       } else {
         comboBox.setSelectedIndex(-1);
       }
+      comboBox.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+      comboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
       return comboBox;
     }
   }
