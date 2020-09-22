@@ -19,50 +19,69 @@ package Utils.Validation;
 import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import org.jetbrains.annotations.NotNull;
 
 public class UIValidator {
 
   public static final String ILLEGAL_TEXT_PATTERN = "[{|}]";
+  public static final String VALIDATION_METHOD = "ComponentValidation.Method";
 
-  public static ComponentValidator createTableValidator(Disposable disposable, JTable table,
-      Supplier<? extends ValidationInfo> validationMethod) {
-    table.getModel().addTableModelListener(
-        e -> ComponentValidator.getInstance(table)
-            .ifPresent(ComponentValidator::revalidate));
-    return new ComponentValidator(disposable).withValidator(() -> {
-      if (validationMethod.get() != null) {
-        if (validationMethod.get().warning) {
-          table.setBorder(BorderFactory.createLineBorder(JBColor.YELLOW));
-        } else {
-          table.setBorder(BorderFactory.createLineBorder(JBColor.RED));
-        }
-        return validationMethod.get();
-      }
-      table.setBorder(null);
-      return null;
-    }).andStartOnFocusLost().installOn(table);
+  public static void createTableValidator(Disposable disposable, JTable table,
+      Supplier<ValidationInfo> validationMethod) {
+    TableModelListener tableModelListener = new ComponentTableValidationUpdater(table,
+        validationMethod);
+    table.getModel().addTableModelListener(tableModelListener);
+    FocusListener focusListener = new ComponentFocusValidationUpdater(table, validationMethod);
+    table.addFocusListener(focusListener);
+    Disposer.register(disposable, () -> {
+      table.removeFocusListener(focusListener);
+      table.getModel().removeTableModelListener(tableModelListener);
+    });
+    table.putClientProperty(VALIDATION_METHOD, validationMethod);
   }
 
-  public static ValidationInfo hasValidationInfo(JComponent component) {
+  public static void createTextValidator(Disposable disposable, JTextField jTextField,
+      Supplier<ValidationInfo> validationMethod) {
+    DocumentAdapter documentAdapter = new ComponentTextValidationUpdater(jTextField,
+        validationMethod);
+    jTextField.getDocument().addDocumentListener(documentAdapter);
+    Disposer.register(disposable,
+        () -> jTextField.getDocument().removeDocumentListener(documentAdapter));
+    jTextField.putClientProperty(VALIDATION_METHOD, validationMethod);
+  }
+
+  private static ValidationInfo hasValidationInfo(JComponent component) {
     return component != null ? (ValidationInfo) component
         .getClientProperty(CELL_VALIDATION_PROPERTY) : null;
   }
 
-  private static boolean isTableCellValid(JComponent jComponent) {
-    ValidationInfo cellInfo = UIValidator.hasValidationInfo(jComponent);
-    if (cellInfo != null && !cellInfo.warning) {
-      return false;
+  private static Supplier<ValidationInfo> getValidationMethod(JComponent component) {
+    return component != null ? (Supplier<ValidationInfo>) component
+        .getClientProperty(VALIDATION_METHOD) : null;
+  }
+
+  public static boolean isComponentValid(JComponent jComponent) {
+    if (getValidationMethod(jComponent) != null) {
+      updateValidation(getValidationMethod(jComponent), jComponent);
     }
-    return true;
+    ValidationInfo cellInfo = UIValidator.hasValidationInfo(jComponent);
+    return cellInfo == null || cellInfo.warning;
   }
 
   public static boolean isTableCellsValid(JTable jTable) {
@@ -72,22 +91,12 @@ public class UIValidator {
         JComponent component = (JComponent) jTable
             .getCellRenderer(i, j).getTableCellRendererComponent(jTable,
                 tableModel.getValueAt(i, j), false, false, i, 0);
-        if (!isTableCellValid(component)) {
+        if (!isComponentValid(component)) {
           return false;
         }
       }
     }
     return true;
-  }
-
-  public static boolean isComponentValid(JComponent component) {
-    if (!ComponentValidator.getInstance(component).isPresent()) {
-      return true;
-    }
-    ComponentValidator componentValidator = ComponentValidator.getInstance(component).get();
-    componentValidator.revalidate();
-    return componentValidator.getValidationInfo() == null || componentValidator
-        .getValidationInfo().warning;
   }
 
   public static boolean isTableCellsValidDeep(JTable jTable) {
@@ -97,16 +106,92 @@ public class UIValidator {
         JComponent component = (JComponent) jTable
             .getCellRenderer(i, j).getTableCellRendererComponent(jTable,
                 tableModel.getValueAt(i, j), false, false, i, 0);
-        if (!isTableCellValid(component)) {
+        if (!isComponentValid(component)) {
           return false;
         }
         for (Component childComp : component.getComponents()) {
-          if (childComp instanceof JComponent && !isTableCellValid((JComponent) childComp)) {
+          if (childComp instanceof JComponent && !isComponentValid((JComponent) childComp)) {
             return false;
           }
         }
       }
     }
     return true;
+  }
+
+  private static void updateValidation(
+      Supplier<ValidationInfo> validationMethod,
+      JComponent jComponent) {
+    ValidationInfo cellInfo = validationMethod.get();
+    jComponent.putClientProperty(CELL_VALIDATION_PROPERTY, cellInfo);
+    if (cellInfo != null) {
+      jComponent.setToolTipText(cellInfo.message);
+      if (cellInfo.warning) {
+        jComponent.setBorder(BorderFactory.createLineBorder(JBColor.YELLOW));
+      } else {
+        jComponent.setBorder(BorderFactory.createLineBorder(JBColor.RED));
+      }
+      validationMethod.get();
+      return;
+    }
+    jComponent.setToolTipText("");
+    jComponent.setBorder(null);
+  }
+
+  private final static class ComponentFocusValidationUpdater implements FocusListener {
+
+    private final JComponent jComponent;
+    private final Supplier<ValidationInfo> validationMethod;
+
+    public ComponentFocusValidationUpdater(JComponent jComponent,
+        Supplier<ValidationInfo> supplier) {
+      this.jComponent = jComponent;
+      this.validationMethod = supplier;
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+      updateValidation(validationMethod, jComponent);
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+      updateValidation(validationMethod, jComponent);
+    }
+  }
+
+  private final static class ComponentTextValidationUpdater extends DocumentAdapter {
+
+    private final JComponent jComponent;
+    private final Supplier<ValidationInfo> validationMethod;
+    private boolean textChanged = false;
+
+    public ComponentTextValidationUpdater(JComponent jComponent,
+        Supplier<ValidationInfo> supplier) {
+      this.jComponent = jComponent;
+      this.validationMethod = supplier;
+    }
+
+    @Override
+    protected void textChanged(@NotNull DocumentEvent documentEvent) {
+      updateValidation(validationMethod, jComponent);
+    }
+  }
+
+  private final static class ComponentTableValidationUpdater implements TableModelListener {
+
+    private final JComponent jComponent;
+    private final Supplier<ValidationInfo> validationMethod;
+
+    public ComponentTableValidationUpdater(JComponent jComponent,
+        Supplier<ValidationInfo> supplier) {
+      this.jComponent = jComponent;
+      this.validationMethod = supplier;
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+      updateValidation(validationMethod, jComponent);
+    }
   }
 }

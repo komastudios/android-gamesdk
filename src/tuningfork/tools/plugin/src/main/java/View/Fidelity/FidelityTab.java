@@ -21,7 +21,6 @@ import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
 import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.CellCustomDataEditorValidatorWrapper;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
 import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
@@ -29,7 +28,6 @@ import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
 import View.TabLayout;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.ui.cellvalidators.CellTooltipManager;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
@@ -102,6 +100,8 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
         ToolbarDecorator.createDecorator(fidelityTable)
             .setAddAction(it -> fidelityTabController.addRowAction(fidelityTable))
             .setRemoveAction(it -> fidelityTabController.removeRowAction(fidelityTable))
+            .setMinimumSize(getMinimumSize())
+            .setPreferredSize(getPreferredSize())
             .createPanel();
 
     fidelityLabel.setFont(TabLayout.getMainFont());
@@ -132,8 +132,8 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     typeColumn.setCellRenderer(new ComboBoxRenderer());
 
     setDecoratorPanelSize(fidelityDecoratorPanel);
-    setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
-    this.add(scrollPane);
+    setTableSettings(fidelityTable);
+    this.add(fidelityDecoratorPanel);
     this.add(Box.createVerticalStrut(10));
   }
 
@@ -151,10 +151,9 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
 
   private TableCellEditor getCellEditorByValue(FidelityTableData data) {
     if (data.getFieldType().equals(FieldType.ENUM)) {
-      return new FidelityCellPanelValidationEditorWrapper(
-          new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames()));
+      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames());
     }
-    return new CellCustomDataEditorValidatorWrapper(new FidelityTableDecorators.TextBoxEditor());
+    return new FidelityTableDecorators.TextBoxEditor();
   }
 
   public void saveSettings() {
@@ -166,9 +165,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initValidators() {
-    new CellTooltipManager(disposable).
-        withCellComponentProvider(new FidelityCellComponentProvider(fidelityTable)).
-        installOn(fidelityTable);
     UIValidator.createTableValidator(disposable, fidelityTable, () -> {
       List<String> fieldNames = fidelityTabController.getFidelityData().getFieldNames();
       boolean isNamesDuplicate =

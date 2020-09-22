@@ -69,7 +69,6 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     setSize();
     initComponents();
     addComponents();
-    initValidators();
   }
 
   public QualityTabController getQualityTabController() {
@@ -120,8 +119,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return TableRenderer
-                .getEditorTextBoxWithValidation(getIntegerTextFieldModel(), disposable);
+            return getIntegerTextFieldModel();
           }
         }
       }
@@ -201,9 +199,6 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     }
   }
 
-  private void initValidators() {
-    TableRenderer.addCellToolTipManager(qualityParametersTable, disposable);
-  }
 
   public boolean isViewValid() {
     return UIValidator.isTableCellsValid(qualityParametersTable);
