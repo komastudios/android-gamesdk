@@ -16,6 +16,7 @@
 package View.Monitoring;
 
 import Controller.Monitoring.MonitoringController;
+import View.Dialog.MonitoringQualityDialogWrapper;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import Utils.Monitoring.RequestServer;
@@ -32,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -82,6 +84,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JLabel totalMemData;
   private JPanel gridPanel;
   private JPanel fidelityInfoPanel;
+  private JButton changeQualityButton;
   private JScrollPane fidelityInfoScrollPane;
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
@@ -136,6 +139,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void refreshUI() {
     plotData();
     retrievedInformationPanel.setVisible(true);
+    changeQualityButton.setVisible(true);
     loadingPanel.setVisible(false);
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
@@ -159,19 +163,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     refreshUI();
   }
 
-  private void setNoData() {
-    nameData.setText("N/A");
-    totalMemData.setText("N/A");
-    brandData.setText("N/A");
-    deviceData.setText("N/A");
-    cpuFreqsData.setText("N/A");
-  }
-
   private void addComponents() {
     this.add(title);
     this.add(Box.createVerticalStrut(10));
     this.add(warningLabel);
-    this.add(Box.createVerticalStrut(10));
     JPanel buttonPanel1 = new JPanel();
     buttonPanel1.add(startMonitoring);
     this.add(buttonPanel1);
@@ -195,13 +190,14 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     retrievedInformationPanel.add(fidelityInfoScrollPane);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
+    buttonPanel2.add(changeQualityButton);
 
     this.add(retrievedInformationPanel);
   }
 
   private void initComponents() {
     controller = new MonitoringController();
-    controller.addPropertyChangeListener(this);
+    controller.addMonitoringPropertyChangeListener(this);
 
     title.setFont(MAIN_FONT);
     nameInfo.setFont(MIDDLE_FONT);
@@ -216,7 +212,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     cpuFreqsData = new JLabel();
     deviceData = new JLabel();
     totalMemData = new JLabel();
-    setNoData();
 
     nameData.setFont(SMALL_FONT);
     brandData.setFont(SMALL_FONT);
@@ -257,12 +252,12 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
     stopMonitoring.addActionListener(actionEvent -> {
       retrievedInformationPanel.setVisible(false);
+      changeQualityButton.setVisible(false);
       try {
         RequestServer.stopListening();
       } catch (IOException e) {
         e.printStackTrace();
       }
-      setNoData();
       startMonitoring.setVisible(true);
       stopMonitoring.setVisible(false);
     });
@@ -286,6 +281,15 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     fidelityInfoScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     fidelityInfoScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     fidelityInfoScrollPane.setViewportBorder(null);
+
+    changeQualityButton = new JButton("Change displayed quality");
+    changeQualityButton.setVisible(false);
+
+    changeQualityButton.addActionListener(actionEvent -> {
+      MonitoringQualityDialogWrapper monitoringWrapper = new MonitoringQualityDialogWrapper(controller.getQualityNumber(), controller.getIndexesNotToPlot());
+      monitoringWrapper.addPropertyChangeListener(this);
+      monitoringWrapper.show();
+    });
   }
 
   @Override
@@ -316,6 +320,11 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       fidelityInfoPanel.add(fidelityInfo);
 
       SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
+    } else if (propertyChangeEvent.getPropertyName().equals("plotSelectedQuality")) {
+      deleteExistingGraphs();
+      controller.setIndexesNotToPlot((ArrayList<Integer>) propertyChangeEvent.getNewValue());
+      controller.removeQualitySettingsNotToPlot();
+      SwingUtilities.updateComponentTreeUI(graphPanel);
     }
   }
 }
