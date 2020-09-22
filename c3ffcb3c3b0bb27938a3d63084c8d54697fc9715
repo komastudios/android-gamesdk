@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "efd294f6_401320ab",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/MainDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-22T14:11:09Z",
+      "side": 1,
+      "message": "nit: Overriding the dispose() method is fine. but I\u0027d suggest doing\nDisposer.register(getDisposer(), () -\u003e RequestServer.stopListening());",
+      "range": {
+        "startLine": 78,
+        "startChar": 2,
+        "endLine": 86,
+        "endChar": 3
+      },
+      "revId": "c3ffcb3c3b0bb27938a3d63084c8d54697fc9715",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
