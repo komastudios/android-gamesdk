@@ -27,13 +27,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.ArrayList;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -45,26 +46,43 @@ public class MonitoringController {
 
   /*
    * Key = instrument id, Value = XYSeriesCollection.
+   * Holds all the XYSeries for quality settings received so far for an instrument ID.
+   * If the user wants not to plot a certain quality setting, then the collection is cloned and the specific
+   * settings are not plotted.
    */
-  private HashMap<String, XYSeriesCollection> seriesCollectionMap;
+  private LinkedHashMap<String, XYSeriesCollection> seriesCollectionMap;
   /*
-   * Key = instrument id, Value = list of merged bucket counts.
+   * Each fidelity setting received so far has a LinkedHashMap with merged count values
+   * received so far, where Key = instrument id, Value = list of merged bucket counts.
    */
-  private LinkedHashMap<String, List<Integer>> renderTimeHistograms;
-  private HashSet<ByteString> previousQualitySettings;
+  private HashMap<ByteString, LinkedHashMap<String, List<Integer>>> renderTimeHistograms;
+  private ArrayList<Integer> indexesNotToPlot;
   private LinkedHashSet<QualityDataModel> qualitySettingsList;
-  private PropertyChangeSupport propertyChangeSupport;
+  private PropertyChangeSupport monitoringPropertyChange;
   private int currentQualityIndex;
   private boolean isNewQuality;
+  private ByteString currentFidelitySettings;
 
   public MonitoringController() {
-    renderTimeHistograms = new LinkedHashMap<>();
-    previousQualitySettings = new HashSet<>();
+    renderTimeHistograms = new HashMap<>();
     qualitySettingsList = new LinkedHashSet<>();
-    propertyChangeSupport = new PropertyChangeSupport(this);
-    seriesCollectionMap = new HashMap<>();
+    monitoringPropertyChange = new PropertyChangeSupport(this);
+    seriesCollectionMap = new LinkedHashMap<>();
+    indexesNotToPlot = new ArrayList<>();
     currentQualityIndex = 0;
     isNewQuality = false;
+  }
+
+  public int getQualityNumber() {
+    return qualitySettingsList.size();
+  }
+
+  public void setIndexesNotToPlot(ArrayList<Integer> indexesNotToPlot) {
+    this.indexesNotToPlot = indexesNotToPlot;
+  }
+
+  public ArrayList<Integer> getIndexesNotToPlot() {
+    return indexesNotToPlot;
   }
 
   private int getIndexOf(QualityDataModel currentQuality) {
@@ -78,7 +96,7 @@ public class MonitoringController {
     return index;
   }
 
-  private Optional<Integer> transformQualitySettings(ByteString currentQualitySettings)
+  private Optional<Integer> transformQualitySettings()
       throws InvalidProtocolBufferException {
     FileDescriptor devTuningForkDesc = DataModelTransformer.getDevTuningforkDesc();
 
@@ -88,16 +106,15 @@ public class MonitoringController {
 
     Descriptor fidelityParamsDesc = devTuningForkDesc.findMessageTypeByName("FidelityParams");
     DynamicMessage qualityMessage = DynamicMessage
-        .parseFrom(fidelityParamsDesc, currentQualitySettings.toByteArray());
+        .parseFrom(fidelityParamsDesc, currentFidelitySettings.toByteArray());
 
     QualityDataModel newQuality = DataModelTransformer
         .transformToQuality(qualityMessage, fidelityParamsDesc.getFields()).get();
 
-    if (!previousQualitySettings.contains(currentQualitySettings)) {
+    if (!renderTimeHistograms.containsKey(currentFidelitySettings)) {
+      renderTimeHistograms.put(currentFidelitySettings, new LinkedHashMap<>());
       qualitySettingsList.add(newQuality);
-      propertyChangeSupport
-          .firePropertyChange("addFidelity", qualitySettingsList.size(), newQuality);
-      previousQualitySettings.add(currentQualitySettings);
+      monitoringPropertyChange.firePropertyChange("addFidelity", qualitySettingsList.size(), newQuality);
       isNewQuality = true;
     } else {
       isNewQuality = false;
@@ -113,30 +130,47 @@ public class MonitoringController {
       return;
     }
 
-    ByteString currentFidelityParams = telemetryRequest.getTelemetry(0).getContext()
-        .getTuningParameters().getSerializedFidelityParameters();
+    currentFidelitySettings = telemetryRequest.getTelemetry(0).getContext()
+            .getTuningParameters().getSerializedFidelityParameters();
 
-    transformQualitySettings(currentFidelityParams).ifPresent(index -> currentQualityIndex = index);
-
-    if (isNewQuality) {
-      renderTimeHistograms = new LinkedHashMap<>();
-    }
+    transformQualitySettings().ifPresent(index -> currentQualityIndex = index);
   }
 
   public void setRenderTimeHistograms(UploadTelemetryRequest telemetryRequest) {
-    renderTimeHistograms = TelemetryProcessing.processTelemetryData(telemetryRequest);
+    renderTimeHistograms.put(currentFidelitySettings,
+        TelemetryProcessing.processTelemetryData(telemetryRequest));
   }
 
   public Set<String> getRenderTimeHistogramsKeys() {
-    return renderTimeHistograms.keySet();
+    return renderTimeHistograms.get(currentFidelitySettings).keySet();
   }
 
-  public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
-    propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+  public void addMonitoringPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+    monitoringPropertyChange.addPropertyChangeListener(propertyChangeListener);
+  }
+
+  /*
+   * Replots only a certain series from the XYseriescollection, and maintains the order of the
+   * other XY series.
+   */
+  private void replotCertainSeries(String instrumentID, int currentQualityIndex,
+      XYSeries histogramDataset) {
+    XYSeriesCollection seriesToModify = new XYSeriesCollection();
+    XYSeriesCollection originalSeries = seriesCollectionMap.get(instrumentID);
+
+    for (int i = 0; i < currentQualityIndex; i++) {
+      seriesToModify.addSeries(originalSeries.getSeries(i));
+    }
+    seriesToModify.addSeries(histogramDataset);
+    for (int i = currentQualityIndex + 1; i < qualitySettingsList.size(); i++) {
+      seriesToModify.addSeries(originalSeries.getSeries(i));
+    }
+
+    seriesCollectionMap.put(instrumentID, seriesToModify);
   }
 
   public void createChartPanels() {
-    for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms.entrySet()) {
+    for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms.get(currentFidelitySettings).entrySet()) {
       String instrumentId = entry.getKey();
       XYSeries histogramDataset = new XYSeries("Quality settings " + (currentQualityIndex + 1));
       List<Integer> fpsList = entry.getValue();
@@ -150,16 +184,32 @@ public class MonitoringController {
       }
 
       if (!isNewQuality) {
-        seriesCollectionMap.get(instrumentId).removeSeries(currentQualityIndex);
+        replotCertainSeries(instrumentId, currentQualityIndex, histogramDataset);
+      } else {
+        seriesCollectionMap.get(instrumentId).addSeries(histogramDataset);
       }
-      seriesCollectionMap.get(instrumentId).addSeries(histogramDataset);
+    }
+    removeQualitySettingsNotToPlot();
+  }
 
-      JFreeChart histogram = ChartFactory.createXYBarChart("Render time histogram",
-          "frame time", false, "counts", seriesCollectionMap.get(instrumentId),
-          PlotOrientation.VERTICAL, true, false, false);
+  public void removeQualitySettingsNotToPlot() {
+    for (Map.Entry<String, XYSeriesCollection> entry : seriesCollectionMap.entrySet()) {
+      try {
+        XYSeriesCollection datasets = (XYSeriesCollection) entry.getValue().clone();
 
-      ChartPanel chartPanel = new ChartPanel(histogram);
-      propertyChangeSupport.firePropertyChange("addChart", instrumentId, chartPanel);
+        for (int pos = 0; pos < indexesNotToPlot.size(); pos++) {
+          datasets.removeSeries(indexesNotToPlot.get(pos) - pos);
+        }
+
+        JFreeChart histogram = ChartFactory.createXYBarChart("Render time histogram",
+            "frame time", false, "counts", datasets,
+            PlotOrientation.VERTICAL, true, false, false);
+
+        ChartPanel chartPanel = new ChartPanel(histogram);
+        monitoringPropertyChange.firePropertyChange("addChart", entry.getKey(), chartPanel);
+      } catch (CloneNotSupportedException e) {
+        e.printStackTrace();
+      }
     }
   }
 }
