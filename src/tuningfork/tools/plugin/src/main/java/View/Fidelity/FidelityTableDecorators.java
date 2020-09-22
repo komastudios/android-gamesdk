@@ -16,6 +16,7 @@
 
 package View.Fidelity;
 
+import View.Decorator.RoundedCornerBorder;
 import com.intellij.openapi.ui.ComboBox;
 import java.awt.Component;
 import java.util.List;
@@ -117,6 +118,7 @@ public class FidelityTableDecorators {
 
     public TextBoxRenderer() {
       textField = new JTextField();
+      textField.setBorder(new RoundedCornerBorder());
     }
 
     public Component getTableCellRendererComponent(
@@ -133,6 +135,7 @@ public class FidelityTableDecorators {
 
     public TextBoxEditor() {
       textField = new JTextField();
+      textField.setBorder(new RoundedCornerBorder());
     }
 
     @Override

@@ -16,12 +16,18 @@
 
 package View.Fidelity;
 
+import View.Decorator.RoundedCornerBorder;
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/*
+This class is responsible for just enclosing a TextField and label(error label) inside a Jpanel
+for validation. As using the normal validation icon place would look glitchy.
+
+Only meant to be used with fidelity panel.
+ */
 public class FidelityValidatablePanelWithTextField extends JPanel {
 
   private JTextField jTextField;
@@ -33,10 +39,11 @@ public class FidelityValidatablePanelWithTextField extends JPanel {
     this.setLayout(new BorderLayout(0, 0));
     this.add(jTextField, BorderLayout.CENTER);
     this.add(errorLabel, BorderLayout.EAST);
+    this.setBorder(new RoundedCornerBorder());
     this.setBackground(null);
     this.setForeground(null);
     this.setOpaque(false);
-    this.setFocusable(false);
+    jTextField.setBorder(null);
   }
 
   public JLabel getErrorLabel() {
@@ -47,8 +54,4 @@ public class FidelityValidatablePanelWithTextField extends JPanel {
     return jTextField;
   }
 
-  @Override
-  protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
-  }
 }
