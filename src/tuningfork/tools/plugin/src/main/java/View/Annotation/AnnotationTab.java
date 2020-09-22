@@ -32,7 +32,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,13 +40,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
 
 public class AnnotationTab extends TabLayout implements PropertyChangeListener {
 
-  private JBScrollPane scrollPane;
   private JBTable annotationTable;
   private JPanel decoratorPanel;
   private AnnotationTableModel model;
@@ -72,12 +69,13 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initVariables() {
-    scrollPane = new JBScrollPane();
     annotationTable = new JBTable();
     decoratorPanel =
         ToolbarDecorator.createDecorator(annotationTable)
             .setAddAction(it -> annotationController.addRowAction(annotationTable))
             .setRemoveAction(it -> annotationController.removeRowAction(annotationTable))
+            .setMinimumSize(getMinimumSize())
+            .setPreferredSize(getPreferredSize())
             .createPanel();
     model = new AnnotationTableModel(annotationController);
     annotationController.addPropertyChangeListener(this);
@@ -98,9 +96,9 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
     annotationTable.setModel(model);
     annotationController.addInitialAnnotation(annotationTable);
     setDecoratorPanelSize(decoratorPanel);
-    setTableSettings(scrollPane, decoratorPanel, annotationTable);
+    setTableSettings(annotationTable);
     initColumnViews();
-    this.add(scrollPane);
+    this.add(decoratorPanel);
     this.add(Box.createVerticalStrut(10));
     this.add(new EnumTable(annotationController));
   }
@@ -137,8 +135,7 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
               }
               return null;
             }));
-    nameColumn
-        .setCellEditor(TableRenderer.getEditorTextBoxWithValidation(new JTextField(), disposable));
+    nameColumn.setCellEditor(TabLayout.getTextFieldModel());
   }
 
   public boolean isViewValid() {
@@ -147,7 +144,6 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initValidators() {
-    TableRenderer.addCellToolTipManager(annotationTable, disposable);
     UIValidator.createTableValidator(disposable, annotationTable, () -> {
       List<String> fieldNames = annotationController.getAnnotationData().getFieldNames();
       boolean isNamesDuplicate =

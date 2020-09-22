@@ -16,7 +16,6 @@
 package View.Dialog;
 
 import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
-import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
@@ -26,7 +25,6 @@ import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.TabLayout;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -204,7 +202,7 @@ public class EnumDialogWrapper extends DialogWrapper {
     }
 
     private void initValidators() {
-      new ComponentValidator(disposable).withValidator(() -> {
+      UIValidator.createTextValidator(disposable, nameTextField, () -> {
         String name = nameTextField.getText();
         if (name.isEmpty()) {
           return new ValidationInfo(resourceLoader.get("field_empty_error"),
@@ -216,7 +214,7 @@ public class EnumDialogWrapper extends DialogWrapper {
               nameTextField);
         }
         return null;
-      }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
+      });
 
       UIValidator.createTableValidator(disposable, optionsTable,
           () -> {
@@ -233,8 +231,8 @@ public class EnumDialogWrapper extends DialogWrapper {
             }
             return null;
           });
-      optionsTable.getColumnModel().getColumn(0)
-          .setCellEditor(getEditorTextBoxWithValidation(new JTextField(), disposable));
+      optionsTable.getColumnModel()
+          .getColumn(0).setCellEditor(TabLayout.getTextFieldModel());
 
       //noinspection UnstableApiUsage
       optionsTable.getColumnModel().getColumn(0)
@@ -243,15 +241,16 @@ public class EnumDialogWrapper extends DialogWrapper {
                   (value, row, column) -> {
                     String strVal = value.toString();
                     if (strVal.isEmpty()) {
-                      return new ValidationInfo("Field Can Not Be Empty!");
+                      return new ValidationInfo(resourceLoader.get("field_empty_error"));
                     }
                     if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
-                      return new ValidationInfo(strVal + " contains illegal characters");
+                      return new ValidationInfo(
+                          String
+                              .format(resourceLoader.get("field_illegal_character_error"), strVal));
                     }
                     return null;
                   }));
 
-      TableRenderer.addCellToolTipManager(optionsTable, disposable);
     }
 
     public boolean isViewValid() {
