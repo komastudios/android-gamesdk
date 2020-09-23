@@ -53,6 +53,10 @@ Version 1.1.0
  - Ability to record custom timing information (startTrace/endTrace).
  - In expert mode, quality settings are remotely setable using the Play console.
 - A Unity plugin incorporating the Tuning Fork library is available separately.
+- Known Issues:
+ - Incorrect frame pacing on Android 11 w/ multiple refresh rates. Fix is availabe at
+   https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1367721
+
 
 Version 1.2.0
 =============
