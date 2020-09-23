@@ -22,6 +22,30 @@
       "revId": "3e96e4f0b1f131881bf61505b934f37d97052a63",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6b56342_0dd45d20",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-23T12:53:57Z",
+      "side": 1,
+      "message": "never mind, I saw you\u0027ve changed it in next cl",
+      "parentUuid": "0f0cd3d4_614c1b5a",
+      "range": {
+        "startLine": 286,
+        "startChar": 4,
+        "endLine": 287,
+        "endChar": 104
+      },
+      "revId": "3e96e4f0b1f131881bf61505b934f37d97052a63",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
