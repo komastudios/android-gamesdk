@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aeef1dce_27158bac",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/QualityDataModel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-09-23T12:51:46Z",
+      "side": 1,
+      "message": "More detailed name pls 😊",
+      "range": {
+        "startLine": 83,
+        "startChar": 31,
+        "endLine": 83,
+        "endChar": 32
+      },
+      "revId": "097b1ca0eb550736ba9116a0a15da108fc72c3eb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
