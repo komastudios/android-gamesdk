@@ -83,6 +83,8 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
                 new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
         .addSampleExtraFolder(
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
+def memoryHintsNativeLibrary = new NativeLibrary('memory_hints', 'GAMESDK_BUILD_MEMORY_HINTS')
+        .setAarLibrary("games-memory-hints", "1.0.0-alpha01")
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -137,7 +139,7 @@ allprojects {
     }
 }
 
-def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary]
+def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary, memoryHintsNativeLibrary]
 
 def getBuildPath() {
     return new File("$projectDir/build").getPath()
