@@ -16,6 +16,24 @@
       "revId": "de161089546d8d970ff5cfeed87b08d03344f3fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "885adc21_1222cb86",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1732289
+      },
+      "writtenOn": "2020-09-24T10:20:16Z",
+      "side": 1,
+      "message": "Well, the disposer doesn\u0027t close the socket.\nI\u0027ve been testing master this morning and I noticed this. This is why I added this CL.",
+      "parentUuid": "f3816bd8_caeb0a87",
+      "revId": "de161089546d8d970ff5cfeed87b08d03344f3fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
