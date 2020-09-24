@@ -17,6 +17,7 @@
 package View.Fidelity;
 
 import View.Decorator.RoundedCornerBorder;
+import com.intellij.util.ui.UIUtil;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,14 +37,13 @@ public class FidelityValidatablePanelWithTextField extends JPanel {
   public FidelityValidatablePanelWithTextField() {
     jTextField = new JTextField();
     errorLabel = new JLabel();
-    this.setLayout(new BorderLayout(0, 0));
-    this.add(jTextField, BorderLayout.CENTER);
-    this.add(errorLabel, BorderLayout.EAST);
-    this.setBorder(new RoundedCornerBorder());
-    this.setBackground(null);
-    this.setForeground(null);
-    this.setOpaque(false);
+    setLayout(new BorderLayout(0, 0));
+    add(jTextField, BorderLayout.CENTER);
+    add(errorLabel, BorderLayout.EAST);
+    setBorder(new RoundedCornerBorder());
+    setBackground(UIUtil.getTableBackground());
     jTextField.setBorder(null);
+    jTextField.setBackground(UIUtil.getTableBackground());
   }
 
   public JLabel getErrorLabel() {

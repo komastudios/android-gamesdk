@@ -18,6 +18,7 @@ package View.Fidelity;
 
 import View.Decorator.RoundedCornerBorder;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.AbstractCellEditor;
@@ -81,15 +82,19 @@ public class FidelityTableDecorators {
     public JPanelDecorator(List<String> enumsTemp) {
       this.enums = enumsTemp;
       fidelityTablePanel = new FidelityTablePanel();
+      fidelityTablePanel.setBackground(UIUtil.getTableBackground());
     }
 
     @Override
     public Component getTableCellEditorComponent(
         JTable table, Object value, boolean isSelected, int row, int column) {
       FidelityTableData fidelityTableData = (FidelityTableData) value;
-      fidelityTablePanel.updateData(fidelityTableData, isSelected, table);
+      fidelityTablePanel.updateData(fidelityTableData);
       fidelityTablePanel.setComboBoxChoices(enums);
       fidelityTablePanel.getEnumTypes().setSelectedItem(fidelityTableData.getFieldEnumName());
+      fidelityTablePanel.getTextFieldPanel().setBackground(UIUtil.getTableGridColor());
+      fidelityTablePanel.getTextFieldPanel().getTextField()
+          .setBackground(UIUtil.getTableGridColor());
       return fidelityTablePanel;
     }
 
@@ -101,7 +106,7 @@ public class FidelityTableDecorators {
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       FidelityTableData fidelityTableData = (FidelityTableData) value;
-      fidelityTablePanel.updateData(fidelityTableData, isSelected, table);
+      fidelityTablePanel.updateData(fidelityTableData);
       fidelityTablePanel.setComboBoxChoices(enums);
       if (enums.contains(fidelityTableData.getFieldEnumName())) {
         fidelityTablePanel.getEnumTypes().setSelectedItem(fidelityTableData.getFieldEnumName());
@@ -125,6 +130,7 @@ public class FidelityTableDecorators {
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       FidelityTableData feed = (FidelityTableData) value;
       textField.setText(feed.getFieldParamName());
+      textField.setBackground(table.getBackground());
       return textField;
     }
   }
@@ -143,6 +149,7 @@ public class FidelityTableDecorators {
         JTable table, Object value, boolean isSelected, int row, int column) {
       FidelityTableData feed = (FidelityTableData) value;
       textField.setText(feed.getFieldParamName());
+      textField.setBackground(UIUtil.getTableGridColor());
       return textField;
     }
 
