@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -72,6 +73,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       SCREEN_SIZE.height / 5);
   private final Dimension scrollPaneSize = new Dimension(SCREEN_SIZE.width / 4,
       SCREEN_SIZE.height / 16);
+  private static final String loadingText = "Retrieving histograms";
 
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
@@ -88,6 +90,8 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private MonitoringController controller;
+  private Thread loadingAnimationThread;
+  private JLabel loadingLabel;
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -145,6 +149,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest)
       throws InvalidProtocolBufferException {
+    if (!loadingAnimationThread.isInterrupted()) {
+      loadingAnimationThread.interrupt();
+    }
+
     controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
 
@@ -172,6 +180,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     JPanel buttonPanel2 = new JPanel();
     buttonPanel2.add(stopMonitoring);
     this.add(buttonPanel2);
+
+    loadingPanel.add(Box.createVerticalStrut(30));
+    loadingPanel.add(loadingLabel);
     this.add(loadingPanel);
 
     gridPanel.add(nameInfo);
@@ -192,6 +203,32 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     buttonPanel2.add(changeQualityButton);
 
     this.add(retrievedInformationPanel);
+  }
+
+  private void sleepUI(long seconds) {
+    try {
+      TimeUnit.SECONDS.sleep(seconds);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void initLoadingAnimationThread() {
+    loadingAnimationThread = new Thread("Retrieving histogram data") {
+      public void run() {
+        while (true) {
+          loadingLabel.setText(loadingText);
+          sleepUI(1);
+          loadingLabel.setText(loadingText + " .");
+          sleepUI(1);
+          loadingLabel.setText(loadingText + " . .");
+          sleepUI(1);
+          loadingLabel.setText(loadingText + " . . .");
+          sleepUI(1);
+        }
+      }
+    };
+    loadingAnimationThread.start();
   }
 
   private void initComponents() {
@@ -241,9 +278,11 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
     startMonitoring.addActionListener(actionEvent -> {
       try {
+        loadingPanel.setVisible(true);
         RequestServer.listen(requestConsumer);
         startMonitoring.setVisible(false);
         stopMonitoring.setVisible(true);
+        initLoadingAnimationThread();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -259,12 +298,17 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       }
       startMonitoring.setVisible(true);
       stopMonitoring.setVisible(false);
+      if (!loadingAnimationThread.isInterrupted()) {
+        loadingAnimationThread.interrupt();
+        loadingPanel.setVisible(false);
+      }
     });
 
     stopMonitoring.setVisible(false);
 
     loadingPanel = new JPanel();
-    // TODO(@targintaru) add loading gif
+    loadingLabel = new JBLabel();
+
     retrievedInformationPanel = new JPanel(new VerticalLayout());
     retrievedInformationPanel.setVisible(false);
     graphPanel = new JPanel(new VerticalLayout());
