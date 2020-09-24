@@ -19,6 +19,7 @@ package Utils.Assets;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Model.ValidationSettingsDataModel;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import java.io.File;
@@ -84,5 +85,18 @@ public class AssetsWriter {
         qualityDataModel.toString(),
         filePath,
         Optional.empty());
+  }
+
+  public boolean saveDevValidationSettingsParams(ValidationSettingsDataModel validationSettingsDataModel) {
+    File file = new File(assetsDirectory, "dev_tuningfork_validationsettingsparamst.txt");
+    try (FileWriter fileWriter = new FileWriter(file)){
+      fileWriter.write(AUTO_GENERATED_PROTO);
+      fileWriter.write(validationSettingsDataModel.toString());
+      fileWriter.write(AUTO_GENERATED_PROTO);
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }
