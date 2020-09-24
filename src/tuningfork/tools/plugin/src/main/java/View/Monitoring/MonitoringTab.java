@@ -20,7 +20,9 @@ import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceS
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import Utils.Monitoring.RequestServer;
 import View.TabLayout;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.components.JBLabel;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -40,6 +42,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jfree.chart.ChartPanel;
@@ -64,7 +68,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private final Dimension chartSize = new Dimension(SCREEN_SIZE.width / 4,
-      SCREEN_SIZE.height / 4);
+      SCREEN_SIZE.height / 5);
+  private final Dimension scrollPaneSize = new Dimension(SCREEN_SIZE.width / 4,
+      SCREEN_SIZE.height / 16);
 
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
@@ -75,6 +81,8 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JLabel deviceData;
   private JLabel totalMemData;
   private JPanel gridPanel;
+  private JPanel fidelityInfoPanel;
+  private JScrollPane fidelityInfoScrollPane;
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private MonitoringController controller;
@@ -132,11 +140,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
 
-  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
-    if (!controller.checkFidelityParams(telemetryRequest)) {
-      instrumentIDComboBox.setModel(new DefaultComboBoxModel<>());
-      deleteExistingGraphs();
-    }
+  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest)
+      throws InvalidProtocolBufferException {
+    controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
 
     DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
@@ -186,6 +192,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     gridPanel.add(totalMemData);
 
     retrievedInformationPanel.add(gridPanel);
+    retrievedInformationPanel.add(fidelityInfoScrollPane);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
 
@@ -229,7 +236,15 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     gridPanel = new JPanel(new GridLayout(5, 2));
-    Consumer<UploadTelemetryRequest> requestConsumer = this::setMonitoringTabData;
+
+    Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest -> {
+      try {
+        setMonitoringTabData(uploadTelemetryRequest);
+      } catch (InvalidProtocolBufferException e) {
+        e.printStackTrace();
+      }
+    };
+
     startMonitoring.addActionListener(actionEvent -> {
       try {
         RequestServer.listen(requestConsumer);
@@ -261,6 +276,16 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
+
+    fidelityInfoPanel = new JPanel(new VerticalLayout());
+    fidelityInfoScrollPane = new JScrollPane();
+    fidelityInfoScrollPane.setMaximumSize(scrollPaneSize);
+    fidelityInfoScrollPane.setMinimumSize(scrollPaneSize);
+    fidelityInfoScrollPane.setPreferredSize(scrollPaneSize);
+    fidelityInfoScrollPane.setViewportView(fidelityInfoPanel);
+    fidelityInfoScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    fidelityInfoScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    fidelityInfoScrollPane.setViewportBorder(null);
   }
 
   @Override
@@ -280,6 +305,17 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
       graphPanel.add(chartPanel);
       histogramsGraphPanels.add(chartPanel);
+    } else if (propertyChangeEvent.getPropertyName().equals("addFidelity")) {
+      JLabel fidelityName = new JBLabel( "Quality settings " + propertyChangeEvent.getOldValue());
+      JLabel fidelityInfo = new JBLabel(propertyChangeEvent.getNewValue().toString());
+
+      fidelityName.setFont(MIDDLE_FONT);
+      fidelityInfo.setFont(SMALL_FONT);
+
+      fidelityInfoPanel.add(fidelityName);
+      fidelityInfoPanel.add(fidelityInfo);
+
+      SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
     }
   }
 }
