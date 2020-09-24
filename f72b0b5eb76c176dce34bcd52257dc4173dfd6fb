@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "555a88a4_b284e017",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-09-24T18:22:15Z",
+      "side": 1,
+      "message": "Hey Ady,\nI\u0027m confused about how this doesn\u0027t include the notes for 1.2.0, which are present at the HEAD of master.\n",
+      "revId": "f72b0b5eb76c176dce34bcd52257dc4173dfd6fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
