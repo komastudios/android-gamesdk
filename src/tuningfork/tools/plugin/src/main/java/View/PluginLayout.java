@@ -31,13 +31,17 @@ import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.OnePixelDivider;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.UIManager;
@@ -94,6 +98,7 @@ public class PluginLayout extends JPanel {
 
   private void addComponents() {
     this.add(menuPanel);
+    this.add(Box.createHorizontalStrut(10));
     this.add(fidelitySettingsLayout);
     this.add(annotationsLayout);
     this.add(qualityLayout);
@@ -103,11 +108,7 @@ public class PluginLayout extends JPanel {
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
     for (JPanel panel : panels) {
-      if (panel.equals(toSetVisible)) {
-        panel.setVisible(true);
-      } else {
-        panel.setVisible(false);
-      }
+      panel.setVisible(panel.equals(toSetVisible));
     }
   }
 
@@ -166,6 +167,8 @@ public class PluginLayout extends JPanel {
     menu.setSelectionModel(new LeafOnlySelectionModel());
     menuPanel.setSize(menuSize);
     menuPanel.add(menu);
+    menuPanel.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
+    menuPanel.setBorder(BorderFactory.createLineBorder(OnePixelDivider.BACKGROUND));
   }
 
   private void initComponents() {
@@ -239,7 +242,7 @@ public class PluginLayout extends JPanel {
           super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
 
       if (!leaf) {
-        cell.setFont(new Font("Roboto", Font.BOLD, 14));
+        cell.setFont(new Font("Roboto", Font.BOLD, 13));
       } else {
         cell.setFont(new Font("Roboto", Font.PLAIN, 12));
       }
@@ -281,14 +284,9 @@ public class PluginLayout extends JPanel {
     return annotationsLayout.getAnnotationController();
   }
 
-  public InstrumentationSettingsTabController getInstrumentationSettingsTabController() {
-    return instrumentationSettingsTab.getInstrumentationSettingsTabController();
-  }
-
   public void saveSettings() {
     fidelitySettingsLayout.saveSettings();
     annotationsLayout.saveSettings();
-    instrumentationSettingsTab.saveSettings();
     qualityLayout.saveSettings();
   }
 

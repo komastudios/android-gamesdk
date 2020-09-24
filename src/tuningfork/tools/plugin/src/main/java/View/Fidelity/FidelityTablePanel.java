@@ -20,7 +20,6 @@ import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 
 public class FidelityTablePanel extends JPanel {
 
@@ -41,6 +40,10 @@ public class FidelityTablePanel extends JPanel {
     return enumTypes;
   }
 
+  public FidelityValidatablePanelWithTextField getTextFieldPanel() {
+    return enumName;
+  }
+
   public String getEnumName() {
     return enumName.getTextField().getText();
   }
@@ -59,14 +62,9 @@ public class FidelityTablePanel extends JPanel {
     }
   }
 
-  public void updateData(FidelityTableData fidelityData, boolean isSelected, JTable table) {
+  public void updateData(FidelityTableData fidelityData) {
     this.fidelityData = fidelityData;
     enumTypes.setSelectedItem(this.fidelityData.getFieldEnumName());
     enumName.getTextField().setText(this.fidelityData.getFieldParamName());
-    if (isSelected) {
-      setBackground(table.getSelectionBackground());
-    } else {
-      setBackground(table.getBackground());
-    }
   }
 }

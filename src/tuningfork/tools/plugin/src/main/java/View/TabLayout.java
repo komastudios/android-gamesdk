@@ -20,10 +20,13 @@ import View.Decorator.DocumentFilters.NumberDocumentFilter;
 import View.Decorator.RoundedCornerBorder;
 import View.Decorator.TableRenderer;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.util.ui.UIUtil;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -61,7 +64,7 @@ public class TabLayout extends JPanel {
     this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
   }
 
-  public void setTableSettings(JTable table) {
+  public static void setTableSettings(JTable table) {
     table.setFillsViewportHeight(true);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.getTableHeader().setReorderingAllowed(false);
@@ -70,6 +73,7 @@ public class TabLayout extends JPanel {
     table.setSelectionForeground(null);
     table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
     table.setIntercellSpacing(new Dimension(0, 0));
+    table.setShowGrid(false);
   }
 
   public void initComboBoxColumns(JTable table, int col, List<String> options) {
@@ -90,20 +94,38 @@ public class TabLayout extends JPanel {
 
   public static DefaultCellEditor getTextFieldModel() {
     JTextField textFieldModel = new JTextField();
+    textFieldModel.setOpaque(true);
     textFieldModel.setBorder(new RoundedCornerBorder());
-    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
+    DefaultCellEditor textEditor = new CellEditorWithBackground(textFieldModel);
     textEditor.setClickCountToStart(1);
     return textEditor;
   }
 
   public TableCellEditor getIntegerTextFieldModel() {
     JTextField textFieldModel = new JTextField();
-    DefaultCellEditor defaultCellEditor = new DefaultCellEditor(textFieldModel);
+    textFieldModel.setOpaque(true);
+    DefaultCellEditor defaultCellEditor = new CellEditorWithBackground(textFieldModel);
     ((AbstractDocument) textFieldModel.getDocument())
         .setDocumentFilter(new NumberDocumentFilter());
     textFieldModel.setBorder(new RoundedCornerBorder());
     defaultCellEditor.setClickCountToStart(1);
     return defaultCellEditor;
+  }
+
+  private static final class CellEditorWithBackground extends DefaultCellEditor {
+
+    public CellEditorWithBackground(JTextField textField) {
+      super(textField);
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
+        int row, int column) {
+      JComponent jComponent = (JComponent) super
+          .getTableCellEditorComponent(table, value, isSelected, row, column);
+      jComponent.setBackground(UIUtil.getTableGridColor());
+      return jComponent;
+    }
   }
 
   public void initTextFieldColumns(JTable table, int col) {

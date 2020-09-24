@@ -51,9 +51,8 @@ import org.jdesktop.swingx.VerticalLayout;
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
   private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
-  private final static JLabel title = new JLabel(RESOURCE_LOADER.get("quality_levels"));
-  private final static JLabel aboutQualitySettings = new JLabel(
-      RESOURCE_LOADER.get("quality_info"));
+  private final JLabel title;
+  private final JLabel aboutQualitySettings;
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
@@ -66,6 +65,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     this.setLayout(new VerticalLayout());
     this.qualityTabController = qualityTabController;
     this.disposable = disposable;
+    title = new JLabel(RESOURCE_LOADER.get("quality_levels"));
+    aboutQualitySettings = new JLabel(RESOURCE_LOADER.get("quality_info"));
     setSize();
     initComponents();
     addComponents();
@@ -82,6 +83,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initComponents() {
+
     title.setFont(getMainFont());
     aboutQualitySettings.setFont(getSecondaryFont());
 
@@ -148,6 +150,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     qualityParametersTable.setIntercellSpacing(new Dimension(0, 0));
     qualityParametersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     qualityParametersTable.setRowHeight(25);
+    qualityParametersTable.setShowGrid(false);
     setColumnsSize(qualityParametersTable.getTableHeader());
   }
 
