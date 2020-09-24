@@ -148,6 +148,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     qualityParametersTable.setIntercellSpacing(new Dimension(0, 0));
     qualityParametersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     qualityParametersTable.setRowHeight(25);
+    qualityParametersTable.setShowGrid(false);
     setColumnsSize(qualityParametersTable.getTableHeader());
   }
 

@@ -31,7 +31,6 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -51,7 +50,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   private final JBLabel fidelityLabel = new JBLabel(resourceLoader.get("fidelity_settings"));
   private final JBLabel informationLabel = new JBLabel(resourceLoader.get("fidelity_info"));
   FidelityTabController fidelityTabController;
-  private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
 
@@ -71,7 +69,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initVariables() {
-    scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
           @Override
