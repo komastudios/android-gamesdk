@@ -35,9 +35,13 @@ import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.util.ui.JBEmptyBorder;
+import com.intellij.util.ui.JBUI;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.border.Border;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MainDialogWrapper extends DialogWrapper {
@@ -72,6 +76,12 @@ public class MainDialogWrapper extends DialogWrapper {
       e.printStackTrace();
     }
     super.doCancelAction();
+  }
+
+  @Nullable
+  @Override
+  protected Border createContentPaneBorder() {
+    return new JBEmptyBorder(JBUI.insetsRight(10));
   }
 
   @Override
@@ -129,6 +139,12 @@ public class MainDialogWrapper extends DialogWrapper {
     this.compiler = compiler;
     setTitle(resourceLoader.get("android_performance_tuner_plugin"));
     init();
+  }
+
+  @NotNull
+  @Override
+  protected DialogStyle getStyle() {
+    return DialogStyle.COMPACT;
   }
 
   @Override
