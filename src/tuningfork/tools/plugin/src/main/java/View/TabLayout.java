@@ -61,7 +61,7 @@ public class TabLayout extends JPanel {
     this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
   }
 
-  public void setTableSettings(JTable table) {
+  public static void setTableSettings(JTable table) {
     table.setFillsViewportHeight(true);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.getTableHeader().setReorderingAllowed(false);
