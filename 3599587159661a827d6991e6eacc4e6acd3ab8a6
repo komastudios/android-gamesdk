@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "24a3c31d_17aeadbc",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/ValidationSettingsDataModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-09-24T22:00:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27142c40_c29946c5",
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8f08c16d_04b9ad62",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Model/ValidationSettingsDataModel.java",
         "patchSetId": 6
@@ -39,6 +57,30 @@
       "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1eb3e7dc_6982767a",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Model/ValidationSettingsDataModel.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-09-24T22:00:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f08c16d_04b9ad62",
+      "range": {
+        "startLine": 10,
+        "startChar": 12,
+        "endLine": 16,
+        "endChar": 50
+      },
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     },
     {
       "key": {
@@ -79,6 +121,24 @@
       "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "622cb862_73988f6f",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/ValidationSettings/ValidationSettingsTab.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1729535
+      },
+      "writtenOn": "2020-09-24T22:00:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27e520dc_ec6a7837",
+      "revId": "3599587159661a827d6991e6eacc4e6acd3ab8a6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
