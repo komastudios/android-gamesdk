@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3816bd8_caeb0a87",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-09-24T10:00:15Z",
+      "side": 1,
+      "message": "I think this is the disposer responsibility. Once the dialog has been closed by either method. It will dispose of the socket.",
+      "revId": "de161089546d8d970ff5cfeed87b08d03344f3fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
