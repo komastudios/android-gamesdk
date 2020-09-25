@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005178456",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1430042?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7a4eb52c_c1864a95",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Fidelity/FidelityTab.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-25T11:41:53Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 2
+      },
+      "revId": "9d4bad2124ca0a28e060a53cbce61b40c96a0af2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
