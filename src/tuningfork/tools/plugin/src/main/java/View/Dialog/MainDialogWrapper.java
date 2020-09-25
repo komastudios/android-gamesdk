@@ -115,6 +115,13 @@ public class MainDialogWrapper extends DialogWrapper {
           "Android Performance Tuner settings saved successfully!",
           NotificationType.INFORMATION);
       notification.notify(project);
+
+      try {
+        RequestServer.stopListening();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
       super.doOKAction();
     }
   }
