@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005172296",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1435416?revision\u003d5",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1b205430_11da02e0",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-25T05:15:24Z",
+      "side": 1,
+      "message": "Wrong casing for \"loadingText\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 76,
+        "startChar": 10,
+        "endLine": 76,
+        "endChar": 41
+      },
+      "revId": "d3083ce55d18f81f12c81c5734cf3b04ee7f7dd9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
