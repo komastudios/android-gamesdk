@@ -1,0 +1,2272 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cfad49ad_182bd25a",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 1,
+        "startChar": 29,
+        "endLine": 1,
+        "endChar": 30
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "605cc117_ce703d09",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 2,
+        "startChar": 79,
+        "endLine": 2,
+        "endChar": 80
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4c305173_fb348614",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 3,
+        "startChar": 4,
+        "endLine": 3,
+        "endChar": 5
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6b8dcaa2_17dd7339",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 4,
+        "startChar": 39,
+        "endLine": 4,
+        "endChar": 40
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cd258142_0dd7fbf0",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 5,
+        "startChar": 4,
+        "endLine": 5,
+        "endChar": 5
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "af345220_c7fc6677",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 6,
+        "startChar": 79,
+        "endLine": 6,
+        "endChar": 80
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5324ddb2_6758bd83",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "287bade2_05538fe9",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 8,
+        "startChar": 60,
+        "endLine": 8,
+        "endChar": 61
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ff8f0347_d2ab8ac6",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 9,
+        "startChar": 32,
+        "endLine": 9,
+        "endChar": 33
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2d18dfee_d99fa032",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "90a81517_f9ed7c17",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 11,
+        "startChar": 17,
+        "endLine": 11,
+        "endChar": 18
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2f666496_bb69c0c8",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 12,
+        "startChar": 34,
+        "endLine": 12,
+        "endChar": 35
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "338c99ea_e8e3db8e",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 13,
+        "startChar": 22,
+        "endLine": 13,
+        "endChar": 23
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3a74b28d_3876a94d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 14,
+        "startChar": 22,
+        "endLine": 14,
+        "endChar": 23
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4470c15a_a77d3979",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fd1e5af6_dffb4aae",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 16,
+        "startChar": 113,
+        "endLine": 16,
+        "endChar": 114
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f421fff2_3c7b0b8c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 17,
+        "startChar": 21,
+        "endLine": 17,
+        "endChar": 22
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4fe4acd4_34c4f2d4",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "402a4147_bb4b62a8",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 19,
+        "startChar": 18,
+        "endLine": 19,
+        "endChar": 19
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "412b729f_9ff4b75c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 20,
+        "startChar": 46,
+        "endLine": 20,
+        "endChar": 47
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d952c1fd_10ac556d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fd5773f5_787c019c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 22,
+        "startChar": 21,
+        "endLine": 22,
+        "endChar": 22
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bac48316_4c5b5b37",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 23,
+        "startChar": 29,
+        "endLine": 23,
+        "endChar": 30
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "721832b2_fcd1f47c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 24,
+        "startChar": 34,
+        "endLine": 24,
+        "endChar": 35
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d6a9d9e0_d4ec1191",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2b9d5011_755a5b24",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 26,
+        "startChar": 5,
+        "endLine": 26,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6a59201f_1aaf6319",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 27,
+        "startChar": 83,
+        "endLine": 27,
+        "endChar": 84
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bb3059cc_1462b2e2",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 28,
+        "startChar": 5,
+        "endLine": 28,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "05f31a49_5627c696",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 29,
+        "startChar": 71,
+        "endLine": 29,
+        "endChar": 72
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6f237afc_11f11ad5",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 30,
+        "startChar": 40,
+        "endLine": 30,
+        "endChar": 41
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "11efb5fd_fba2b46e",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a89aa35b_4b00eee5",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 32,
+        "startChar": 9,
+        "endLine": 32,
+        "endChar": 10
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e3051b64_686f7b65",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cf8bee62_cd39c9c5",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 34,
+        "startChar": 21,
+        "endLine": 34,
+        "endChar": 22
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f9ae6f99_647c9b17",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 35,
+        "startChar": 28,
+        "endLine": 35,
+        "endChar": 29
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "582e33d5_8c1e157f",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 36,
+        "startChar": 37,
+        "endLine": 36,
+        "endChar": 38
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8e21c85c_b5051331",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1e2747a6_27e756b8",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 38,
+        "startChar": 31,
+        "endLine": 38,
+        "endChar": 32
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ad73580d_e8d802a7",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cfae1e5a_e65fbd3d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "419437c0_ec376f61",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 41,
+        "startChar": 65,
+        "endLine": 41,
+        "endChar": 66
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "943ed67b_e0e76b76",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 42,
+        "startChar": 5,
+        "endLine": 42,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e8eea9df_a80462e4",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 43,
+        "startChar": 71,
+        "endLine": 43,
+        "endChar": 72
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "46091e56_06b6d3e9",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 44,
+        "startChar": 40,
+        "endLine": 44,
+        "endChar": 41
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bcedc504_287e79d7",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f895109e_e731b422",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 46,
+        "startChar": 9,
+        "endLine": 46,
+        "endChar": 10
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a477ca8a_abf6d5ec",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3e0c620d_534df4e8",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 48,
+        "startChar": 5,
+        "endLine": 48,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d3e764bc_ea25fd21",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 49,
+        "startChar": 58,
+        "endLine": 49,
+        "endChar": 59
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3f0b1cc8_158b6603",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "21773f49_b35d3962",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 51,
+        "startChar": 47,
+        "endLine": 51,
+        "endChar": 48
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3204e87e_afa80546",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "84000c72_51d09340",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 53,
+        "startChar": 13,
+        "endLine": 53,
+        "endChar": 14
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "624eeeca_63791d09",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 54,
+        "startChar": 38,
+        "endLine": 54,
+        "endChar": 39
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9b9f13dd_25b81969",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 55,
+        "startChar": 18,
+        "endLine": 55,
+        "endChar": 19
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a01b35b9_d9725680",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 56,
+        "startChar": 11,
+        "endLine": 56,
+        "endChar": 12
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7dba7025_7f409147",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8d550456_e4b1aa30",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 58,
+        "startChar": 19,
+        "endLine": 58,
+        "endChar": 20
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c6855b3a_c8fe50fd",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 59,
+        "startChar": 29,
+        "endLine": 59,
+        "endChar": 30
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b08b4873_c28c0c33",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "74facd70_2138623d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 61,
+        "startChar": 20,
+        "endLine": 61,
+        "endChar": 21
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "520bc9b2_669b36db",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c13c1201_2e37ea57",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 63,
+        "startChar": 8,
+        "endLine": 63,
+        "endChar": 9
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7f4ba923_54bebfad",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 64,
+        "startChar": 27,
+        "endLine": 64,
+        "endChar": 28
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "419b173f_528af5e5",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fb61e1cd_c3e1c820",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 66,
+        "startChar": 58,
+        "endLine": 66,
+        "endChar": 59
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "674aaa21_4d5ff81e",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8aaf1d58_0bba6a69",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 68,
+        "startChar": 19,
+        "endLine": 68,
+        "endChar": 20
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fa39f55b_1e1df340",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 69,
+        "startChar": 174,
+        "endLine": 69,
+        "endChar": 175
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9135084b_231e2117",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9d16879e_b42aa3a1",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 5
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "05bce9da_fd7b600d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 72,
+        "startChar": 60,
+        "endLine": 72,
+        "endChar": 61
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f40174ea_6ffabf10",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 73,
+        "startChar": 35,
+        "endLine": 73,
+        "endChar": 36
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c71fee41_ebf8ab50",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "39bbc34a_4c06fbde",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 75,
+        "startChar": 5,
+        "endLine": 75,
+        "endChar": 6
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6f25f43f_da73a5dc",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 76,
+        "startChar": 84,
+        "endLine": 76,
+        "endChar": 85
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "98fba5e3_e312c98c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 77,
+        "startChar": 33,
+        "endLine": 77,
+        "endChar": 34
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "74d89c2a_c705c66a",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 78,
+        "startChar": 44,
+        "endLine": 78,
+        "endChar": 45
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4b931206_0c60457d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 79,
+        "startChar": 9,
+        "endLine": 79,
+        "endChar": 10
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b93f04cd_ace5f34b",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a123c1d5_0345bb2f",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 81,
+        "startChar": 8,
+        "endLine": 81,
+        "endChar": 9
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e1e6d6f6_03535d9d",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 82,
+        "startChar": 32,
+        "endLine": 82,
+        "endChar": 33
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "03103b09_f990d2a1",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 1
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005202223",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440252?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b9a93fc7_3431a36c",
+        "filename": "samples/memory_advice/hogger/gradlew.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-27T16:26:32Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 84,
+        "startChar": 6,
+        "endLine": 84,
+        "endChar": 7
+      },
+      "revId": "1485bddc8bf94bb6b0dda22824a27e4064869297",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
