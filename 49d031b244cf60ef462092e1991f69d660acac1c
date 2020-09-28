@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7e28609_aa675173",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:22:02Z",
+      "side": 1,
+      "message": "Overall looks good, added a few nits to ensure the CMakeLists is as clean as possible.",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "95b2fba3_c28301f9",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:22:02Z",
+      "side": 1,
+      "message": "You may remove this comment if you don\u0027t need protobuf? Not sure about your plan for this, just flagging.",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cc7a2db4_0fd48e00",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:22:02Z",
+      "side": 1,
+      "message": "I think these variables are deprecated, try to remove them. add_gamesdk_target should be working standalone, using jut the LIBRARIES argument that is passed to it.",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3ef4abc_9fc9b3a7",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:22:02Z",
+      "side": 1,
+      "message": "Should you build just memory_advice for this sample? Or do you actually want to get Swappy/Tuning Fork in?",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
