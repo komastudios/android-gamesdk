@@ -16,6 +16,24 @@
       "revId": "43fd4652413526c48abdbfbfe2813a2275535c5e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "404f0892_1a37ab2b",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T13:00:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7b3fc15_371d89d6",
+      "revId": "43fd4652413526c48abdbfbfe2813a2275535c5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
