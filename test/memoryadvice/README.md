@@ -202,7 +202,7 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.apps.internal.games:memoryadvice:0.9'
+    implementation 'com.google.android.apps.internal.games:memoryadvice:0.13'
 
 }
 ```
