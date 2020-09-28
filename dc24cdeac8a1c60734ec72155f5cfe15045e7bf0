@@ -71,6 +71,24 @@
     },
     {
       "key": {
+        "uuid": "b0ec2b04_cc9cb9f2",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T11:12:12Z",
+      "side": 1,
+      "message": "I\u0027m resolving this as Florian also agreed with the contents of the file.",
+      "parentUuid": "1e707760_977bf4b5",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a562b986_1d758a44",
         "filename": "src/memory_advice/CMakeLists.txt",
         "patchSetId": 3
@@ -85,6 +103,24 @@
       "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7ca69d9_103b3b40",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T11:12:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a562b986_1d758a44",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
