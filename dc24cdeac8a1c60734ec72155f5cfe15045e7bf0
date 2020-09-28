@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dcfc94b0_a83ba190",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-09-28T08:09:22Z",
+      "side": 1,
+      "message": "What\u0027s this file based on?",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
