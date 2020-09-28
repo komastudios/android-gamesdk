@@ -18,15 +18,17 @@ package View;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Fidelity.FidelityTabController;
+import Controller.InstrumentationSettings.InstrumentationSettingsTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
+import View.InstrumentationSettings.InstrumentationSettingsTab;
 import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
-import View.ValidationSettings.ValidationSettingsTab;
+import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.openapi.Disposable;
 import com.intellij.ui.treeStructure.Tree;
 import java.awt.Color;
@@ -51,10 +53,9 @@ public class PluginLayout extends JPanel {
   private QualityTab qualitySettingsLayout;
   private AnnotationTab annotationsLayout;
   private FidelityTab fidelitySettingsLayout;
-  private JPanel validationSettingsLayout;
+  private InstrumentationSettingsTab instrumentationSettingsTab;
   private MonitoringTab monitoringTab;
-  private FidelityTabController fidelityTabController;
-  private AnnotationTabController annotationTabController;
+  private InstrumentationSettingsTabController instrumentationSettingsTabController;
   private JPanel menuPanel;
   private JTree menu;
   private ArrayList<JPanel> panels;
@@ -94,7 +95,7 @@ public class PluginLayout extends JPanel {
     this.add(fidelitySettingsLayout);
     this.add(annotationsLayout);
     this.add(qualitySettingsLayout);
-    this.add(validationSettingsLayout);
+    this.add(instrumentationSettingsTab);
     this.add(monitoringTab);
   }
 
@@ -150,7 +151,7 @@ public class PluginLayout extends JPanel {
       } else if (node.equals(qualitySettingsNode)) {
         changeLayoutVisibility(qualitySettingsLayout);
       } else if (node.equals(validationSettings)) {
-        changeLayoutVisibility(validationSettingsLayout);
+        changeLayoutVisibility(instrumentationSettingsTab);
       } else if (node.equals(telemetryNode)) {
         changeLayoutVisibility(monitoringTab);
       } else if (!node.isLeaf()) {
@@ -166,13 +167,14 @@ public class PluginLayout extends JPanel {
 
   private void initComponents() {
     // Annotation Initialization.
-    annotationTabController = new AnnotationTabController(annotationData, enumData);
+    AnnotationTabController annotationTabController = new AnnotationTabController(annotationData,
+        enumData);
     annotationsLayout = new AnnotationTab(annotationTabController, disposable);
     annotationsLayout.setSize(new Dimension(5 * SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2));
     annotationsLayout.setVisible(true);
 
     // Fidelity initialization.
-    fidelityTabController = new FidelityTabController(fidelityData,
+    FidelityTabController fidelityTabController = new FidelityTabController(fidelityData,
         annotationTabController.getEnums());
     fidelitySettingsLayout = new FidelityTab(fidelityTabController);
     annotationTabController.addPropertyChangeListener(
@@ -190,9 +192,12 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout.setVisible(false);
 
     // Validation settings initialization.
-    validationSettingsLayout = new ValidationSettingsTab(enumData);
-    validationSettingsLayout.setSize(panelSize);
-    validationSettingsLayout.setVisible(false);
+    instrumentationSettingsTabController = new InstrumentationSettingsTabController(
+        Settings.newBuilder().build());
+    instrumentationSettingsTab = new InstrumentationSettingsTab(
+        instrumentationSettingsTabController);
+    instrumentationSettingsTab.setSize(panelSize);
+    instrumentationSettingsTab.setVisible(false);
 
     // Monitoring initialization.
     monitoringTab = new MonitoringTab();
@@ -204,7 +209,7 @@ public class PluginLayout extends JPanel {
     panels.add(qualitySettingsLayout);
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
-    panels.add(validationSettingsLayout);
+    panels.add(instrumentationSettingsTab);
     panels.add(monitoringTab);
 
     initMenuTree();
@@ -273,9 +278,14 @@ public class PluginLayout extends JPanel {
     return annotationsLayout.getAnnotationController();
   }
 
+  public InstrumentationSettingsTabController getInstrumentationSettingsTabController() {
+    return instrumentationSettingsTab.getInstrumentationSettingsTabController();
+  }
+
   public void saveSettings() {
     fidelitySettingsLayout.saveSettings();
     annotationsLayout.saveSettings();
+    instrumentationSettingsTab.saveSettings();
   }
 
   public QualityTabController getQualityTabController() {

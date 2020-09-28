@@ -32,6 +32,7 @@ dependencies {
     testCompile 'com.google.truth:truth:0.43'
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
     protobuf files('src/main/java/Utils/Monitoring/proto/performanceparameters.proto')
+    protobuf files('../../proto/tuningfork.proto')
 }
 
 def getAndroidStudioPath() {
@@ -70,6 +71,7 @@ sourceSets {
     main {
         proto {
             include 'src/main/java/Utils/Monitoring/proto/performanceparameters.proto'
+            include '../../proto/tuningfork.proto'
         }
     }
 }
