@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "342d90ca_51caa454",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T11:12:24Z",
+      "side": 1,
+      "message": "Makes sense, removing all protobuf related dependencies. They are there because I copied this file from experimentsdemo.",
+      "parentUuid": "95b2fba3_c28301f9",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cc7a2db4_0fd48e00",
         "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
         "patchSetId": 2
@@ -53,6 +71,24 @@
     },
     {
       "key": {
+        "uuid": "24937d02_beeb7599",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T11:12:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc7a2db4_0fd48e00",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3ef4abc_9fc9b3a7",
         "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
         "patchSetId": 2
@@ -67,6 +103,24 @@
       "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b1e9994_2ab95298",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-28T11:12:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3ef4abc_9fc9b3a7",
+      "revId": "49d031b244cf60ef462092e1991f69d660acac1c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
