@@ -10,7 +10,7 @@ android {
         minSdkVersion 19
         versionCode 9
         // LINT.IfChange
-        versionName '0.9'
+        versionName '0.13'
         // LINT.ThenChange(../README.md)
     }
 
@@ -40,10 +40,19 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.google.android.apps.internal.games'
-                artifactId = 'memoryadvice'
+                groupId = 'com.google.android.games'
+                artifactId = 'memory-advice'
                 version = android.defaultConfig.versionName
                 artifact(sourceJar)
+                pom {
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+                }
             }
         }
     }
