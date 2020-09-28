@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7b3fc15_371d89d6",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T11:15:23Z",
+      "side": 1,
+      "message": "Not a big deal yet, but better get it right now: \nUse fixed size types (uint64_t, uint32_t...) to ensure they stay the same size across platforms, at least in the public interface functions (this helps ensuring the ABI stays the same).",
+      "revId": "43fd4652413526c48abdbfbfe2813a2275535c5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
