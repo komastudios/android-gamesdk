@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "77592e45_a82cc05a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:35:13Z",
+      "side": 1,
+      "message": "Overall looks good 👍 Added a few nits.",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "013f1608_6a88196f",
+        "filename": "build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 684,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:35:13Z",
+      "side": 1,
+      "message": "Ah nice I missed this while looking at what was necessary to get a new lib running :) \nWill be worth looking at what kind of \"unit tests\" will be doable for your library!",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcfc94b0_a83ba190",
         "filename": "src/memory_advice/CMakeLists.txt",
         "patchSetId": 3
@@ -13,6 +47,41 @@
       "writtenOn": "2020-09-28T08:09:22Z",
       "side": 1,
       "message": "What\u0027s this file based on?",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e707760_977bf4b5",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:35:13Z",
+      "side": 1,
+      "message": "This is adapted from Swappy CMakeLists.txt. The flags include:\nC++14, warnings are errors, thread safety warnings including \"annotations on libc++’s std::mutex and std::lock_guard\", O3 optimization, PIC code, no exceptions, no RTTI (seems all fair so far), some magic to get smaller library size (-ffunction-sections -fdata-sections, -Wl,--gc-sections,-s) (seems to work well for Swappy), support for non GNU runtime symbol resolution hashtable (unsure how necessary this is, though it seems to work for Swappy and don\u0027t have any downside).\n\nIt seems fair to be to go ahead with this, but we can totally revisit these flags if needed.",
+      "parentUuid": "dcfc94b0_a83ba190",
+      "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a562b986_1d758a44",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-09-28T09:35:13Z",
+      "side": 1,
+      "message": "ubernit (sorry!): this is very compact, would you mind adding a blank lines between the block of set(s) and the include_directories, and the add_library?\n\nI see this as \"here are 1) a bunch of flags first, then 2) some include directories, then 3) the sources, and finally 4) I declare the libraries that are built from the sources.\"",
       "revId": "dc24cdeac8a1c60734ec72155f5cfe15045e7bf0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
