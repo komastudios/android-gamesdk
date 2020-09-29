@@ -35,6 +35,17 @@ task sourceJar(type: Jar) {
     classifier 'sources'
 }
 
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    exclude "**/AndroidManifest.xml"
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    classifier 'javadoc'
+}
+
 afterEvaluate {
     publishing {
         publications {
@@ -44,7 +55,12 @@ afterEvaluate {
                 artifactId = 'memory-advice'
                 version = android.defaultConfig.versionName
                 artifact(sourceJar)
+                artifact(javadocJar)
                 pom {
+                    name = 'The Android Memory Assistance API'
+                    url = 'https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice'
+                    description = 'An experimental library to help applications avoid exceeding ' +
+                            'safe limits of memory use on devices.'
                     licenses {
                         license {
                             name = 'The Apache Software License, Version 2.0'

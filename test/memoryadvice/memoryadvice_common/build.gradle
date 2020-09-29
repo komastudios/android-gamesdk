@@ -18,6 +18,11 @@ task sourceJar(type: Jar) {
     classifier 'sources'
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    classifier 'javadoc'
+}
+
 afterEvaluate {
     publishing {
         publications {
@@ -26,9 +31,11 @@ afterEvaluate {
                 artifactId = 'memory-advice-common'
                 version = '0.13'
                 artifact(sourceJar)
+                artifact(javadocJar)
                 from components.java
                 pom {
                     name = 'Memory Advice for Java : Common components'
+                    url = 'https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice'
                     description = 'Parts of the Memory Advice library that are written in Java can be ' +
                             'run in desktop application as well as Android.'
                     licenses {
