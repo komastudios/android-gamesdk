@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005251799",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440778?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "86768fe0_a1d97a7c",
+        "filename": "test/memoryadvice/memoryadvice_common/src/main/resources/schemas/resultsRow.schema.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-29T21:43:49Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 11,
+        "startChar": 85,
+        "endLine": 11,
+        "endChar": 91
+      },
+      "revId": "f66671c9c7bd0c320b21794c6632fc0a92d4d80e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005251799",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440778?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0b8c6bef_f290be94",
+        "filename": "test/memoryadvice/memoryadvice_common/src/main/resources/schemas/resultsRow.schema.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-29T21:43:49Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 21,
+        "startChar": 85,
+        "endLine": 21,
+        "endChar": 91
+      },
+      "revId": "f66671c9c7bd0c320b21794c6632fc0a92d4d80e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
