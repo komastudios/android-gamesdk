@@ -35,6 +35,7 @@ public final class RoundedCornerBorder extends AbstractBorder {
 
   public enum BorderType {
     NORMAL(JBColor.GRAY),
+    WARNING(JBColor.YELLOW),
     ERROR(JBColor.RED);
     JBColor borderColor;
 
