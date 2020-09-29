@@ -63,6 +63,7 @@ public class MainDialogWrapper extends DialogWrapper {
   private MessageDataModel fidelityData;
   private List<EnumDataModel> enumData;
   private List<QualityDataModel> qualityData;
+  private final Settings settingsData;
   private ProtoCompiler compiler;
 
   private void addNotification(String errorMessage) {
@@ -143,13 +144,14 @@ public class MainDialogWrapper extends DialogWrapper {
 
   public MainDialogWrapper(@Nullable Project project, MessageDataModel annotationData,
       MessageDataModel fidelityData, List<EnumDataModel> enumData,
-      List<QualityDataModel> qualityData, ProtoCompiler compiler) {
+      List<QualityDataModel> qualityData, Settings settingsData, ProtoCompiler compiler) {
     super(project);
 
     this.annotationData = annotationData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
     this.qualityData = qualityData;
+    this.settingsData = settingsData;
     this.project = project;
     this.compiler = compiler;
     setTitle(resourceLoader.get("android_performance_tuner_plugin"));
@@ -173,7 +175,7 @@ public class MainDialogWrapper extends DialogWrapper {
   @Nullable
   protected JComponent createCenterPanel() {
     pluginLayout = new PluginLayout(annotationData, fidelityData, enumData, qualityData,
-        getDisposable());
+        settingsData, getDisposable());
     return pluginLayout;
   }
 }
