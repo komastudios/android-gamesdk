@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005253243",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440779?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a1674f6e_f07295b0",
+        "filename": "test/memoryadvice/memoryadvice/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-29T22:27:17Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 61,
+        "startChar": 105,
+        "endLine": 61,
+        "endChar": 111
+      },
+      "revId": "7bb733e7d2889de34069aa0021e309ef8d61fca4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005253243",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1440779?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c12fa099_08f8c9a5",
+        "filename": "test/memoryadvice/memoryadvice_common/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-09-29T22:27:17Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027primary/secondary\u0027 or \u0027manager/worker\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 38,
+        "startChar": 105,
+        "endLine": 38,
+        "endChar": 111
+      },
+      "revId": "7bb733e7d2889de34069aa0021e309ef8d61fca4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
