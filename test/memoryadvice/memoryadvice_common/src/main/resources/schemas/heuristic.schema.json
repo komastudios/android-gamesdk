@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Heuristic",
+  "description": "Settings for an individual memory management technique (heuristic) based off a single metric.",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "baselineRatio": {
+      "$ref": "triggerRatios.schema.json"
+    },
+    "deltaLimit": {
+      "$ref": "triggerRatios.schema.json"
+    },
+    "fixed": {
+      "anyOf": [
+        {
+          "$ref": "triggerNumeric.schema.json"
+        },
+        {
+          "$ref": "triggerMemory.schema.json"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Metrics Specs",
+  "description": "Specification for which metrics to collect.",
+  "additionalProperties": false,
+  "properties": {
+    "ActivityManager": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "canaryProcessTester": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "memory": {
+              "$ref": "memoryQuantity.schema.json"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "debug": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "meminfo": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "MemoryInfo": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "proc": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "status": {
+      "$ref": "metricsSpecGroup.schema.json"
+    },
+    "summary": {
+      "$ref": "metricsSpecGroup.schema.json"
+    }
+  }
+}
