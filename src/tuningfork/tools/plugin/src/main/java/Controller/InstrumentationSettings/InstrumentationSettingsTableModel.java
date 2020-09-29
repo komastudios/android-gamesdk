@@ -30,12 +30,16 @@ public class InstrumentationSettingsTableModel extends AbstractTableModel {
       "Maximum Bucket Size",
       "Number Of Buckets"
   };
-  private final List<String[]> data;
+  private List<String[]> data;
   private final InstrumentationSettingsTabController controller;
 
   public InstrumentationSettingsTableModel(InstrumentationSettingsTabController controller) {
     data = new ArrayList<>();
     this.controller = controller;
+  }
+
+  public void setData(List<String[]> data) {
+    this.data = data;
   }
 
   @Override

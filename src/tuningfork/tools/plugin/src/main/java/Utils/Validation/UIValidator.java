@@ -18,6 +18,8 @@ package Utils.Validation;
 
 import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
 
+import View.Decorator.RoundedCornerBorder;
+import View.Decorator.RoundedCornerBorder.BorderType;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.Disposer;
@@ -29,8 +31,11 @@ import java.awt.event.FocusListener;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -56,6 +61,24 @@ public class UIValidator {
     table.putClientProperty(VALIDATION_METHOD, validationMethod);
   }
 
+  public static void createSimpleValidation(Disposable disposable, JComponent jComponent,
+      Supplier<ValidationInfo> validationMethod) {
+    jComponent.putClientProperty(VALIDATION_METHOD, validationMethod);
+  }
+
+  public static void createSliderValidator(Disposable disposable, JSlider jSlider,
+      Supplier<ValidationInfo> validationMethod) {
+    FocusListener focusListener = new ComponentFocusValidationUpdater(jSlider, validationMethod);
+    jSlider.addFocusListener(focusListener);
+    ChangeListener changeListener = new ComponentSliderValidationUpdate(jSlider, validationMethod);
+    jSlider.addChangeListener(changeListener);
+    Disposer.register(disposable, () -> {
+      jSlider.removeFocusListener(focusListener);
+      jSlider.removeChangeListener(changeListener);
+    });
+    jSlider.putClientProperty(VALIDATION_METHOD, validationMethod);
+  }
+
   public static void createTextValidator(Disposable disposable, JTextField jTextField,
       Supplier<ValidationInfo> validationMethod) {
     DocumentAdapter documentAdapter = new ComponentTextValidationUpdater(jTextField,
@@ -76,9 +99,17 @@ public class UIValidator {
         .getClientProperty(VALIDATION_METHOD) : null;
   }
 
+  public static boolean isComponentValid(JTextField jComponent) {
+    if (getValidationMethod(jComponent) != null) {
+      updateValidationRoundedBorder(getValidationMethod(jComponent), jComponent);
+    }
+    ValidationInfo cellInfo = UIValidator.hasValidationInfo(jComponent);
+    return cellInfo == null || cellInfo.warning;
+  }
+
   public static boolean isComponentValid(JComponent jComponent) {
     if (getValidationMethod(jComponent) != null) {
-      updateValidation(getValidationMethod(jComponent), jComponent);
+      updateValidationLineBorder(getValidationMethod(jComponent), jComponent);
     }
     ValidationInfo cellInfo = UIValidator.hasValidationInfo(jComponent);
     return cellInfo == null || cellInfo.warning;
@@ -119,7 +150,7 @@ public class UIValidator {
     return true;
   }
 
-  private static void updateValidation(
+  private static void updateValidationLineBorder(
       Supplier<ValidationInfo> validationMethod,
       JComponent jComponent) {
     ValidationInfo cellInfo = validationMethod.get();
@@ -138,6 +169,26 @@ public class UIValidator {
     jComponent.setBorder(null);
   }
 
+  private static void updateValidationRoundedBorder(
+      Supplier<ValidationInfo> validationMethod,
+      JTextField jComponent) {
+    ValidationInfo cellInfo = validationMethod.get();
+    jComponent.putClientProperty(CELL_VALIDATION_PROPERTY, cellInfo);
+    if (cellInfo != null) {
+      jComponent.setToolTipText(cellInfo.message);
+      if (cellInfo.warning) {
+        jComponent.setBorder(new RoundedCornerBorder(BorderType.WARNING));
+      } else {
+        jComponent.setBorder(new RoundedCornerBorder(BorderType.ERROR));
+      }
+      validationMethod.get();
+      return;
+    }
+    jComponent.setToolTipText("");
+    jComponent.setBorder(new RoundedCornerBorder(BorderType.NORMAL));
+  }
+
+
   private final static class ComponentFocusValidationUpdater implements FocusListener {
 
     private final JComponent jComponent;
@@ -151,21 +202,21 @@ public class UIValidator {
 
     @Override
     public void focusGained(FocusEvent e) {
-      updateValidation(validationMethod, jComponent);
+      updateValidationLineBorder(validationMethod, jComponent);
     }
 
     @Override
     public void focusLost(FocusEvent e) {
-      updateValidation(validationMethod, jComponent);
+      updateValidationLineBorder(validationMethod, jComponent);
     }
   }
 
   private final static class ComponentTextValidationUpdater extends DocumentAdapter {
 
-    private final JComponent jComponent;
+    private final JTextField jComponent;
     private final Supplier<ValidationInfo> validationMethod;
 
-    public ComponentTextValidationUpdater(JComponent jComponent,
+    public ComponentTextValidationUpdater(JTextField jComponent,
         Supplier<ValidationInfo> supplier) {
       this.jComponent = jComponent;
       this.validationMethod = supplier;
@@ -173,7 +224,7 @@ public class UIValidator {
 
     @Override
     protected void textChanged(@NotNull DocumentEvent documentEvent) {
-      updateValidation(validationMethod, jComponent);
+      updateValidationRoundedBorder(validationMethod, jComponent);
     }
   }
 
@@ -190,7 +241,26 @@ public class UIValidator {
 
     @Override
     public void tableChanged(TableModelEvent e) {
-      updateValidation(validationMethod, jComponent);
+      updateValidationLineBorder(validationMethod, jComponent);
+    }
+  }
+
+  private final static class ComponentSliderValidationUpdate implements ChangeListener {
+
+    private final JSlider component;
+    private final Supplier<ValidationInfo> validationMethod;
+
+    public ComponentSliderValidationUpdate(JSlider component,
+        Supplier<ValidationInfo> supplier) {
+      this.component = component;
+      this.validationMethod = supplier;
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+      if (!component.getValueIsAdjusting()) {
+        updateValidationLineBorder(validationMethod, component);
+      }
     }
   }
 }
