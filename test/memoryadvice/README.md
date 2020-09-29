@@ -172,11 +172,11 @@ repo init -u https://android.googlesource.com/platform/manifest -b my-branch
 
 ## Adding the library to an Android project
 
-The library is published on Google's Maven repository
-[GMaven](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.13).
+The library is published on
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.13).
 
-In the application root `build.gradle` file, ensure ``google()` is specified as
-a repository for the project, as well as `jitpack.io` for some of its
+In the application root `build.gradle` file, ensure `google()` is specified as a
+repository for the project, as well as `jitpack.io` for some of its
 dependencies. For example:
 
 ```gradle
@@ -204,7 +204,7 @@ dependencies {
 
 If you prefer to build your own version of the libary, it can be cloned from
 [test/memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/)
-and build locally with `gradle publishToMavenLocal` and use of `mavenLocal()` in
+and built locally with `gradle publishToMavenLocal` and use of `mavenLocal()` in
 `repositories`.
 
 ### Code
