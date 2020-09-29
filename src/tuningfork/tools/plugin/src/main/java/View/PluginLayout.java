@@ -190,7 +190,7 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout.setVisible(false);
 
     // Validation settings initialization.
-    validationSettingsLayout = new ValidationSettingsTab();
+    validationSettingsLayout = new ValidationSettingsTab(enumData);
     validationSettingsLayout.setSize(panelSize);
     validationSettingsLayout.setVisible(false);
 

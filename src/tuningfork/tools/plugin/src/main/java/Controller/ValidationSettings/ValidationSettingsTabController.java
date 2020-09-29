@@ -16,10 +16,21 @@
 
 package Controller.ValidationSettings;
 
+import Model.EnumDataModel;
+import Model.ValidationSettingsDataModel;
+
 import javax.swing.JTable;
+import java.util.List;
 import java.util.Random;
 
 public class ValidationSettingsTabController {
+    private ValidationSettingsDataModel validationSettingsDataModel;
+    private List<EnumDataModel> enumDataModelList;
+
+    public ValidationSettingsTabController(List<EnumDataModel> enumDataModelList) {
+        this.enumDataModelList = enumDataModelList;
+    }
+
     public static void addRowAction(JTable jtable) {
         ValidationSettingsTableModel model = (ValidationSettingsTableModel) jtable.getModel();
         // TODO(volobushek): change to actual insert data.
@@ -38,5 +49,16 @@ public class ValidationSettingsTabController {
             jtable.getCellEditor().stopCellEditing();
         }
         model.removeRow(row);
+    }
+
+    public boolean saveSettings(JTable table, String api_key, String method, String intervalms_or_count) {
+        //TODO (volobushek) add warning list for each setting inside ValidationSettingsDataModel class
+        List<String> fieldNames = ((ValidationSettingsTableModel) table.getModel()).getColumnNames();
+        List<List<String>> validationSettings = ((ValidationSettingsTableModel)
+                table.getModel()).getValidationSettings();
+        validationSettingsDataModel = new ValidationSettingsDataModel(fieldNames, validationSettings,
+                api_key, method, intervalms_or_count, enumDataModelList);
+        validationSettingsDataModel.toString();
+        return true;
     }
 }
