@@ -72,6 +72,7 @@ public class MainDialogWrapper extends DialogWrapper {
     notification.notify(project);
   }
 
+
   @Override
   public void doCancelAction() {
     try {
