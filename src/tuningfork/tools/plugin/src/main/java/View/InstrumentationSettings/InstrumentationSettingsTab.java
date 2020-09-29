@@ -51,7 +51,7 @@ public class InstrumentationSettingsTab extends TabLayout {
   private JRadioButton radioButtonTimeBased;
   private JRadioButton radioButtonIntervalBased;
   private ButtonGroup radioButtonGroup;
-  private final InstrumentationSettingsTabController instrumentationSettingsTabController;
+  private final InstrumentationSettingsTabController controller;
   private JTextField apiKey;
   private JSlider intervalSlider;
   private final JBLabel validationSettingsLabel = new JBLabel("Settings parameters");
@@ -60,10 +60,17 @@ public class InstrumentationSettingsTab extends TabLayout {
           "Histograms:</html>");
 
   public InstrumentationSettingsTab(InstrumentationSettingsTabController controller) {
-    this.instrumentationSettingsTabController = controller;
+    this.controller = controller;
     initVariables();
     initComponents();
     addComponents();
+    initializeData();
+  }
+
+  private void initializeData() {
+    controller.setInitialData(validationSettingsTable);
+    controller.setAggregation(radioButtonTimeBased, radioButtonIntervalBased, intervalSlider);
+    controller.setApiKeyTextBox(apiKey);
   }
 
   private void addComponents() {
@@ -98,9 +105,9 @@ public class InstrumentationSettingsTab extends TabLayout {
     decoratorPanel =
         ToolbarDecorator.createDecorator(validationSettingsTable)
             .setAddAction(it ->
-                InstrumentationSettingsTabController.addRowAction(validationSettingsTable))
+                controller.addRowAction(validationSettingsTable))
             .setRemoveAction(it ->
-                InstrumentationSettingsTabController.removeRowAction(validationSettingsTable))
+                controller.removeRowAction(validationSettingsTable))
             .createPanel();
   }
 
@@ -110,7 +117,7 @@ public class InstrumentationSettingsTab extends TabLayout {
     validationSettingsLabel.setFont(getMainFont());
     informationLabel.setFont(getSecondaryFont());
     InstrumentationSettingsTableModel model = new InstrumentationSettingsTableModel(
-        instrumentationSettingsTabController);
+        controller);
     validationSettingsTable.setModel(model);
     setDecoratorPanelSize(decoratorPanel);
     setTableSettings(validationSettingsTable);
@@ -133,8 +140,8 @@ public class InstrumentationSettingsTab extends TabLayout {
     table.setIntercellSpacing(new Dimension(0, 0));
   }
 
-  public InstrumentationSettingsTabController getInstrumentationSettingsTabController() {
-    return instrumentationSettingsTabController;
+  public InstrumentationSettingsTabController getController() {
+    return controller;
   }
 
   private final class TimeRadioButtonsChange implements ItemListener {
@@ -183,17 +190,16 @@ public class InstrumentationSettingsTab extends TabLayout {
   }
 
   public void saveSettings() {
-    instrumentationSettingsTabController.setApiKey(apiKey.getText());
+    controller.setApiKey(apiKey.getText());
     if (radioButtonTimeBased.isSelected()) {
       int timeInMillisecond = intervalSlider.getValue() * 10 * 1000;
-      instrumentationSettingsTabController.setUploadInterval(timeInMillisecond);
-      instrumentationSettingsTabController
-          .setAggregationMethod(radioButtonTimeBased.getText());
+      controller.setUploadInterval(timeInMillisecond);
+      controller.setAggregationMethod(radioButtonTimeBased.getText());
     } else if (radioButtonIntervalBased.isSelected()) {
-      instrumentationSettingsTabController.setUploadInterval(intervalSlider.getValue());
-      instrumentationSettingsTabController
-          .setAggregationMethod(radioButtonIntervalBased.getText());
+      controller.setUploadInterval(intervalSlider.getValue());
+      controller.setAggregationMethod(radioButtonIntervalBased.getText());
     }
+    controller.setEnumData();
     validationSettingsTable.clearSelection();
   }
 }

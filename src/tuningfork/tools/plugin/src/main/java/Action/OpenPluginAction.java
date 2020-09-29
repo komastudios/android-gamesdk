@@ -22,6 +22,7 @@ import Utils.DataModelTransformer;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import View.Dialog.MainDialogWrapper;
+import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -51,13 +52,14 @@ public class OpenPluginAction extends AnAction {
                   MessageDataModel fidelityTableData = transformer.initFidelityData();
                   List<EnumDataModel> enumData = transformer.initEnumData();
                   List<QualityDataModel> qualityData = transformer.initQualityData();
-
+                  Settings settingsData = transformer.initProtoSettings();
                   SwingUtilities.invokeLater(() -> {
                     MainDialogWrapper dialogWrapper = new MainDialogWrapper(e.getProject(),
                         annotationData,
                         fidelityTableData,
                         enumData,
                         qualityData,
+                        settingsData,
                         protoCompiler);
                     dialogWrapper.show();
                   });

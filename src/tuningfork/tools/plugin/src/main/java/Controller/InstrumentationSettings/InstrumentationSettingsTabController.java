@@ -20,7 +20,11 @@ import com.google.tuningfork.Tuningfork.Settings;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy;
 import com.google.tuningfork.Tuningfork.Settings.AggregationStrategy.Submission;
 import com.google.tuningfork.Tuningfork.Settings.Histogram;
+import java.util.ArrayList;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 public class InstrumentationSettingsTabController {
 
@@ -31,16 +35,52 @@ public class InstrumentationSettingsTabController {
     this.settingsModel = settingsModel;
   }
 
-  public static void addRowAction(JTable jtable) {
-    InstrumentationSettingsTableModel model = (InstrumentationSettingsTableModel) jtable.getModel();
+  public void setInitialData(JTable jTable) {
+    InstrumentationSettingsTableModel model = (InstrumentationSettingsTableModel) jTable.getModel();
+    ArrayList<String[]> histograms = new ArrayList<>();
+    for (Histogram histogram : settingsModel.getHistogramsList()) {
+      histograms.add(new String[]{String.valueOf(histogram.getInstrumentKey()),
+          String.valueOf(histogram.getBucketMin()),
+          String.valueOf(histogram.getBucketMax()),
+          String.valueOf(histogram.getNBuckets())});
+    }
+    model.setData(histograms);
+  }
+
+  public void setAggregation(JRadioButton timeButton, JRadioButton tickButton,
+      JSlider intervalSlider) {
+    if (settingsModel.getAggregationStrategy().getMethod().equals(Submission.TIME_BASED)) {
+      timeButton.setSelected(true);
+      intervalSlider
+          .setValue(settingsModel.getAggregationStrategy().getIntervalmsOrCount() / (10 * 1000));
+    } else if (settingsModel.getAggregationStrategy().getMethod().equals(Submission.TICK_BASED)) {
+      tickButton.setSelected(true);
+      intervalSlider.setValue(settingsModel.getAggregationStrategy().getIntervalmsOrCount());
+    }
+  }
+
+  public void setApiKeyTextBox(JTextField apiKey) {
+    apiKey.setText(settingsModel.getApiKey());
+  }
+
+  public void setEnumData() {
+    Settings.Builder settingsBuilder = settingsModel.toBuilder();
+    AggregationStrategy.Builder strategy = settingsBuilder.getAggregationStrategy().toBuilder();
+    settingsModel = settingsBuilder.setAggregationStrategy(strategy.setMaxInstrumentationKeys(
+        settingsModel.getHistogramsCount()
+    )).build();
+  }
+
+  public void addRowAction(JTable jTable) {
+    InstrumentationSettingsTableModel model = (InstrumentationSettingsTableModel) jTable.getModel();
     model.addRow();
   }
 
-  public static void removeRowAction(JTable jtable) {
-    InstrumentationSettingsTableModel model = (InstrumentationSettingsTableModel) jtable.getModel();
-    int row = jtable.getSelectedRow();
-    if (jtable.getCellEditor() != null) {
-      jtable.getCellEditor().stopCellEditing();
+  public void removeRowAction(JTable jTable) {
+    InstrumentationSettingsTableModel model = (InstrumentationSettingsTableModel) jTable.getModel();
+    int row = jTable.getSelectedRow();
+    if (jTable.getCellEditor() != null) {
+      jTable.getCellEditor().stopCellEditing();
     }
     model.removeRow(row);
   }

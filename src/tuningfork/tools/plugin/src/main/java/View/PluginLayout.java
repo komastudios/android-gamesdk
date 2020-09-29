@@ -65,6 +65,7 @@ public class PluginLayout extends JPanel {
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enumData;
   private final List<QualityDataModel> qualityData;
+  private final Settings settingsData;
   private final Dimension panelSize = new Dimension(5 * SCREEN_SIZE.width / 6,
       SCREEN_SIZE.height / 2);
   private final Dimension menuSize = new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2);
@@ -72,11 +73,13 @@ public class PluginLayout extends JPanel {
   private final Disposable disposable;
 
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
-      List<EnumDataModel> enumData, List<QualityDataModel> qualityData, Disposable disposable) {
+      List<EnumDataModel> enumData, List<QualityDataModel> qualityData, Settings settingsData,
+      Disposable disposable) {
     this.annotationData = annotationData;
     this.qualityData = qualityData;
     this.enumData = enumData;
     this.fidelityData = fidelityData;
+    this.settingsData = settingsData;
     this.disposable = disposable;
     panels = new ArrayList<>();
     fidelityData.setEnumData(enumData);
@@ -192,8 +195,7 @@ public class PluginLayout extends JPanel {
     qualitySettingsLayout.setVisible(false);
 
     // Validation settings initialization.
-    instrumentationSettingsTabController = new InstrumentationSettingsTabController(
-        Settings.newBuilder().build());
+    instrumentationSettingsTabController = new InstrumentationSettingsTabController(settingsData);
     instrumentationSettingsTab = new InstrumentationSettingsTab(
         instrumentationSettingsTabController);
     instrumentationSettingsTab.setSize(panelSize);
@@ -279,7 +281,7 @@ public class PluginLayout extends JPanel {
   }
 
   public InstrumentationSettingsTabController getInstrumentationSettingsTabController() {
-    return instrumentationSettingsTab.getInstrumentationSettingsTabController();
+    return instrumentationSettingsTab.getController();
   }
 
   public void saveSettings() {
