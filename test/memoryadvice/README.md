@@ -160,16 +160,6 @@ resolution. These can be restored when no more memory warnings (including
 
 # API specifics
 
-## Getting the library
-
-Get the [repo tool](https://gerrit.googlesource.com/git-repo/) and sync the
-Games SDK project
-[games-sdk project](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master);
-
-```bash
-repo init -u https://android.googlesource.com/platform/manifest -b my-branch
-```
-
 ## Adding the library to an Android project
 
 The library is published on
@@ -202,10 +192,19 @@ dependencies {
 }
 ```
 
-If you prefer to build your own version of the libary, it can be cloned from
-[test/memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/)
-and built locally with `gradle publishToMavenLocal` and use of `mavenLocal()` in
-`repositories`.
+### Building the library from source
+
+If you prefer to build your own version of the libary, get the
+[repo tool](https://gerrit.googlesource.com/git-repo/) and sync the Games SDK
+project
+[games-sdk project](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master);
+
+```bash
+repo init -u https://android.googlesource.com/platform/manifest -b my-branch
+```
+
+Built with `gradle publishToMavenLocal` and add `mavenLocal()` to `repositories`
+in the `build.gradle` of clients.
 
 ### Code
 
