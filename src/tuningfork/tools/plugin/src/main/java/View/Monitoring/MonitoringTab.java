@@ -16,11 +16,11 @@
 package View.Monitoring;
 
 import Controller.Monitoring.MonitoringController;
+import Utils.Monitoring.RequestServer;
 import View.Dialog.MonitoringQualityDialogWrapper;
+import View.TabLayout;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
-import Utils.Monitoring.RequestServer;
-import View.TabLayout;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBLabel;
@@ -50,6 +50,20 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jfree.chart.ChartPanel;
 
+/*
+The Logic of the monitoring goes as follow
+1-A new UploadTelemetry report is sent to the plugin
+2-Loading thread is interrupted
+3-The telemetry report is checked for the fidelity byte string. If it exists then isNewQuality = false
+ else isNewQuality = true and addFidelity property is fired
+4-Device specification is set
+5-Histograms are merged together. For each instrument key and the same fidelity parameters. they get merged
+6-Combobox is renewed with the unique instrument keys that exists so far.
+7-UI is refreshed by deleting all the old charts and making new charts
+8-Each chart represent a single instrument key. each chart will have data for all different quality
+at the beginning. but the "Not selected quality" is deleted later on. But XYSeries originally saves
+all quality settings data and deletes the one it doesn't need on plotting.
+ */
 public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private final JLabel title = new JLabel("Telemetry reports");
@@ -60,7 +74,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private final JLabel totalMem = new JLabel("Total memory bytes: ");
   private final JLabel warningLabel = new JLabel(
       "<html> This feature requires running the app on a local"
-          + "endpoint in the background.<br> Endpoint uri must be set to \"http://10.0.2.2:9000\"."
+          + " endpoint in the background.<br> Endpoint uri must be set to \"http://10.0.2.2:9000\"."
           + "</html>");
   private final JButton startMonitoring = new JButton("Start monitoring");
   private final JButton stopMonitoring = new JButton("Stop monitoring");
@@ -102,10 +116,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private void addComboBoxData(Set<String> renderTimeHistogramsKeys) {
     List<String> uniqueIDs = new ArrayList<>(renderTimeHistogramsKeys);
-    Vector<String> uniqueIdVector = new Vector<>();
-    uniqueIdVector.addAll(uniqueIDs);
+    Vector<String> uniqueIdVector = new Vector<>(uniqueIDs);
     uniqueIdVector.add(0, "Instrument ID");
 
+    // Preserve the selected item on combo box update
     String selectedObject = null;
     if (uniqueIDs.contains(instrumentIDComboBox.getSelectedItem())) {
       selectedObject = (String) instrumentIDComboBox.getSelectedItem();
@@ -116,6 +130,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     }
   }
 
+  // Deleting all the old ChartPanels used to render histograms
   private void deleteExistingGraphs() {
     for (ChartPanel panel : histogramsGraphPanels) {
       graphPanel.remove(panel);
@@ -129,18 +144,16 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     graphPanel.revalidate();
   }
 
+  // Hide all other panels except the one at index
   private void changePanelVisibility(int index) {
     for (int i = 0; i < histogramsGraphPanels.size(); i++) {
-      if (i == index) {
-        histogramsGraphPanels.get(i).setVisible(true);
-      } else {
-        histogramsGraphPanels.get(i).setVisible(false);
-      }
+      histogramsGraphPanels.get(i).setVisible(i == index);
     }
   }
 
   private void refreshUI() {
     plotData();
+    gridPanel.setVisible(true);
     retrievedInformationPanel.setVisible(true);
     changeQualityButton.setVisible(true);
     loadingPanel.setVisible(false);
@@ -152,7 +165,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     if (!loadingAnimationThread.isInterrupted()) {
       loadingAnimationThread.interrupt();
     }
-
     controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
 
@@ -161,7 +173,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     brandData.setText(deviceSpec.getBrand());
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
-
     controller.setRenderTimeHistograms(telemetryRequest);
     addComboBoxData(controller.getRenderTimeHistogramsKeys());
 
@@ -195,36 +206,34 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     gridPanel.add(deviceData);
     gridPanel.add(totalMem);
     gridPanel.add(totalMemData);
-
     retrievedInformationPanel.add(gridPanel);
     retrievedInformationPanel.add(fidelityInfoScrollPane);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
     buttonPanel2.add(changeQualityButton);
-
     this.add(retrievedInformationPanel);
   }
 
-  private void sleepUI(long seconds) {
-    try {
-      TimeUnit.SECONDS.sleep(seconds);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+  private void sleepUI(long seconds) throws InterruptedException {
+    TimeUnit.SECONDS.sleep(seconds);
   }
 
   private void initLoadingAnimationThread() {
     loadingAnimationThread = new Thread("Retrieving histogram data") {
       public void run() {
-        while (true) {
-          loadingLabel.setText(LOADING_TEXT);
-          sleepUI(1);
-          loadingLabel.setText(LOADING_TEXT + " .");
-          sleepUI(1);
-          loadingLabel.setText(LOADING_TEXT + " . .");
-          sleepUI(1);
-          loadingLabel.setText(LOADING_TEXT + " . . .");
-          sleepUI(1);
+        try {
+          while (!Thread.interrupted()) {
+            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT));
+            sleepUI(1);
+            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " ."));
+            sleepUI(1);
+            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . ."));
+            sleepUI(1);
+            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . . ."));
+            sleepUI(1);
+          }
+        } catch (InterruptedException e) {
+          // Silently Ignore Interruption exception and let thread exit
         }
       }
     };
@@ -248,7 +257,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     cpuFreqsData = new JLabel();
     deviceData = new JLabel();
     totalMemData = new JLabel();
-
     nameData.setFont(SMALL_FONT);
     brandData.setFont(SMALL_FONT);
     cpuFreqsData.setFont(SMALL_FONT);
@@ -267,15 +275,15 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     gridPanel = new JPanel(new GridLayout(5, 2));
-
-    Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest -> {
-      try {
-        setMonitoringTabData(uploadTelemetryRequest);
-      } catch (InvalidProtocolBufferException e) {
-        e.printStackTrace();
-      }
-    };
-
+    gridPanel.setVisible(false);
+    Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest ->
+        SwingUtilities.invokeLater(() -> {
+          try {
+            setMonitoringTabData(uploadTelemetryRequest);
+          } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+          }
+        });
     startMonitoring.addActionListener(actionEvent -> {
       try {
         loadingPanel.setVisible(true);
@@ -289,6 +297,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     stopMonitoring.addActionListener(actionEvent -> {
+      gridPanel.setVisible(false);
       retrievedInformationPanel.setVisible(false);
       changeQualityButton.setVisible(false);
       try {
@@ -340,37 +349,37 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   @Override
   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-    if (propertyChangeEvent.getPropertyName().equals("addChart")) {
-      ChartPanel chartPanel = (ChartPanel) propertyChangeEvent.getNewValue();
-      chartPanel.setMaximumSize(chartSize);
-      chartPanel.setMinimumSize(chartSize);
-      chartPanel.setPreferredSize(chartSize);
+    switch (propertyChangeEvent.getPropertyName()) {
+      case "addChart":
+        ChartPanel chartPanel = (ChartPanel) propertyChangeEvent.getNewValue();
+        chartPanel.setMaximumSize(chartSize);
+        chartPanel.setMinimumSize(chartSize);
+        chartPanel.setPreferredSize(chartSize);
 
-      String instrumentID = (String) propertyChangeEvent.getOldValue();
-      if (instrumentIDComboBox.getSelectedItem().equals(instrumentID)) {
-        chartPanel.setVisible(true);
-      } else {
-        chartPanel.setVisible(false);
-      }
+        String instrumentID = (String) propertyChangeEvent.getOldValue();
+        chartPanel.setVisible(instrumentIDComboBox.getSelectedItem().equals(instrumentID));
 
-      graphPanel.add(chartPanel);
-      histogramsGraphPanels.add(chartPanel);
-    } else if (propertyChangeEvent.getPropertyName().equals("addFidelity")) {
-      JLabel fidelityName = new JBLabel("Quality settings " + propertyChangeEvent.getOldValue());
-      JLabel fidelityInfo = new JBLabel(propertyChangeEvent.getNewValue().toString());
+        graphPanel.add(chartPanel);
+        histogramsGraphPanels.add(chartPanel);
+        break;
+      case "addFidelity":
+        JLabel fidelityName = new JBLabel("Quality settings " + propertyChangeEvent.getOldValue());
+        JLabel fidelityInfo = new JBLabel(propertyChangeEvent.getNewValue().toString());
 
-      fidelityName.setFont(MIDDLE_FONT);
-      fidelityInfo.setFont(SMALL_FONT);
+        fidelityName.setFont(MIDDLE_FONT);
+        fidelityInfo.setFont(SMALL_FONT);
 
-      fidelityInfoPanel.add(fidelityName);
-      fidelityInfoPanel.add(fidelityInfo);
+        fidelityInfoPanel.add(fidelityName);
+        fidelityInfoPanel.add(fidelityInfo);
 
-      SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
-    } else if (propertyChangeEvent.getPropertyName().equals("plotSelectedQuality")) {
-      deleteExistingGraphs();
-      controller.setIndexesNotToPlot((ArrayList<Integer>) propertyChangeEvent.getNewValue());
-      controller.removeQualitySettingsNotToPlot();
-      SwingUtilities.updateComponentTreeUI(graphPanel);
+        SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
+        break;
+      case "plotSelectedQuality":
+        deleteExistingGraphs();
+        controller.setIndexesNotToPlot((ArrayList<Integer>) propertyChangeEvent.getNewValue());
+        controller.removeQualitySettingsNotToPlot();
+        SwingUtilities.updateComponentTreeUI(graphPanel);
+        break;
     }
   }
 }

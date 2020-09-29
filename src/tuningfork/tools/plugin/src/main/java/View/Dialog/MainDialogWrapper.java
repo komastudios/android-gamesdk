@@ -31,12 +31,11 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
 import java.io.IOException;
-import com.intellij.openapi.ui.Messages;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -139,7 +138,7 @@ public class MainDialogWrapper extends DialogWrapper {
     this.compiler = compiler;
 
     setTitle("Android Performance Tuner Plugin");
-
+    init();
     Disposer.register(this.getDisposable(), () -> {
       try {
         RequestServer.stopListening();
@@ -147,8 +146,6 @@ public class MainDialogWrapper extends DialogWrapper {
         e.printStackTrace();
       }
     });
-
-    init();
   }
 
   @Override

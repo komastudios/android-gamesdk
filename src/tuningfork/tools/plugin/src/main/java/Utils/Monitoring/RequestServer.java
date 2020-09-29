@@ -50,12 +50,17 @@ public class RequestServer {
             String stringResponse = new String(ByteStreams.toByteArray(socket.getInputStream()));
             if (stringResponse.contains("uploadTelemetry HTTP/1.1")) {
               String jsonFromResponse = "{" + stringResponse.split("\\{", 2)[1];
-              consumer.accept(parseJsonTelemetry(jsonFromResponse));
+              try {
+                consumer.accept(parseJsonTelemetry(jsonFromResponse));
+              } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+              }
             }
           }
           serverSocket.close();
-        } catch (Exception e) {
-          e.printStackTrace();
+        } catch (IOException e) {
+          // Silently Ignoring exceptions due to SocketException being thrown always on socket Close
+          // https://docs.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#close()
         }
       }
     };
@@ -99,7 +104,7 @@ public class RequestServer {
       throws InvalidProtocolBufferException {
     UploadTelemetryRequest.Builder telemetryBuilder = UploadTelemetryRequest.newBuilder();
     Optional<String> replacedSubstrings = replaceExponentSubstrings(jsonString);
-    jsonString = replacedSubstrings.isPresent() ? replacedSubstrings.get() : jsonString;
+    jsonString = replacedSubstrings.orElse(jsonString);
     JsonFormat.parser().ignoringUnknownFields().merge(jsonString, telemetryBuilder);
     return telemetryBuilder.build();
   }

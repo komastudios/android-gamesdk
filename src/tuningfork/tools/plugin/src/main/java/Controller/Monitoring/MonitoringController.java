@@ -26,6 +26,7 @@ import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -33,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.ArrayList;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -55,10 +54,10 @@ public class MonitoringController {
    * Each fidelity setting received so far has a LinkedHashMap with merged count values
    * received so far, where Key = instrument id, Value = list of merged bucket counts.
    */
-  private HashMap<ByteString, LinkedHashMap<String, List<Integer>>> renderTimeHistograms;
+  private final HashMap<ByteString, LinkedHashMap<String, List<Integer>>> renderTimeHistograms;
   private ArrayList<Integer> indexesNotToPlot;
-  private LinkedHashSet<QualityDataModel> qualitySettingsList;
-  private PropertyChangeSupport monitoringPropertyChange;
+  private final LinkedHashSet<QualityDataModel> qualitySettingsList;
+  private final PropertyChangeSupport monitoringPropertyChange;
   private int currentQualityIndex;
   private boolean isNewQuality;
   private ByteString currentFidelitySettings;
@@ -174,7 +173,6 @@ public class MonitoringController {
       String instrumentId = entry.getKey();
       XYSeries histogramDataset = new XYSeries("Quality settings " + (currentQualityIndex + 1));
       List<Integer> fpsList = entry.getValue();
-
       for (int i = 0; i < fpsList.size(); i++) {
         histogramDataset.add(i, fpsList.get(i));
       }
@@ -201,8 +199,8 @@ public class MonitoringController {
           datasets.removeSeries(indexesNotToPlot.get(pos) - pos);
         }
 
-        JFreeChart histogram = ChartFactory.createXYBarChart("Render time histogram",
-            "frame time", false, "counts", datasets,
+        JFreeChart histogram = ChartFactory.createXYBarChart("Render Time Histogram",
+            "Frame Time", false, "Count", datasets,
             PlotOrientation.VERTICAL, true, false, false);
 
         ChartPanel chartPanel = new ChartPanel(histogram);

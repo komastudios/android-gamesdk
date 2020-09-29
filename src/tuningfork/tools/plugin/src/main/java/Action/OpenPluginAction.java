@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenPluginAction extends AnAction {
+
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     ProgressManager.getInstance()
@@ -60,6 +61,7 @@ public class OpenPluginAction extends AnAction {
                         qualityData,
                         protoCompiler);
                     dialogWrapper.show();
+                    dialogWrapper.disposeIfNeeded();
                   });
                 } catch (IOException | CompilationException ex) {
                   ex.printStackTrace();
