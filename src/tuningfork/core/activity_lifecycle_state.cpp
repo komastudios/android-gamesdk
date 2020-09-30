@@ -27,7 +27,7 @@ namespace tuningfork {
 
 ActivityLifecycleState::ActivityLifecycleState() {
     std::stringstream lifecycle_path_builder;
-    lifecycle_path_builder << file_utils::GetAppCacheDir() << "/tuningfork";
+    lifecycle_path_builder << DefaultTuningForkSaveDirectory();
     file_utils::CheckAndCreateDir(lifecycle_path_builder.str());
     lifecycle_path_builder << "/lifecycle.bin";
     tf_lifecycle_path_str_ = lifecycle_path_builder.str();

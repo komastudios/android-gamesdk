@@ -25,7 +25,7 @@ for file in ${files[@]}; do
     minorVersion=`git show $1 $SWAPPY_COMMON_H | grep "#define SWAPPY_MINOR_VERSION" | wc -l`
     # echo "version_files $version_files"
     if [[ $majorVersion -eq "0" && $minorVersion -eq "0" ]]; then
-      echo "Did you break ABI without changing SWAPPY_MAJOR_VERSION/SWAPPY_MINOR_VERSION ?"
+      echo "Did you break the Swappy ABI without changing SWAPPY_MAJOR_VERSION or SWAPPY_MINOR_VERSION ?"
       exit 1
     fi
 

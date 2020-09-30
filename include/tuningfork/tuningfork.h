@@ -49,9 +49,11 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 1
+#define TUNINGFORK_BUGFIX_VERSION 0
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
-                                   TUNINGFORK_MINOR_VERSION)
+                                   TUNINGFORK_MINOR_VERSION, \
+                                   TUNINGFORK_BUGFIX_VERSION)
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.

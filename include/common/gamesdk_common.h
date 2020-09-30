@@ -29,4 +29,9 @@
 
 #pragma once
 
-#define ANDROID_GAMESDK_PACKED_VERSION(MAJOR, MINOR) ((MAJOR << 16) | (MINOR))
+// There are separate versions for Swappy and Tuning Fork that use this format.
+#define ANDROID_GAMESDK_PACKED_VERSION(MAJOR, MINOR, BUGFIX) \
+    ((MAJOR << 16) | (MINOR) | (BUGFIX << 8))
+#define ANDROID_GAMESDK_MAJOR_VERSION(PACKED) ((PACKED) >> 16)
+#define ANDROID_GAMESDK_MINOR_VERSION(PACKED) ((PACKED)&0xff)
+#define ANDROID_GAMESDK_BUGFIX_VERSION(PACKED) (((PACKED) >> 8) & 0xff)
