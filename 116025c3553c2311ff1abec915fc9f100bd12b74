@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ebfff5e_5d1cb796",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-30T08:59:42Z",
+      "side": 1,
+      "message": "I suggest that instead of submitting a new gradle/ folder, you should use the one in gamesdk\u0027s root folder by creating a symlink to it from here. If you do this, you should change the gradle version throughout this project to match that one.",
+      "revId": "116025c3553c2311ff1abec915fc9f100bd12b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66cd490c_7b5a9dd1",
+        "filename": "test/memoryadvice_exampleclient/app/src/main/java/com/google/android/apps/internal/games/memoryadvice_exampleclient/MainActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-09-30T08:59:42Z",
+      "side": 1,
+      "message": "nit: add inline comments describing what these parameters are",
+      "range": {
+        "startLine": 21,
+        "startChar": 45,
+        "endLine": 21,
+        "endChar": 53
+      },
+      "revId": "116025c3553c2311ff1abec915fc9f100bd12b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
