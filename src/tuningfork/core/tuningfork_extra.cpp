@@ -46,7 +46,7 @@ namespace tuningfork {
 bool GetSavedFileName(std::string& name) {
     // Create tuningfork/version folder if it doesn't exist
     std::stringstream tf_path_str;
-    tf_path_str << file_utils::GetAppCacheDir() << "/tuningfork";
+    tf_path_str << DefaultTuningForkSaveDirectory();
     if (!file_utils::CheckAndCreateDir(tf_path_str.str())) {
         return false;
     }

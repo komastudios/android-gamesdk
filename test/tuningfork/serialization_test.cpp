@@ -42,12 +42,12 @@ RequestInfo test_device_info{
     {1, 2, 3} /*cpu_max_freq_hz*/,
     "packname" /*apk_package_name*/,
     0 /*apk_version_code*/,
-    ANDROID_GAMESDK_PACKED_VERSION(0, 10) /*tuningfork_version*/,
+    ANDROID_GAMESDK_PACKED_VERSION(0, 10, 0) /*tuningfork_version*/,
     "MODEL" /*model*/,
     "BRAND" /*brand*/,
     "PRODUCT" /*product*/,
     "DEVICE" /*device*/,
-    ANDROID_GAMESDK_PACKED_VERSION(2, 7) /*swappy_version*/};
+    ANDROID_GAMESDK_PACKED_VERSION(2, 7, 0) /*swappy_version*/};
 
 std::string test_device_info_ser = R"TF({
   "brand": "BRAND",
@@ -76,6 +76,7 @@ TEST(SerializationTest, DeviceInfo) { CheckDeviceInfo(test_device_info); }
 std::string report_start = R"TF({
   "name": "applications/packname/apks/0",
   "session_context": {
+    "crash_reports": [],
     "device": {
       "brand": "BRAND",
       "build_version": "6.3",
@@ -92,8 +93,8 @@ std::string report_start = R"TF({
     },
     "game_sdk_info": {
       "session_id": "sess",
-      "swappy_version": "2.7",
-      "version": "0.10"
+      "swappy_version": "2.7.0",
+      "version": "0.10.0"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:00.000000Z",

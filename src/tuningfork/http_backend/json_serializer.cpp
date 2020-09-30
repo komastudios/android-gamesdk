@@ -79,9 +79,9 @@ using namespace date;
 
 static std::string GetVersionString(uint32_t ver) {
     std::stringstream version_str;
-    uint32_t major_version = ver >> 16;
-    uint32_t minor_version = ver & 0xffff;
-    version_str << major_version << "." << minor_version;
+    version_str << ANDROID_GAMESDK_MAJOR_VERSION(ver) << "."
+                << ANDROID_GAMESDK_MINOR_VERSION(ver) << "."
+                << ANDROID_GAMESDK_BUGFIX_VERSION(ver);
     return version_str.str();
 }
 Json::object GameSdkInfoJson(const RequestInfo& request_info) {
