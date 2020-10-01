@@ -39,9 +39,11 @@ extern "C" {
 
 #define MEMORY_ADVICE_MAJOR_VERSION 1
 #define MEMORY_ADVICE_MINOR_VERSION 0
+#define MEMORY_ADVICE_BUGFIX_VERSION 0
 #define MEMORY_ADVICE_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(MEMORY_ADVICE_MAJOR_VERSION, \
-                                   MEMORY_ADVICE_MINOR_VERSION)
+                                   MEMORY_ADVICE_MINOR_VERSION, \
+                                   MEMORY_ADVICE_BUGFIX_VERSION)
 
 // Internal macros to generate a symbol to track Memory Advice version, do not
 // use directly.

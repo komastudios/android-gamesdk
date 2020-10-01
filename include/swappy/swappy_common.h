@@ -43,18 +43,20 @@
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 1
 #define SWAPPY_MINOR_VERSION 7
-#define SWAPPY_PACKED_VERSION \
-    ANDROID_GAMESDK_PACKED_VERSION(SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION)
+#define SWAPPY_BUGFIX_VERSION 0
+#define SWAPPY_PACKED_VERSION                                                  \
+    ANDROID_GAMESDK_PACKED_VERSION(SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION, \
+                                   SWAPPY_BUGFIX_VERSION)
 
 // Internal macros to generate a symbol to track Swappy version, do not use
 // directly.
-#define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) \
-    PREFIX##_##MAJOR##_##MINOR
-#define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR) \
-    SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
+#define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
+    PREFIX##_##MAJOR##_##MINOR_##BUGFIX
+#define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
+    SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
 #define SWAPPY_VERSION_SYMBOL                                   \
     SWAPPY_VERSION_CONCAT(Swappy_version, SWAPPY_MAJOR_VERSION, \
-                          SWAPPY_MINOR_VERSION)
+                          SWAPPY_MINOR_VERSION, SWAPPY_BUGFIX_VERSION)
 
 /** @endcond */
 

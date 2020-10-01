@@ -230,7 +230,7 @@ class TuningForkTest {
           time_provider_(tick_size),
           meminfo_provider_(enable_meminfo) {
         RequestInfo info = {};
-        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0);
+        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0, 0);
         init_return_value_ =
             tuningfork::Init(settings, &info, &test_backend_, &time_provider_,
                              &meminfo_provider_);
@@ -469,6 +469,7 @@ static std::string ReplaceReturns(std::string in) {
 
 static const std::string session_context = R"TF(
 {
+  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -485,7 +486,7 @@ static const std::string session_context = R"TF(
   },
   "game_sdk_info": {
     "session_id": "",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.020000Z",
@@ -497,6 +498,7 @@ static const std::string session_context = R"TF(
 // This has extra time for the app and asset loading
 static const std::string session_context_loading = R"TF(
 {
+  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -513,7 +515,7 @@ static const std::string session_context_loading = R"TF(
   },
   "game_sdk_info": {
     "session_id": "",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.220000Z",
@@ -854,6 +856,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
 {
   "name": "applications//apks/0",
   "session_context":{
+    "crash_reports": [],
     "device": {
       "brand": "",
       "build_version": "",
@@ -870,7 +873,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     },
     "game_sdk_info": {
       "session_id": "",
-      "version": "1.0"
+      "version": "1.0.0"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:20.020000Z",
