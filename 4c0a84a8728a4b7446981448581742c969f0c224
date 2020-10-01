@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78c69d5b_efde2fec",
+        "filename": "include/common/gamesdk_common.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-01T11:41:45Z",
+      "side": 1,
+      "message": "I hope we won\u0027t need to reach version 255 of either minor or bugfix :)",
+      "revId": "4c0a84a8728a4b7446981448581742c969f0c224",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
