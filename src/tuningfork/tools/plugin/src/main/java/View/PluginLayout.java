@@ -17,12 +17,14 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
+import Controller.Experimental.ExperimentalTabController;
 import Controller.Fidelity.FidelityTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
 import View.Annotation.AnnotationTab;
+import View.Experimental.ExperimentalTab;
 import View.Fidelity.FidelityTab;
 import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
@@ -52,6 +54,7 @@ public class PluginLayout extends JPanel {
   private AnnotationTab annotationsLayout;
   private FidelityTab fidelitySettingsLayout;
   private JPanel validationSettingsLayout;
+  private ExperimentalTab experimentalTab;
   private MonitoringTab monitoringTab;
   private FidelityTabController fidelityTabController;
   private AnnotationTabController annotationTabController;
@@ -96,6 +99,7 @@ public class PluginLayout extends JPanel {
     this.add(qualitySettingsLayout);
     this.add(validationSettingsLayout);
     this.add(monitoringTab);
+    this.add(experimentalTab);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -130,10 +134,11 @@ public class PluginLayout extends JPanel {
         new DefaultMutableTreeNode("Telemetry Reports");
 
     monitoringRoot.add(telemetryNode);
-
+    DefaultMutableTreeNode experimentalNode = new DefaultMutableTreeNode("Experimental");
     root.add(settingsRoot);
     root.add(validationRoot);
     root.add(monitoringRoot);
+    root.add(experimentalNode);
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
@@ -153,6 +158,8 @@ public class PluginLayout extends JPanel {
         changeLayoutVisibility(validationSettingsLayout);
       } else if (node.equals(telemetryNode)) {
         changeLayoutVisibility(monitoringTab);
+      } else if (node.equals(experimentalNode)) {
+        changeLayoutVisibility(experimentalTab);
       } else if (!node.isLeaf()) {
         menu.setMinimumSize(menuSize);
       }
@@ -199,6 +206,10 @@ public class PluginLayout extends JPanel {
     monitoringTab.setSize(panelSize);
     monitoringTab.setVisible(false);
 
+    //Experimental initialization
+    experimentalTab = new ExperimentalTab(new ExperimentalTabController(qualityData));
+    experimentalTab.setVisible(false);
+
     menuPanel = new JPanel();
 
     panels.add(qualitySettingsLayout);
@@ -206,7 +217,7 @@ public class PluginLayout extends JPanel {
     panels.add(fidelitySettingsLayout);
     panels.add(validationSettingsLayout);
     panels.add(monitoringTab);
-
+    panels.add(experimentalTab);
     initMenuTree();
   }
 
@@ -245,9 +256,9 @@ public class PluginLayout extends JPanel {
     private TreePath[] getLeafs(TreePath[] fullPaths) {
       ArrayList<TreePath> paths = new ArrayList<>();
 
-      for (int i = 0; i < fullPaths.length; i++) {
-        if (((DefaultMutableTreeNode) fullPaths[i].getLastPathComponent()).isLeaf()) {
-          paths.add(fullPaths[i]);
+      for (TreePath fullPath : fullPaths) {
+        if (((DefaultMutableTreeNode) fullPath.getLastPathComponent()).isLeaf()) {
+          paths.add(fullPath);
         }
       }
 
