@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "b38c14cc_9e0deafc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T14:59:23Z",
+      "side": 1,
+      "message": "OK. I just submitted a fix for it not working on Mac, so don\u0027t worry about trying now.\nYou need to update the bugfix number in include/tuningfork/tuningfork.h.",
+      "parentUuid": "a2477067_e5208b37",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "86063f3d_dac625e6",
         "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
         "patchSetId": 2
