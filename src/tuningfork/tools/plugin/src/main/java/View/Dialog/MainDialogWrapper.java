@@ -132,13 +132,6 @@ public class MainDialogWrapper extends DialogWrapper {
       Notification notification = NOTIFICATION_GROUP
           .createNotification(resourceLoader.get("save_successful"), NotificationType.INFORMATION);
       notification.notify(project);
-
-      try {
-        RequestServer.stopListening();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
       super.doOKAction();
     }
   }
