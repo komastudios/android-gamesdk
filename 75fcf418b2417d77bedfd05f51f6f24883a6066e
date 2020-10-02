@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "34b7ad91_a6d6db7f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T14:33:36Z",
+      "side": 1,
+      "message": "Also, the new pre-upload check should have caught that you didn\u0027t update the bugfix number in tuningfork. Did you use --no-verify or is the script not working?",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86063f3d_dac625e6",
         "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
         "patchSetId": 2
