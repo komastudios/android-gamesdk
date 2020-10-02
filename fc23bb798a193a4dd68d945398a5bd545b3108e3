@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0cc09931_39f6128e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T15:00:14Z",
+      "side": 1,
+      "message": "Awesome work finding and fixing the bug, BTW, Mohannad 😊",
+      "revId": "fc23bb798a193a4dd68d945398a5bd545b3108e3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
