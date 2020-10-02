@@ -17,6 +17,7 @@
 package View.Experimental;
 
 import Controller.Experimental.ExperimentalTabController;
+import Utils.Monitoring.RequestServer;
 import View.TabLayout;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -25,6 +26,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.treeStructure.Tree;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -71,6 +73,10 @@ public class ExperimentalTab extends TabLayout {
     this.add(decoratorPanel);
   }
 
+  public void reloadTree(JTree jTree) {
+    ((DefaultTreeModel) jTree.getModel()).setRoot(controller.getQualityAsTree());
+  }
+
   private final class RefreshButton extends AnActionButton {
 
     public RefreshButton() {
@@ -78,8 +84,13 @@ public class ExperimentalTab extends TabLayout {
     }
 
     @Override
+    public void updateButton(@NotNull AnActionEvent e) {
+      e.getPresentation().setEnabled(false);
+    }
+
+    @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-      ((DefaultTreeModel) jTree.getModel()).setRoot(controller.getQualityAsTree());
+      reloadTree(jTree);
     }
   }
 
@@ -91,12 +102,15 @@ public class ExperimentalTab extends TabLayout {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) jTree.getSelectionPath()
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) Objects
+          .requireNonNull(jTree.getSelectionPath())
           .getLastPathComponent();
       int qualityIndex = treeNode.getParent().getIndex(treeNode);
       controller.setCurrentByteString(
           controller.getQualityAsByteString(qualityIndex));
-      ((DefaultTreeModel) jTree.getModel()).setRoot(controller.getQualityAsTree());
+      RequestServer.getInstance().setFidelitySupplier(
+          () -> controller.getQualityAsByteString(qualityIndex));
+      reloadTree(jTree);
     }
 
     @Override
