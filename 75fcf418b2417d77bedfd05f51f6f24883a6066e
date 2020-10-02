@@ -16,6 +16,40 @@
       "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "817bab49_a619015c",
+        "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T14:29:36Z",
+      "side": 1,
+      "message": "Assign at the declaration point rather than putting the assignment later:\nhttp://go/cstyle#Local_Variables",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c19c22d_793dcb4f",
+        "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T14:29:36Z",
+      "side": 1,
+      "message": "nit: it\u0027s trailing rather than tailing,  but I guess it has the same meaning :)",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
     }
   ]
 }
