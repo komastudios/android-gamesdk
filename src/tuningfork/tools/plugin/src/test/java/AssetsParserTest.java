@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-import Files.AssetsParser;
+import Utils.Assets.AssetsParser;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Rule;

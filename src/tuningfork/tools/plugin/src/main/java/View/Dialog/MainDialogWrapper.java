@@ -18,6 +18,7 @@ package View.Dialog;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Fidelity.FidelityTabController;
+import Controller.InstrumentationSettings.InstrumentationSettingsTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
@@ -27,16 +28,16 @@ import Utils.Assets.AssetsWriter;
 import Utils.Monitoring.RequestServer;
 import Utils.Proto.ProtoCompiler;
 import View.PluginLayout;
+import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
 import java.io.IOException;
-import com.intellij.openapi.ui.Messages;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -47,13 +48,10 @@ public class MainDialogWrapper extends DialogWrapper {
   private final Project project;
   private final NotificationGroup NOTIFICATION_GROUP =
       new NotificationGroup("Android Performance Tuner", NotificationDisplayType.BALLOON, true);
-  private AnnotationTabController annotationTabController;
-  private FidelityTabController fidelityTabController;
-  private QualityTabController qualityTabController;
-  private MessageDataModel annotationData;
-  private MessageDataModel fidelityData;
-  private List<EnumDataModel> enumData;
-  private List<QualityDataModel> qualityData;
+  private final MessageDataModel annotationData;
+  private final MessageDataModel fidelityData;
+  private final List<EnumDataModel> enumData;
+  private final List<QualityDataModel> qualityData;
   private ProtoCompiler compiler;
 
   private void addNotification(String errorMessage) {
@@ -63,9 +61,6 @@ public class MainDialogWrapper extends DialogWrapper {
     notification.notify(project);
   }
 
-  private boolean isValid() {
-    return pluginLayout.isValid();
-  }
 
   @Override
   public void doCancelAction() {
@@ -83,12 +78,14 @@ public class MainDialogWrapper extends DialogWrapper {
       Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
       return;
     }
+    pluginLayout.saveSettings();
     AssetsWriter assetsWriter = new AssetsWriter(
         AssetsFinder.findAssets(project.getProjectFilePath().split(".idea")[0]).getAbsolutePath());
-    annotationTabController = pluginLayout.getAnnotationTabController();
-    fidelityTabController = pluginLayout.getFidelityTabController();
-    qualityTabController = pluginLayout.getQualityTabController();
-
+    AnnotationTabController annotationTabController = pluginLayout.getAnnotationTabController();
+    FidelityTabController fidelityTabController = pluginLayout.getFidelityTabController();
+    QualityTabController qualityTabController = pluginLayout.getQualityTabController();
+    InstrumentationSettingsTabController instrumentationController = pluginLayout
+        .getInstrumentationSettingsTabController();
     List<EnumDataModel> annotationEnums = annotationTabController.getEnums();
 
     if (annotationEnums == null) {
@@ -96,8 +93,6 @@ public class MainDialogWrapper extends DialogWrapper {
           "Unable to write annotation and quality settings back to .proto files. You must add some settings first.1");
       return;
     }
-
-    pluginLayout.saveSettings();
     MessageDataModel fidelityModel = fidelityTabController.getFidelityData();
     MessageDataModel annotationModel = annotationTabController.getAnnotationData();
     boolean writeOK = true;
@@ -106,7 +101,11 @@ public class MainDialogWrapper extends DialogWrapper {
       addNotification("Unable to write annotation and fidelity settings back to .proto files.");
       writeOK = false;
     }
-
+    Settings dataModel = instrumentationController.getDataModel();
+    if (!assetsWriter.saveInstrumentationSettings(dataModel)) {
+      addNotification("Unable to write instrumentation settings to txt files.");
+      writeOK = false;
+    }
     List<QualityDataModel> qualityDataModels = qualityTabController.getQualityDataModels();
     assetsWriter.saveDevFidelityParams(compiler, qualityDataModels);
 
