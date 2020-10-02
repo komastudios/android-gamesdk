@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include "common.h"
+#include "time_provider.h"
+#include "tuningfork_utils.h"
 
 namespace tuningfork {
 
-// You can provide your own time source rather than steady_clock by inheriting
-// this and passing it to Init. Useful in tests.
-class ITimeProvider {
-   public:
-    virtual ~ITimeProvider() {}
-    virtual TimePoint Now() = 0;
-    virtual SystemTimePoint SystemNow() = 0;
-    virtual Duration TimeSinceProcessStart() = 0;
-};
+TimePoint ChronoTimeProvider::Now() { return std::chrono::steady_clock::now(); }
 
-// Implementation that uses std::chrono.
-class ChronoTimeProvider : public ITimeProvider {
-   public:
-    TimePoint Now() override;
-    SystemTimePoint SystemNow() override;
-    Duration TimeSinceProcessStart() override;
-};
+SystemTimePoint ChronoTimeProvider::SystemNow() {
+    return std::chrono::system_clock::now();
+}
+
+Duration ChronoTimeProvider::TimeSinceProcessStart() {
+    return GetTimeSinceProcessStart();
+}
 
 }  // namespace tuningfork

@@ -50,7 +50,33 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       loading_start_(TimePoint::min()),
       before_first_tick_(true),
       app_first_run_(first_run) {
+    if (backend == nullptr) {
+        default_backend_ = std::make_unique<HttpBackend>();
+        TuningFork_ErrorCode err = default_backend_->Init(settings);
+        if (err == TUNINGFORK_ERROR_OK) {
+            ALOGI("TuningFork.GoogleEndpoint: OK");
+            backend_ = default_backend_.get();
+        } else {
+            ALOGE("TuningFork.GoogleEndpoint: FAILED");
+            initialization_error_code_ = err;
+            return;
+        }
+    }
+
+    if (time_provider_ == nullptr) {
+        default_time_provider_ = std::make_unique<ChronoTimeProvider>();
+        time_provider_ = default_time_provider_.get();
+    }
+
+    if (meminfo_provider_ == nullptr) {
+        default_meminfo_provider_ = std::make_unique<DefaultMemInfoProvider>();
+        meminfo_provider_ = default_meminfo_provider_.get();
+        meminfo_provider_->SetDeviceMemoryBytes(
+            RequestInfo::CachedValue().total_memory_bytes);
+    }
+
     auto start_time = time_provider_->TimeSinceProcessStart();
+
     ALOGI(
         "TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  "
         "n_annotations: %zu"
@@ -128,8 +154,9 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
 
 TuningForkImpl::~TuningForkImpl() {
     // Stop the threads before we delete Tuning Fork internals
+    if (backend_) backend_->Stop();
     upload_thread_.Stop();
-    async_telemetry_->Stop();
+    if (async_telemetry_) async_telemetry_->Stop();
 }
 
 void TuningForkImpl::CreateSessionFrameHistograms(
