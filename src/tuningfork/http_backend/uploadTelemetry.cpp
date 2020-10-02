@@ -55,7 +55,7 @@ TuningFork_ErrorCode HttpBackend::UploadTelemetry(const std::string& evt_ser) {
     return ret;
 }
 
-void HttpBackend::KillThreads() {
+void HttpBackend::Stop() {
     if (ultimate_uploader_) ultimate_uploader_->Stop();
 }
 
