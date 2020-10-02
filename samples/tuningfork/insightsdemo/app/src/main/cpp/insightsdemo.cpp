@@ -122,6 +122,7 @@ void InitTf(JNIEnv* env, jobject activity) {
     TuningFork_Settings settings {};
     if (swappy_enabled) {
         settings.swappy_tracer_fn = &SwappyGL_injectTracer;
+        settings.swappy_version = Swappy_version();
     }
     settings.fidelity_params_callback = FidelityParamsCallback;
 #ifndef NDEBUG
@@ -139,6 +140,7 @@ void InitTf(JNIEnv* env, jobject activity) {
 
     TuningFork_ErrorCode err = TuningFork_init(&settings, env, activity);
     if (err==TUNINGFORK_ERROR_OK) {
+        TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONCREATE);
         TuningFork_setUploadCallback(UploadCallback);
         SetAnnotations();
         TuningFork_enableMemoryRecording(true);
@@ -234,14 +236,22 @@ Java_com_tuningfork_insightsdemo_TFTestActivity_clearSurface(JNIEnv */*env*/, jc
 }
 JNIEXPORT void JNICALL
 Java_com_tuningfork_insightsdemo_TFTestActivity_start(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONSTART);
     Renderer::getInstance()->start();
 }
 JNIEXPORT void JNICALL
 Java_com_tuningfork_insightsdemo_TFTestActivity_stop(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONSTOP);
     Renderer::getInstance()->stop();
     // Call flush here to upload any histograms when the app goes to the background.
     auto ret = TuningFork_flush();
     ALOGI("TuningFork_flush returned %d", ret);
+}
+
+JNIEXPORT void JNICALL
+Java_com_tuningfork_insightsdemo_TFTestActivity_destroy(JNIEnv */*env*/, jclass /*clz*/ ) {
+    TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONDESTROY);
+    TuningFork_destroy();
 }
 
 JNIEXPORT void JNICALL

@@ -127,7 +127,8 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
             }
             std::string sfps = ifps->second.string_value();
             fps.resize(modp_b64_decode_len(sfps.length()));
-            int sz = modp_b64_decode((char*)fps.data(), sfps.c_str(), sfps.length());
+            int sz =
+                modp_b64_decode((char*)fps.data(), sfps.c_str(), sfps.length());
             if (sz == -1) {
                 ALOGE("Can't decode base 64 FPs");
                 return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_ERROR;

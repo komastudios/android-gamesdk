@@ -57,6 +57,7 @@ class DebugBackend : public IBackend {
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
+    void Stop() override {}
 };
 
 static std::unique_ptr<DebugBackend> s_debug_backend =
