@@ -107,6 +107,24 @@
     },
     {
       "key": {
+        "uuid": "567caf72_edf3c5c2",
+        "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-02T14:50:17Z",
+      "side": 1,
+      "message": "Denied access to the go/cstyle.",
+      "parentUuid": "77e4da7e_8331b8e6",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3c19c22d_793dcb4f",
         "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
         "patchSetId": 2
