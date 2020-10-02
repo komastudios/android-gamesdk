@@ -49,7 +49,11 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 1
+<<<<<<< HEAD
 #define TUNINGFORK_BUGFIX_VERSION 1
+=======
+#define TUNINGFORK_BUGFIX_VERSION 2
+>>>>>>> 3a1aa891 (Improve shutdown behaviour)
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
                                    TUNINGFORK_MINOR_VERSION, \
