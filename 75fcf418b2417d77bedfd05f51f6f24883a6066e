@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86063f3d_dac625e6",
+        "filename": "src/tuningfork/http_backend/generateTuningParameters.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-02T14:25:45Z",
+      "side": 1,
+      "message": "Nit: for better legibility (and also not creating an uninitialized variable) I suggest moving the function call here",
+      "revId": "75fcf418b2417d77bedfd05f51f6f24883a6066e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
