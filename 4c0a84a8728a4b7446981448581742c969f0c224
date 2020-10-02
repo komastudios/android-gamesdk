@@ -16,6 +16,24 @@
       "revId": "4c0a84a8728a4b7446981448581742c969f0c224",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d836d5b0_630c62cd",
+        "filename": "include/common/gamesdk_common.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T11:10:59Z",
+      "side": 1,
+      "message": "\u0027\u0027Reason for major release: our version numbers overflowed\u0027\u0027\n😊",
+      "parentUuid": "78c69d5b_efde2fec",
+      "revId": "4c0a84a8728a4b7446981448581742c969f0c224",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
     }
   ]
 }
