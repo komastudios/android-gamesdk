@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee7ab9ea_9df569ac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-02T15:21:48Z",
+      "side": 1,
+      "message": "Bypass presubmit: infra errors. This is only a change to repo hooks.",
+      "revId": "59229b6d00adee26380707189ebbd154a444c75f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
