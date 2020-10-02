@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c4083410_da5bd2af",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-02T16:03:53Z",
+      "side": 1,
+      "message": "Use the /* ... */ block comment style described here: https://google.github.io/styleguide/javaguide.html#s4.8.6-comments",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 3
+      },
+      "revId": "6d3619f6337527f2b44fdc6d729336985c71d753",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}
