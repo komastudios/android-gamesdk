@@ -49,11 +49,14 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 1
+<<<<<<< HEAD
 #define TUNINGFORK_BUGFIX_VERSION 1
-#define TUNINGFORK_PACKED_VERSION                            \
-    ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
-                                   TUNINGFORK_MINOR_VERSION, \
-                                   TUNINGFORK_BUGFIX_VERSION)
+=======
+#define TUNINGFORK_BUGFIX_VERSION 2
+>>>>>>> 3a1aa891 (Improve shutdown behaviour)
+    #define TUNINGFORK_PACKED_VERSION ANDROID_GAMESDK_PACKED_VERSION(
+        TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION,
+        TUNINGFORK_BUGFIX_VERSION)
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
@@ -65,24 +68,24 @@ extern "C" {
     TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, \
                               TUNINGFORK_MINOR_VERSION)
 
-/** @endcond */
+    /** @endcond */
 
-/**
- * @brief Instrument keys indicating time periods within a frame.
- *  Keys 64000-65535 are reserved
- */
-enum TuningFork_InstrumentKeys {
-    TFTICK_USERDEFINED_BASE = 0,
-    TFTICK_RAW_FRAME_TIME =
-        64000,  ///< If GPU time is available, thisis MAX(CPU_TIME,GPU_TIME)
-                ///< If not, this is the same as PACED_FRAME_TIME
-    TFTICK_PACED_FRAME_TIME =
-        64001,  ///< Frame time between ends of eglSwapBuffers calls or
-                ///< Vulkan queue present.
-    TFTICK_CPU_TIME =
-        64002,  ///< The time between frame start and the call to Swappy_swap.
-    TFTICK_GPU_TIME =
-        64003  ///< The time between buffer swap and GPU fence triggering.
+    /**
+     * @brief Instrument keys indicating time periods within a frame.
+     *  Keys 64000-65535 are reserved
+     */
+    enum TuningFork_InstrumentKeys {
+        TFTICK_USERDEFINED_BASE = 0,
+        TFTICK_RAW_FRAME_TIME =
+            64000,  ///< If GPU time is available, thisis MAX(CPU_TIME,GPU_TIME)
+                    ///< If not, this is the same as PACED_FRAME_TIME
+        TFTICK_PACED_FRAME_TIME =
+            64001,  ///< Frame time between ends of eglSwapBuffers calls or
+                    ///< Vulkan queue present.
+        TFTICK_CPU_TIME = 64002,  ///< The time between frame start and the call
+                                  ///< to Swappy_swap.
+        TFTICK_GPU_TIME =
+            64003  ///< The time between buffer swap and GPU fence triggering.
 };
 
 /**

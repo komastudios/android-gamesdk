@@ -238,6 +238,7 @@ Java_com_tuningfork_experimentsdemo_TFTestActivity_stop(JNIEnv */*env*/, jclass 
 JNIEXPORT void JNICALL
 Java_com_tuningfork_experimentsdemo_TFTestActivity_destroy(JNIEnv */*env*/, jclass /*clz*/ ) {
     TuningFork_reportLifecycleEvent(TUNINGFORK_STATE_ONDESTROY);
+    TuningFork_destroy();
 }
 
 JNIEXPORT void JNICALL

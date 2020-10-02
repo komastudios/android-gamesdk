@@ -23,6 +23,7 @@ namespace tuningfork {
 // Provider of system memory information.
 class IMemInfoProvider {
    public:
+    virtual ~IMemInfoProvider() {}
     virtual void UpdateMemInfo() = 0;
     virtual void UpdateOomScore() = 0;
     virtual uint64_t GetNativeHeapAllocatedSize() = 0;
