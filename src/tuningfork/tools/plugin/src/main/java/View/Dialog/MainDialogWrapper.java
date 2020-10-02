@@ -35,7 +35,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
-import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
@@ -64,16 +63,6 @@ public class MainDialogWrapper extends DialogWrapper {
 
   private boolean isValid() {
     return pluginLayout.isValid();
-  }
-
-  @Override
-  public void doCancelAction() {
-    try {
-      RequestServer.stopListening();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    super.doCancelAction();
   }
 
   @Override
@@ -114,13 +103,6 @@ public class MainDialogWrapper extends DialogWrapper {
           "Android Performance Tuner settings saved successfully!",
           NotificationType.INFORMATION);
       notification.notify(project);
-
-      try {
-        RequestServer.stopListening();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
       super.doOKAction();
     }
   }
@@ -139,13 +121,7 @@ public class MainDialogWrapper extends DialogWrapper {
 
     setTitle("Android Performance Tuner Plugin");
     init();
-    Disposer.register(this.getDisposable(), () -> {
-      try {
-        RequestServer.stopListening();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+    Disposer.register(this.getDisposable(), () -> RequestServer.getInstance().stopListening());
   }
 
   @Override

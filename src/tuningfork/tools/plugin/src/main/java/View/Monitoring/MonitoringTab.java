@@ -30,7 +30,6 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -285,26 +284,18 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
           }
         });
     startMonitoring.addActionListener(actionEvent -> {
-      try {
-        loadingPanel.setVisible(true);
-        RequestServer.listen(requestConsumer);
-        startMonitoring.setVisible(false);
-        stopMonitoring.setVisible(true);
-        initLoadingAnimationThread();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      loadingPanel.setVisible(true);
+      RequestServer.getInstance().setMonitoringAction(requestConsumer);
+      startMonitoring.setVisible(false);
+      stopMonitoring.setVisible(true);
+      initLoadingAnimationThread();
     });
 
     stopMonitoring.addActionListener(actionEvent -> {
       gridPanel.setVisible(false);
       retrievedInformationPanel.setVisible(false);
       changeQualityButton.setVisible(false);
-      try {
-        RequestServer.stopListening();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      RequestServer.getInstance().setMonitoringAction(null);
       startMonitoring.setVisible(true);
       stopMonitoring.setVisible(false);
       if (!loadingAnimationThread.isInterrupted()) {
