@@ -105,7 +105,7 @@ public class MonitoringController {
 
     Descriptor fidelityParamsDesc = devTuningForkDesc.findMessageTypeByName("FidelityParams");
     DynamicMessage qualityMessage = DynamicMessage
-        .parseFrom(fidelityParamsDesc, currentFidelitySettings.toByteArray());
+        .parseFrom(fidelityParamsDesc, currentFidelitySettings);
 
     QualityDataModel newQuality = DataModelTransformer
         .transformToQuality(qualityMessage, fidelityParamsDesc.getFields()).get();
