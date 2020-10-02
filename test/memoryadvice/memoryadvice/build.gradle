@@ -10,7 +10,7 @@ android {
         minSdkVersion 19
         versionCode 9
         // LINT.IfChange
-        versionName '0.13'
+        versionName '0.14'
         // LINT.ThenChange(../README.md)
     }
 
