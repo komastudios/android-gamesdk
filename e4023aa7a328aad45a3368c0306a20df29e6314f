@@ -1,0 +1,31 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000005339850",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1446817?revision\u003d4",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1f53f9c3_50d27788",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-10-05T10:42:42Z",
+      "side": 1,
+      "message": "This file contains a set of conflict markers.If this is a false alarm, add IGNORE_MERGE_CONFLICT_CHECK\u003d\u003d\u003creason\u003e to your commit message.",
+      "range": {
+        "startLine": 52,
+        "startChar": 1,
+        "endLine": 52,
+        "endChar": 7
+      },
+      "revId": "e4023aa7a328aad45a3368c0306a20df29e6314f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
