@@ -50,10 +50,6 @@ public class FidelityTabController {
         .addPropertyChangeListener(propertyChangeListener);
   }
 
-  public MessageDataModel getFidelityDataModel() {
-    return fidelityDataModel;
-  }
-
   public void addInitialFidelity(JTable table) {
     List<String> fieldNames = fidelityDataModel.getFieldNames();
     List<String> fieldValues = fidelityDataModel.getFieldTypes();

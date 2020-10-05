@@ -87,7 +87,8 @@ public class PluginLayout extends JPanel {
   }
 
   public boolean isViewValid() {
-    return annotationsLayout.isViewValid() && qualityLayout.isViewValid();
+    return annotationsLayout.isViewValid() && fidelitySettingsLayout.isViewValid() && qualityLayout
+        .isViewValid();
   }
 
   private void addComponents() {
@@ -176,7 +177,7 @@ public class PluginLayout extends JPanel {
     // Fidelity initialization.
     FidelityTabController fidelityTabController = new FidelityTabController(fidelityData,
         annotationTabController.getEnums());
-    fidelitySettingsLayout = new FidelityTab(fidelityTabController);
+    fidelitySettingsLayout = new FidelityTab(fidelityTabController, disposable);
     annotationTabController.addPropertyChangeListener(
         fidelitySettingsLayout);
     fidelitySettingsLayout.setVisible(false);
