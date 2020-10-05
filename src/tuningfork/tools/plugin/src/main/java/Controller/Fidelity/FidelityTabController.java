@@ -20,11 +20,9 @@ import Model.EnumDataModel;
 import Model.MessageDataModel;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
-import com.intellij.openapi.ui.ValidationInfo;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -132,29 +130,5 @@ public class FidelityTabController {
 
   public List<EnumDataModel> getEnums() {
     return enums;
-  }
-
-  public List<ValidationInfo> validate() {
-    List<ValidationInfo> validationInfos = new ArrayList<>();
-    List<String> types = fidelityDataModel.getFieldTypes();
-    boolean emptyType = types.stream().anyMatch(String::isEmpty);
-    if (emptyType) {
-      validationInfos.add(new ValidationInfo("Empty Field Type Is Not Allowed"));
-    }
-    List<String> names = fidelityDataModel.getFieldNames();
-    boolean duplicateField =
-        names.stream().anyMatch(name -> Collections.frequency(names, name) > 1);
-    if (duplicateField) {
-      validationInfos.add(new ValidationInfo("Duplicate Fields Are Not Allowed"));
-    }
-    names.stream()
-        .filter(s -> !s.matches(FIELD_NAME_PATTERN) && !s.isEmpty())
-        .forEach(s ->
-            validationInfos.add(
-                new ValidationInfo(s + " Does Not Match The Pattern [a-zA-Z_].")));
-    if (names.stream().anyMatch(String::isEmpty)) {
-      validationInfos.add(new ValidationInfo("Empty Fields Are Not Allowed."));
-    }
-    return validationInfos;
   }
 }

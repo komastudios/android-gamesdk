@@ -23,6 +23,7 @@ import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Resources.ResourceLoader;
 import View.Annotation.AnnotationTab;
 import View.Fidelity.FidelityTab;
 import View.InstrumentationSettings.InstrumentationSettingsTab;
@@ -31,7 +32,6 @@ import View.Quality.QualityTab;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.openapi.Disposable;
 import com.intellij.ui.treeStructure.Tree;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -60,6 +60,7 @@ public class PluginLayout extends JPanel {
   private JTree menu;
   private ArrayList<JPanel> panels;
 
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private final MessageDataModel annotationData;
   private final MessageDataModel fidelityData;
@@ -111,37 +112,38 @@ public class PluginLayout extends JPanel {
   }
 
   private void initMenuTree() {
-    DefaultMutableTreeNode settingsRoot = new DefaultMutableTreeNode("Settings");
-    DefaultMutableTreeNode annotationsNode = new DefaultMutableTreeNode("Annotations");
-    DefaultMutableTreeNode fidelityNode = new DefaultMutableTreeNode("Fidelity settings");
-    DefaultMutableTreeNode qualitySettingsNode = new DefaultMutableTreeNode("Quality settings");
+    DefaultMutableTreeNode settingsRoot = new DefaultMutableTreeNode(
+        resourceLoader.get("settings"));
+    DefaultMutableTreeNode annotationsNode = new DefaultMutableTreeNode(
+        resourceLoader.get("annotation_settings"));
+    DefaultMutableTreeNode fidelityNode = new DefaultMutableTreeNode(
+        resourceLoader.get("fidelity_settings"));
+    DefaultMutableTreeNode qualitySettingsNode = new DefaultMutableTreeNode(
+        resourceLoader.get("quality_settings"));
 
-    //new root for validation and settings attached there
-    DefaultMutableTreeNode validationRoot = new DefaultMutableTreeNode("Validation");
-    DefaultMutableTreeNode validationSettings = new DefaultMutableTreeNode("Settings");
-
-    validationRoot.add(validationSettings);
+    DefaultMutableTreeNode validationSettings = new DefaultMutableTreeNode(
+        resourceLoader.get("instrumentation_settings"));
 
     settingsRoot.add(annotationsNode);
     settingsRoot.add(fidelityNode);
     settingsRoot.add(qualitySettingsNode);
+    settingsRoot.add(validationSettings);
 
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
-    DefaultMutableTreeNode monitoringRoot = new DefaultMutableTreeNode("Monitoring");
+    DefaultMutableTreeNode root = new DefaultMutableTreeNode(resourceLoader.get("preference"));
+    DefaultMutableTreeNode monitoringRoot = new DefaultMutableTreeNode(
+        resourceLoader.get("monitoring"));
     DefaultMutableTreeNode telemetryNode =
-        new DefaultMutableTreeNode("Telemetry Reports");
+        new DefaultMutableTreeNode(resourceLoader.get("telemetry_report"));
 
     monitoringRoot.add(telemetryNode);
 
     root.add(settingsRoot);
-    root.add(validationRoot);
     root.add(monitoringRoot);
-
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
     menu.setCellRenderer(new CustomCellRenderer());
-    menu.setBackground(new Color(0, true));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    menu.setRootVisible(false);
     menu.addTreeSelectionListener(treeSelectionEvent -> {
       DefaultMutableTreeNode node = (DefaultMutableTreeNode)
           treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
@@ -160,7 +162,7 @@ public class PluginLayout extends JPanel {
       }
     });
     menu.setMinimumSize(menuSize);
-    menu.setPreferredSize(new Dimension(150, this.getPreferredSize().height));
+    menu.setPreferredSize(new Dimension(180, this.getPreferredSize().height));
     menu.setSelectionModel(new LeafOnlySelectionModel());
     menuPanel.setSize(menuSize);
     menuPanel.add(menu);
@@ -237,9 +239,9 @@ public class PluginLayout extends JPanel {
           super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
 
       if (!leaf) {
-        cell.setFont(new Font("Roboto", Font.BOLD, 13));
+        cell.setFont(new Font("Roboto", Font.BOLD, 14));
       } else {
-        cell.setFont(new Font("Roboto", Font.PLAIN, 11));
+        cell.setFont(new Font("Roboto", Font.PLAIN, 12));
       }
 
       return cell;

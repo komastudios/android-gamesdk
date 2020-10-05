@@ -22,6 +22,7 @@ import Utils.DataModelTransformer;
 import Utils.Generation.TuningForkMethodsGeneration;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
+import Utils.Resources.ResourceLoader;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
@@ -45,8 +46,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class GenerateAnnotationAction extends AnAction {
 
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
   private final NotificationGroup NOTIFICATION_GROUP =
-      new NotificationGroup("Android Performance Tuner", NotificationDisplayType.BALLOON, true);
+      new NotificationGroup(resourceLoader.get("android_performance_tuner"),
+          NotificationDisplayType.BALLOON, true);
 
   @Override
   public void update(@NotNull AnActionEvent e) {
@@ -73,12 +76,13 @@ public class GenerateAnnotationAction extends AnAction {
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
     if (psiFile == null) {
       Notification notification = NOTIFICATION_GROUP.createNotification(
-          "Unable to identify the current file.",
+          resourceLoader.get("identify_file_error"),
           NotificationType.INFORMATION);
       notification.notify(project);
       return;
     }
-    ProgressManager.getInstance().run(new GenerationTask(project, "Loading APT Data", psiFile));
+    ProgressManager.getInstance()
+        .run(new GenerationTask(project, resourceLoader.get("loading_apt"), psiFile));
   }
 
 
@@ -112,9 +116,9 @@ public class GenerateAnnotationAction extends AnAction {
         MessageDataModel fidelityData = transformer.initFidelityData();
         TuningForkMethodsGeneration tuningForkMethodsGeneration
             = new TuningForkMethodsGeneration(psiFile, project);
-        progressIndicator.setText("Writing Methods");
+        progressIndicator.setText(resourceLoader.get("generation_writing_method"));
         generateCode(annotationData, fidelityData, tuningForkMethodsGeneration, project);
-        progressIndicator.setText("Brushing Up Imports");
+        progressIndicator.setText(resourceLoader.get("generation_brush_imports"));
         WriteCommandAction
             .runWriteCommandAction(project, tuningForkMethodsGeneration::generateImports);
       } catch (IOException | CompilationException e1) {

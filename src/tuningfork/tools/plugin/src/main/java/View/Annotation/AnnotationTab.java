@@ -21,6 +21,7 @@ import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
 import Model.EnumDataModel;
+import Utils.Resources.ResourceLoader;
 import Utils.Validation.UIValidator;
 import View.Annotation.AnnotationDecorator.EnumComboBoxDecorator;
 import View.Decorator.TableRenderer;
@@ -51,10 +52,11 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
   private JPanel decoratorPanel;
   private AnnotationTableModel model;
   private final AnnotationTabController annotationController;
-
-  private final JBLabel annotationLabel = new JBLabel("Annotation Settings");
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+  private final JBLabel annotationLabel = new JBLabel(
+      resourceLoader.get("annotation_settings"));
   private final JBLabel informationLabel =
-      new JBLabel("Annotation is used by tuning fork to mark the histograms being sent.");
+      new JBLabel(resourceLoader.get("annotation_info"));
   private final Disposable disposable;
 
   public AnnotationTab(AnnotationTabController annotationController, Disposable disposable) {
@@ -94,6 +96,16 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
     this.add(informationLabel);
     // Initialize toolbar and table.
     annotationTable.setModel(model);
+    annotationController.addInitialAnnotation(annotationTable);
+    setDecoratorPanelSize(decoratorPanel);
+    setTableSettings(scrollPane, decoratorPanel, annotationTable);
+    initColumnViews();
+    this.add(scrollPane);
+    this.add(Box.createVerticalStrut(10));
+    this.add(new EnumTable(annotationController));
+  }
+
+  private void initColumnViews() {
     TableColumn enumColumn = annotationTable.getColumnModel().getColumn(0);
     enumColumn.setCellEditor(new EnumComboBoxDecorator(
         annotationController.getEnums()));
@@ -104,14 +116,12 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
             (value, row, column) -> {
               String strVal = value.toString();
               if (strVal.isEmpty()) {
-                return new ValidationInfo("Field Can Not Be Empty");
+                return new ValidationInfo(resourceLoader.get("field_empty_error"));
               }
               return null;
             })
         );
-    annotationController.addInitialAnnotation(annotationTable);
-    setDecoratorPanelSize(decoratorPanel);
-    setTableSettings(scrollPane, decoratorPanel, annotationTable);
+
     TableColumn nameColumn = annotationTable.getColumnModel().getColumn(1);
     //noinspection UnstableApiUsage
     nameColumn.setCellRenderer(
@@ -119,18 +129,16 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
             (value, row, column) -> {
               String strVal = value.toString();
               if (strVal.isEmpty()) {
-                return new ValidationInfo("Field Can Not Be Empty");
+                return new ValidationInfo(resourceLoader.get("field_empty_error"));
               }
               if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
-                return new ValidationInfo(strVal + " contains illegal characters");
+                return new ValidationInfo(String
+                    .format(resourceLoader.get("field_illegal_character_error"), strVal));
               }
               return null;
             }));
     nameColumn
         .setCellEditor(TableRenderer.getEditorTextBoxWithValidation(new JTextField(), disposable));
-    this.add(scrollPane);
-    this.add(Box.createVerticalStrut(10));
-    this.add(new EnumTable(annotationController));
   }
 
   public boolean isViewValid() {
@@ -145,7 +153,8 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
       boolean isNamesDuplicate =
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {
-        return new ValidationInfo("Repeated Fields Names Are Not Allowed.", annotationTable);
+        return new ValidationInfo(resourceLoader.get("repeated_fields_error"),
+            annotationTable);
       }
       return null;
     });

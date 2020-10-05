@@ -20,6 +20,7 @@ import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
+import Utils.Resources.ResourceLoader;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
@@ -56,17 +57,18 @@ public class EnumDialogWrapper extends DialogWrapper {
   private boolean isEdit;
   private int editingRow;
   private EnumDataModel enumDataModel;
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
   public EnumDialogWrapper(EnumController controller) {
     super(true);
-    setTitle("Add Enum");
+    setTitle(resourceLoader.get("add_enum_title"));
     this.controller = controller;
     init();
   }
 
   public EnumDialogWrapper(EnumController controller, int row, EnumDataModel enumDataModel) {
     super(true);
-    setTitle("Edit Enum");
+    setTitle(resourceLoader.get("edit_enum_title"));
     this.controller = controller;
     this.isEdit = true;
     this.editingRow = row;
@@ -86,7 +88,8 @@ public class EnumDialogWrapper extends DialogWrapper {
   protected void doOKAction() {
     stopCellEditingMomentarily();
     if (!enumLayout.isViewValid()) {
-      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      Messages.showErrorDialog(resourceLoader.get("fix_errors_first"),
+          resourceLoader.get("unable_to_close_title"));
       return;
     }
     if (isEdit) {
@@ -94,14 +97,16 @@ public class EnumDialogWrapper extends DialogWrapper {
         super.doOKAction();
       } else {
         Messages.showInfoMessage(
-            "Conflicting enums names. Please change the enum name", "Unable to Edit Enum!");
+            String.format(resourceLoader.get("enum_name_already_exist"), enumLayout.getName()),
+            resourceLoader.get("unable_to_close_title"));
       }
     } else {
       if (controller.addEnum(enumLayout.getName(), enumLayout.getOptions())) {
         super.doOKAction();
       } else {
         Messages.showInfoMessage(
-            "Enum name already exists. Please change the enum name", "Unable to Add Enum!");
+            String.format(resourceLoader.get("enum_name_already_exist"), enumLayout.getName()),
+            resourceLoader.get("unable_to_close_title"));
       }
     }
   }
@@ -122,8 +127,9 @@ public class EnumDialogWrapper extends DialogWrapper {
     private JPanel decoratorPanel;
     private JTextField nameTextField;
     private DefaultTableModel model;
-    private final JLabel nameLabel = new JBLabel("Name");
     private final Disposable disposable;
+    private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+    private final JLabel nameLabel = new JBLabel(resourceLoader.get("label_name"));
 
     EnumLayout(Disposable disposable) {
       this.disposable = disposable;
@@ -193,7 +199,7 @@ public class EnumDialogWrapper extends DialogWrapper {
       optionsTable.setSelectionForeground(null);
       optionsTable.setSelectionBackground(null);
       optionsTable.setIntercellSpacing(new Dimension(0, 0));
-      model.setColumnIdentifiers(new String[]{"Options"});
+      model.setColumnIdentifiers(new String[]{resourceLoader.get("table_column_options")});
       optionsTable.setModel(model);
     }
 
@@ -201,10 +207,13 @@ public class EnumDialogWrapper extends DialogWrapper {
       new ComponentValidator(disposable).withValidator(() -> {
         String name = nameTextField.getText();
         if (name.isEmpty()) {
-          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+          return new ValidationInfo(resourceLoader.get("field_empty_error"),
+              nameTextField);
         }
         if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(name).find()) {
-          return new ValidationInfo(name + " contains illegal characters", nameTextField);
+          return new ValidationInfo(
+              String.format(resourceLoader.get("field_illegal_character_error"), name),
+              nameTextField);
         }
         return null;
       }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
@@ -212,13 +221,15 @@ public class EnumDialogWrapper extends DialogWrapper {
       UIValidator.createTableValidator(disposable, optionsTable,
           () -> {
             if (optionsTable.getRowCount() == 0) {
-              return new ValidationInfo("Options Table Can Not Be Empty", optionsTable);
+              return new ValidationInfo(resourceLoader.get("options_table_empty_error"),
+                  optionsTable);
             }
             ArrayList<String> options = getOptions();
             boolean isOptionDuplicate =
                 options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
             if (isOptionDuplicate) {
-              return new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable);
+              return new ValidationInfo(resourceLoader.get("repeated_fields_error"),
+                  optionsTable);
             }
             return null;
           });

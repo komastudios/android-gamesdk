@@ -17,6 +17,7 @@
 package View;
 
 import Controller.Enum.EnumController;
+import Utils.Resources.ResourceLoader;
 import View.Dialog.EnumDialogWrapper;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
@@ -48,7 +49,8 @@ public class EnumTable extends JPanel {
         return false;
       }
     };
-    tableModel.setColumnIdentifiers(new Object[]{"Options"});
+    tableModel.setColumnIdentifiers(
+        new Object[]{ResourceLoader.getInstance().get("table_column_options")});
     controller.addEnumsToModel(tableModel);
     this.enumTable = new JBTable(tableModel);
     this.controller = controller;

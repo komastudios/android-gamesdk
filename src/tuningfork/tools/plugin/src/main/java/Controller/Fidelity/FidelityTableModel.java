@@ -16,6 +16,7 @@
 
 package Controller.Fidelity;
 
+import Utils.Resources.ResourceLoader;
 import View.Fidelity.FidelityTableData;
 import View.Fidelity.FieldType;
 import com.intellij.openapi.ui.Messages;
@@ -29,7 +30,7 @@ public class FidelityTableModel extends AbstractTableModel {
   private final String[] columnNames = {"Type", "Parameter name"};
   private List<FidelityTableData> data;
   private FidelityTabController controller;
-
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
   public FidelityTableModel(FidelityTabController controller) {
     this.controller = controller;
     data = new ArrayList<>();
@@ -83,8 +84,8 @@ public class FidelityTableModel extends AbstractTableModel {
           controller.updateEnum(row, controller.getEnums().get(0));
           data.get(row).setFieldEnumName(controller.getEnumNames().get(0));
         } else {
-          Messages.showErrorDialog("You Need to Add An Enum First.",
-              "Unable to Choose Enum");
+          Messages.showErrorDialog(resourceLoader.get("need_to_add_enum_error"),
+              resourceLoader.get("unable_to_choose_enum_title"));
           return;
         }
       }
@@ -126,6 +127,6 @@ public class FidelityTableModel extends AbstractTableModel {
   }
 
   public List<String> getFidelityParamNames() {
-    return data.stream().map(row -> row.getFieldParamName()).collect(Collectors.toList());
+    return data.stream().map(FidelityTableData::getFieldParamName).collect(Collectors.toList());
   }
 }
