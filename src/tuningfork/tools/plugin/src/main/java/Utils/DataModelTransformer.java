@@ -16,12 +16,12 @@
 
 package Utils;
 
-import Files.AssetsParser;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
 import Model.QualityDataModel;
 import Utils.Assets.AssetsFinder;
+import Utils.Assets.AssetsParser;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import com.google.common.io.Files;

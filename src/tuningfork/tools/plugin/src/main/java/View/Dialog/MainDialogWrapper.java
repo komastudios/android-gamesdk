@@ -34,16 +34,17 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
-import java.io.IOException;
-import com.intellij.openapi.ui.Messages;
+import com.intellij.util.ui.JBEmptyBorder;
+import com.intellij.util.ui.JBUI;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.border.Border;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MainDialogWrapper extends DialogWrapper {
@@ -57,6 +58,7 @@ public class MainDialogWrapper extends DialogWrapper {
   private AnnotationTabController annotationTabController;
   private FidelityTabController fidelityTabController;
   private QualityTabController qualityTabController;
+  private InstrumentationSettingsTabController instrumentationController;
   private MessageDataModel annotationData;
   private MessageDataModel fidelityData;
   private List<EnumDataModel> enumData;
@@ -80,6 +82,12 @@ public class MainDialogWrapper extends DialogWrapper {
     super.doCancelAction();
   }
 
+  @Nullable
+  @Override
+  protected Border createContentPaneBorder() {
+    return new JBEmptyBorder(JBUI.insetsRight(10));
+  }
+
   @Override
   protected void doOKAction() {
     pluginLayout.saveSettings();
@@ -94,6 +102,7 @@ public class MainDialogWrapper extends DialogWrapper {
     annotationTabController = pluginLayout.getAnnotationTabController();
     fidelityTabController = pluginLayout.getFidelityTabController();
     qualityTabController = pluginLayout.getQualityTabController();
+    instrumentationController = pluginLayout.getInstrumentationSettingsTabController();
     List<EnumDataModel> annotationEnums = annotationTabController.getEnums();
 
     if (annotationEnums == null) {
@@ -152,6 +161,12 @@ public class MainDialogWrapper extends DialogWrapper {
       }
     });
     init();
+  }
+
+  @NotNull
+  @Override
+  protected DialogStyle getStyle() {
+    return DialogStyle.COMPACT;
   }
 
   @Override

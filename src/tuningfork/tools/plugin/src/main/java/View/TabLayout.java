@@ -20,15 +20,18 @@ import View.Decorator.DocumentFilters.NumberDocumentFilter;
 import View.Decorator.RoundedCornerBorder;
 import View.Decorator.TableRenderer;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.util.ui.UIUtil;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
@@ -61,28 +64,16 @@ public class TabLayout extends JPanel {
     this.setPreferredSize(new Dimension(PANEL_MIN_WIDTH, PANEL_MIN_HEIGHT));
   }
 
-  /*
-   * Dynamically resizes when current row number is greater than initial height.
-   */
-  private void resizePanelToFit(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
-    int oldWidth = scrollPane.getWidth();
-    int newHeight =
-        Math.max(
-            decoratorPanel.getMinimumSize().height + 2,
-            Math.min(this.getHeight() - 100, table.getRowHeight() * table.getRowCount() + 30));
-    scrollPane.setSize(new Dimension(oldWidth, newHeight));
-    scrollPane.revalidate();
-  }
-
-  public void setTableSettings(JScrollPane scrollPane, JPanel decoratorPanel, JTable table) {
-    scrollPane.setViewportView(decoratorPanel);
+  public static void setTableSettings(JTable table) {
     table.setFillsViewportHeight(true);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     table.getTableHeader().setReorderingAllowed(false);
     table.setRowSelectionAllowed(true);
     table.setSelectionBackground(null);
     table.setSelectionForeground(null);
+    table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
     table.setIntercellSpacing(new Dimension(0, 0));
+    table.setShowGrid(false);
   }
 
   public void initComboBoxColumns(JTable table, int col, List<String> options) {
@@ -101,20 +92,40 @@ public class TabLayout extends JPanel {
     return boxEditor;
   }
 
-  public DefaultCellEditor getTextFieldModel() {
+  public static DefaultCellEditor getTextFieldModel() {
     JTextField textFieldModel = new JTextField();
+    textFieldModel.setOpaque(true);
     textFieldModel.setBorder(new RoundedCornerBorder());
-    DefaultCellEditor textEditor = new DefaultCellEditor(textFieldModel);
+    DefaultCellEditor textEditor = new CellEditorWithBackground(textFieldModel);
     textEditor.setClickCountToStart(1);
     return textEditor;
   }
 
-  public JTextField getIntegerTextFieldModel() {
+  public TableCellEditor getIntegerTextFieldModel() {
     JTextField textFieldModel = new JTextField();
+    textFieldModel.setOpaque(true);
+    DefaultCellEditor defaultCellEditor = new CellEditorWithBackground(textFieldModel);
     ((AbstractDocument) textFieldModel.getDocument())
         .setDocumentFilter(new NumberDocumentFilter());
     textFieldModel.setBorder(new RoundedCornerBorder());
-    return textFieldModel;
+    defaultCellEditor.setClickCountToStart(1);
+    return defaultCellEditor;
+  }
+
+  private static final class CellEditorWithBackground extends DefaultCellEditor {
+
+    public CellEditorWithBackground(JTextField textField) {
+      super(textField);
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
+        int row, int column) {
+      JComponent jComponent = (JComponent) super
+          .getTableCellEditorComponent(table, value, isSelected, row, column);
+      jComponent.setBackground(UIUtil.getTableGridColor());
+      return jComponent;
+    }
   }
 
   public void initTextFieldColumns(JTable table, int col) {

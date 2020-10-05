@@ -24,7 +24,6 @@ import View.TabLayout;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
-import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Hashtable;
@@ -35,9 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jdesktop.swingx.prompt.PromptSupport;
@@ -121,16 +118,6 @@ public class InstrumentationSettingsTab extends TabLayout {
     for (int i = 0; i < validationSettingsTable.getModel().getColumnCount(); i++) {
       initTextFieldColumns(validationSettingsTable, i);
     }
-  }
-
-  private void setTableSettings(JTable table) {
-    table.setFillsViewportHeight(true);
-    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    table.getTableHeader().setReorderingAllowed(false);
-    table.setRowSelectionAllowed(true);
-    table.setSelectionBackground(null);
-    table.setSelectionForeground(null);
-    table.setIntercellSpacing(new Dimension(0, 0));
   }
 
   public InstrumentationSettingsTabController getInstrumentationSettingsTabController() {

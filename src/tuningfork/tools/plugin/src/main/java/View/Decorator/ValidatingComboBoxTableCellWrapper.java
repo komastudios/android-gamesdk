@@ -14,24 +14,19 @@
  * limitations under the License
  */
 
-package Utils.Validation;
+package View.Decorator;
 
-import View.Decorator.ValidationComboBoxEditor;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.ui.CellRendererPanel;
 import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.function.Supplier;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
-import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,25 +67,16 @@ public class ValidatingComboBoxTableCellWrapper extends CellRendererPanel implem
       boolean isSelected, boolean hasFocus, int row, int column) {
     JComponent delegateRenderer = (JComponent) delegate
         .getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    if (!(delegateRenderer instanceof JComboBox)) {
-      throw new IllegalStateException("Unknown Component. Expected ComboBox");
-    }
     if (cellValidator != null) {
       ValidationInfo result = cellValidator.validate(value, row, column);
-      JComboBox<?> comboBox = (JComboBox<?>) delegateRenderer;
-      if (comboBox.getEditor() instanceof ValidationComboBoxEditor) {
-        ValidationComboBoxEditor comboBoxEditor = (ValidationComboBoxEditor) comboBox.getEditor();
-        comboBoxEditor.getErrorLabel().setIcon(result == null ? null
-            : result.warning ? AllIcons.General.BalloonWarning : AllIcons.General.BalloonError);
-        comboBoxEditor.getErrorLabel().setBorder(result == null ? null : iconBorder());
-        comboBox.putClientProperty(CELL_VALIDATION_PROPERTY, result);
+      delegateRenderer.putClientProperty(CELL_VALIDATION_PROPERTY, result);
+      if (result != null) {
+        delegateRenderer.setToolTipText(result.message);
+      } else {
+        delegateRenderer.setToolTipText("");
       }
     }
     return delegateRenderer;
-  }
-
-  private static Border iconBorder() {
-    return JBUI.Borders.emptyRight(UIUtil.isUnderWin10LookAndFeel() ? 4 : 3);
   }
 
   @Override

@@ -16,12 +16,19 @@
 
 package View.Fidelity;
 
+import View.Decorator.RoundedCornerBorder;
+import com.intellij.util.ui.UIUtil;
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/*
+This class is responsible for just enclosing a TextField and label(error label) inside a Jpanel
+for validation. As using the normal validation icon place would look glitchy.
+
+Only meant to be used with fidelity panel.
+ */
 public class FidelityValidatablePanelWithTextField extends JPanel {
 
   private JTextField jTextField;
@@ -30,13 +37,13 @@ public class FidelityValidatablePanelWithTextField extends JPanel {
   public FidelityValidatablePanelWithTextField() {
     jTextField = new JTextField();
     errorLabel = new JLabel();
-    this.setLayout(new BorderLayout(0, 0));
-    this.add(jTextField, BorderLayout.CENTER);
-    this.add(errorLabel, BorderLayout.EAST);
-    this.setBackground(null);
-    this.setForeground(null);
-    this.setOpaque(false);
-    this.setFocusable(false);
+    setLayout(new BorderLayout(0, 0));
+    add(jTextField, BorderLayout.CENTER);
+    add(errorLabel, BorderLayout.EAST);
+    setBorder(new RoundedCornerBorder());
+    setBackground(UIUtil.getTableBackground());
+    jTextField.setBorder(null);
+    jTextField.setBackground(UIUtil.getTableBackground());
   }
 
   public JLabel getErrorLabel() {
@@ -47,8 +54,4 @@ public class FidelityValidatablePanelWithTextField extends JPanel {
     return jTextField;
   }
 
-  @Override
-  protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
-  }
 }
