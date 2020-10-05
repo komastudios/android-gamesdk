@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "570355c0_fa11669a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-05T10:41:30Z",
+      "side": 1,
+      "message": "Added a few questions, apart from that looks much safer without the statics. 👍",
+      "revId": "3a1aa8913db345a5cbcb0b34161757e1ae7b4c23",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15dcdade_e07e2ec3",
+        "filename": "samples/tuningfork/insightsdemo/app/src/main/cpp/insightsdemo.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-05T10:41:30Z",
+      "side": 1,
+      "message": "question: was this a problem not to specify it? Seems like it would have resulted in the wrong callbacks being used for the tracers?",
+      "revId": "3a1aa8913db345a5cbcb0b34161757e1ae7b4c23",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84290f9a_00b8fa58",
+        "filename": "src/tuningfork/core/meminfo_provider.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-05T10:41:30Z",
+      "side": 1,
+      "message": "Nice catch! Do you think this could have been creating any issue?",
+      "revId": "3a1aa8913db345a5cbcb0b34161757e1ae7b4c23",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": true
+    }
+  ]
+}

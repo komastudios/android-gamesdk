@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e92fabf3_ce0fadd5",
+        "filename": "src/tuningfork/core/tuningfork.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-05T10:41:30Z",
+      "side": 0,
+      "message": "Removing these static initialisations sounds much safer 👍",
+      "revId": "59229b6d00adee26380707189ebbd154a444c75f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
+      "unresolved": false
+    }
+  ]
+}
