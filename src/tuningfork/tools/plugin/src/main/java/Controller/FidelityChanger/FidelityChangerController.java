@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package Controller.Experimental;
+package Controller.FidelityChanger;
 
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
@@ -27,12 +27,12 @@ import com.google.protobuf.TextFormat.ParseException;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class ExperimentalTabController {
+public class FidelityChangerController {
 
   private final List<QualityDataModel> qualityDataModels;
   private ByteString currentFidelityByteString;
 
-  public ExperimentalTabController(List<QualityDataModel> qualityDataModelList) {
+  public FidelityChangerController(List<QualityDataModel> qualityDataModelList) {
     this.qualityDataModels = qualityDataModelList;
   }
 
