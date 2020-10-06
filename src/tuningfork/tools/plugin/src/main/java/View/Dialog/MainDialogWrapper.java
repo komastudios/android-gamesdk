@@ -40,7 +40,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.util.ui.JBEmptyBorder;
 import com.intellij.util.ui.JBUI;
-import java.io.IOException;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.border.Border;
@@ -72,16 +71,6 @@ public class MainDialogWrapper extends DialogWrapper {
     notification.notify(project);
   }
 
-
-  @Override
-  public void doCancelAction() {
-    try {
-      RequestServer.stopListening();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    super.doCancelAction();
-  }
 
   @Nullable
   @Override
@@ -147,13 +136,7 @@ public class MainDialogWrapper extends DialogWrapper {
     this.project = project;
     this.compiler = compiler;
     setTitle(resourceLoader.get("android_performance_tuner_plugin"));
-    Disposer.register(this.getDisposable(), () -> {
-      try {
-        RequestServer.stopListening();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+    Disposer.register(this.getDisposable(), () -> RequestServer.getInstance().stopListening());
     init();
   }
 

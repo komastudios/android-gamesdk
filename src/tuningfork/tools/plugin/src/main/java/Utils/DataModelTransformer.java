@@ -32,9 +32,11 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,6 +106,21 @@ public final class DataModelTransformer {
     }
 
     return Optional.of(qualityDataModel);
+  }
+
+  public static List<DynamicMessage> convertByteStringToDynamicMessage(List<String> messages,
+      FileDescriptor fileDescriptor) {
+    Descriptor descriptor = fileDescriptor.findMessageTypeByName("FidelityParams");
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    messages.forEach(byteMessage -> {
+      try {
+        dynamicMessages.add(DynamicMessage
+            .parseFrom(descriptor, Base64.getDecoder().decode(byteMessage)));
+      } catch (InvalidProtocolBufferException e) {
+        e.printStackTrace();
+      }
+    });
+    return dynamicMessages;
   }
 
   public static Optional<MessageDataModel> transformToFidelity(Descriptor desc) {
