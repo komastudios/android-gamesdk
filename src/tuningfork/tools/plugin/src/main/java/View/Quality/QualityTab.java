@@ -29,9 +29,12 @@ import View.Quality.QualityDecorators.HeaderCenterLabel;
 import View.Quality.QualityDecorators.ParameterNameRenderer;
 import View.Quality.QualityDecorators.TrendRenderer;
 import View.TabLayout;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
+import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.UIUtil;
@@ -47,6 +50,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jetbrains.annotations.NotNull;
 
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
@@ -70,6 +74,17 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     setSize();
     initComponents();
     addComponents();
+    initValidators();
+  }
+
+  private void initValidators() {
+    UIValidator.createTableValidator(disposable, qualityParametersTable, () ->
+    {
+      if (qualityTabController.getDefaultQuality() == -1) {
+        return new ValidationInfo(RESOURCE_LOADER.get("default_quality_error"));
+      }
+      return null;
+    });
   }
 
   public QualityTabController getQualityTabController() {
@@ -133,6 +148,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
             anActionButton -> qualityTabController.removeColumn(qualityParametersTable))
         .setRemoveActionUpdater(e -> qualityParametersTable.getSelectedColumn() > 1)
         .setMinimumSize(new Dimension(600, 500))
+        .addExtraAction(new ChangeButton())
         .createPanel();
 
     setDecoratorPanelSize(decoratorPanel);
@@ -204,7 +220,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
 
 
   public boolean isViewValid() {
-    return UIValidator.isTableCellsValid(qualityParametersTable);
+    return UIValidator.isComponentValid(qualityParametersTable)
+        && UIValidator.isTableCellsValid(qualityParametersTable);
   }
 
   public void saveSettings() {
@@ -224,6 +241,23 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
       } else {
         return null;
       }
+    }
+  }
+
+  private final class ChangeButton extends AnActionButton {
+
+    public ChangeButton() {
+      super("Set Default Quality", AllIcons.Actions.SetDefault);
+    }
+
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+      qualityTabController.setDefaultQuality(qualityParametersTable);
+    }
+
+    @Override
+    public void updateButton(@NotNull AnActionEvent e) {
+      e.getPresentation().setEnabled(qualityParametersTable.getSelectedColumn() != -1);
     }
   }
 }

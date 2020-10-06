@@ -22,6 +22,8 @@ import Model.QualityDataModel;
 import Utils.Validation.ValidationTool;
 import View.Fidelity.FieldType;
 import com.google.common.collect.ImmutableList;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
@@ -33,17 +35,35 @@ public class QualityTabController {
   private final List<QualityDataModel> qualityDataModels;
   private final MessageDataModel fidelityData;
   private final List<EnumDataModel> enums;
+  private final PropertyChangeSupport propertyChangeSupport;
+  private int defaultQuality;
 
   public QualityTabController(List<QualityDataModel> qualityDataModels,
       MessageDataModel fidelityData,
-      List<EnumDataModel> enums) {
+      List<EnumDataModel> enums, int defaultQuality) {
     this.qualityDataModels = qualityDataModels;
     this.fidelityData = fidelityData;
     this.enums = enums;
+    this.propertyChangeSupport = new PropertyChangeSupport(this);
+    this.defaultQuality = defaultQuality + 1;
+  }
+
+  public int getDefaultQuality() {
+    return defaultQuality;
   }
 
   public List<QualityDataModel> getQualityDataModels() {
     return qualityDataModels;
+  }
+
+  public void setDefaultQuality(JTable table) {
+    int selectedColumn = table.getSelectedColumn();
+    this.defaultQuality = selectedColumn;
+    QualityTableModel tableModel = (QualityTableModel) table.getModel();
+    // minus 2 is added because there's 2 constant columns(name, Trend).
+    int qualityIndex = selectedColumn - 2;
+    tableModel.updateColumnNames();
+    setDefaultQuality(qualityIndex);
   }
 
   public void addInitialQuality(JTable table) {
@@ -61,6 +81,15 @@ public class QualityTabController {
   public void addColumn(JTable table) {
     QualityTableModel tableModel = (QualityTableModel) table.getModel();
     tableModel.addColumn();
+  }
+
+  public void setDefaultQuality(int value) {
+    this.defaultQuality = value;
+    propertyChangeSupport.firePropertyChange("changeDefaultQuality", null, value);
+  }
+
+  public void addPropertyChangeListener(PropertyChangeListener changeListener) {
+    this.propertyChangeSupport.addPropertyChangeListener(changeListener);
   }
 
   public void removeColumn(JTable table) {

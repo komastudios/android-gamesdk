@@ -37,6 +37,8 @@ import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Hashtable;
@@ -56,7 +58,7 @@ import org.jdesktop.swingx.VerticalLayout;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 
-public class InstrumentationSettingsTab extends TabLayout {
+public class InstrumentationSettingsTab extends TabLayout implements PropertyChangeListener {
 
   private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
   private final static float LOWEST_RECOMMENDED_BUCKET = (float) (1.00 / 60 * 1000);
@@ -295,6 +297,13 @@ public class InstrumentationSettingsTab extends TabLayout {
     column
         .setCellRenderer(TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
             new NumberTextFieldValidator()));
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+    if (evt.getPropertyName().equals("changeDefaultQuality")) {
+      controller.setDefaultQuality((int) evt.getNewValue());
+    }
   }
 
   private static final class IntegerTextFieldValidator implements TableCellValidator {

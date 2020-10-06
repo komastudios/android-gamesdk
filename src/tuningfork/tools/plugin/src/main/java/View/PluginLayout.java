@@ -40,6 +40,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -193,19 +195,21 @@ public class PluginLayout extends JPanel {
 
     // Quality Setting Initialization.
     QualityTabController qualityTabController = new QualityTabController(qualityData,
-        fidelityData, enumData);
+        fidelityData, enumData,
+        getDefaultQuality(settingsData.getDefaultFidelityParametersFilename()));
     qualityLayout = new QualityTab(qualityTabController, disposable);
     fidelityTabController.addPropertyChangeListener(qualityLayout);
     annotationTabController.addPropertyChangeListener(qualityLayout);
     qualityLayout.setSize(panelSize);
     qualityLayout.setVisible(false);
 
-    // Validation settings initialization.
+    // Instrumentation settings initialization.
     instrumentationSettingsTabController = new InstrumentationSettingsTabController(settingsData);
     instrumentationSettingsTab = new InstrumentationSettingsTab(
         instrumentationSettingsTabController, disposable);
     instrumentationSettingsTab.setSize(panelSize);
     instrumentationSettingsTab.setVisible(false);
+    qualityTabController.addPropertyChangeListener(instrumentationSettingsTab);
 
     // Monitoring initialization.
     monitoringTab = new MonitoringTab();
@@ -221,6 +225,15 @@ public class PluginLayout extends JPanel {
     panels.add(monitoringTab);
 
     initMenuTree();
+  }
+
+  public int getDefaultQuality(String qualityString) {
+    Pattern pattern = Pattern.compile("\\d+");
+    Matcher matcher = pattern.matcher(qualityString);
+    if (matcher.find()) {
+      return Integer.parseInt(matcher.group());
+    }
+    return -1;
   }
 
   static class CustomCellRenderer extends DefaultTreeCellRenderer {
