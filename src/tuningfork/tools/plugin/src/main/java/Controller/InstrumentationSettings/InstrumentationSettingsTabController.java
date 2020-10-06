@@ -89,6 +89,13 @@ public class InstrumentationSettingsTabController {
     model.removeRow(row);
   }
 
+  public void setDefaultQuality(int value) {
+    Settings.Builder settingsBuilder = settingsModel.toBuilder();
+    // + 1 was added to shift to 1-indexing
+    settingsModel = settingsBuilder.setDefaultFidelityParametersFilename(
+        "dev_tuningfork_fidelityparams_" + (value + 1) + ".bin").build();
+  }
+
   public void addNewHistogram() {
     Settings.Builder settingsBuilder = settingsModel.toBuilder();
     settingsModel = settingsBuilder.addHistograms(Histogram.newBuilder().build()).build();
