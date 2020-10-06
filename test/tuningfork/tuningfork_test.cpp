@@ -81,6 +81,8 @@ class TestBackend : public IBackend {
         return TUNINGFORK_ERROR_OK;
     }
 
+    void Stop() override {}
+
     void Clear() { result = ""; }
 
     void SetDownloadBackend(const std::shared_ptr<IBackend>& dl) {
@@ -138,6 +140,8 @@ class TestDownloadBackend : public IBackend {
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
+
+    void Stop() override  {}
 };
 
 // Increment time with a known tick size
