@@ -14,9 +14,9 @@
  * limitations under the License
  */
 
-package View.Experimental;
+package View.FidelityChanger;
 
-import Controller.Experimental.ExperimentalTabController;
+import Controller.FidelityChanger.FidelityChangerController;
 import Utils.Monitoring.RequestServer;
 import View.TabLayout;
 import com.intellij.icons.AllIcons;
@@ -39,15 +39,15 @@ import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
 
-public class ExperimentalTab extends TabLayout {
+public class FidelityChanger extends TabLayout {
 
-  private final JLabel jLabel = new JLabel("Experimental Features");
+  private final JLabel experimentalLabel = new JLabel("Fidelity Changer");
+  private final FidelityChangerController controller;
+  private final Dimension treePanelDimension = new Dimension(300, 200);
   private JTree jTree;
-  private final ExperimentalTabController controller;
   private JPanel decoratorPanel;
-  private Dimension treePanelDimension = new Dimension(300, 200);
 
-  public ExperimentalTab(ExperimentalTabController controller) {
+  public FidelityChanger(FidelityChangerController controller) {
     this.controller = controller;
     this.setLayout(new VerticalLayout());
     initComponents();
@@ -59,7 +59,7 @@ public class ExperimentalTab extends TabLayout {
     jTree.setRootVisible(false);
     jTree.setSelectionModel(new NonLeafSelection());
     jTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    jLabel.setFont(getMainFont());
+    experimentalLabel.setFont(getMainFont());
     decoratorPanel = ToolbarDecorator.createDecorator(jTree)
         .addExtraAction(new ChangeButton())
         .addExtraAction(new RefreshButton())
@@ -69,12 +69,37 @@ public class ExperimentalTab extends TabLayout {
   }
 
   private void addComponents() {
-    this.add(jLabel);
+    this.add(experimentalLabel);
     this.add(decoratorPanel);
   }
 
   public void reloadTree(JTree jTree) {
     ((DefaultTreeModel) jTree.getModel()).setRoot(controller.getQualityAsTree());
+  }
+
+  private static class NonLeafSelection extends DefaultTreeSelectionModel {
+
+    private TreePath[] getLeafs(TreePath[] fullPaths) {
+      ArrayList<TreePath> paths = new ArrayList<>();
+
+      for (TreePath fullPath : fullPaths) {
+        if (!((DefaultMutableTreeNode) fullPath.getLastPathComponent()).isLeaf()) {
+          paths.add(fullPath);
+        }
+      }
+
+      return paths.toArray(fullPaths);
+    }
+
+    @Override
+    public void setSelectionPaths(TreePath[] treePaths) {
+      super.setSelectionPaths(getLeafs(treePaths));
+    }
+
+    @Override
+    public void addSelectionPaths(TreePath[] treePaths) {
+      super.addSelectionPaths(getLeafs(treePaths));
+    }
   }
 
   private final class RefreshButton extends AnActionButton {
@@ -116,31 +141,6 @@ public class ExperimentalTab extends TabLayout {
     @Override
     public void updateButton(@NotNull AnActionEvent e) {
       e.getPresentation().setEnabled(jTree.getSelectionPath() != null);
-    }
-  }
-
-  private static class NonLeafSelection extends DefaultTreeSelectionModel {
-
-    private TreePath[] getLeafs(TreePath[] fullPaths) {
-      ArrayList<TreePath> paths = new ArrayList<>();
-
-      for (TreePath fullPath : fullPaths) {
-        if (!((DefaultMutableTreeNode) fullPath.getLastPathComponent()).isLeaf()) {
-          paths.add(fullPath);
-        }
-      }
-
-      return paths.toArray(fullPaths);
-    }
-
-    @Override
-    public void setSelectionPaths(TreePath[] treePaths) {
-      super.setSelectionPaths(getLeafs(treePaths));
-    }
-
-    @Override
-    public void addSelectionPaths(TreePath[] treePaths) {
-      super.addSelectionPaths(getLeafs(treePaths));
     }
   }
 }
