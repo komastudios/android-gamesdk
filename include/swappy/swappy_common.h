@@ -51,7 +51,7 @@
 // Internal macros to generate a symbol to track Swappy version, do not use
 // directly.
 #define SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
-    PREFIX##_##MAJOR##_##MINOR_##BUGFIX
+    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
 #define SWAPPY_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
     SWAPPY_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
 #define SWAPPY_VERSION_SYMBOL                                   \
