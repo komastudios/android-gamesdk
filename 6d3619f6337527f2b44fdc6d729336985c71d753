@@ -1,6 +1,7 @@
 {
   "comments": [
     {
+      "unresolved": true,
       "key": {
         "uuid": "c4083410_da5bd2af",
         "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
@@ -20,8 +21,31 @@
         "endChar": 3
       },
       "revId": "6d3619f6337527f2b44fdc6d729336985c71d753",
-      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889",
-      "unresolved": true
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b1418e2_03fc8d5c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-07T13:51:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4083410_da5bd2af",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 3
+      },
+      "revId": "6d3619f6337527f2b44fdc6d729336985c71d753",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
