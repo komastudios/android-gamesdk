@@ -112,6 +112,10 @@ public class TabLayout extends JPanel {
     return defaultCellEditor;
   }
 
+  public boolean isViewValid() {
+    return true;
+  }
+
   private static final class CellEditorWithBackground extends DefaultCellEditor {
 
     public CellEditorWithBackground(JTextField textField) {
