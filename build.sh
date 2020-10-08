@@ -27,6 +27,7 @@ fi
 # Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
+    # Don't distribute Oboe in the full Game SDK zip distribution.
     package_name=fullsdk
     ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -38,9 +39,10 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
 # Calculate hash of the zip file
