@@ -17,3 +17,7 @@
 
 # Protocol Buffers:
 third_party/protobuf-3.0.0/python/dist/
+
+# Third party libraries:
+src/oboe
+include/oboe
