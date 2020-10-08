@@ -129,4 +129,39 @@ class ToolchainEnumerator {
         val stl: String,
         val toolchain: Toolchain
     )
+
+    companion object {
+        /**
+         * Filter the libraries to keep only those who are compatible
+         * with the Android version, NDK version and STL specified in the
+         * toolchain/build options.
+         */
+        @JvmStatic
+        fun filterBuiltLibraries(
+            libraries: Collection<NativeLibrary>,
+            buildOptions: BuildOptions,
+            toolchain: Toolchain
+        ): Collection<NativeLibrary> {
+            return libraries.filter { nativeLibrary ->
+                val androidVersion = toolchain.getAndroidVersion().toInt()
+                val ndkVersion = toolchain.getNdkVersionNumber().toInt()
+                if (nativeLibrary.minimumAndroidApiLevel != null &&
+                    nativeLibrary.minimumAndroidApiLevel!! > androidVersion
+                ) {
+                    false
+                } else if (nativeLibrary.minimumNdkVersion != null &&
+                    nativeLibrary.minimumNdkVersion!! > ndkVersion
+                ) {
+                    false
+                } else if (nativeLibrary.supportedStlVersions != null &&
+                    !nativeLibrary.supportedStlVersions!!
+                        .contains(buildOptions.stl)
+                ) {
+                    false
+                } else {
+                    true
+                }
+            }
+        }
+    }
 }

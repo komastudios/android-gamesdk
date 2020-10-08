@@ -18,6 +18,14 @@ data class NativeLibrary(
         private set
     var sampleExtraFolderPaths: ArrayList<SampleFolder> = ArrayList()
         private set
+    var minimumAndroidApiLevel: Int? = null
+        private set
+    var minimumNdkVersion: Int? = null
+        private set
+    var supportedStlVersions: List<String>? = null
+        private set
+    var isThirdParty = false
+        private set
 
     fun setAarLibrary(
         aarLibraryName: String,
@@ -29,14 +37,41 @@ data class NativeLibrary(
         return this
     }
 
-    fun addSampleAndroidProject(sampleAndroidProject: ExternalAndroidProject):
-        NativeLibrary {
-            sampleAndroidProjects.add(sampleAndroidProject)
-            return this
-        }
+    fun addSampleAndroidProject(
+        sampleAndroidProject: ExternalAndroidProject
+    ): NativeLibrary {
+        sampleAndroidProjects.add(sampleAndroidProject)
+        return this
+    }
 
-    fun addSampleExtraFolder(sampleFolder: SampleFolder): NativeLibrary {
+    fun addSampleExtraFolder(
+        sampleFolder: SampleFolder
+    ): NativeLibrary {
         sampleExtraFolderPaths.add(sampleFolder)
+        return this
+    }
+
+    fun setMinimumAndroidApiLevel(
+        minimumAndroidApiLevel: Int?
+    ): NativeLibrary {
+        this.minimumAndroidApiLevel = minimumAndroidApiLevel
+        return this
+    }
+
+    fun setMinimumNdkVersion(minimumNdkVersion: Int?): NativeLibrary {
+        this.minimumNdkVersion = minimumNdkVersion
+        return this
+    }
+
+    fun setSupportedStlVersions(
+        supportedStlVersions: List<String>?
+    ): NativeLibrary {
+        this.supportedStlVersions = supportedStlVersions
+        return this
+    }
+
+    fun setThirdParty(): NativeLibrary {
+        this.isThirdParty = true
         return this
     }
 
