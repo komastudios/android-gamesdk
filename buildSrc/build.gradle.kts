@@ -10,6 +10,9 @@ plugins {
 val ktlint by configurations.creating
 
 dependencies {
+    // Use zip4j for robust handling of ZIP files
+    implementation("net.lingala.zip4j:zip4j:2.6.3")
+
     // Use the Kotlin test library.
     testImplementation(kotlin("test"))
 

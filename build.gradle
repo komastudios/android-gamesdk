@@ -4,6 +4,7 @@ import com.google.androidgamesdk.ExternalAndroidProject
 import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
+import com.google.androidgamesdk.OboeDownloader
 import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
@@ -86,6 +87,9 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
 def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice', 'GAMESDK_BUILD_MEMORY_ADVICE')
         .setAarLibrary("games-memory-advice", "1.0.0-alpha01")
 
+def oboeNativeLibrary = new NativeLibrary('oboe', 'GAMESDK_BUILD_OBOE')
+        .setAarLibrary("games-oboe", "1.0.0-alpha01")
+
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
         + osFolderName(ExternalToolName.PROTOBUF)).getPath()
@@ -130,6 +134,12 @@ task prepare_proto(dependsOn: prepare_proto_before) {
     }
 }
 
+task prepare_third_party_libraries {
+    doLast {
+        def oboeDownloader = new OboeDownloader(project)
+        oboeDownloader.fetchAndInstall();
+    }
+}
 
 allprojects {
     buildDir = getOutPath()
@@ -139,7 +149,7 @@ allprojects {
     }
 }
 
-def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary]
+def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary, oboeNativeLibrary]
 
 def getBuildPath() {
     return new File("$projectDir/build").getPath()

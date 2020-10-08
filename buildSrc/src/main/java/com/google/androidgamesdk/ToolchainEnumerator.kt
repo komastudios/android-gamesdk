@@ -14,20 +14,21 @@ class ToolchainEnumerator {
     val allAbis = abis32Bits + abis64Bits
 
     private val pre17STLs = listOf(
-        "c++_static", "c++_shared",
-        "gnustl_static", "gnustl_shared"
+        "c++_static", "c++_shared"
+        // "gnustl_static", "gnustl_shared"
     )
     private val post17STLs = listOf("c++_static", "c++_shared")
 
     // For the AAR, only build the dynamic libraries against shared STL.
-    private val aarPre17STLs = listOf("c++_shared", "gnustl_shared")
+    private val aarPre17STLs = listOf("c++_shared"/*, "gnustl_shared"*/)
     private val aarPost17STLs = listOf("c++_shared")
 
     private val pre17NdkToSdks = mapOf(
-        "r14" to listOf(14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
-        "r15" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26),
-        "r16" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27),
-        "r17" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28)
+        // TODO: Allow oboe not to be built for these:
+        /*"r14" to listOf(/*14, 15,*/ 16, 17, 18, 19, 20, 21, 22, 23, 24),
+        "r15" to listOf(/*14, 15,*/ 16, 17, 18, 19, 21, 22, 23, 24, 26),
+        "r16" to listOf(/*14, 15,*/ 16, 17, 18, 19, 21, 22, 23, 24, 26, 27),*/
+        "r17" to listOf(/*14, 15,*/ 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28)
     )
     private val post17NdkToSdks = mapOf(
         "r18" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28),
@@ -42,9 +43,10 @@ class ToolchainEnumerator {
     private val aar32BitsPre17NdkToSdks = pre17NdkToSdks
     private val aar32BitsPost17NdkToSdks = post17NdkToSdks
     private val aar64BitsPre17NdkToSdks = mapOf(
-        "r14" to listOf(21, 22, 23, 24),
+        // TODO: Allow oboe not to be built for these:
+        /*"r14" to listOf(21, 22, 23, 24),
         "r15" to listOf(21, 22, 23, 24, 26),
-        "r16" to listOf(21, 22, 23, 24, 26, 27),
+        "r16" to listOf(21, 22, 23, 24, 26, 27),*/
         "r17" to listOf(21, 22, 23, 24, 26, 27, 28)
     )
     private val aar64BitsPost17NdkToSdks = mapOf(
