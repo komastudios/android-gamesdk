@@ -59,6 +59,7 @@ class ToolchainEnumeratorTest {
                 .count()
         )
     }
+
     @Test
     fun generateProperAarToolchains() {
         val project = createMockProject()
@@ -108,6 +109,75 @@ class ToolchainEnumeratorTest {
             7 * 2 * 1 + 11 * 1 * 2,
             allAarToolchains.filter { it.toolchain.getNdkVersion() == "r18" }
                 .count()
+        )
+    }
+
+    @Test
+    fun canFilterLibraries() {
+        val alwaysLibrary = NativeLibrary("alwayslib", "MY_LIB")
+        val apiMin24Library = NativeLibrary("apiMin24Lib", "MY_LIB")
+            .setMinimumAndroidApiLevel(24)
+        val ndkMin18Library = NativeLibrary("ndkMin28Lib", "MY_LIB")
+            .setMinimumNdkVersion(18)
+        val someStlOnlyLibrary = NativeLibrary("someStlOnlyLib", "MY_LIB")
+            .setSupportedStlVersions(listOf("c++_static"))
+
+        val allLibraries = listOf(
+            alwaysLibrary, apiMin24Library, ndkMin18Library, someStlOnlyLibrary
+        )
+        val project = createMockProject()
+
+        assertEquals(
+            allLibraries,
+            ToolchainEnumerator.filterBuiltLibraries(
+                allLibraries,
+                BuildOptions(
+                    stl = "c++_static",
+                    arch = "armeabi-v7a",
+                    buildType = "Release",
+                    threadChecks = true
+                ),
+                SpecificToolchain(project, "25", "r20")
+            )
+        )
+        assertEquals(
+            listOf(alwaysLibrary, apiMin24Library, ndkMin18Library),
+            ToolchainEnumerator.filterBuiltLibraries(
+                allLibraries,
+                BuildOptions(
+                    stl = "c++_shared",
+                    arch = "armeabi-v7a",
+                    buildType = "Release",
+                    threadChecks = true
+                ),
+                SpecificToolchain(project, "25", "r20")
+            )
+        )
+        assertEquals(
+            listOf(alwaysLibrary, ndkMin18Library),
+            ToolchainEnumerator.filterBuiltLibraries(
+                allLibraries,
+                BuildOptions(
+                    stl = "c++_shared",
+                    arch = "armeabi-v7a",
+                    buildType = "Release",
+                    threadChecks = true
+                ),
+                SpecificToolchain(project, "16", "r20")
+            )
+        )
+        assertEquals(
+            listOf(alwaysLibrary),
+            ToolchainEnumerator.filterBuiltLibraries(
+                allLibraries,
+                BuildOptions(
+                    stl = "c++_shared",
+                    arch = "armeabi-v7a",
+                    buildType = "Release",
+                    threadChecks = true
+                ),
+                SpecificToolchain(project, "16", "r17")
+            )
         )
     }
 }
