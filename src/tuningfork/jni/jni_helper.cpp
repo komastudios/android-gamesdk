@@ -123,6 +123,15 @@ int LocalObject::CallIntMethod(const char* name, const char* sig, ...) const {
     va_end(argptr);
     return r;
 }
+bool LocalObject::CallBooleanMethod(const char* name, const char* sig,
+                                    ...) const {
+    jmethodID mid = Env()->GetMethodID(clz_, name, sig);
+    va_list argptr;
+    va_start(argptr, sig);
+    bool r = Env()->CallBooleanMethodV(obj_, mid, argptr);
+    va_end(argptr);
+    return r;
+}
 std::string GetExceptionMessage() {
     std::string msg;
     jthrowable exception = Env()->ExceptionOccurred();

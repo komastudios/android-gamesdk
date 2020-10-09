@@ -85,6 +85,18 @@ class Object {
             obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b);
         return Object(o);
     }
+    Object CallSOMethod(const char* name, const char* a,
+                        const char* returnClass) {
+        std::stringstream str;
+        str << "(Ljava/lang/String;)L" << returnClass << ";";
+        jobject o =
+            obj_.CallObjectMethod(name, str.str().c_str(), String(a).J());
+        return Object(o);
+    }
+    bool CallVZMethod(const char* name) {
+        return obj_.CallBooleanMethod(name, "()Z");
+    }
+    bool IsNull() const { return obj_.IsNull(); }
 };
 
 namespace io {
@@ -350,6 +362,7 @@ class AssetManager : public java::Object {
 
 class Context : public java::Object {
    public:
+    static constexpr const char* CONNECTIVITY_SERVICE = "connectivity";
     Context(jobject o) : java::Object(o) {}
     pm::PackageManager getPackageManager() {
         return CallVOMethod("getPackageManager",
@@ -361,6 +374,9 @@ class Context : public java::Object {
     }
     java::io::File getCacheDir() {
         return CallVOMethod("getCacheDir", "java/io/File");
+    }
+    java::Object getSystemService(const char* name) {
+        return CallSOMethod("getSystemService", name, "java/lang/Object");
     }
 };
 
@@ -407,6 +423,19 @@ class Build {
 };  // Class Build
 
 }  // namespace os
+
+namespace net {
+
+class ConnectivityManager : java::Object {
+   public:
+    ConnectivityManager(java::Object&& o) : java::Object(std::move(o)) {}
+    // NB This requires Manifest.permission.ACCESS_NETWORK_STATE.
+    bool isActiveNetworkMetered() {
+        return CallVZMethod("isActiveNetworkMetered");
+    }
+};
+
+}  // namespace net
 
 }  // namespace android
 
