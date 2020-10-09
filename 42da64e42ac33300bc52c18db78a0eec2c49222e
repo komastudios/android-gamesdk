@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbc9f96b_dfbc8b40",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-09T16:32:23Z",
+      "side": 1,
+      "message": "I don\u0027t like the idea of the extra memory usage so have changed it to make the convention explicit in the ProcessTimeInterval class.",
+      "parentUuid": "980e9e80_25774d8d",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cf71915e_42d4c638",
@@ -48,6 +66,24 @@
       "writtenOn": "2020-10-09T15:38:12Z",
       "side": 1,
       "message": "Would you consider modifying the other call sites to explicitly set the argument to false instead of a default arg? (i.e: in TuningFork_recordLoadingTime only I think?).\nI think this could encourage the client code to use Start/Stop instead.",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15796899_d61b6bbd",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-09T16:32:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cf71915e_42d4c638",
       "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a015881_590ecff6",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-09T16:32:23Z",
+      "side": 1,
+      "message": "Where makes equal sense.",
+      "parentUuid": "84590aca_710b0176",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5b365e82_d6a0dd51",
@@ -82,6 +136,24 @@
       "writtenOn": "2020-10-09T15:38:12Z",
       "side": 1,
       "message": "*encouraged",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3be63531_28a8f78f",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-09T16:32:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b365e82_d6a0dd51",
       "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
