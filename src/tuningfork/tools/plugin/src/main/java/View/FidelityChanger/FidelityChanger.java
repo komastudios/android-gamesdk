@@ -18,6 +18,7 @@ package View.FidelityChanger;
 
 import Controller.FidelityChanger.FidelityChangerController;
 import Utils.Monitoring.RequestServer;
+import Utils.UI.UIUtils;
 import View.TabLayout;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -32,7 +33,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -74,7 +74,7 @@ public class FidelityChanger extends TabLayout {
   }
 
   public void reloadTree(JTree jTree) {
-    ((DefaultTreeModel) jTree.getModel()).setRoot(controller.getQualityAsTree());
+    UIUtils.reloadTreeAndKeepState(jTree, controller.getQualityAsTree());
   }
 
   private static class NonLeafSelection extends DefaultTreeSelectionModel {
