@@ -141,7 +141,7 @@ class TestDownloadBackend : public IBackend {
         return TUNINGFORK_ERROR_OK;
     }
 
-    void Stop() override  {}
+    void Stop() override {}
 };
 
 // Increment time with a known tick size
@@ -630,18 +630,18 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
         "loading":{
           "loading_events":[
             {
+              "intervals":[{"end":"0.21s", "start":"0s"}],
               "loading_metadata":{
                 "source":8,
                 "state":2
-              },
-              "times_ms":[210]
+              }
             },
             {
+              "intervals":[{"end":"0.1s", "start":"0s"}],
               "loading_metadata":{
                 "source":7,
                 "state":2
-              },
-              "times_ms":[100]
+              }
             }
           ]
         }
@@ -659,6 +659,7 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
       "report":{
         "loading":{
           "loading_events": [{
+            "intervals":[{"end":"0.2s", "start":"0.1s"}],
             "loading_metadata": {
               "compression_level": 100,
               "network_info": {
@@ -667,8 +668,7 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
               },
               "source": 5,
               "state": 3
-            },
-            "times_ms": [100]
+            }
           }]
         }
       }

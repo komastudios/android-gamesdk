@@ -43,4 +43,10 @@ typedef std::chrono::steady_clock::duration Duration;
 typedef std::chrono::system_clock::time_point SystemTimePoint;
 typedef std::chrono::system_clock::duration SystemDuration;
 
+typedef std::chrono::nanoseconds ProcessTime;  // Duration since process start.
+struct ProcessTimeInterval {
+    ProcessTime start;
+    ProcessTime end;
+};
+
 }  // namespace tuningfork
