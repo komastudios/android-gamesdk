@@ -16,9 +16,10 @@
 
 #pragma once
 
-#include "histogram.h"
 #include "metricdata.h"
+#include "process_time.h"
 #include "settings.h"
+#include "time_series.h"
 
 namespace tuningfork {
 
@@ -29,18 +30,19 @@ struct LoadingTimeMetric {
 };
 
 struct LoadingTimeMetricData : public MetricData {
+    static constexpr int kDefaultTimeSeriesCapacity = 200;
     LoadingTimeMetricData(MetricId metric_id)
         : MetricData(MetricType()),
           metric_id_(metric_id),
-          histogram_(Settings::Histogram{}, true),
+          data_(kDefaultTimeSeriesCapacity),
           duration_(Duration::zero()) {}
     MetricId metric_id_;
-    // TODO (willosborn): refactor histogram into separate time-series class
-    Histogram<double> histogram_;
+    TimeSeries<ProcessTimeInterval> data_;
     Duration duration_;
     void Record(Duration dt);
-    virtual void Clear() override { histogram_.Clear(); }
-    virtual size_t Count() const override { return histogram_.Count(); }
+    void Record(ProcessTimeInterval interval);
+    virtual void Clear() override { data_.Clear(); }
+    virtual size_t Count() const override { return data_.Count(); }
     static Metric::Type MetricType() { return Metric::Type::LOADING_TIME; }
 };
 
