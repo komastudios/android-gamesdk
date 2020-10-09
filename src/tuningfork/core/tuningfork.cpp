@@ -204,7 +204,8 @@ TuningFork_ErrorCode RecordLoadingTime(
     if (!s_impl)
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else
-        return s_impl->RecordLoadingTime(duration, d, annotation);
+        return s_impl->RecordLoadingTime(duration, d, annotation,
+                                         false /*relativeToStart*/);
 }
 
 TuningFork_ErrorCode StartRecordingLoadingTime(

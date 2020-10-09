@@ -59,7 +59,7 @@ class TuningForkImpl : public IdProvider {
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
     bool app_first_run_;
-    std::unordered_map<LoadingHandle, TimePoint> live_loading_events_;
+    std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
 
@@ -117,7 +117,7 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode RecordLoadingTime(
         Duration duration, const LoadingTimeMetadata &metadata,
-        const ProtobufSerialization &annotation);
+        const ProtobufSerialization &annotation, bool relativeToStart);
 
     TuningFork_ErrorCode StartRecordingLoadingTime(
         const LoadingTimeMetadata &metadata,

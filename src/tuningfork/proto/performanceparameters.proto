@@ -19,6 +19,7 @@ syntax = "proto3";
 package google.android.performanceparameters.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
@@ -282,12 +283,29 @@ message LoadingReport {
 }
 
 // Representation of a set of loading times.
+// Where developers use start+stop functions to record loading time events (the
+// encouraged behaviour), they are recorded in 'intervals'. 'times_ms' will
+// contain events that are recorded as durations.
 message LoadingTimeEvents {
   // Times in milliseconds
   repeated int32 times_ms = 1 [packed = true];
 
   // Metadata recorded with these loading events.
   LoadingTimeMetadata loading_metadata = 2;
+
+  // Events recorded with both start and end times.
+  // Times are durations from the app process' start time.
+  repeated ProcessTimePeriod intervals = 3;
+}
+
+// A message describing a period of time, with times represented as durations
+// since the app process started.
+message ProcessTimePeriod {
+  // Duration from process start to the start of the period.
+  google.protobuf.Duration start = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Duration from process start to the end of the period.
+  google.protobuf.Duration end = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // A message describing a period of time.
