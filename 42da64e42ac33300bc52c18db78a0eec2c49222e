@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3e6488c_8abba88c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-09T15:38:12Z",
+      "side": 1,
+      "message": "Overall looks good!",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "980e9e80_25774d8d",
+        "filename": "src/tuningfork/core/session.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-09T15:38:12Z",
+      "side": 1,
+      "message": "Just an idea: would a separate vector of \"DurationSeries\" have avoided this convention of \"if I set the end time to 0, then consider it as a duration when serializing\"?\nDownside is to have another vector in memory.",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf71915e_42d4c638",
+        "filename": "src/tuningfork/core/tuningfork_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-09T15:38:12Z",
+      "side": 1,
+      "message": "Would you consider modifying the other call sites to explicitly set the argument to false instead of a default arg? (i.e: in TuningFork_recordLoadingTime only I think?).\nI think this could encourage the client code to use Start/Stop instead.",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84590aca_710b0176",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-09T15:38:12Z",
+      "side": 1,
+      "message": "*When",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b365e82_d6a0dd51",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-09T15:38:12Z",
+      "side": 1,
+      "message": "*encouraged",
+      "revId": "42da64e42ac33300bc52c18db78a0eec2c49222e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
