@@ -15,12 +15,12 @@
  */
 package View.Dialog;
 
-import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
+import static Utils.UI.UIValidator.ILLEGAL_TEXT_PATTERN;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.UIValidator;
+import Utils.UI.UIValidator;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.TabLayout;
