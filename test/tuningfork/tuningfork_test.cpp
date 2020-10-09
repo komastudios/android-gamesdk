@@ -141,7 +141,7 @@ class TestDownloadBackend : public IBackend {
         return TUNINGFORK_ERROR_OK;
     }
 
-    void Stop() override  {}
+    void Stop() override {}
 };
 
 // Increment time with a known tick size

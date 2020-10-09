@@ -181,6 +181,7 @@ class LocalObject {
     jni::String CallStringMethod(const char* name, const char* sig, ...) const;
     void CallVoidMethod(const char* name, const char* sig, ...) const;
     int CallIntMethod(const char* name, const char* sig, ...) const;
+    bool CallBooleanMethod(const char* name, const char* sig, ...) const;
 
     // Returns a null object if the field could not be found (and exception will
     // be set)

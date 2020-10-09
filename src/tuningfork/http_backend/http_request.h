@@ -29,10 +29,15 @@ class HttpRequest {
     std::string base_url_;
     std::string api_key_;
     Duration timeout_;
+    bool allow_metered_;
 
    public:
-    HttpRequest(std::string base_url, std::string api_key, Duration timeout)
-        : base_url_(base_url), api_key_(api_key), timeout_(timeout) {}
+    HttpRequest(std::string base_url, std::string api_key, Duration timeout,
+                bool allow_metered = false)
+        : base_url_(base_url),
+          api_key_(api_key),
+          timeout_(timeout),
+          allow_metered_(allow_metered) {}
     virtual ~HttpRequest() {}
     std::string GetURL(std::string rpcname) const;
     virtual TuningFork_ErrorCode Send(const std::string& rpc_name,
