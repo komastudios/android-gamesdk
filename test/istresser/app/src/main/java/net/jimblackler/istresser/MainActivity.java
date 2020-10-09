@@ -337,7 +337,8 @@ public class MainActivity extends Activity {
                   if (MemoryAdvisor.anyRedWarnings(advice)) {
                     freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
                   }
-                } else if (MemoryAdvisor.anyRedWarnings(advice)) {
+                } else if (MemoryAdvisor.getMemoryState(advice)
+                    == MemoryAdvisor.MemoryState.CRITICAL) {
                   shouldAllocate = false;
                   // Allocating 0 MB
                   releaseMemory();
