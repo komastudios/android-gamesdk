@@ -270,6 +270,9 @@ class MyActivity extends Activity {
       case CRITICAL:
         // The application should free memory as soon as possible, until the memory state changes.
         break;
+      case BACKGROUNDED:
+        // The application has been put into the background.
+        break;
     }
   }
 }
