@@ -41,7 +41,8 @@ phones that have run a stress test application in the Firebase Test Lab. This
 dictionary is bundled directly with the library.
 
 The library is only intended for use while applications are running in the
-foreground (currently operated by users).
+foreground (currently operated by users). (In the event that the application is
+put into the background, this will be reported in the `MemoryState`.)
 
 "Memory" means specifically native heap memory allocated by malloc, and graphics
 memory allocated by the OpenGL ES and Vulkan Graphics APIs. (Note: Memory is
@@ -163,7 +164,7 @@ resolution. These can be restored when no more memory warnings (including
 ## Adding the library to an Android project
 
 The library is published on
-[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.14).
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.15).
 
 In the application root `build.gradle` file, ensure `google()` is specified as a
 repository for the project, as well as `jitpack.io` for some of its
@@ -187,7 +188,7 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.games:memory-advice:0.14'
+    implementation 'com.google.android.games:memory-advice:0.15'
 
 }
 ```
@@ -296,10 +297,10 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, 10, 3000,
-        new MemoryWatcher.Client(){
+    MemoryWatcher memoryWatcher =
+    new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.Client() {
       @Override
-      public void newState(MemoryAdvisor.MemoryState state) {
+      public void newState(MemoryAdvisor.MemoryState memoryState) {
         switch (memoryState) {
           case OK:
             // The application can safely allocate significant memory.
@@ -310,6 +311,9 @@ class MyActivity extends Activity {
           case CRITICAL:
             // The application should free memory as soon as possible, until the memory state
             // changes.
+            break;
+          case BACKGROUNDED:
+            // The application has been put into the background.
             break;
         }
       }

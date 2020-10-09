@@ -10,7 +10,7 @@ android {
         minSdkVersion 19
         versionCode 9
         // LINT.IfChange
-        versionName '0.14'
+        versionName '0.15'
         // LINT.ThenChange(../README.md)
     }
 
@@ -28,6 +28,7 @@ android {
 
 dependencies {
     implementation project(path: ':memoryadvice_common')
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 }
 
 task sourceJar(type: Jar) {
