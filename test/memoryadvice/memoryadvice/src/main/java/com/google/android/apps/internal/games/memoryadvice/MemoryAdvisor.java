@@ -171,6 +171,9 @@ public class MemoryAdvisor extends MemoryMonitor {
    * @return The current memory state.
    */
   public static MemoryState getMemoryState(JSONObject advice) {
+    if (advice.optBoolean("backgrounded")) {
+      return MemoryState.BACKGROUNDED;
+    }
     if (anyRedWarnings(advice)) {
       return MemoryState.CRITICAL;
     }
@@ -514,6 +517,11 @@ public class MemoryAdvisor extends MemoryMonitor {
     /**
      * The application should free memory as soon as possible, until the memory state changes.
      */
-    CRITICAL
+    CRITICAL,
+
+    /**
+     * The application is backgrounded. The library does not make advice in this state.
+     */
+    BACKGROUNDED
   }
 }

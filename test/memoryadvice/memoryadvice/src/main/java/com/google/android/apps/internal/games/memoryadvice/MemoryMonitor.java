@@ -11,6 +11,10 @@ import android.os.Build;
 import android.os.Debug;
 import android.os.Process;
 import android.util.Log;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +30,7 @@ class MemoryMonitor {
   private final ActivityManager activityManager;
   private final JSONObject metrics;
   private final CanaryProcessTester canaryProcessTester;
+  private boolean appBackgrounded;
   private int latestOnTrimLevel;
   private int pid = Process.myPid();
 
@@ -59,6 +64,18 @@ class MemoryMonitor {
     } catch (JSONException e) {
       throw new MemoryAdvisorException(e);
     }
+
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
+      @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+      public void onAppBackgrounded() {
+        appBackgrounded = true;
+      }
+
+      @OnLifecycleEvent(Lifecycle.Event.ON_START)
+      public void onAppForegrounded() {
+        appBackgrounded = false;
+      }
+    });
   }
 
   /**
@@ -162,6 +179,10 @@ class MemoryMonitor {
       if (canaryProcessTester != null && canaryProcessTester.warning()) {
         report.put("canaryProcessTester", true);
         canaryProcessTester.reset();
+      }
+
+      if (appBackgrounded) {
+        report.put("backgrounded", true);
       }
 
       if (latestOnTrimLevel > 0) {
