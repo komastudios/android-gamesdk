@@ -16,6 +16,7 @@
 
 package Utils.Assets;
 
+import static Files.FolderConfig.DEV_TUNINGFORK_DESCRIPTOR;
 import static Files.FolderConfig.DEV_TUNINGFORK_PROTO;
 import static Files.FolderConfig.TUNINGFORK_SETTINGS_BINARY;
 
@@ -49,7 +50,7 @@ public class AssetsWriter {
       List<EnumDataModel> enums,
       MessageDataModel annotationMessage,
       MessageDataModel fidelityMessage) {
-    File file = new File(assetsDirectory, "dev_tuningfork.proto");
+    File file = new File(assetsDirectory, DEV_TUNINGFORK_PROTO);
     try (FileWriter fileWriter = new FileWriter(file)) {
       fileWriter.write(AUTO_GENERATED_PROTO);
       fileWriter.write("syntax = \"proto3\";\n\n");
@@ -60,8 +61,14 @@ public class AssetsWriter {
       fileWriter.write(annotationMessage.toString());
       fileWriter.write(fidelityMessage.toString());
       fileWriter.write(AUTO_GENERATED_PROTO);
-      return true;
     } catch (IOException e) {
+      e.printStackTrace();
+    }
+    File descriptorFile = new File(assetsDirectory, DEV_TUNINGFORK_DESCRIPTOR);
+    try {
+      ProtoCompiler.getInstance().compile(file, Optional.of(descriptorFile));
+      return true;
+    } catch (IOException | CompilationException e) {
       e.printStackTrace();
     }
     return false;
