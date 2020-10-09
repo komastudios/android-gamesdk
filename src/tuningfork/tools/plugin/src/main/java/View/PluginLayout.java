@@ -158,24 +158,26 @@ public class PluginLayout extends JPanel {
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     menu.setRootVisible(false);
     menu.addTreeSelectionListener(treeSelectionEvent -> {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-          treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-      if (node.equals(annotationsNode)) {
-        changeLayoutVisibility(annotationsLayout);
-      } else if (node.equals(fidelityNode)) {
-        changeLayoutVisibility(fidelitySettingsLayout);
-      } else if (node.equals(qualitySettingsNode)) {
-        changeLayoutVisibility(qualityLayout);
-      } else if (node.equals(validationSettings)) {
-        changeLayoutVisibility(instrumentationSettingsTab);
-      } else if (node.equals(telemetryNode)) {
-        changeLayoutVisibility(monitoringTab);
-      } else if (node.equals(experimentalNode)) {
-        changeLayoutVisibility(fidelityChanger);
-      } else if (node.equals(debugInfo)) {
-        changeLayoutVisibility(debugInfoTab);
-      } else if (!node.isLeaf()) {
-        menu.setMinimumSize(menuSize);
+      if (treeSelectionEvent.getNewLeadSelectionPath() != null) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+            treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
+        if (node.equals(annotationsNode)) {
+          changeLayoutVisibility(annotationsLayout);
+        } else if (node.equals(fidelityNode)) {
+          changeLayoutVisibility(fidelitySettingsLayout);
+        } else if (node.equals(qualitySettingsNode)) {
+          changeLayoutVisibility(qualityLayout);
+        } else if (node.equals(validationSettings)) {
+          changeLayoutVisibility(instrumentationSettingsTab);
+        } else if (node.equals(telemetryNode)) {
+          changeLayoutVisibility(monitoringTab);
+        } else if (node.equals(experimentalNode)) {
+          changeLayoutVisibility(fidelityChanger);
+        } else if (node.equals(debugInfo)) {
+          changeLayoutVisibility(debugInfoTab);
+        } else if (!node.isLeaf()) {
+          menu.setMinimumSize(menuSize);
+        }
       }
     });
     menu.setMinimumSize(menuSize);

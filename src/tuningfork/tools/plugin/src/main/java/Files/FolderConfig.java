@@ -17,6 +17,7 @@ package Files;
 
 public class FolderConfig {
     public static final String DEV_TUNINGFORK_PROTO = "dev_tuningfork.proto";
+    public static final String DEV_TUNINGFORK_DESCRIPTOR = "dev_tuningfork.descriptor";
     public static final String TUNINGFORK_SETTINGS_BINARY = "tuningfork_settings.bin";
     public static final String DEV_FIDELITY_BINARY =
         "dev_tuningfork_fidelityparams_([1-9]|1[0-5]).bin";
