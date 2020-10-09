@@ -17,13 +17,18 @@ package View.Monitoring;
 
 import Controller.Monitoring.MonitoringController;
 import Utils.Monitoring.RequestServer;
+import Utils.UI.UIUtils;
+import View.Decorator.LabelScrollPane;
 import View.Dialog.MonitoringQualityDialogWrapper;
 import View.TabLayout;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
+import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTabbedPane;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -44,6 +49,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.VerticalLayout;
@@ -87,7 +94,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private final Dimension scrollPaneSize = new Dimension(SCREEN_SIZE.width / 4,
       SCREEN_SIZE.height / 16);
   private static final String LOADING_TEXT = "Retrieving histograms";
-
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
   private JPanel graphPanel;
@@ -105,6 +111,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private MonitoringController controller;
   private Thread loadingAnimationThread;
   private JLabel loadingLabel;
+  private JBTabbedPane tabbedPane;
+  private JPanel buttonPanel1, buttonPanel2;
+  private LabelScrollPane annotationPanel;
+  private JTree jTree;
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -152,8 +162,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private void refreshUI() {
     plotData();
-    gridPanel.setVisible(true);
-    retrievedInformationPanel.setVisible(true);
+    tabbedPane.setVisible(true);
     changeQualityButton.setVisible(true);
     loadingPanel.setVisible(false);
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
@@ -164,9 +173,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     if (!loadingAnimationThread.isInterrupted()) {
       loadingAnimationThread.interrupt();
     }
+    controller.checkAnnotationParams(telemetryRequest);
     controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
-
     DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
     totalMemData.setText(Long.toString(deviceSpec.getTotalMemoryBytes()));
     brandData.setText(deviceSpec.getBrand());
@@ -174,27 +183,27 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
     controller.setRenderTimeHistograms(telemetryRequest);
     addComboBoxData(controller.getRenderTimeHistogramsKeys());
-
-    startMonitoring.setVisible(false);
+    UIUtils.reloadTreeAndKeepState(jTree, controller.getTree());
     stopMonitoring.setVisible(true);
     refreshUI();
   }
+
 
   private void addComponents() {
     this.add(title);
     this.add(Box.createVerticalStrut(10));
     this.add(warningLabel);
-    JPanel buttonPanel1 = new JPanel();
+    buttonPanel1 = new JPanel();
     buttonPanel1.add(startMonitoring);
     this.add(buttonPanel1);
-    JPanel buttonPanel2 = new JPanel();
+    buttonPanel2 = new JPanel();
     buttonPanel2.add(stopMonitoring);
     this.add(buttonPanel2);
 
     loadingPanel.add(Box.createVerticalStrut(30));
     loadingPanel.add(loadingLabel);
     this.add(loadingPanel);
-
+    this.add(tabbedPane);
     gridPanel.add(nameInfo);
     gridPanel.add(nameData);
     gridPanel.add(brand);
@@ -205,12 +214,16 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     gridPanel.add(deviceData);
     gridPanel.add(totalMem);
     gridPanel.add(totalMemData);
-    retrievedInformationPanel.add(gridPanel);
+    tabbedPane.addTab("Device Info", gridPanel);
+    retrievedInformationPanel.add(annotationPanel.getPanel());
     retrievedInformationPanel.add(fidelityInfoScrollPane);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
+    tabbedPane.addTab("Render Histograms", retrievedInformationPanel);
     buttonPanel2.add(changeQualityButton);
-    this.add(retrievedInformationPanel);
+    jTree = new JTree();
+    jTree.setRootVisible(false);
+    tabbedPane.add("Testing", ToolbarDecorator.createDecorator(jTree).createPanel());
   }
 
   private void sleepUI(long seconds) throws InterruptedException {
@@ -242,7 +255,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void initComponents() {
     controller = new MonitoringController();
     controller.addMonitoringPropertyChangeListener(this);
-
+    annotationPanel = new LabelScrollPane();
     title.setFont(MAIN_FONT);
     nameInfo.setFont(MIDDLE_FONT);
     brand.setFont(MIDDLE_FONT);
@@ -274,7 +287,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     gridPanel = new JPanel(new GridLayout(5, 2));
-    gridPanel.setVisible(false);
     Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest ->
         SwingUtilities.invokeLater(() -> {
           try {
@@ -286,18 +298,18 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     startMonitoring.addActionListener(actionEvent -> {
       loadingPanel.setVisible(true);
       RequestServer.getInstance().setMonitoringAction(requestConsumer);
-      startMonitoring.setVisible(false);
+      buttonPanel1.setVisible(false);
+      buttonPanel2.setVisible(true);
       stopMonitoring.setVisible(true);
       initLoadingAnimationThread();
     });
 
     stopMonitoring.addActionListener(actionEvent -> {
-      gridPanel.setVisible(false);
-      retrievedInformationPanel.setVisible(false);
+      tabbedPane.setVisible(false);
       changeQualityButton.setVisible(false);
       RequestServer.getInstance().setMonitoringAction(null);
-      startMonitoring.setVisible(true);
-      stopMonitoring.setVisible(false);
+      buttonPanel1.setVisible(true);
+      buttonPanel2.setVisible(false);
       if (!loadingAnimationThread.isInterrupted()) {
         loadingAnimationThread.interrupt();
         loadingPanel.setVisible(false);
@@ -310,7 +322,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     loadingLabel = new JBLabel();
 
     retrievedInformationPanel = new JPanel(new VerticalLayout());
-    retrievedInformationPanel.setVisible(false);
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
@@ -336,6 +347,8 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       monitoringWrapper.addPropertyChangeListener(this);
       monitoringWrapper.show();
     });
+    tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
+    tabbedPane.setVisible(false);
   }
 
   @Override
@@ -364,6 +377,15 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
         fidelityInfoPanel.add(fidelityInfo);
 
         SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
+        break;
+      case "addAnnotation":
+        DynamicMessage dynamicMessage = (DynamicMessage) propertyChangeEvent.getNewValue();
+        annotationPanel.removeAll();
+        annotationPanel.addText("Annotation", MIDDLE_FONT);
+        String[] text = dynamicMessage.toString().split("\n");
+        for (String string : text) {
+          annotationPanel.addText(string);
+        }
         break;
       case "plotSelectedQuality":
         deleteExistingGraphs();

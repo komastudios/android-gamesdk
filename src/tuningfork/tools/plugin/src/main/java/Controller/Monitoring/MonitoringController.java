@@ -15,9 +15,12 @@
  */
 package Controller.Monitoring;
 
+import Controller.Monitoring.MonitoringController.HistogramTree.JTreeNode;
+import Controller.Monitoring.MonitoringController.HistogramTree.Node;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Monitoring.TelemetryProcessing;
+import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -27,13 +30,16 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -49,18 +55,21 @@ public class MonitoringController {
    * If the user wants not to plot a certain quality setting, then the collection is cloned and the specific
    * settings are not plotted.
    */
-  private LinkedHashMap<String, XYSeriesCollection> seriesCollectionMap;
+  private final HashMap<ByteString, LinkedHashMap<String, XYSeriesCollection>> seriesCollectionMap;
   /*
    * Each fidelity setting received so far has a LinkedHashMap with merged count values
    * received so far, where Key = instrument id, Value = list of merged bucket counts.
    */
-  private final HashMap<ByteString, LinkedHashMap<String, List<Integer>>> renderTimeHistograms;
+  private final HashMap<ByteString, HashMap<ByteString, LinkedHashMap<String, List<Integer>>>>
+      renderTimeHistograms;
   private ArrayList<Integer> indexesNotToPlot;
   private final LinkedHashSet<QualityDataModel> qualitySettingsList;
   private final PropertyChangeSupport monitoringPropertyChange;
   private int currentQualityIndex;
   private boolean isNewQuality;
   private ByteString currentFidelitySettings;
+  private ByteString currentAnnotationSettings;
+  private HistogramTree<List<Integer>> histogramTree;
 
   public MonitoringController() {
     renderTimeHistograms = new HashMap<>();
@@ -68,6 +77,7 @@ public class MonitoringController {
     monitoringPropertyChange = new PropertyChangeSupport(this);
     seriesCollectionMap = new LinkedHashMap<>();
     indexesNotToPlot = new ArrayList<>();
+    histogramTree = new HistogramTree<>();
     currentQualityIndex = 0;
     isNewQuality = false;
   }
@@ -113,7 +123,8 @@ public class MonitoringController {
     if (!renderTimeHistograms.containsKey(currentFidelitySettings)) {
       renderTimeHistograms.put(currentFidelitySettings, new LinkedHashMap<>());
       qualitySettingsList.add(newQuality);
-      monitoringPropertyChange.firePropertyChange("addFidelity", qualitySettingsList.size(), newQuality);
+      monitoringPropertyChange
+          .firePropertyChange("addFidelity", qualitySettingsList.size(), newQuality);
       isNewQuality = true;
     } else {
       isNewQuality = false;
@@ -123,25 +134,82 @@ public class MonitoringController {
     return Optional.of(qualitySettingsList.size() - 1);
   }
 
+  public void checkAnnotationParams(UploadTelemetryRequest telemetryRequest) {
+    if (telemetryRequest.getTelemetry(0) == null) {
+      return;
+    }
+    currentAnnotationSettings = telemetryRequest.getTelemetry(0).getContext()
+        .getAnnotations();
+    if (!seriesCollectionMap.containsKey(currentAnnotationSettings)) {
+      seriesCollectionMap.put(currentAnnotationSettings, new LinkedHashMap<>());
+    }
+    try {
+      DynamicMessage dynamicMessage = DynamicMessage
+          .parseFrom(
+              DataModelTransformer.getDevTuningforkDesc().findMessageTypeByName("Annotation"),
+              currentAnnotationSettings);
+      monitoringPropertyChange.firePropertyChange("addAnnotation", null, dynamicMessage);
+    } catch (InvalidProtocolBufferException e) {
+      e.printStackTrace();
+    }
+    for (int i = 0; i < telemetryRequest.getTelemetryCount(); i++) {
+      ByteString byteString = telemetryRequest.getTelemetry(i).getContext().getAnnotations();
+      try {
+        System.out.println(DynamicMessage
+            .parseFrom(
+                DataModelTransformer.getDevTuningforkDesc().findMessageTypeByName("Annotation"),
+                byteString).toString());
+      } catch (InvalidProtocolBufferException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private void makeTree(UploadTelemetryRequest telemetryRequest) {
+    String deviceName = telemetryRequest.getSessionContext().getDevice().getBrand() + "/" +
+        telemetryRequest.getSessionContext().getDevice().getModel();
+    Node<List<Integer>> deviceNode = new Node<>(deviceName);
+    for (Telemetry telemetry : telemetryRequest.getTelemetryList()) {
+      ByteString annotationByteString = telemetry.getContext().getAnnotations();
+      ByteString fidelityByteString = telemetry.getContext().getTuningParameters()
+          .getSerializedFidelityParameters();
+      Node<List<Integer>> annotation = new Node<>(
+          Base64.getEncoder().encodeToString(annotationByteString.toByteArray()), "HEY");
+      Node<List<Integer>> fidelity = new Node<>(
+          Base64.getEncoder().encodeToString(fidelityByteString.toByteArray()), "BLEP");
+      annotation.addChild(fidelity);
+      deviceNode.addChild(annotation);
+    }
+    histogramTree.addPath(deviceNode);
+  }
+
+  public JTreeNode getTree() {
+    return histogramTree.getAsTreeNode();
+  }
+
   public void checkFidelityParams(UploadTelemetryRequest telemetryRequest)
       throws InvalidProtocolBufferException {
     if (telemetryRequest.getTelemetry(0) == null) {
       return;
     }
-
+    makeTree(telemetryRequest);
     currentFidelitySettings = telemetryRequest.getTelemetry(0).getContext()
-            .getTuningParameters().getSerializedFidelityParameters();
+        .getTuningParameters().getSerializedFidelityParameters();
 
     transformQualitySettings().ifPresent(index -> currentQualityIndex = index);
   }
 
   public void setRenderTimeHistograms(UploadTelemetryRequest telemetryRequest) {
-    renderTimeHistograms.put(currentFidelitySettings,
+    if (!renderTimeHistograms.containsKey(currentAnnotationSettings)) {
+      renderTimeHistograms.put(currentAnnotationSettings, new HashMap<>());
+    }
+    renderTimeHistograms.get(currentAnnotationSettings).put(currentFidelitySettings,
         TelemetryProcessing.processTelemetryData(telemetryRequest));
   }
 
   public Set<String> getRenderTimeHistogramsKeys() {
-    return renderTimeHistograms.get(currentFidelitySettings).keySet();
+    return renderTimeHistograms.get(currentAnnotationSettings).get(currentFidelitySettings)
+        .keySet();
   }
 
   public void addMonitoringPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
@@ -155,7 +223,8 @@ public class MonitoringController {
   private void replotCertainSeries(String instrumentID, int currentQualityIndex,
       XYSeries histogramDataset) {
     XYSeriesCollection seriesToModify = new XYSeriesCollection();
-    XYSeriesCollection originalSeries = seriesCollectionMap.get(instrumentID);
+    XYSeriesCollection originalSeries = seriesCollectionMap.get(currentAnnotationSettings)
+        .get(instrumentID);
 
     for (int i = 0; i < currentQualityIndex; i++) {
       seriesToModify.addSeries(originalSeries.getSeries(i));
@@ -165,11 +234,13 @@ public class MonitoringController {
       seriesToModify.addSeries(originalSeries.getSeries(i));
     }
 
-    seriesCollectionMap.put(instrumentID, seriesToModify);
+    seriesCollectionMap.get(currentAnnotationSettings).put(instrumentID, seriesToModify);
   }
 
   public void createChartPanels() {
-    for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms.get(currentFidelitySettings).entrySet()) {
+    for (Map.Entry<String, List<Integer>> entry : renderTimeHistograms
+        .get(currentAnnotationSettings).get(currentFidelitySettings)
+        .entrySet()) {
       String instrumentId = entry.getKey();
       XYSeries histogramDataset = new XYSeries("Quality settings " + (currentQualityIndex + 1));
       List<Integer> fpsList = entry.getValue();
@@ -177,21 +248,24 @@ public class MonitoringController {
         histogramDataset.add(i, fpsList.get(i));
       }
 
-      if (!seriesCollectionMap.containsKey(instrumentId)) {
-        seriesCollectionMap.put(instrumentId, new XYSeriesCollection());
+      if (!seriesCollectionMap.get(currentAnnotationSettings).containsKey(instrumentId)) {
+        seriesCollectionMap.get(currentAnnotationSettings)
+            .put(instrumentId, new XYSeriesCollection());
       }
 
       if (!isNewQuality) {
         replotCertainSeries(instrumentId, currentQualityIndex, histogramDataset);
       } else {
-        seriesCollectionMap.get(instrumentId).addSeries(histogramDataset);
+        seriesCollectionMap.get(currentAnnotationSettings).get(instrumentId)
+            .addSeries(histogramDataset);
       }
     }
     removeQualitySettingsNotToPlot();
   }
 
   public void removeQualitySettingsNotToPlot() {
-    for (Map.Entry<String, XYSeriesCollection> entry : seriesCollectionMap.entrySet()) {
+    for (Map.Entry<String, XYSeriesCollection> entry : seriesCollectionMap
+        .get(currentAnnotationSettings).entrySet()) {
       try {
         XYSeriesCollection datasets = (XYSeriesCollection) entry.getValue().clone();
 
@@ -210,4 +284,119 @@ public class MonitoringController {
       }
     }
   }
+
+  static final class HistogramTree<T> {
+
+    private final Node<T> root = new Node<>("");
+
+    public HistogramTree() {
+    }
+
+    public void addPath(Node<T> node) {
+      root.findAndAddChild(node);
+      for (Node<T> childNode : node.childrenNodes) {
+        addPath(childNode, node);
+      }
+    }
+
+    public void addPath(Node<T> node, Node<T> parentNode) {
+      parentNode.findAndAddChild(node);
+      for (Node<T> childNode : node.childrenNodes) {
+        addPath(childNode, node);
+      }
+    }
+
+    public JTreeNode getAsTreeNode() {
+      return getAsTreeNode(root, new JTreeNode("", ""));
+    }
+
+    public JTreeNode getAsTreeNode(Node<T> currentNode, JTreeNode treeNode) {
+      for (Node<T> childNode : currentNode.childrenNodes) {
+        JTreeNode childTreeNode = new JTreeNode(childNode.nodeName, currentNode.nodeToolTip);
+        treeNode.add(childTreeNode);
+        getAsTreeNode(childNode, childTreeNode);
+      }
+      return treeNode;
+    }
+
+    public static final class JTreeNode extends DefaultMutableTreeNode {
+
+      private final String shortDesc, longDesc;
+
+      public JTreeNode(String shortDesc, String longDesc) {
+        super();
+        this.shortDesc = shortDesc;
+        this.longDesc = longDesc;
+      }
+
+      public String getToolTip() {
+        return longDesc;
+      }
+
+      @Override
+      public String toString() {
+        return shortDesc;
+      }
+    }
+
+    public static final class Node<V> {
+
+      private final List<Node<V>> childrenNodes;
+      private final String nodeName;
+      private String nodeToolTip;
+      private Optional<V> value;
+
+      public Node(String nodeName) {
+        this.childrenNodes = new ArrayList<>();
+        this.nodeName = nodeName;
+        this.nodeToolTip = "";
+      }
+
+      public Node(String nodeName, String nodeToolTip) {
+        this(nodeName);
+        this.nodeToolTip = nodeToolTip;
+      }
+
+      public V getValue() {
+        return this.value.orElse(null);
+      }
+
+      public void setValue(V value) {
+        this.value = Optional.ofNullable(value);
+      }
+
+      public Node<V> findAndAddChild(Node<V> nodeToFind) {
+        Optional<Node<V>> foundNode = childrenNodes.stream()
+            .filter(node -> node.equals(nodeToFind))
+            .findFirst();
+        if (foundNode.isPresent()) {
+          return foundNode.get();
+        } else {
+          addChild(nodeToFind);
+        }
+        return nodeToFind;
+      }
+
+      public void addChild(Node<V> node) {
+        childrenNodes.add(node);
+      }
+
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) {
+          return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+          return false;
+        }
+        return Objects.equals(nodeName, ((Node<?>) o).nodeName);
+      }
+
+      @Override
+      public int hashCode() {
+        return Objects.hash(nodeName);
+      }
+    }
+  }
+
 }
