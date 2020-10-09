@@ -16,13 +16,13 @@
 
 package View.Annotation;
 
-import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
+import static Utils.UI.UIValidator.ILLEGAL_TEXT_PATTERN;
 
 import Controller.Annotation.AnnotationTabController;
 import Controller.Annotation.AnnotationTableModel;
 import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.UIValidator;
+import Utils.UI.UIValidator;
 import View.Annotation.AnnotationDecorator.EnumComboBoxDecorator;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;

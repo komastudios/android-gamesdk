@@ -18,6 +18,7 @@ package View.DebugInfo;
 
 import Controller.DebugInfo.DebugInfoController;
 import Utils.Monitoring.RequestServer;
+import Utils.UI.UIUtils;
 import View.Decorator.LabelScrollPane;
 import View.TabLayout;
 import com.google.common.collect.Streams;
@@ -42,7 +43,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -125,9 +125,8 @@ public class debugInfoTab extends TabLayout {
   }
 
   public void reloadTree(JTree jTree, List<String> fidelityStrings, FileDescriptor descriptor) {
-    ((DefaultTreeModel) jTree.getModel()).setRoot(debugInfoController.getQualityAsTree(
-        debugInfoController.convertByteStringToModel(fidelityStrings, descriptor)
-    ));
+    UIUtils.reloadTreeAndKeepState(jTree, debugInfoController.getQualityAsTree(
+        debugInfoController.convertByteStringToModel(fidelityStrings, descriptor)));
   }
 
 
