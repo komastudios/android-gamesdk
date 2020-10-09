@@ -288,6 +288,22 @@ message LoadingTimeEvents {
 
   // Metadata recorded with these loading events.
   LoadingTimeMetadata loading_metadata = 2;
+
+  // Start and end times.
+  // Times are durations from the process start time.
+  repeated ProcessTimePeriod intervals = 3;
+}
+
+// A message describing a period of time, with times represented as durations since
+// the app's process started.
+message ProcessTimePeriod {
+  // Duration from process start to the start of the period.
+  // Required.
+  google.protobuf.Duration start = 1;
+
+  // Duration from process start to the end of the period.
+  // Required.
+  google.protobuf.Duration end = 2;
 }
 
 // A message describing a period of time.
