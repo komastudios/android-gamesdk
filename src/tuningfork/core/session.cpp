@@ -39,12 +39,16 @@ void FrameTimeMetricData::Clear() {
 }
 
 void LoadingTimeMetricData::Record(Duration dt) {
-    // The histogram stores millisecond values as doubles
-    histogram_.Add(
-        double(
-            std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) /
-        1000000);
+    // If we don't have start and end times, set the end time to 0 and deal with
+    // it in serialization code.
+    data_.Add({std::chrono::duration_cast<std::chrono::nanoseconds>(dt),
+               std::chrono::nanoseconds(0)});
     duration_ += dt;
+}
+
+void LoadingTimeMetricData::Record(ProcessTimeInterval dt) {
+    data_.Add(dt);
+    duration_ += dt.end - dt.start;
 }
 
 FrameTimeMetricData* Session::CreateFrameTimeHistogram(
