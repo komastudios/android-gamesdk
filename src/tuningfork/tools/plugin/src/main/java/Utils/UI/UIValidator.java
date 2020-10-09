@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package Utils.Validation;
+package Utils.UI;
 
 import static com.intellij.openapi.ui.cellvalidators.ValidatingTableCellRendererWrapper.CELL_VALIDATION_PROPERTY;
 
