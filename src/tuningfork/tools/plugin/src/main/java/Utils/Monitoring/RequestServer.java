@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.Optional;
@@ -54,7 +55,8 @@ public class RequestServer {
   private static RequestServer requestServer;
 
   private RequestServer() throws IOException {
-    httpServer = HttpServer.create(new InetSocketAddress("localhost", 9000), 0);
+    httpServer = HttpServer
+        .create(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000), 0);
     httpServer.setExecutor(THREAD_POOL_EXECUTOR);
     httpServer.createContext("/applications",
         new TuningForkHandler());
@@ -128,19 +130,14 @@ public class RequestServer {
     return telemetryBuilder.build();
   }
 
-  private final class TuningForkHandler implements HttpHandler {
-
-    @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-      String requestPath = httpExchange.getRequestURI().toASCIIString();
-      if (requestPath.contains(":uploadTelemetry")) {
-        handleUploadTelemetry(httpExchange);
-      } else if (requestPath.contains(":generateTuningParameters")) {
-        handleGenerateTuningParameters(httpExchange);
-      } else if (requestPath.contains(":debugInfo")) {
-        handleDebugInfo(httpExchange);
-      }
-    }
+  // Respond with code 200 for now
+  private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
+    InputStream inputStream = httpExchange.getRequestBody();
+    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
+    debugInfo.ifPresent(jsonObjectConsumer -> jsonObjectConsumer.accept(jsonObject));
+    httpExchange.sendResponseHeaders(200, 0);
+    httpExchange.getResponseBody().flush();
+    httpExchange.getResponseBody().close();
   }
 
   private void handleUploadTelemetry(HttpExchange httpExchange) throws IOException {
@@ -172,15 +169,22 @@ public class RequestServer {
     httpExchange.getResponseBody().close();
   }
 
-  // Respond with code 200 for now
-  private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
-    InputStream inputStream = httpExchange.getRequestBody();
-    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
-    if (debugInfo.isPresent()) {
-      debugInfo.get().accept(jsonObject);
+  private final class TuningForkHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+      String requestPath = httpExchange.getRequestURI().toASCIIString();
+      try {
+        if (requestPath.contains(":uploadTelemetry")) {
+          handleUploadTelemetry(httpExchange);
+        } else if (requestPath.contains(":generateTuningParameters")) {
+          handleGenerateTuningParameters(httpExchange);
+        } else if (requestPath.contains(":debugInfo")) {
+          handleDebugInfo(httpExchange);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-    httpExchange.sendResponseHeaders(200, 0);
-    httpExchange.getResponseBody().flush();
-    httpExchange.getResponseBody().close();
   }
 }
