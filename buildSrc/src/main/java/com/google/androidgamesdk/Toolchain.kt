@@ -13,7 +13,14 @@ abstract class Toolchain {
     protected abstract var project_: Project
     protected abstract var androidVersion_: String
     protected abstract var ndkVersion_: String
+
+    override fun toString(): String {
+        return "Toolchain(androidVersion=$androidVersion_, " +
+            "ndkVersion=$ndkVersion_)"
+    }
+
     abstract fun getAndroidNDKPath(): String
+
     fun getAndroidVersion(): String {
         return androidVersion_
     }
