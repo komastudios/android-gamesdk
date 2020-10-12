@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55eb37c5_0752ea48",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-12T17:31:48Z",
+      "side": 1,
+      "message": "Removing GPars in favor of JVM parallelStream. Same time for the whole build (1h10-1h20 on the build bots for the gamesdk) but in case of one build failing, not all the other builds are run, which can help finding the error, make the presubmit fail faster and reduce the size of our error logs.",
+      "revId": "870c80c9e44c7ad91838c13176c413f682f46da0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
