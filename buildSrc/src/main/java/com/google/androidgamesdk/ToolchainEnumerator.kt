@@ -1,6 +1,7 @@
 package com.google.androidgamesdk
 
 import org.gradle.api.Project
+import java.util.stream.Collectors
 
 /**
  * Expose the toolchains to use to compile a library against all combinations
@@ -101,6 +102,18 @@ class ToolchainEnumerator {
                 )
             }
         }
+    }
+
+    /**
+     * Execute the specified function concurrently on the toolchains.
+     * In case of an exception, it will be rethrown early (not waiting for
+     * all tasks to finish).
+     */
+    fun <T> parallelMap(
+        toolchains: List<EnumeratedToolchain>,
+        f: (EnumeratedToolchain) -> T
+    ): List<T> {
+        return toolchains.parallelStream().map(f).collect(Collectors.toList())
     }
 
     data class EnumeratedToolchain(
