@@ -16,6 +16,24 @@
       "message": "uber nitpicking: to avoid a potential risk of long list of parameters, I would go for a \"fluent\" setter:\n\nHttpRequest\u0026 AllowMetered(bool allow) { allow_metered_ \u003d allow; return *this; }\n\nSo that we can call it only if needed:\n\nHttpRequest request(\"url\", \"my_api_key\", 12000);\nrequest.AllowMetered(true).Send(\"/endpoint\", \"{}\", responseCode, responseBody);\n\n(or without the method chaining if you prefer to avoid this pattern, but at least something not in the constructor)",
       "revId": "ab142c59e910c9a683f746eab7c2c725fbec3964",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cfb1dc3_a02cc9ec",
+        "filename": "src/tuningfork/http_backend/http_request.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-12T09:54:03Z",
+      "side": 1,
+      "message": "Good idea. Done.",
+      "parentUuid": "5c8fdf25_4fbcc227",
+      "revId": "ab142c59e910c9a683f746eab7c2c725fbec3964",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
