@@ -20,6 +20,7 @@ set(MEMORY_ADVICE_SRCS
   c_header_check.c
   core/memory_advice.cpp
   core/memory_advice_c.cpp
+  core/metrics_provider.cpp
 )
 
 add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})
