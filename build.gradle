@@ -206,9 +206,13 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
     runAndroidCMake(project, buildFolders, toolchain, buildOptions, libraries)
 
     def cmdLine = !toolchain.getNinjaPath().isEmpty() ? [toolchain.getNinjaPath()] : ["make", "-j"]
-    exec {
+    def execResult = exec {
         workingDir workingFolder
         commandLine cmdLine
+        ignoreExitValue true
+    }
+    if (execResult.getExitValue() != 0) {
+        throw new Exception("Error when building libraries with " + toolchain + " and " + buildOptions)
     }
 
     def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
@@ -241,7 +245,9 @@ def executeCmd(cmd, dir) {
 // Create outAr from the contents of inArs
 // All files taken/created in dir
 def repackArchives(dir, inArs, outAr) {
-    def arPath = getLocalToolchain().getArPath()
+    // Create a toolchain just to get access to ar (actual SDK/NDK is irrelevant).
+    def localToolchain = new LocalToolchain(project, "24", null)
+    def arPath = localToolchain.getArPath()
     if (OperatingSystem.current().isWindows()) {
         inArs.each {
             executeCmd("cmd /c ${arPath} -x ${it}", dir)
@@ -469,38 +475,36 @@ def unityNativeBuild(libraries, buildType="Release") {
 
 def sdkNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
-    def allToolchains = new ToolchainEnumerator().enumerateAllToolchains(project)
-    GParsPool.withPool {
-        return allToolchains.collectParallel { enumeratedToolchain ->
-            buildNativeModules(
-                    new BuildOptions(
-                            buildType,
-                            threadChecks,
-                            enumeratedToolchain.stl,
-                            enumeratedToolchain.abi),
-                    enumeratedToolchain.toolchain,
-                    libraries,
-                    "src")
-        }
-    }
+    def toolchainEnumerator = new ToolchainEnumerator()
+    def allToolchains = toolchainEnumerator.enumerateAllToolchains(project)
+    return toolchainEnumerator.parallelMap(allToolchains, { enumeratedToolchain ->
+        buildNativeModules(
+                new BuildOptions(
+                        buildType,
+                        threadChecks,
+                        enumeratedToolchain.stl,
+                        enumeratedToolchain.abi),
+                enumeratedToolchain.toolchain,
+                libraries,
+                "src")
+    })
 }
 
 def sdkAarNativeBuild(libraries, buildType) {
     def threadChecks = false
-    def allAarToolchains = new ToolchainEnumerator().enumerateAllAarToolchains(project)
-    GParsPool.withPool {
-        return allAarToolchains.collectParallel { enumeratedToolchain ->
-            buildNativeModules(
-                    new BuildOptions(
-                            buildType,
-                            threadChecks,
-                            enumeratedToolchain.stl,
-                            enumeratedToolchain.abi),
-                    enumeratedToolchain.toolchain,
-                    libraries,
-                    "src")
-        }
-    }
+    def toolchainEnumerator = new ToolchainEnumerator()
+    def allAarToolchains = toolchainEnumerator.enumerateAllAarToolchains(project)
+    return toolchainEnumerator.parallelMap(allAarToolchains, { enumeratedToolchain ->
+        buildNativeModules(
+                new BuildOptions(
+                        buildType,
+                        threadChecks,
+                        enumeratedToolchain.stl,
+                        enumeratedToolchain.abi),
+                enumeratedToolchain.toolchain,
+                libraries,
+                "src")
+    })
 }
 
 def specificNativeBuild(specificToolchainConfiguration, libraries,
