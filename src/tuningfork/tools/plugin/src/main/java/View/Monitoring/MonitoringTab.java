@@ -16,19 +16,20 @@
 package View.Monitoring;
 
 import Controller.Monitoring.MonitoringController;
+import Controller.Monitoring.MonitoringController.HistogramTree.Node;
 import Utils.Monitoring.RequestServer;
-import Utils.UI.UIUtils;
 import View.Decorator.LabelScrollPane;
-import View.Dialog.MonitoringQualityDialogWrapper;
+import View.Dialog.MonitoringFilterDialogWrapper;
 import View.TabLayout;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTabbedPane;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -38,6 +39,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +55,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jfree.chart.ChartPanel;
 
@@ -114,7 +119,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JBTabbedPane tabbedPane;
   private JPanel buttonPanel1, buttonPanel2;
   private LabelScrollPane annotationPanel;
-  private JTree jTree;
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -183,7 +187,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
     controller.setRenderTimeHistograms(telemetryRequest);
     addComboBoxData(controller.getRenderTimeHistogramsKeys());
-    UIUtils.reloadTreeAndKeepState(jTree, controller.getTree());
     stopMonitoring.setVisible(true);
     refreshUI();
   }
@@ -221,9 +224,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     retrievedInformationPanel.add(graphPanel);
     tabbedPane.addTab("Render Histograms", retrievedInformationPanel);
     buttonPanel2.add(changeQualityButton);
-    jTree = new JTree();
-    jTree.setRootVisible(false);
-    tabbedPane.add("Testing", ToolbarDecorator.createDecorator(jTree).createPanel());
   }
 
   private void sleepUI(long seconds) throws InterruptedException {
@@ -342,10 +342,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     changeQualityButton.setVisible(false);
 
     changeQualityButton.addActionListener(actionEvent -> {
-      MonitoringQualityDialogWrapper monitoringWrapper = new MonitoringQualityDialogWrapper(
-          controller.getQualityNumber(), controller.getIndexesNotToPlot());
-      monitoringWrapper.addPropertyChangeListener(this);
-      monitoringWrapper.show();
+      MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
+          controller.getHistogramTree());
+      filterDialog.show();
     });
     tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
     tabbedPane.setVisible(false);
@@ -393,6 +392,94 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
         controller.removeQualitySettingsNotToPlot();
         SwingUtilities.updateComponentTreeUI(graphPanel);
         break;
+    }
+  }
+
+  public static class TreeToolTipRenderer extends DefaultTreeCellRenderer {
+
+    JPanel panel;
+    JLabel nameLabel, iconLabel;
+
+    public TreeToolTipRenderer() {
+      panel = new JPanel(new HorizontalLayout());
+      nameLabel = new JLabel();
+      iconLabel = new JLabel();
+      panel.add(nameLabel);
+      panel.add(iconLabel);
+      setOpenIcon(null);
+      setClosedIcon(null);
+      setBackgroundSelectionColor(null);
+      setLeafIcon(null);
+    }
+
+    @Override
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
+        boolean expanded, boolean leaf, int row, boolean hasFocus) {
+      if (value instanceof JTreeNode) {
+        JTreeNode jTreeNode = (JTreeNode) value;
+        panel.setToolTipText(jTreeNode.getToolTip());
+        nameLabel.setText(jTreeNode.getNodeName());
+        iconLabel.setIcon((jTreeNode.getNodeState() ? Actions.SetDefault : null));
+        return panel;
+      }
+      return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+    }
+  }
+
+  public static final class JTreeNode extends DefaultMutableTreeNode {
+
+    private final String nodeName, toolTipDesc;
+    private boolean selectedState;
+
+    public JTreeNode() {
+      super();
+      this.nodeName = "";
+      this.toolTipDesc = "";
+    }
+
+    public JTreeNode(Node node) {
+      super();
+      this.nodeName = node.getNodeName();
+      this.toolTipDesc = node.getNodeToolTip();
+      this.selectedState = node.getNodeState();
+    }
+
+    public String getNodeName() {
+      return nodeName;
+    }
+
+    public String getToolTip() {
+      return toolTipDesc;
+    }
+
+    public boolean getNodeState() {
+      return selectedState;
+    }
+
+    public void setNodeState(boolean state) {
+      this.selectedState = state;
+    }
+
+    @Override
+    public String toString() {
+      return nodeName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      JTreeNode jTreeNode = (JTreeNode) o;
+      return this.nodeName.equals(jTreeNode.getNodeName());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(nodeName);
     }
   }
 }
