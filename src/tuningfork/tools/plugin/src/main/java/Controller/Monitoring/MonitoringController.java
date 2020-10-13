@@ -15,11 +15,11 @@
  */
 package Controller.Monitoring;
 
-import Controller.Monitoring.MonitoringController.HistogramTree.JTreeNode;
 import Controller.Monitoring.MonitoringController.HistogramTree.Node;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Monitoring.TelemetryProcessing;
+import View.Monitoring.MonitoringTab.JTreeNode;
 import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.protobuf.ByteString;
@@ -30,8 +30,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -69,7 +69,8 @@ public class MonitoringController {
   private boolean isNewQuality;
   private ByteString currentFidelitySettings;
   private ByteString currentAnnotationSettings;
-  private HistogramTree<List<Integer>> histogramTree;
+  private HistogramTree histogramTree;
+  private Map<ByteString, Integer> annotationMap, fidelityMap;
 
   public MonitoringController() {
     renderTimeHistograms = new HashMap<>();
@@ -77,9 +78,11 @@ public class MonitoringController {
     monitoringPropertyChange = new PropertyChangeSupport(this);
     seriesCollectionMap = new LinkedHashMap<>();
     indexesNotToPlot = new ArrayList<>();
-    histogramTree = new HistogramTree<>();
+    histogramTree = new HistogramTree();
     currentQualityIndex = 0;
     isNewQuality = false;
+    annotationMap = new HashMap<>();
+    fidelityMap = new HashMap<>();
   }
 
   public int getQualityNumber() {
@@ -152,33 +155,90 @@ public class MonitoringController {
     } catch (InvalidProtocolBufferException e) {
       e.printStackTrace();
     }
-    for (int i = 0; i < telemetryRequest.getTelemetryCount(); i++) {
-      ByteString byteString = telemetryRequest.getTelemetry(i).getContext().getAnnotations();
-      try {
-        System.out.println(DynamicMessage
-            .parseFrom(
-                DataModelTransformer.getDevTuningforkDesc().findMessageTypeByName("Annotation"),
-                byteString).toString());
-      } catch (InvalidProtocolBufferException e) {
-        e.printStackTrace();
-      }
+  }
+
+  private String getAnnotation(ByteString bytes) {
+    try {
+      DynamicMessage dynamicMessage = DynamicMessage
+          .parseFrom(
+              DataModelTransformer.getDevTuningforkDesc().findMessageTypeByName("Annotation"),
+              bytes);
+      return splitMessageIntoHTML(dynamicMessage.toString());
+    } catch (InvalidProtocolBufferException e) {
+      e.printStackTrace();
     }
+    return "";
+  }
+
+  private String getFidelity(ByteString bytes) {
+    try {
+      Descriptor descriptor = DataModelTransformer.getDevTuningforkDesc()
+          .findMessageTypeByName("FidelityParams");
+      DynamicMessage dynamicMessage = DynamicMessage.parseFrom(descriptor, bytes);
+      QualityDataModel newQuality = DataModelTransformer
+          .transformToQuality(dynamicMessage, descriptor.getFields()).get();
+      return splitMessageIntoHTML(newQuality.toString());
+    } catch (InvalidProtocolBufferException e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
+
+  private String getFidelityNodeName(ByteString bytes) {
+    if (fidelityMap.containsKey(bytes)) {
+      return "Fidelity " + fidelityMap.get(bytes);
+    }
+    int sz = fidelityMap.size() + 1;
+    fidelityMap.put(bytes, sz);
+    return getFidelityNodeName(bytes);
+  }
+
+  private String getAnnotationNodeName(ByteString bytes) {
+    if (annotationMap.containsKey(bytes)) {
+      return "Annotation " + annotationMap.get(bytes);
+    }
+    // Starting at 1-indexed counting.
+    int sz = annotationMap.size() + 1;
+    annotationMap.put(bytes, sz);
+    return getAnnotationNodeName(bytes);
+  }
+
+  private String splitMessageIntoHTML(String message) {
+    String[] stringChunks = message.split("\n");
+    StringBuilder newMessage = new StringBuilder("<html>");
+    for (String chunk : stringChunks) {
+      newMessage.append(chunk).append("<br>");
+    }
+    newMessage.append("</html>");
+    return newMessage.toString();
+  }
+
+  public HistogramTree getHistogramTree() {
+    return histogramTree;
   }
 
   private void makeTree(UploadTelemetryRequest telemetryRequest) {
     String deviceName = telemetryRequest.getSessionContext().getDevice().getBrand() + "/" +
         telemetryRequest.getSessionContext().getDevice().getModel();
-    Node<List<Integer>> deviceNode = new Node<>(deviceName);
+    Node deviceNode = new Node(deviceName);
     for (Telemetry telemetry : telemetryRequest.getTelemetryList()) {
       ByteString annotationByteString = telemetry.getContext().getAnnotations();
       ByteString fidelityByteString = telemetry.getContext().getTuningParameters()
           .getSerializedFidelityParameters();
-      Node<List<Integer>> annotation = new Node<>(
-          Base64.getEncoder().encodeToString(annotationByteString.toByteArray()), "HEY");
-      Node<List<Integer>> fidelity = new Node<>(
-          Base64.getEncoder().encodeToString(fidelityByteString.toByteArray()), "BLEP");
+
+      Node annotation = new Node(getAnnotationNodeName(annotationByteString),
+          getAnnotation(annotationByteString));
+      Node fidelity = new Node(getFidelityNodeName(fidelityByteString),
+          getFidelity(fidelityByteString));
       annotation.addChild(fidelity);
       deviceNode.addChild(annotation);
+      telemetry.getReport().getRendering().getRenderTimeHistogramList().forEach(
+          histogram -> {
+            Node instrumentNode = new Node(String.valueOf(histogram.getInstrumentId()));
+            instrumentNode.setValue(histogram.getCountsList());
+            fidelity.addChild(instrumentNode);
+          }
+      );
     }
     histogramTree.addPath(deviceNode);
   }
@@ -285,71 +345,127 @@ public class MonitoringController {
     }
   }
 
-  static final class HistogramTree<T> {
 
-    private final Node<T> root = new Node<>("");
+  public static final class HistogramTree {
+
+    private Node root = new Node("");
 
     public HistogramTree() {
     }
 
-    public void addPath(Node<T> node) {
-      root.findAndAddChild(node);
-      for (Node<T> childNode : node.childrenNodes) {
-        addPath(childNode, node);
+    public void addPath(Node node) {
+      addPath(node, root);
+    }
+
+    private void addPath(Node currentNode, Node parentNode) {
+      Optional<Node> foundNode = parentNode.findChild(currentNode);
+      List<Node> children = currentNode.childrenNodes;
+      currentNode = currentNode.getNoChildrenCopy();
+      if (foundNode.isPresent()) {
+        mergeNodeValue(currentNode, foundNode.get());
+        currentNode = foundNode.get();
+      } else {
+        parentNode.addChild(currentNode);
+      }
+      for (Node child : children) {
+        addPath(child, currentNode);
       }
     }
 
-    public void addPath(Node<T> node, Node<T> parentNode) {
-      parentNode.findAndAddChild(node);
-      for (Node<T> childNode : node.childrenNodes) {
-        addPath(childNode, node);
+    // Merges the new node into the old node
+    private void mergeNodeValue(Node newNode, Node oldNode) {
+      List<Integer> newValue = newNode.getValue();
+      List<Integer> oldValue = oldNode.getValue();
+      for (int i = 0; i < oldValue.size(); i++) {
+        oldValue.set(i, oldValue.get(i) + newValue.get(i));
       }
+    }
+
+    public Node findNodeByName(String name) {
+      return findNodeByName(root, name);
+    }
+
+    private Node findNodeByName(Node currentNode, String name) {
+      if (currentNode.getNodeName().equals(name)) {
+        return currentNode;
+      }
+      Node foundNode;
+      for (Node childNode : currentNode.childrenNodes) {
+        if ((foundNode = findNodeByName(childNode, name)) != null) {
+          return foundNode;
+        }
+      }
+      return null;
+    }
+
+    public JTreeNode getAsTreeNode(int maxDepth) {
+      return getAsTreeNode(root, new JTreeNode(), maxDepth, 0);
     }
 
     public JTreeNode getAsTreeNode() {
-      return getAsTreeNode(root, new JTreeNode("", ""));
+      return getAsTreeNode(root, new JTreeNode(), Integer.MAX_VALUE, 0);
     }
 
-    public JTreeNode getAsTreeNode(Node<T> currentNode, JTreeNode treeNode) {
-      for (Node<T> childNode : currentNode.childrenNodes) {
-        JTreeNode childTreeNode = new JTreeNode(childNode.nodeName, currentNode.nodeToolTip);
+    public JTreeNode getAsTreeNode(Node currentNode, JTreeNode treeNode, int maxDepth,
+        int currentDepth) {
+      if (currentDepth >= maxDepth) {
+        return treeNode;
+      }
+      for (Node childNode : currentNode.childrenNodes) {
+        JTreeNode childTreeNode = new JTreeNode(childNode);
         treeNode.add(childTreeNode);
-        getAsTreeNode(childNode, childTreeNode);
+        getAsTreeNode(childNode, childTreeNode, maxDepth, currentDepth + 1);
       }
       return treeNode;
     }
 
-    public static final class JTreeNode extends DefaultMutableTreeNode {
-
-      private final String shortDesc, longDesc;
-
-      public JTreeNode(String shortDesc, String longDesc) {
-        super();
-        this.shortDesc = shortDesc;
-        this.longDesc = longDesc;
-      }
-
-      public String getToolTip() {
-        return longDesc;
-      }
-
-      @Override
-      public String toString() {
-        return shortDesc;
-      }
+    public List<Node> getAllPhoneModels() {
+      return new ArrayList<>(root.childrenNodes);
     }
 
-    public static final class Node<V> {
+    public List<Node> getAllAnnotations(Node phoneModel) {
+      return new ArrayList<>(phoneModel.childrenNodes);
+    }
 
-      private final List<Node<V>> childrenNodes;
+    public Set<Node> getAllFidelity(List<Node> annotations) {
+      Set<Node> fidelitySet = new HashSet<>();
+      annotations.forEach(annotationNode -> fidelitySet.addAll(annotationNode.childrenNodes));
+      return fidelitySet;
+    }
+
+    public void toggleLastNode(TreePath path) {
+      Node currentNode = root;
+      for (int i = 1; i < path.getPathCount(); i++) {
+        JTreeNode currentJTreeNode = (JTreeNode) path.getPathComponent(i);
+        currentNode = currentNode.findChild(new Node(currentJTreeNode.getNodeName())).get();
+      }
+      currentNode.toggleSelectedState();
+    }
+
+    private void setRoot(Node node) {
+      this.root = node;
+    }
+
+    public HistogramTree getCopy() {
+      HistogramTree copyTree = new HistogramTree();
+      copyTree.setRoot(copyTree.root.getDeepCopy());
+      return copyTree;
+    }
+
+    public static final class Node {
+
+      private final List<Node> childrenNodes;
       private final String nodeName;
       private String nodeToolTip;
-      private Optional<V> value;
+      private List<Integer> value;
+      private boolean selectedState;
 
       public Node(String nodeName) {
         this.childrenNodes = new ArrayList<>();
         this.nodeName = nodeName;
         this.nodeToolTip = "";
+        this.value = new ArrayList<>();
+        selectedState = false;
       }
 
       public Node(String nodeName, String nodeToolTip) {
@@ -357,28 +473,60 @@ public class MonitoringController {
         this.nodeToolTip = nodeToolTip;
       }
 
-      public V getValue() {
-        return this.value.orElse(null);
+      public List<Integer> getValue() {
+        return this.value;
       }
 
-      public void setValue(V value) {
-        this.value = Optional.ofNullable(value);
+      public void setValue(List<Integer> value) {
+        this.value = value;
       }
 
-      public Node<V> findAndAddChild(Node<V> nodeToFind) {
-        Optional<Node<V>> foundNode = childrenNodes.stream()
+      public void toggleSelectedState() {
+        selectedState = !selectedState;
+      }
+
+      public Optional<Node> findChild(Node nodeToFind) {
+        return childrenNodes.stream()
             .filter(node -> node.equals(nodeToFind))
             .findFirst();
-        if (foundNode.isPresent()) {
-          return foundNode.get();
-        } else {
-          addChild(nodeToFind);
-        }
-        return nodeToFind;
       }
 
-      public void addChild(Node<V> node) {
+      // Gets a copy of the node without children
+      public Node getNoChildrenCopy() {
+        Node copyNode = new Node(nodeName, nodeToolTip);
+        copyNode.setValue(new ArrayList<>(this.value));
+        return copyNode;
+      }
+
+      public Node getDeepCopy() {
+        Node copyNode = new Node(nodeName, nodeToolTip);
+        copyNode.setValue(new ArrayList<>(this.value));
+        for (int i = 0; i < childrenNodes.size(); i++) {
+          Node childCopy = childrenNodes.get(i).getDeepCopy();
+          copyNode.childrenNodes.add(childCopy);
+        }
+        return copyNode;
+      }
+
+      public String getNodeName() {
+        return nodeName;
+      }
+
+      public String getNodeToolTip() {
+        return nodeToolTip;
+      }
+
+      public boolean getNodeState() {
+        return selectedState;
+      }
+
+      public void addChild(Node node) {
         childrenNodes.add(node);
+      }
+
+      @Override
+      public String toString() {
+        return nodeName;
       }
 
       @Override
@@ -389,7 +537,7 @@ public class MonitoringController {
         if (o == null || getClass() != o.getClass()) {
           return false;
         }
-        return Objects.equals(nodeName, ((Node<?>) o).nodeName);
+        return nodeName.equals(((Node) o).nodeName);
       }
 
       @Override
