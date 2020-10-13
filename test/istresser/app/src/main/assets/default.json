@@ -64,6 +64,11 @@
         },
         "predictions": {
           "oom_score": true
+        },
+        "switchTest": {
+          "enabled": true,
+          "launchDuration": "30S",
+          "returnDuration": "60S"
         }
       }
     ]
