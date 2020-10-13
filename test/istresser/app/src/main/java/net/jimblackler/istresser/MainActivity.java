@@ -46,9 +46,6 @@ import org.json.JSONObject;
 public class MainActivity extends Activity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
-  private static final int LAUNCH_DURATION = 0;
-  private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
@@ -415,9 +412,12 @@ public class MainActivity extends Activity {
             }
           }
           long timeRunning = System.currentTimeMillis() - testStartTime;
-          if (LAUNCH_DURATION != 0) {
+          JSONObject switchTest = params.optJSONObject("switchTest");
+          if (switchTest != null && switchTest.optBoolean("enabled")) {
+            long launchDuration = getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
+            long returnDuration = getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
             long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-            if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
+            if (appSwitchTimeRunning > launchDuration && lastLaunched < launchDuration) {
               lastLaunched = appSwitchTimeRunning;
               Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
               File file = new File(
@@ -428,7 +428,7 @@ public class MainActivity extends Activity {
               intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
               startActivityForResult(intent, 1);
             }
-            if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
+            if (appSwitchTimeRunning > returnDuration && lastLaunched < returnDuration) {
               lastLaunched = appSwitchTimeRunning;
               finishActivity(1);
               appSwitchTimerStart = System.currentTimeMillis();
