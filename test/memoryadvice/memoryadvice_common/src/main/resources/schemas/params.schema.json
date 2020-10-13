@@ -75,6 +75,25 @@
     },
     "timeout": {
       "$ref": "duration.schema.json"
+    },
+    "switchTest": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "launchDuration": {
+          "$ref": "duration.schema.json"
+        },
+        "returnDuration": {
+          "$ref": "duration.schema.json"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "type": "object"
+
     }
   },
   "type": "object"
