@@ -109,6 +109,7 @@ class MemoryMonitor {
     JSONObject report = new JSONObject();
     try {
       if (fields.has("debug")) {
+        long time = System.nanoTime();
         JSONObject metricsOut = new JSONObject();
         Object debugFieldsValue = fields.get("debug");
         JSONObject debug =
@@ -126,12 +127,15 @@ class MemoryMonitor {
         if (allFields || (debug != null && debug.optBoolean("Pss"))) {
           metricsOut.put("Pss", Debug.getNativeHeapSize());
         }
-        if (metricsOut.length() > 0) {
-          report.put("debug", metricsOut);
-        }
+
+        JSONObject meta = new JSONObject();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("debug", metricsOut);
       }
 
       if (fields.has("MemoryInfo")) {
+        long time = System.nanoTime();
         Object memoryInfoValue = fields.get("MemoryInfo");
         JSONObject memoryInfoFields =
             memoryInfoValue instanceof JSONObject ? (JSONObject) memoryInfoValue : null;
@@ -152,9 +156,11 @@ class MemoryMonitor {
           if (allFields || memoryInfoFields.has("threshold")) {
             metricsOut.put("threshold", memoryInfo.threshold);
           }
-          if (metricsOut.length() > 0) {
-            report.put("MemoryInfo", metricsOut);
-          }
+
+          JSONObject meta = new JSONObject();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+          report.put("MemoryInfo", metricsOut);
         }
       }
 
@@ -191,6 +197,7 @@ class MemoryMonitor {
       }
 
       if (fields.has("proc")) {
+        long time = System.nanoTime();
         Object procFieldsValue = fields.get("proc");
         JSONObject procFields =
             procFieldsValue instanceof JSONObject ? (JSONObject) procFieldsValue : null;
@@ -199,12 +206,15 @@ class MemoryMonitor {
         if (allFields || procFields.optBoolean("oom_score")) {
           metricsOut.put("oom_score", getOomScore(pid));
         }
-        if (metricsOut.length() > 0) {
-          report.put("proc", metricsOut);
-        }
+
+        JSONObject meta = new JSONObject();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("proc", metricsOut);
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fields.has("summary")) {
+        long time = System.nanoTime();
         Object summaryValue = fields.get("summary");
         JSONObject summary = summaryValue instanceof JSONObject ? (JSONObject) summaryValue : null;
         boolean allFields = summaryValue instanceof Boolean && (Boolean) summaryValue;
@@ -221,13 +231,16 @@ class MemoryMonitor {
               }
             }
           }
-          if (metricsOut.length() > 0) {
-            report.put("summary", metricsOut);
-          }
+
+          JSONObject meta = new JSONObject();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+          report.put("summary", metricsOut);
         }
       }
 
       if (fields.has("meminfo")) {
+        long time = System.nanoTime();
         Object meminfoFieldsValue = fields.get("meminfo");
         JSONObject meminfoFields =
             meminfoFieldsValue instanceof JSONObject ? (JSONObject) meminfoFieldsValue : null;
@@ -241,13 +254,16 @@ class MemoryMonitor {
               metricsOut.put(key, pair.getValue());
             }
           }
-          if (metricsOut.length() > 0) {
-            report.put("meminfo", metricsOut);
-          }
+
+          JSONObject meta = new JSONObject();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+          report.put("meminfo", metricsOut);
         }
       }
 
       if (fields.has("status")) {
+        long time = System.nanoTime();
         Object statusValue = fields.get("status");
         JSONObject status = statusValue instanceof JSONObject ? (JSONObject) statusValue : null;
         boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
@@ -259,9 +275,11 @@ class MemoryMonitor {
               metricsOut.put(key, pair.getValue());
             }
           }
-          if (metricsOut.length() > 0) {
-            report.put("status", metricsOut);
-          }
+
+          JSONObject meta = new JSONObject();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+          report.put("status", metricsOut);
         }
       }
 
