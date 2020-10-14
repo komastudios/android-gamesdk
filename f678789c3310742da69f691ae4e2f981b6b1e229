@@ -16,6 +16,23 @@
       "message": "FTL tests are timing out, but apart from that this should be ready for review.",
       "revId": "f678789c3310742da69f691ae4e2f981b6b1e229",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66d7bcc2_ed171e5f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-14T15:04:46Z",
+      "side": 1,
+      "message": "LGTM. Please confirm that you have\n1) checked that the Windows build works\n2) checked that there is no regression in build time with the switch from GPars to parallel map",
+      "revId": "f678789c3310742da69f691ae4e2f981b6b1e229",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
