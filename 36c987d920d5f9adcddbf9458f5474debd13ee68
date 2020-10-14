@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "314e3ed2_614d94d0",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-10-14T12:24:03Z",
+      "side": 1,
+      "message": "Any reason not to port the regex from the Java version?",
+      "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
