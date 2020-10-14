@@ -33,6 +33,24 @@
       "message": "LGTM. Please confirm that you have\n1) checked that the Windows build works\n2) checked that there is no regression in build time with the switch from GPars to parallel map",
       "revId": "f678789c3310742da69f691ae4e2f981b6b1e229",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4842bdac_07e8fc80",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-14T17:12:26Z",
+      "side": 1,
+      "message": "The gamesdk build took 1 hour 11 minutes: \nhttps://android-build.googleplex.com/builds/build-details/P17228063/targets/gamesdk\nand 1 hour 16 minutes during another run:\nhttps://android-build.googleplex.com/builds/build-details/P17208965/targets/gamesdk\nand 1 hour 6 minutes in yet another run:\nhttps://android-build.googleplex.com/builds/build-details/P17207184/targets/gamesdk\n\nWith GPars previously, we can observe times like:\n1 hour 16 minutes, 1 hour 6 minutes\nhttps://android-build.googleplex.com/builds/build-details/P17202261/targets/gamesdk\nhttps://android-build.googleplex.com/builds/build-details/P17180133/targets/gamesdk\n\nSo this seems not to change anything on the build time.\n\nFor Windows, I\u0027ve reverted a change in repackArchives in how we get the localToolchain, so that we still honor the \"ndk\" parameter as it\u0027s being used in the build script. Apart from that it compiles properly.\n\nI\u0027ll run one last time the presubmits to ensure the build times are stable.",
+      "parentUuid": "66d7bcc2_ed171e5f",
+      "revId": "f678789c3310742da69f691ae4e2f981b6b1e229",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
