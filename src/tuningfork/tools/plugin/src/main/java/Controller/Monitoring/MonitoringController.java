@@ -16,6 +16,7 @@
 package Controller.Monitoring;
 
 import Controller.Monitoring.MonitoringController.HistogramTree.Node;
+import Model.MonitorFilterModel;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import Utils.Monitoring.TelemetryProcessing;
@@ -27,6 +28,7 @@ import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.intellij.util.ui.UIUtil;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -71,6 +74,7 @@ public class MonitoringController {
   private ByteString currentAnnotationSettings;
   private HistogramTree histogramTree;
   private Map<ByteString, Integer> annotationMap, fidelityMap;
+  private List<MonitorFilterModel> filterModels;
 
   public MonitoringController() {
     renderTimeHistograms = new HashMap<>();
@@ -83,6 +87,7 @@ public class MonitoringController {
     isNewQuality = false;
     annotationMap = new HashMap<>();
     fidelityMap = new HashMap<>();
+    filterModels = new ArrayList<>();
   }
 
   public int getQualityNumber() {
@@ -247,6 +252,91 @@ public class MonitoringController {
     return histogramTree.getAsTreeNode();
   }
 
+  public void addFilter(MonitorFilterModel model) {
+    filterModels.add(model);
+  }
+
+  public Set<String> prepareFiltering() {
+    List<Map<String, List<Integer>>> allModelsHistograms = new ArrayList<>();
+    filterModels.forEach(model -> allModelsHistograms.add(getModelHistogram(model)));
+    Set<String> allInstrumentKeys = getAllKeys(allModelsHistograms);
+    for (String key : allInstrumentKeys) {
+      XYSeriesCollection collection = new XYSeriesCollection();
+      for (int i = 0; i < allModelsHistograms.size(); i++) {
+        Map<String, List<Integer>> filterData = allModelsHistograms.get(i);
+        List<Integer> histogram = filterData.getOrDefault(key, new ArrayList<>());
+        collection.addSeries(makeSeries(histogram, i));
+      }
+      JFreeChart histogram = ChartFactory.createXYBarChart("Render Time Histogram",
+          "Frame Time(ms)", false, "Count", collection,
+          PlotOrientation.VERTICAL, true, false, false);
+      ChartPanel chartPanel = new ChartPanel(histogram);
+      setTheme(histogram, chartPanel);
+      monitoringPropertyChange.firePropertyChange("addChart", key, chartPanel);
+    }
+    return allInstrumentKeys;
+  }
+
+  private void setTheme(JFreeChart jChart, ChartPanel chartPanel) {
+    chartPanel.getChart().setBackgroundPaint(UIUtil.getWindowColor());
+    jChart.getPlot().setBackgroundPaint(UIUtil.getWindowColor());
+    ((XYPlot) jChart.getPlot()).setDomainGridlinePaint(UIUtil.getTextAreaForeground());
+    ((XYPlot) jChart.getPlot()).setRangeGridlinePaint(UIUtil.getTextAreaForeground());
+    ((XYPlot) jChart.getPlot()).getDomainAxis().setTickLabelPaint(UIUtil.getTextAreaForeground());
+    ((XYPlot) jChart.getPlot()).getRangeAxis().setTickLabelPaint(UIUtil.getTextAreaForeground());
+    ((XYPlot) jChart.getPlot()).getDomainAxis().setLabelPaint(UIUtil.getTextAreaForeground());
+    ((XYPlot) jChart.getPlot()).getRangeAxis().setLabelPaint(UIUtil.getTextAreaForeground());
+    jChart.getLegend().setBackgroundPaint(UIUtil.getWindowColor());
+    jChart.getLegend().setItemPaint(UIUtil.getTextAreaForeground());
+  }
+
+  private XYSeries makeSeries(List<Integer> seriesData, int filterNumber) {
+    XYSeries xySeries = new XYSeries(
+        String.format("Filter %d", filterNumber + 1));
+    int totalSum = seriesData.stream().mapToInt(val -> val).sum();
+    for (int i = 0; i < seriesData.size(); i++) {
+      xySeries.add(i, (1.00 * seriesData.get(i)) / (double) (totalSum));
+    }
+    return xySeries;
+  }
+
+  private Set<String> getAllKeys(List<Map<String, List<Integer>>> allModels) {
+    Set<String> keys = new HashSet<>();
+    allModels.forEach(mp -> keys.addAll(mp.keySet()));
+    return keys;
+  }
+
+  /*
+   * This method returns a List<Map<String, List<Integer> >, the outer list represents fidelity
+   * while Each Map<String, List<> > Represents a different chosen fidelity,
+   * and the map entry set is the merged instrument keys
+   * So if you choose [Annotation1, Annotation2], Fidelity 1, then The list size will be just 1
+   * and Map will have all instrument key, and each instrument key represent the merging of
+   * Annotation1-fidelity1 + Annotation2-fidelity1
+   */
+  private Map<String, List<Integer>> getModelHistogram(MonitorFilterModel model) {
+    Node phoneNode = histogramTree.findNodeByName(model.getPhoneModel());
+    String fidelity = model.getFidelity();
+    Map<String, List<Integer>> singleFidelityBucket = new HashMap<>();
+    model.getAnnotations().forEach(annotation -> {
+      Node annotationNode = histogramTree.findNodeByName(annotation, phoneNode);
+      Map<String, List<Integer>> buckets = histogramTree
+          .getFidelityCount(annotationNode, fidelity);
+      mergeMaps(singleFidelityBucket, buckets);
+    });
+    return singleFidelityBucket;
+  }
+
+  private void mergeMaps(Map<String, List<Integer>> mainMap, Map<String, List<Integer>> toMerge) {
+    toMerge.forEach((key, value) -> mainMap.merge(key, value, (v1, v2) -> {
+      List<Integer> mergedList = new ArrayList<>();
+      for (int i = 0; i < v1.size(); i++) {
+        mergedList.add(v1.get(i) + v2.get(i));
+      }
+      return mergedList;
+    }));
+  }
+
   public void checkFidelityParams(UploadTelemetryRequest telemetryRequest)
       throws InvalidProtocolBufferException {
     if (telemetryRequest.getTelemetry(0) == null) {
@@ -333,12 +423,7 @@ public class MonitoringController {
           datasets.removeSeries(indexesNotToPlot.get(pos) - pos);
         }
 
-        JFreeChart histogram = ChartFactory.createXYBarChart("Render Time Histogram",
-            "Frame Time", false, "Count", datasets,
-            PlotOrientation.VERTICAL, true, false, false);
 
-        ChartPanel chartPanel = new ChartPanel(histogram);
-        monitoringPropertyChange.firePropertyChange("addChart", entry.getKey(), chartPanel);
       } catch (CloneNotSupportedException e) {
         e.printStackTrace();
       }
@@ -385,6 +470,10 @@ public class MonitoringController {
       return findNodeByName(root, name);
     }
 
+    public Node findNodeByName(String name, Node startNode) {
+      return findNodeByName(startNode, name);
+    }
+
     private Node findNodeByName(Node currentNode, String name) {
       if (currentNode.getNodeName().equals(name)) {
         return currentNode;
@@ -417,6 +506,21 @@ public class MonitoringController {
         getAsTreeNode(childNode, childTreeNode, maxDepth, currentDepth + 1);
       }
       return treeNode;
+    }
+
+    public Map<String, List<Integer>> getFidelityCount(Node annotationNode, String fidelity) {
+      Optional<Node> fidelityNode = annotationNode.childrenNodes.stream()
+          .filter(node -> node.getNodeName().equals(fidelity)).findFirst();
+      if (!fidelityNode.isPresent()) {
+        return new HashMap<>();
+      }
+      Map<String, List<Integer>> bucketList = new HashMap<>();
+      fidelityNode.get().childrenNodes.forEach(instrumentNode -> {
+        String key = instrumentNode.getNodeName();
+        List<Integer> value = instrumentNode.getValue();
+        bucketList.put(key, value);
+      });
+      return bucketList;
     }
 
     public List<Node> getAllPhoneModels() {
