@@ -17,8 +17,10 @@ import org.json.JSONObject;
  */
 class BuildInfo {
   private static final String TAG = BuildInfo.class.getSimpleName();
+
   /**
    * Copies the Android build data into a JSON object.
+   *
    * @param context The Android context.
    * @return A JSONObject containing the Android build data.
    */
@@ -51,6 +53,7 @@ class BuildInfo {
 
   /**
    * Use reflection to copy all the static fields from the specified class into a JSON object.
+   *
    * @param aClass The class to copy static fields from.
    * @return the fields in a JSONObject.
    */
@@ -71,6 +74,7 @@ class BuildInfo {
 
   /**
    * Convert the system features into a JSONObject.
+   *
    * @param context The current context.
    * @return The system features in a JSONObject.
    */

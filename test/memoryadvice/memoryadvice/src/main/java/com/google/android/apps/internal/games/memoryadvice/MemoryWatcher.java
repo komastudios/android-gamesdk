@@ -22,13 +22,14 @@ public class MemoryWatcher {
   /**
    * Create a MemoryWatcher object. This calls back the supplied client when the memory state
    * changes.
-   * @param memoryAdvisor The memory advisor object to employ.
+   *
+   * @param memoryAdvisor            The memory advisor object to employ.
    * @param maxMillisecondsPerSecond The budget for overhead introduced by the advisor and watcher.
-   * @param minimumFrequency The minimum time duration between iterations, in milliseconds.
-   * @param client The client to call back when the state changes.
+   * @param minimumFrequency         The minimum time duration between iterations, in milliseconds.
+   * @param client                   The client to call back when the state changes.
    */
-  public MemoryWatcher(final MemoryAdvisor memoryAdvisor, final long maxMillisecondsPerSecond,
-      final long minimumFrequency, final Client client) {
+  public MemoryWatcher(MemoryAdvisor memoryAdvisor, long maxMillisecondsPerSecond,
+      long minimumFrequency, Client client) {
     watcherStartTime = System.currentTimeMillis();
     expectedTime = watcherStartTime;
     runner = new Runnable() {

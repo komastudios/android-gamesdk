@@ -19,25 +19,27 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/** A class to provide metrics of current memory usage to an application in JSON format. */
+/**
+ * A class to provide metrics of current memory usage to an application in JSON format.
+ */
 class MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
 
   private static final long BYTES_IN_KILOBYTE = 1024;
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
-  private final MapTester mapTester;
   protected final JSONObject baseline;
+  private final MapTester mapTester;
   private final ActivityManager activityManager;
   private final JSONObject metrics;
   private final CanaryProcessTester canaryProcessTester;
   private boolean appBackgrounded;
   private int latestOnTrimLevel;
-  private int pid = Process.myPid();
+  private final int pid = Process.myPid();
 
   /**
    * Create an Android memory metrics fetcher.
    *
-   * @param context  The Android context to employ.
+   * @param context The Android context to employ.
    * @param metrics The constant metrics to fetch - constant and variable.
    */
   MemoryMonitor(Context context, JSONObject metrics) {
@@ -81,7 +83,7 @@ class MemoryMonitor {
   /**
    * Create an Android memory metrics fetcher to collect the default selection of metrics.
    *
-   * @param context  The Android context to employ.
+   * @param context The Android context to employ.
    */
   public MemoryMonitor(Context context) {
     this(context, getDefaultParams(context.getAssets()).optJSONObject("metrics"));
@@ -89,6 +91,7 @@ class MemoryMonitor {
 
   /**
    * Gets Android memory metrics using the default fields.
+   *
    * @return A JSONObject containing current memory metrics.
    */
   public JSONObject getMemoryMetrics() {
