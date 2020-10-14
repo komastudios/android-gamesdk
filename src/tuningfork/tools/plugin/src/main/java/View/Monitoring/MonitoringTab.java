@@ -17,6 +17,7 @@ package View.Monitoring;
 
 import Controller.Monitoring.MonitoringController;
 import Controller.Monitoring.MonitoringController.HistogramTree.Node;
+import Model.MonitorFilterModel;
 import Utils.Monitoring.RequestServer;
 import View.Decorator.LabelScrollPane;
 import View.Dialog.MonitoringFilterDialogWrapper;
@@ -153,7 +154,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private void plotData() {
     deleteExistingGraphs();
-    controller.createChartPanels();
+    addComboBoxData(controller.prepareFiltering());
     graphPanel.revalidate();
   }
 
@@ -186,8 +187,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
     controller.setRenderTimeHistograms(telemetryRequest);
-    addComboBoxData(controller.getRenderTimeHistogramsKeys());
-    stopMonitoring.setVisible(true);
+    addComboBoxData(controller.prepareFiltering());
     refreshUI();
   }
 
@@ -297,6 +297,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
         });
     startMonitoring.addActionListener(actionEvent -> {
       loadingPanel.setVisible(true);
+      stopMonitoring.setVisible(true);
       RequestServer.getInstance().setMonitoringAction(requestConsumer);
       buttonPanel1.setVisible(false);
       buttonPanel2.setVisible(true);
@@ -344,6 +345,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     changeQualityButton.addActionListener(actionEvent -> {
       MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
           controller.getHistogramTree());
+      filterDialog.addPropertyChangeListener(this);
       filterDialog.show();
     });
     tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
@@ -392,6 +394,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
         controller.removeQualitySettingsNotToPlot();
         SwingUtilities.updateComponentTreeUI(graphPanel);
         break;
+      case "addFilter":
+        MonitorFilterModel model = (MonitorFilterModel) propertyChangeEvent.getNewValue();
+        controller.addFilter(model);
+        refreshUI();
     }
   }
 
