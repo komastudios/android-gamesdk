@@ -25,6 +25,8 @@ import View.Dialog.MonitoringFilterDialogWrapper;
 import View.TabLayout;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.ToolbarDecorator;
@@ -90,6 +92,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
           + " endpoint in the background.<br> Endpoint uri must be set to \"http://10.0.2.2:9000\"."
           + "</html>");
   private final JButton startMonitoring = new JButton("Start monitoring");
+  private final JButton loadReport = new JButton("Load Report");
   private final JButton stopMonitoring = new JButton("Stop monitoring");
 
   private static final Font MAIN_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 18);
@@ -108,14 +111,14 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JLabel deviceData;
   private JLabel totalMemData;
   private JPanel gridPanel;
-  private JButton changeQualityButton;
+  private JButton saveReport;
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private MonitoringController controller;
   private Thread loadingAnimationThread;
   private JLabel loadingLabel;
   private JBTabbedPane tabbedPane;
-  private JPanel buttonPanel1, buttonPanel2;
+  private JPanel beforeLoadingButtonsPanel, afterLoadingButtonsPanel;
   private JTree dataTree, filterTree;
   private JPanel dataPanel;
   private JPanel filterPanel;
@@ -154,6 +157,8 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void plotData() {
     deleteExistingGraphs();
     addComboBoxData(controller.prepareFiltering());
+    UIUtils.reloadTreeAndKeepState(dataTree, controller.getTree());
+    UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
     graphPanel.revalidate();
   }
 
@@ -167,7 +172,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void refreshUI() {
     plotData();
     tabbedPane.setVisible(true);
-    changeQualityButton.setVisible(true);
+    saveReport.setVisible(true);
     loadingPanel.setVisible(false);
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
@@ -183,8 +188,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
     controller.makeTree(telemetryRequest);
-    addComboBoxData(controller.prepareFiltering());
-    UIUtils.reloadTreeAndKeepState(dataTree, controller.getTree());
     refreshUI();
   }
 
@@ -193,12 +196,14 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     this.add(title);
     this.add(Box.createVerticalStrut(10));
     this.add(warningLabel);
-    buttonPanel1 = new JPanel();
-    buttonPanel1.add(startMonitoring);
-    this.add(buttonPanel1);
-    buttonPanel2 = new JPanel();
-    buttonPanel2.add(stopMonitoring);
-    this.add(buttonPanel2);
+    beforeLoadingButtonsPanel = new JPanel();
+    beforeLoadingButtonsPanel.add(startMonitoring);
+    beforeLoadingButtonsPanel.add(loadReport);
+    this.add(beforeLoadingButtonsPanel);
+    afterLoadingButtonsPanel = new JPanel();
+    afterLoadingButtonsPanel.add(stopMonitoring);
+    afterLoadingButtonsPanel.add(saveReport);
+    this.add(afterLoadingButtonsPanel);
 
     loadingPanel.add(Box.createVerticalStrut(30));
     loadingPanel.add(loadingLabel);
@@ -225,7 +230,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
     tabbedPane.addTab("Render Histograms", retrievedInformationPanel);
-    buttonPanel2.add(changeQualityButton);
+
   }
 
   private void sleepUI(long seconds) throws InterruptedException {
@@ -294,18 +299,32 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       loadingPanel.setVisible(true);
       stopMonitoring.setVisible(true);
       RequestServer.getInstance().setMonitoringAction(requestConsumer);
-      buttonPanel1.setVisible(false);
-      buttonPanel2.setVisible(true);
+      beforeLoadingButtonsPanel.setVisible(false);
+      afterLoadingButtonsPanel.setVisible(true);
       stopMonitoring.setVisible(true);
+      saveReport.setVisible(true);
+      controller.clearData();
       initLoadingAnimationThread();
+    });
+    loadReport.addActionListener(actionEvent -> {
+      RequestServer.getInstance().setMonitoringAction(null);
+      JsonObject data = controller.loadReport();
+      controller.refreshData(data);
+      refreshUI();
+      tabbedPane.setVisible(true);
+      retrievedInformationPanel.setVisible(true);
+      beforeLoadingButtonsPanel.setVisible(false);
+      afterLoadingButtonsPanel.setVisible(true);
+      stopMonitoring.setVisible(true);
+      saveReport.setVisible(false);
     });
 
     stopMonitoring.addActionListener(actionEvent -> {
       tabbedPane.setVisible(false);
-      changeQualityButton.setVisible(false);
+      saveReport.setVisible(false);
       RequestServer.getInstance().setMonitoringAction(null);
-      buttonPanel1.setVisible(true);
-      buttonPanel2.setVisible(false);
+      beforeLoadingButtonsPanel.setVisible(true);
+      afterLoadingButtonsPanel.setVisible(false);
       if (!loadingAnimationThread.isInterrupted()) {
         loadingAnimationThread.interrupt();
         loadingPanel.setVisible(false);
@@ -350,11 +369,11 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
-    changeQualityButton = new JButton("Change displayed quality");
-    changeQualityButton.setVisible(false);
+    saveReport = new JButton("Save Report");
+    saveReport.setVisible(false);
 
-    changeQualityButton.addActionListener(actionEvent -> {
-
+    saveReport.addActionListener(actionEvent -> {
+      controller.saveReport();
     });
     tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
     tabbedPane.setVisible(false);
@@ -404,9 +423,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
         boolean expanded, boolean leaf, int row, boolean hasFocus) {
       if (value instanceof JTreeNode) {
         JTreeNode jTreeNode = (JTreeNode) value;
-        panel.setToolTipText(jTreeNode.getToolTip());
+        panel.setToolTipText(jTreeNode.getToolTipDesc());
         nameLabel.setText(jTreeNode.getNodeName());
-        iconLabel.setIcon((jTreeNode.getNodeState() ? Actions.SetDefault : null));
+        iconLabel.setIcon((jTreeNode.getSelectedState() ? Actions.SetDefault : null));
         return panel;
       }
       return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
@@ -415,19 +434,23 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   public static final class JTreeNode extends DefaultMutableTreeNode {
 
+    @Expose
     private final String nodeName, toolTipDesc;
+    @Expose
     private boolean selectedState;
 
     public JTreeNode() {
       super();
       this.nodeName = "";
       this.toolTipDesc = "";
+      this.selectedState = false;
     }
 
     public JTreeNode(String nodeName) {
       super();
       this.nodeName = nodeName;
       this.toolTipDesc = "";
+      this.selectedState = false;
     }
 
     public JTreeNode(Node node) {
@@ -441,11 +464,11 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       return nodeName;
     }
 
-    public String getToolTip() {
+    public String getToolTipDesc() {
       return toolTipDesc;
     }
 
-    public boolean getNodeState() {
+    public boolean getSelectedState() {
       return selectedState;
     }
 
@@ -454,7 +477,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     }
 
     public Node asNode() {
-      return new Node(getNodeName(), getToolTip());
+      return new Node(getNodeName(), getToolTipDesc());
     }
 
     @Override

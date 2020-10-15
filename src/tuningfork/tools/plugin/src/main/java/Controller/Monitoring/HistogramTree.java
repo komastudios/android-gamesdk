@@ -34,6 +34,14 @@ public final class HistogramTree {
   public HistogramTree() {
   }
 
+  public Node getRoot() {
+    return root;
+  }
+
+  public void setRoot(Node node) {
+    root = node;
+  }
+
   public void addPath(Node node) {
     addPath(node, root);
   }
@@ -119,6 +127,10 @@ public final class HistogramTree {
     return bucketList;
   }
 
+  public void clear() {
+    root = new Node("");
+  }
+
   public List<Node> getAllPhoneModels() {
     return new ArrayList<>(root.childrenNodes);
   }
@@ -142,10 +154,6 @@ public final class HistogramTree {
     currentNode.toggleSelectedState();
   }
 
-  private void setRoot(Node node) {
-    this.root = node;
-  }
-
   public HistogramTree getCopy() {
     HistogramTree copyTree = new HistogramTree();
     copyTree.setRoot(copyTree.root.getDeepCopy());
@@ -154,8 +162,8 @@ public final class HistogramTree {
 
   public static final class Node {
 
-    private final List<Node> childrenNodes;
-    private final String nodeName;
+    private List<Node> childrenNodes;
+    private String nodeName;
     private String nodeToolTip;
     private List<Integer> value;
     private boolean selectedState;
@@ -212,12 +220,32 @@ public final class HistogramTree {
       return nodeName;
     }
 
+    public void setNodeName(String name) {
+      nodeName = name;
+    }
+
     public String getNodeToolTip() {
       return nodeToolTip;
     }
 
+    public void setNodeToolTip(String toolTip) {
+      nodeToolTip = toolTip;
+    }
+
     public boolean getNodeState() {
       return selectedState;
+    }
+
+    public void setNodeState(boolean state) {
+      selectedState = state;
+    }
+
+    public List<Node> getChildrenNodes() {
+      return childrenNodes;
+    }
+
+    public void setChildrenNodes(List<Node> childrenNodes) {
+      this.childrenNodes = childrenNodes;
     }
 
     public void addChild(Node node) {
