@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ba935cb_b3d4d227",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-15T10:33:13Z",
+      "side": 1,
+      "message": "Going ahead with this as no impact on the build time and the failing presubmits are the FTL tests that are timing out - not related to these changes.",
+      "revId": "e7cb75e3117a5b3b3c64fc614751b6c821692665",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
