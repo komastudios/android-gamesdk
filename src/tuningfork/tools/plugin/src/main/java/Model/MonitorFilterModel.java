@@ -16,18 +16,21 @@
 
 package Model;
 
-import Controller.Monitoring.HistogramTree.Node;
 import View.Monitoring.MonitoringTab.JTreeNode;
+import com.google.gson.annotations.Expose;
 import java.util.List;
 
 public class MonitorFilterModel {
 
-  private final String phoneModel;
-  private final List<JTreeNode> annotations;
-  private final Node fidelity;
+  @Expose
+  private String phoneModel;
+  @Expose
+  private List<JTreeNode> annotations;
+  @Expose
+  private JTreeNode fidelity;
 
   public MonitorFilterModel(String phoneModel, List<JTreeNode> annotations,
-      Node fidelity) {
+      JTreeNode fidelity) {
     this.phoneModel = phoneModel;
     this.annotations = annotations;
     this.fidelity = fidelity;
@@ -41,8 +44,20 @@ public class MonitorFilterModel {
     return annotations;
   }
 
-  public Node getFidelity() {
+  public JTreeNode getFidelity() {
     return fidelity;
+  }
+
+  public void setFidelity(JTreeNode fidelity) {
+    this.fidelity = fidelity;
+  }
+
+  public void setPhoneMode(String phoneModel) {
+    this.phoneModel = phoneModel;
+  }
+
+  public void setAnnotations(List<JTreeNode> annotations) {
+    this.annotations = annotations;
   }
 
   @Override

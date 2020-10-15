@@ -105,8 +105,8 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
       return ((Node) phoneModelComboBox.getSelectedItem()).getNodeName();
     }
 
-    private Node getFidelity() {
-      return ((Node) fidelityComboBox.getSelectedItem());
+    private JTreeNode getFidelity() {
+      return ((Node) fidelityComboBox.getSelectedItem()).asJTreeNode();
     }
 
     private List<JTreeNode> getAnnotations() {
