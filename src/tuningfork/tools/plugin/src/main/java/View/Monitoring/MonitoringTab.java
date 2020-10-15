@@ -15,19 +15,19 @@
  */
 package View.Monitoring;
 
+import Controller.Monitoring.HistogramTree.Node;
 import Controller.Monitoring.MonitoringController;
-import Controller.Monitoring.MonitoringController.HistogramTree.Node;
 import Model.MonitorFilterModel;
 import Utils.Monitoring.RequestServer;
-import View.Decorator.LabelScrollPane;
+import Utils.UI.UIUtils;
+import View.Decorator.TreeSelections.FirstNodeSelection;
 import View.Dialog.MonitoringFilterDialogWrapper;
 import View.TabLayout;
 import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
-import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTabbedPane;
 import java.awt.Component;
@@ -45,19 +45,20 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jfree.chart.ChartPanel;
@@ -97,8 +98,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private final Dimension chartSize = new Dimension(SCREEN_SIZE.width / 4,
       SCREEN_SIZE.height / 5);
-  private final Dimension scrollPaneSize = new Dimension(SCREEN_SIZE.width / 4,
-      SCREEN_SIZE.height / 16);
   private static final String LOADING_TEXT = "Retrieving histograms";
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
@@ -109,9 +108,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JLabel deviceData;
   private JLabel totalMemData;
   private JPanel gridPanel;
-  private JPanel fidelityInfoPanel;
   private JButton changeQualityButton;
-  private JScrollPane fidelityInfoScrollPane;
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private MonitoringController controller;
@@ -119,7 +116,9 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private JLabel loadingLabel;
   private JBTabbedPane tabbedPane;
   private JPanel buttonPanel1, buttonPanel2;
-  private LabelScrollPane annotationPanel;
+  private JTree dataTree, filterTree;
+  private JPanel dataPanel;
+  private JPanel filterPanel;
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -173,21 +172,19 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
   }
 
-  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest)
-      throws InvalidProtocolBufferException {
+  public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
     if (!loadingAnimationThread.isInterrupted()) {
       loadingAnimationThread.interrupt();
     }
-    controller.checkAnnotationParams(telemetryRequest);
-    controller.checkFidelityParams(telemetryRequest);
     nameData.setText(telemetryRequest.getName());
     DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
     totalMemData.setText(Long.toString(deviceSpec.getTotalMemoryBytes()));
     brandData.setText(deviceSpec.getBrand());
     deviceData.setText(deviceSpec.getDevice());
     cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
-    controller.setRenderTimeHistograms(telemetryRequest);
+    controller.makeTree(telemetryRequest);
     addComboBoxData(controller.prepareFiltering());
+    UIUtils.reloadTreeAndKeepState(dataTree, controller.getTree());
     refreshUI();
   }
 
@@ -218,8 +215,13 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     gridPanel.add(totalMem);
     gridPanel.add(totalMemData);
     tabbedPane.addTab("Device Info", gridPanel);
-    retrievedInformationPanel.add(annotationPanel.getPanel());
-    retrievedInformationPanel.add(fidelityInfoScrollPane);
+
+    JPanel horizontalPanel = new JPanel(new GridLayout(1, 2));
+    horizontalPanel.add(dataPanel);
+    horizontalPanel.add(filterPanel);
+    dataPanel.setPreferredSize(new Dimension(dataPanel.getPreferredSize().width, 130));
+    filterPanel.setPreferredSize(new Dimension(filterPanel.getPreferredSize().width, 120));
+    retrievedInformationPanel.add(horizontalPanel);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
     tabbedPane.addTab("Render Histograms", retrievedInformationPanel);
@@ -255,7 +257,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void initComponents() {
     controller = new MonitoringController();
     controller.addMonitoringPropertyChangeListener(this);
-    annotationPanel = new LabelScrollPane();
     title.setFont(MAIN_FONT);
     nameInfo.setFont(MIDDLE_FONT);
     brand.setFont(MIDDLE_FONT);
@@ -288,13 +289,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
     gridPanel = new JPanel(new GridLayout(5, 2));
     Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest ->
-        SwingUtilities.invokeLater(() -> {
-          try {
-            setMonitoringTabData(uploadTelemetryRequest);
-          } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-          }
-        });
+        SwingUtilities.invokeLater(() -> setMonitoringTabData(uploadTelemetryRequest));
     startMonitoring.addActionListener(actionEvent -> {
       loadingPanel.setVisible(true);
       stopMonitoring.setVisible(true);
@@ -318,7 +313,36 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     });
 
     stopMonitoring.setVisible(false);
-
+    filterTree = new JTree(new DefaultMutableTreeNode());
+    filterTree.setSelectionModel(new FirstNodeSelection());
+    filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    filterTree.setRootVisible(false);
+    filterTree.setCellRenderer(new TreeToolTipRenderer());
+    filterPanel = ToolbarDecorator.createDecorator(filterTree).setAddAction(
+        anActionButton -> {
+          MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
+              controller.getHistogramTree());
+          filterDialog.addPropertyChangeListener(this);
+          if (filterDialog.showAndGet()) {
+            UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
+            refreshUI();
+          }
+        })
+        .setRemoveAction(anActionButton -> {
+          TreePath path = filterTree.getSelectionPath();
+          JTreeNode leafNode = (JTreeNode) path.getLastPathComponent();
+          JTreeNode leafParent = (JTreeNode) leafNode.getParent();
+          int filterIndex = leafParent.getIndex(leafNode);
+          controller.removeFilter(filterIndex);
+          UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
+          refreshUI();
+        }).createPanel();
+    filterPanel.setBorder(BorderFactory.createTitledBorder("Filters"));
+    dataTree = new JTree(new DefaultMutableTreeNode());
+    dataTree.setRootVisible(false);
+    dataTree.setCellRenderer(new TreeToolTipRenderer());
+    dataPanel = ToolbarDecorator.createDecorator(dataTree).createPanel();
+    dataPanel.setBorder(BorderFactory.createTitledBorder("Data Collected"));
     loadingPanel = new JPanel();
     loadingLabel = new JBLabel();
 
@@ -326,27 +350,11 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
-
-    fidelityInfoPanel = new JPanel(new VerticalLayout());
-    fidelityInfoScrollPane = new JScrollPane();
-    fidelityInfoScrollPane.setMaximumSize(scrollPaneSize);
-    fidelityInfoScrollPane.setMinimumSize(scrollPaneSize);
-    fidelityInfoScrollPane.setPreferredSize(scrollPaneSize);
-    fidelityInfoScrollPane.setViewportView(fidelityInfoPanel);
-    fidelityInfoScrollPane
-        .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    fidelityInfoScrollPane
-        .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-    fidelityInfoScrollPane.setViewportBorder(null);
-
     changeQualityButton = new JButton("Change displayed quality");
     changeQualityButton.setVisible(false);
 
     changeQualityButton.addActionListener(actionEvent -> {
-      MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
-          controller.getHistogramTree());
-      filterDialog.addPropertyChangeListener(this);
-      filterDialog.show();
+
     });
     tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
     tabbedPane.setVisible(false);
@@ -366,33 +374,6 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
         graphPanel.add(chartPanel);
         histogramsGraphPanels.add(chartPanel);
-        break;
-      case "addFidelity":
-        JLabel fidelityName = new JBLabel("Quality settings " + propertyChangeEvent.getOldValue());
-        JLabel fidelityInfo = new JBLabel(propertyChangeEvent.getNewValue().toString());
-
-        fidelityName.setFont(MIDDLE_FONT);
-        fidelityInfo.setFont(SMALL_FONT);
-
-        fidelityInfoPanel.add(fidelityName);
-        fidelityInfoPanel.add(fidelityInfo);
-
-        SwingUtilities.updateComponentTreeUI(fidelityInfoPanel);
-        break;
-      case "addAnnotation":
-        DynamicMessage dynamicMessage = (DynamicMessage) propertyChangeEvent.getNewValue();
-        annotationPanel.removeAll();
-        annotationPanel.addText("Annotation", MIDDLE_FONT);
-        String[] text = dynamicMessage.toString().split("\n");
-        for (String string : text) {
-          annotationPanel.addText(string);
-        }
-        break;
-      case "plotSelectedQuality":
-        deleteExistingGraphs();
-        controller.setIndexesNotToPlot((ArrayList<Integer>) propertyChangeEvent.getNewValue());
-        controller.removeQualitySettingsNotToPlot();
-        SwingUtilities.updateComponentTreeUI(graphPanel);
         break;
       case "addFilter":
         MonitorFilterModel model = (MonitorFilterModel) propertyChangeEvent.getNewValue();
@@ -443,6 +424,12 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       this.toolTipDesc = "";
     }
 
+    public JTreeNode(String nodeName) {
+      super();
+      this.nodeName = nodeName;
+      this.toolTipDesc = "";
+    }
+
     public JTreeNode(Node node) {
       super();
       this.nodeName = node.getNodeName();
@@ -464,6 +451,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
     public void setNodeState(boolean state) {
       this.selectedState = state;
+    }
+
+    public Node asNode() {
+      return new Node(getNodeName(), getToolTip());
     }
 
     @Override
