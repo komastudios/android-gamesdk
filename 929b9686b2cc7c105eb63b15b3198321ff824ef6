@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59e610cc_699624d2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Dialog/MonitoringFilterDialogWrapper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-15T14:45:42Z",
+      "side": 1,
+      "message": "Should we put these strings in the strings file?",
+      "range": {
+        "startLine": 90,
+        "startChar": 21,
+        "endLine": 95,
+        "endChar": 73
+      },
+      "revId": "929b9686b2cc7c105eb63b15b3198321ff824ef6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
