@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21a6bdd5_613a00f7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Decorator/LabelScrollPane.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-15T14:42:03Z",
+      "side": 1,
+      "message": "Should we put this into the strings file instead?",
+      "revId": "697c8ae3e7d444087a2f4b90bdfd44d521022a3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
