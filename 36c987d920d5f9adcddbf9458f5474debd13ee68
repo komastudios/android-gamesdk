@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "00116df2_0a6eb61f",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2020-10-15T11:13:02Z",
+      "side": 1,
+      "message": "I would prefer it, because it sets the precedent that the port follows the design of the original except where there\u0027s a good reason not to.\n\nHaving said that, having an already working version of the same requirement may be a good enough reason.\n\nIf it\u0027s not too much effort, try to port my version. Otherwise I leave it up to you.",
+      "parentUuid": "2dc726f9_c09df426",
+      "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f503c2b6_8f0da0ae",
