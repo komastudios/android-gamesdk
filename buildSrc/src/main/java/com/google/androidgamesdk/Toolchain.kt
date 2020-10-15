@@ -13,7 +13,14 @@ abstract class Toolchain {
     protected abstract var project_: Project
     protected abstract var androidVersion_: String
     protected abstract var ndkVersion_: String
+
+    override fun toString(): String {
+        return "Toolchain(androidVersion=$androidVersion_, " +
+            "ndkVersion=$ndkVersion_)"
+    }
+
     abstract fun getAndroidNDKPath(): String
+
     fun getAndroidVersion(): String {
         return androidVersion_
     }
@@ -29,7 +36,7 @@ abstract class Toolchain {
     fun getBuildKey(buildOptions: BuildOptions): String {
         return buildOptions.arch + "_API" + androidVersion_ +
             "_NDK" + getNdkVersionNumber() + '_' +
-            sanitize(buildOptions.stl!!) + '_' + buildOptions.buildType
+            sanitize(buildOptions.stl) + '_' + buildOptions.buildType
     }
 
     protected fun getNdkVersionFromPropertiesFile(): String {
