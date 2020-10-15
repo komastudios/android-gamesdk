@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7c343e8_43b722b2",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/RequestServer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-15T14:26:52Z",
+      "side": 1,
+      "message": "Please use the codes in java.net.HttpURLConnection (for example, this one would be HTTP_NOT_FOUND) here and throughout.",
+      "revId": "09505dac8b020cb81c75bef494ce303956bcf1d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
