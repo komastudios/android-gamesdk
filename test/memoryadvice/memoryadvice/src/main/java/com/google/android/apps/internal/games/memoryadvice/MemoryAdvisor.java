@@ -35,28 +35,10 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
-   * Get the library's default parameters. These can be selectively modified by the application and
-   * passed back in to the constructor.
-   *
-   * @param assets The AssetManager used to fetch the default parameter file.
-   * @return The default parameters as a JSON object.
-   */
-  public static JSONObject getDefaultParams(AssetManager assets) {
-    JSONObject params;
-    try {
-      params = new JSONObject(readStream(assets.open("memoryadvice/default.json")));
-    } catch (JSONException | IOException ex) {
-      Log.e(TAG, "Problem getting default params", ex);
-      params = new JSONObject();
-    }
-    return params;
-  }
-
-  /**
    * Create an Android memory advice fetcher.
    *
    * @param context The Android context to employ.
-   * @param params The active configuration.
+   * @param params  The active configuration.
    * @throws MemoryAdvisorException
    */
   public MemoryAdvisor(Context context, JSONObject params) {
@@ -71,10 +53,10 @@ public class MemoryAdvisor extends MemoryMonitor {
    * @param readyHandler A callback used when on device stress test is required.
    * @throws MemoryAdvisorException
    */
-  public MemoryAdvisor(Context context, JSONObject params, final Runnable readyHandler) {
+  public MemoryAdvisor(Context context, JSONObject params, Runnable readyHandler) {
     super(context, params.optJSONObject("metrics"));
     this.params = params;
-    final ScheduledExecutorService scheduledExecutorService =
+    ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
     if (params.has("onDeviceStressTest")) {
       deviceProfile = null;
@@ -103,10 +85,29 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
+   * Get the library's default parameters. These can be selectively modified by the application and
+   * passed back in to the constructor.
+   *
+   * @param assets The AssetManager used to fetch the default parameter file.
+   * @return The default parameters as a JSON object.
+   */
+  public static JSONObject getDefaultParams(AssetManager assets) {
+    JSONObject params;
+    try {
+      params = new JSONObject(readStream(assets.open("memoryadvice/default.json")));
+    } catch (JSONException | IOException ex) {
+      Log.e(TAG, "Problem getting default params", ex);
+      params = new JSONObject();
+    }
+    return params;
+  }
+
+  /**
    * Returns 'true' if there are any low memory warnings in the advice object.
-   * @deprecated since 0.7. Use getMemoryState() instead.
+   *
    * @param advice The advice object returned by getAdvice().
    * @return if there are any low memory warnings in the advice object.
+   * @deprecated since 0.7. Use getMemoryState() instead.
    */
   @Deprecated
   public static boolean anyWarnings(JSONObject advice) {
@@ -117,6 +118,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   /**
    * Returns an estimate for the amount of memory that can safely be allocated,
    * in bytes.
+   *
    * @param advice The advice object returned by getAdvice().
    * @return an estimate for the amount of memory that can safely be allocated,
    * in bytes. 0 if no estimate is available.
@@ -145,9 +147,10 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Return 'true' if there are any 'red' (critical) warnings in the advice object.
-   * @deprecated since 0.7. Use getMemoryState() instead.
+   *
    * @param advice The advice object returned by getAdvice().
    * @return if there are any 'red' (critical) warnings in the advice object.
+   * @deprecated since 0.7. Use getMemoryState() instead.
    */
   @Deprecated
   public static boolean anyRedWarnings(JSONObject advice) {
@@ -167,6 +170,7 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Get the memory state from an advice object returned by the Memory Advisor.
+   *
    * @param advice The object to analyze for the memory state.
    * @return The current memory state.
    */
@@ -185,8 +189,9 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Find a Long in a JSON object, even when it is nested in sub-dictionaries in the object.
+   *
    * @param object The object to search.
-   * @param key The key of the Long to find.
+   * @param key    The key of the Long to find.
    * @return The value of he Long.
    */
   private static Long getValue(JSONObject object, String key) {
@@ -471,6 +476,7 @@ public class MemoryAdvisor extends MemoryMonitor {
 
   /**
    * Fetch information about the device.
+   *
    * @param context The Android context.
    * @return Information about the device, in a JSONObject.
    */
