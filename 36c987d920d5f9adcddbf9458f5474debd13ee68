@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2dc726f9_c09df426",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-10-15T11:03:09Z",
+      "side": 1,
+      "message": "That particular code, I copied it from Henry\u0027s implementation of it in tuning fork. If you want I can change it to the regex from the Java version.",
+      "parentUuid": "314e3ed2_614d94d0",
+      "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f503c2b6_8f0da0ae",
@@ -31,6 +49,24 @@
       "writtenOn": "2020-10-14T13:14:48Z",
       "side": 1,
       "message": "Surely a nitpicking but I\u0027m always worried of usage of these C conversion functions as they have undefined behavior (I think) if the supplied string is not in the range of an int.\nIt\u0027s very unlikely to happen (and I see we\u0027ve been using atoi already in Tuning Fork), but as a best practice I would go for:\n* std::stoi (should work, because we\u0027re using C++14) BUT it throws exception in case of out of range/invalid string (https://en.cppreference.com/w/cpp/string/basic_string/stol), while we avoid exceptions. So not this one.\n* strtoll: https://en.cppreference.com/w/cpp/string/byte/strtol (which is used internally by std::stoi), as its return value is well defined (the \"long long\" version as you\u0027re storing the result in a in64_t). You also specify the base, so you avoid surprises.\n* strol in case for some reason strtoll would not be supported (but it\u0027s written \"since C+11\" and we\u0027re using C++14, so it should work).\n\nIn other words: `std::strtoll(split[1].c_str(), nullptr, 10) * BYTES_IN_KB;`",
+      "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "780e9573_3684a472",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-10-15T11:03:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f503c2b6_8f0da0ae",
       "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
