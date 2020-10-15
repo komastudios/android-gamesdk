@@ -66,6 +66,7 @@ public class OpenPluginAction extends AnAction {
                         settingsData,
                         protoCompiler);
                     dialogWrapper.show();
+                    dialogWrapper.disposeIfNeeded();
                   });
                 } catch (IOException | CompilationException ex) {
                   ex.printStackTrace();
