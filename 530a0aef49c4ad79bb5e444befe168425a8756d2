@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5674457b_d764fa12",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Utils/Monitoring/RequestServer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2020-10-15T14:43:34Z",
+      "side": 1,
+      "message": "Please use the codes in java.net.HttpURLConnection here and throughout.",
+      "revId": "530a0aef49c4ad79bb5e444befe168425a8756d2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
