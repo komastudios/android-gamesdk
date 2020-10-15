@@ -32,6 +32,8 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.tuningfork.Tuningfork.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,21 +43,22 @@ import java.util.stream.Collectors;
 
 public final class DataModelTransformer {
 
-  private File assetsDir;
-  private Optional<File> devTuningfork;
-  private Optional<List<File>> qualityFiles;
+  private final Optional<byte[]> settingsData;
+  private final Optional<File> devTuningfork;
+  private final Optional<List<File>> qualityFiles;
   private static FileDescriptor devTuningforkDesc;
-  private ProtoCompiler compiler;
+  private final ProtoCompiler compiler;
 
 
   public DataModelTransformer(String projectPath, ProtoCompiler compiler)
       throws IOException, CompilationException {
-    assetsDir = new File(
+    File assetsDir = new File(
         AssetsFinder.findAssets(projectPath).getAbsolutePath());
     AssetsParser parser = new AssetsParser(assetsDir);
     parser.parseFiles();
     devTuningfork = parser.getDevTuningForkFile();
     qualityFiles = parser.getDevFidelityParamFiles();
+    settingsData = parser.getTuningForkSettings();
     this.compiler = compiler;
     if (devTuningfork.isPresent()) {
       devTuningforkDesc = compiler.compile(devTuningfork.get(), Optional.empty());
@@ -189,5 +192,12 @@ public final class DataModelTransformer {
     }
 
     return qualityDataModelList;
+  }
+
+  public Settings initProtoSettings() throws InvalidProtocolBufferException {
+    if (!settingsData.isPresent()) {
+      return Settings.getDefaultInstance();
+    }
+    return Settings.parseFrom(settingsData.get());
   }
 }

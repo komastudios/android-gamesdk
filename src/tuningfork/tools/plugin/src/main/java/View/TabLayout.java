@@ -128,9 +128,4 @@ public class TabLayout extends JPanel {
     }
   }
 
-  public void initTextFieldColumns(JTable table, int col) {
-    TableColumn column = table.getColumnModel().getColumn(col);
-    column.setCellEditor(getIntegerTextFieldModel());
-    column.setCellRenderer(new TableRenderer.RoundedCornerRenderer());
-  }
 }
