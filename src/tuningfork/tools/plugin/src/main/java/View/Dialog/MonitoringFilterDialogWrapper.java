@@ -16,8 +16,8 @@
 
 package View.Dialog;
 
-import Controller.Monitoring.MonitoringController.HistogramTree;
-import Controller.Monitoring.MonitoringController.HistogramTree.Node;
+import Controller.Monitoring.HistogramTree;
+import Controller.Monitoring.HistogramTree.Node;
 import Model.MonitorFilterModel;
 import Utils.Resources.ResourceLoader;
 import View.Monitoring.MonitoringTab.JTreeNode;
@@ -105,13 +105,12 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
       return ((Node) phoneModelComboBox.getSelectedItem()).getNodeName();
     }
 
-    private String getFidelity() {
-      return ((Node) fidelityComboBox.getSelectedItem()).getNodeName();
+    private Node getFidelity() {
+      return ((Node) fidelityComboBox.getSelectedItem());
     }
 
-    private List<String> getAnnotations() {
-      return selectedAnnotationNodes.stream().map(JTreeNode::getNodeName)
-          .collect(Collectors.toList());
+    private List<JTreeNode> getAnnotations() {
+      return selectedAnnotationNodes;
     }
 
     private void setAnnotations(Node chosenModel) {

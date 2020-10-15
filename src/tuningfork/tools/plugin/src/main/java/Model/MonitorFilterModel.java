@@ -16,16 +16,18 @@
 
 package Model;
 
+import Controller.Monitoring.HistogramTree.Node;
+import View.Monitoring.MonitoringTab.JTreeNode;
 import java.util.List;
 
 public class MonitorFilterModel {
 
   private final String phoneModel;
-  private final List<String> annotations;
-  private final String fidelity;
+  private final List<JTreeNode> annotations;
+  private final Node fidelity;
 
-  public MonitorFilterModel(String phoneModel, List<String> annotations,
-      String fidelity) {
+  public MonitorFilterModel(String phoneModel, List<JTreeNode> annotations,
+      Node fidelity) {
     this.phoneModel = phoneModel;
     this.annotations = annotations;
     this.fidelity = fidelity;
@@ -35,11 +37,11 @@ public class MonitorFilterModel {
     return phoneModel;
   }
 
-  public List<String> getAnnotations() {
+  public List<JTreeNode> getAnnotations() {
     return annotations;
   }
 
-  public String getFidelity() {
+  public Node getFidelity() {
     return fidelity;
   }
 

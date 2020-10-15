@@ -19,6 +19,7 @@ package View.FidelityChanger;
 import Controller.FidelityChanger.FidelityChangerController;
 import Utils.Monitoring.RequestServer;
 import Utils.UI.UIUtils;
+import View.Decorator.TreeSelections.NonLeafSelection;
 import View.TabLayout;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,15 +27,12 @@ import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.treeStructure.Tree;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
@@ -75,31 +73,6 @@ public class FidelityChanger extends TabLayout {
 
   public void reloadTree(JTree jTree) {
     UIUtils.reloadTreeAndKeepState(jTree, controller.getQualityAsTree());
-  }
-
-  private static class NonLeafSelection extends DefaultTreeSelectionModel {
-
-    private TreePath[] getLeafs(TreePath[] fullPaths) {
-      ArrayList<TreePath> paths = new ArrayList<>();
-
-      for (TreePath fullPath : fullPaths) {
-        if (!((DefaultMutableTreeNode) fullPath.getLastPathComponent()).isLeaf()) {
-          paths.add(fullPath);
-        }
-      }
-
-      return paths.toArray(fullPaths);
-    }
-
-    @Override
-    public void setSelectionPaths(TreePath[] treePaths) {
-      super.setSelectionPaths(getLeafs(treePaths));
-    }
-
-    @Override
-    public void addSelectionPaths(TreePath[] treePaths) {
-      super.addSelectionPaths(getLeafs(treePaths));
-    }
   }
 
   private final class RefreshButton extends AnActionButton {
