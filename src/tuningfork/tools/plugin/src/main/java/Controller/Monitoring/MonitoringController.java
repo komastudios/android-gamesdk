@@ -22,19 +22,35 @@ import Utils.DataModelTransformer;
 import View.Monitoring.MonitoringTab.JTreeNode;
 import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ui.UIUtil;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -157,7 +173,7 @@ public class MonitoringController {
       JTreeNode annotationsNode = new JTreeNode("Annotations");
       filterNode.add(annotationsNode);
       model.getAnnotations().forEach(annotationsNode::add);
-      filterNode.add(model.getFidelity().asJTreeNode());
+      filterNode.add(model.getFidelity());
       root.add(filterNode);
     }
     return root;
@@ -165,6 +181,60 @@ public class MonitoringController {
 
   public void addMonitoringPropertyChangeListener(PropertyChangeListener listener) {
     monitoringPropertyChange.addPropertyChangeListener(listener);
+  }
+
+  public void saveReport() {
+    FileChooserDescriptor descriptor = FileChooserDescriptorFactory
+        .createSingleFileDescriptor("json");
+    VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
+    Gson gson = new Gson();
+    if (file != null) {
+      File selectedFile = new File(file.getPath());
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.add("histograms_data", gson.toJsonTree(histogramTree, HistogramTree.class));
+      Gson filterGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+      jsonObject.add("filters_data", filterGson.toJsonTree(filterModels));
+      try (FileOutputStream writer = new FileOutputStream(selectedFile)) {
+        writer.write(jsonObject.toString().getBytes(StandardCharsets.UTF_16));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public JsonObject loadReport() {
+    FileChooserDescriptor descriptor = FileChooserDescriptorFactory
+        .createSingleFileDescriptor("json");
+    VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
+    if (file != null) {
+      File selectedFile = new File(file.getPath());
+      try {
+        String data = FileUtils.readFileToString(selectedFile, StandardCharsets.UTF_16);
+        return (JsonObject) new JsonParser().parse(data);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
+  }
+
+  public void clearData() {
+    histogramTree.clear();
+    annotationMap.clear();
+    fidelityMap.clear();
+    filterModels.clear();
+  }
+
+  public void refreshData(JsonObject jsonData) {
+    clearData();
+    Gson histogramJson = new Gson();
+    Gson filterJson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    JsonElement histogramJsonElement = jsonData.get("histograms_data");
+    JsonElement filterJsonElement = jsonData.get("filters_data");
+    histogramTree = histogramJson.fromJson(histogramJsonElement, HistogramTree.class);
+    Type listType = new TypeToken<List<MonitorFilterModel>>() {
+    }.getType();
+    filterModels = filterJson.fromJson(filterJsonElement, listType);
   }
 
   public void addFilter(MonitorFilterModel model) {
@@ -248,7 +318,8 @@ public class MonitoringController {
     return singleFidelityBucket;
   }
 
-  private void mergeMaps(Map<String, List<Integer>> mainMap, Map<String, List<Integer>> toMerge) {
+  private void mergeMaps
+      (Map<String, List<Integer>> mainMap, Map<String, List<Integer>> toMerge) {
     toMerge.forEach((key, value) -> mainMap.merge(key, value, (v1, v2) -> {
       List<Integer> mergedList = new ArrayList<>();
       for (int i = 0; i < v1.size(); i++) {
