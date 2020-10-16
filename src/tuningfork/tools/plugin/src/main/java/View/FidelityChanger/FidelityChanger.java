@@ -26,6 +26,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
 import java.util.Objects;
 import javax.swing.BorderFactory;
@@ -64,6 +65,7 @@ public class FidelityChanger extends TabLayout {
         .setPreferredSize(treePanelDimension)
         .createPanel();
     decoratorPanel.setBorder(BorderFactory.createTitledBorder("Fidelity Changer"));
+    jTree.setBackground(UIUtil.getWindowColor());
   }
 
   private void addComponents() {
