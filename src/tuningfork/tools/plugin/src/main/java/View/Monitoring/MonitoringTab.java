@@ -19,19 +19,19 @@ import Controller.Monitoring.HistogramTree.Node;
 import Controller.Monitoring.MonitoringController;
 import Model.MonitorFilterModel;
 import Utils.Monitoring.RequestServer;
+import Utils.Resources.ResourceLoader;
 import Utils.UI.UIUtils;
 import View.Decorator.TreeSelections.FirstNodeSelection;
 import View.Dialog.MonitoringFilterDialogWrapper;
 import View.TabLayout;
-import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -40,7 +40,6 @@ import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -54,7 +53,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -81,47 +79,33 @@ import org.jfree.chart.ChartPanel;
  */
 public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
-  private final JLabel title = new JLabel("Telemetry reports");
-  private final JLabel nameInfo = new JLabel("APK name: ");
-  private final JLabel brand = new JLabel("Brand: ");
-  private final JLabel cpuFreqs = new JLabel("CPU core frequencies(Hz): ");
-  private final JLabel device = new JLabel("Device: ");
-  private final JLabel totalMem = new JLabel("Total memory bytes: ");
-  private final JLabel warningLabel = new JLabel(
-      "<html> This feature requires running the app on a local"
-          + " endpoint in the background.<br> Endpoint uri must be set to \"http://10.0.2.2:9000\"."
-          + "</html>");
-  private final JButton startMonitoring = new JButton("Start monitoring");
-  private final JButton loadReport = new JButton("Load Report");
-  private final JButton stopMonitoring = new JButton("Stop monitoring");
-
-  private static final Font MAIN_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 18);
-  private static final Font MIDDLE_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 12);
-  private static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
+  private final static String LOADING_TEXT = RESOURCE_LOADER.get("retrieving_histograms");
+  private final static JLabel MONITORING_INFO = new JLabel(RESOURCE_LOADER.get("monitoring_info"));
+  private final JButton startMonitoringButton = new JButton(
+      RESOURCE_LOADER.get("start_monitoring"));
+  private final JButton loadReportButton = new JButton(RESOURCE_LOADER.get("load_report"));
+  private final JButton saveReportButton = new JButton(RESOURCE_LOADER.get("save_report"));
+  private final JButton stopMonitoring = new JButton(RESOURCE_LOADER.get("stop_monitoring"));
   private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
   private final Dimension chartSize = new Dimension(SCREEN_SIZE.width / 4,
       SCREEN_SIZE.height / 5);
-  private static final String LOADING_TEXT = "Retrieving histograms";
+
   private JPanel retrievedInformationPanel;
   private JPanel loadingPanel;
   private JPanel graphPanel;
-  private JLabel nameData;
-  private JLabel brandData;
-  private JLabel cpuFreqsData;
-  private JLabel deviceData;
-  private JLabel totalMemData;
-  private JPanel gridPanel;
-  private JButton saveReport;
+
   private JComboBox<String> instrumentIDComboBox;
   private ArrayList<ChartPanel> histogramsGraphPanels = new ArrayList<>();
   private MonitoringController controller;
   private Thread loadingAnimationThread;
   private JLabel loadingLabel;
-  private JBTabbedPane tabbedPane;
   private JPanel beforeLoadingButtonsPanel, afterLoadingButtonsPanel;
-  private JTree dataTree, filterTree;
+  private Tree dataTree, filterTree;
   private JPanel dataPanel;
   private JPanel filterPanel;
+  private final Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest ->
+      SwingUtilities.invokeLater(() -> setMonitoringTabData(uploadTelemetryRequest));
 
   public MonitoringTab() {
     this.setLayout(new VerticalLayout());
@@ -133,11 +117,12 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
   private void addComboBoxData(Set<String> renderTimeHistogramsKeys) {
     List<String> uniqueIDs = new ArrayList<>(renderTimeHistogramsKeys);
     Vector<String> uniqueIdVector = new Vector<>(uniqueIDs);
-    uniqueIdVector.add(0, "Instrument ID");
+    uniqueIdVector.add(0, RESOURCE_LOADER.get("instrument_id"));
 
     // Preserve the selected item on combo box update
     String selectedObject = null;
-    if (uniqueIDs.contains(instrumentIDComboBox.getSelectedItem())) {
+    if (instrumentIDComboBox.getSelectedItem() != null && uniqueIDs
+        .contains(instrumentIDComboBox.getSelectedItem().toString())) {
       selectedObject = (String) instrumentIDComboBox.getSelectedItem();
     }
     instrumentIDComboBox.setModel(new DefaultComboBoxModel<>(uniqueIdVector));
@@ -171,119 +156,162 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private void refreshUI() {
     plotData();
-    tabbedPane.setVisible(true);
-    saveReport.setVisible(true);
-    loadingPanel.setVisible(false);
     SwingUtilities.updateComponentTreeUI(retrievedInformationPanel);
+    filterTree.setBackground(UIUtil.getWindowColor());
+    dataTree.setBackground(UIUtil.getWindowColor());
   }
 
   public void setMonitoringTabData(UploadTelemetryRequest telemetryRequest) {
     if (!loadingAnimationThread.isInterrupted()) {
       loadingAnimationThread.interrupt();
     }
-    nameData.setText(telemetryRequest.getName());
-    DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
-    totalMemData.setText(Long.toString(deviceSpec.getTotalMemoryBytes()));
-    brandData.setText(deviceSpec.getBrand());
-    deviceData.setText(deviceSpec.getDevice());
-    cpuFreqsData.setText(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()));
+    onDataReceived();
     controller.makeTree(telemetryRequest);
     refreshUI();
   }
 
 
   private void addComponents() {
-    this.add(title);
     this.add(Box.createVerticalStrut(10));
-    this.add(warningLabel);
+    this.add(MONITORING_INFO);
     beforeLoadingButtonsPanel = new JPanel();
-    beforeLoadingButtonsPanel.add(startMonitoring);
-    beforeLoadingButtonsPanel.add(loadReport);
+    beforeLoadingButtonsPanel.add(startMonitoringButton);
+    beforeLoadingButtonsPanel.add(loadReportButton);
     this.add(beforeLoadingButtonsPanel);
     afterLoadingButtonsPanel = new JPanel();
     afterLoadingButtonsPanel.add(stopMonitoring);
-    afterLoadingButtonsPanel.add(saveReport);
+    afterLoadingButtonsPanel.add(saveReportButton);
     this.add(afterLoadingButtonsPanel);
 
     loadingPanel.add(Box.createVerticalStrut(30));
     loadingPanel.add(loadingLabel);
     this.add(loadingPanel);
-    this.add(tabbedPane);
-    gridPanel.add(nameInfo);
-    gridPanel.add(nameData);
-    gridPanel.add(brand);
-    gridPanel.add(brandData);
-    gridPanel.add(cpuFreqs);
-    gridPanel.add(cpuFreqsData);
-    gridPanel.add(device);
-    gridPanel.add(deviceData);
-    gridPanel.add(totalMem);
-    gridPanel.add(totalMemData);
-    tabbedPane.addTab("Device Info", gridPanel);
 
     JPanel horizontalPanel = new JPanel(new GridLayout(1, 2));
     horizontalPanel.add(dataPanel);
     horizontalPanel.add(filterPanel);
-    dataPanel.setPreferredSize(new Dimension(dataPanel.getPreferredSize().width, 130));
-    filterPanel.setPreferredSize(new Dimension(filterPanel.getPreferredSize().width, 120));
+    dataPanel.setPreferredSize(new Dimension(dataPanel.getPreferredSize().width, 190));
+    filterPanel.setPreferredSize(new Dimension(filterPanel.getPreferredSize().width, 180));
     retrievedInformationPanel.add(horizontalPanel);
     retrievedInformationPanel.add(instrumentIDComboBox);
     retrievedInformationPanel.add(graphPanel);
-    tabbedPane.addTab("Render Histograms", retrievedInformationPanel);
+    this.add(retrievedInformationPanel);
+    retrievedInformationPanel.setVisible(false);
+    afterLoadingButtonsPanel.setVisible(false);
+    filterTree.setOpaque(true);
+    dataTree.setOpaque(true);
+    filterTree.setBackground(filterPanel.getBackground());
+    dataTree.setBackground(dataPanel.getBackground());
+  }
+
+  private void sleepUI() throws InterruptedException {
+    TimeUnit.SECONDS.sleep(1);
+  }
+
+  /*
+   * Show loading panel and the new buttons
+   */
+  private void onStartMonitoring() {
+    startMonitoring();
+    controller.clearData();
+    initLoadingAnimationThread();
+    loadingPanel.setVisible(true);
+    beforeLoadingButtonsPanel.setVisible(false);
+    afterLoadingButtonsPanel.setVisible(true);
+  }
+
+  /*
+   * Hide the loading panel and show the beforeLoading buttons and hide histograms
+   */
+  private void onStopMonitoring() {
+    stopMonitoring();
+    if (loadingAnimationThread != null && !loadingAnimationThread.isInterrupted()) {
+      loadingAnimationThread.interrupt();
+    }
+    loadingPanel.setVisible(false);
+    beforeLoadingButtonsPanel.setVisible(true);
+    afterLoadingButtonsPanel.setVisible(false);
+    retrievedInformationPanel.setVisible(false);
+  }
+
+  private void onDataReceived() {
+    loadingPanel.setVisible(false);
+    beforeLoadingButtonsPanel.setVisible(false);
+    afterLoadingButtonsPanel.setVisible(true);
+    retrievedInformationPanel.setVisible(true);
 
   }
 
-  private void sleepUI(long seconds) throws InterruptedException {
-    TimeUnit.SECONDS.sleep(seconds);
+  private void startMonitoring() {
+    RequestServer.getInstance().setMonitoringAction(requestConsumer);
+  }
+
+  private void stopMonitoring() {
+    RequestServer.getInstance().setMonitoringAction(null);
+  }
+
+  private void onLoadReport() {
+    stopMonitoring();
+    if (controller.loadReport()) {
+      refreshUI();
+      beforeLoadingButtonsPanel.setVisible(false);
+      afterLoadingButtonsPanel.setVisible(true);
+      retrievedInformationPanel.setVisible(true);
+      loadingPanel.setVisible(false);
+    } // Silently ignore invalid report or user not choosing anything.
+  }
+
+  private void addFilter() {
+    MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
+        controller.getHistogramTree());
+    filterDialog.addPropertyChangeListener(this);
+    if (filterDialog.showAndGet()) {
+      UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
+      refreshUI();
+    }
+  }
+
+  private void removeFilter() {
+    TreePath path = filterTree.getSelectionPath();
+    if (path == null) {
+      return;
+    }
+    JTreeNode leafNode = (JTreeNode) path.getLastPathComponent();
+    JTreeNode leafParent = (JTreeNode) leafNode.getParent();
+    int filterIndex = leafParent.getIndex(leafNode);
+    controller.removeFilter(filterIndex);
+    UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
+    refreshUI();
   }
 
   private void initLoadingAnimationThread() {
-    loadingAnimationThread = new Thread("Retrieving histogram data") {
-      public void run() {
-        try {
-          while (!Thread.interrupted()) {
-            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT));
-            sleepUI(1);
-            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " ."));
-            sleepUI(1);
-            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . ."));
-            sleepUI(1);
-            SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . . ."));
-            sleepUI(1);
-          }
-        } catch (InterruptedException e) {
-          // Silently Ignore Interruption exception and let thread exit
+    loadingAnimationThread = new Thread(() -> {
+      try {
+        while (!Thread.interrupted()) {
+          SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT));
+          sleepUI();
+          SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " ."));
+          sleepUI();
+          SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . ."));
+          sleepUI();
+          SwingUtilities.invokeLater(() -> loadingLabel.setText(LOADING_TEXT + " . . ."));
+          sleepUI();
         }
+      } catch (InterruptedException e) {
+        // Silently Ignore Interruption exception and let thread exit
       }
-    };
+    });
     loadingAnimationThread.start();
   }
 
   private void initComponents() {
     controller = new MonitoringController();
     controller.addMonitoringPropertyChangeListener(this);
-    title.setFont(MAIN_FONT);
-    nameInfo.setFont(MIDDLE_FONT);
-    brand.setFont(MIDDLE_FONT);
-    cpuFreqs.setFont(MIDDLE_FONT);
-    device.setFont(MIDDLE_FONT);
-    totalMem.setFont(MIDDLE_FONT);
-    warningLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 12));
-
-    nameData = new JLabel();
-    brandData = new JLabel();
-    cpuFreqsData = new JLabel();
-    deviceData = new JLabel();
-    totalMemData = new JLabel();
-    nameData.setFont(SMALL_FONT);
-    brandData.setFont(SMALL_FONT);
-    cpuFreqsData.setFont(SMALL_FONT);
-    deviceData.setFont(SMALL_FONT);
-    totalMemData.setFont(SMALL_FONT);
+    MONITORING_INFO.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 12));
 
     instrumentIDComboBox = new ComboBox<>();
     DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
-    comboBoxModel.addElement("Instrument ID");
+    comboBoxModel.addElement(RESOURCE_LOADER.get("instrument_id"));
     instrumentIDComboBox.setModel(comboBoxModel);
     instrumentIDComboBox.addActionListener(actionEvent -> {
       if (instrumentIDComboBox.getSelectedIndex() == 0) {
@@ -292,76 +320,25 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       changePanelVisibility(instrumentIDComboBox.getSelectedIndex() - 1);
     });
 
-    gridPanel = new JPanel(new GridLayout(5, 2));
-    Consumer<UploadTelemetryRequest> requestConsumer = uploadTelemetryRequest ->
-        SwingUtilities.invokeLater(() -> setMonitoringTabData(uploadTelemetryRequest));
-    startMonitoring.addActionListener(actionEvent -> {
-      loadingPanel.setVisible(true);
-      stopMonitoring.setVisible(true);
-      RequestServer.getInstance().setMonitoringAction(requestConsumer);
-      beforeLoadingButtonsPanel.setVisible(false);
-      afterLoadingButtonsPanel.setVisible(true);
-      stopMonitoring.setVisible(true);
-      saveReport.setVisible(true);
-      controller.clearData();
-      initLoadingAnimationThread();
-    });
-    loadReport.addActionListener(actionEvent -> {
-      RequestServer.getInstance().setMonitoringAction(null);
-      JsonObject data = controller.loadReport();
-      controller.refreshData(data);
-      refreshUI();
-      tabbedPane.setVisible(true);
-      retrievedInformationPanel.setVisible(true);
-      beforeLoadingButtonsPanel.setVisible(false);
-      afterLoadingButtonsPanel.setVisible(true);
-      stopMonitoring.setVisible(true);
-      saveReport.setVisible(false);
-    });
+    startMonitoringButton.addActionListener(actionEvent -> onStartMonitoring());
+    loadReportButton.addActionListener(actionEvent -> onLoadReport());
+    stopMonitoring.addActionListener(actionEvent -> onStopMonitoring());
 
-    stopMonitoring.addActionListener(actionEvent -> {
-      tabbedPane.setVisible(false);
-      saveReport.setVisible(false);
-      RequestServer.getInstance().setMonitoringAction(null);
-      beforeLoadingButtonsPanel.setVisible(true);
-      afterLoadingButtonsPanel.setVisible(false);
-      if (!loadingAnimationThread.isInterrupted()) {
-        loadingAnimationThread.interrupt();
-        loadingPanel.setVisible(false);
-      }
-    });
-
-    stopMonitoring.setVisible(false);
-    filterTree = new JTree(new DefaultMutableTreeNode());
+    filterTree = new Tree(new DefaultMutableTreeNode());
     filterTree.setSelectionModel(new FirstNodeSelection());
     filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     filterTree.setRootVisible(false);
     filterTree.setCellRenderer(new TreeToolTipRenderer());
-    filterPanel = ToolbarDecorator.createDecorator(filterTree).setAddAction(
-        anActionButton -> {
-          MonitoringFilterDialogWrapper filterDialog = new MonitoringFilterDialogWrapper(
-              controller.getHistogramTree());
-          filterDialog.addPropertyChangeListener(this);
-          if (filterDialog.showAndGet()) {
-            UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
-            refreshUI();
-          }
-        })
-        .setRemoveAction(anActionButton -> {
-          TreePath path = filterTree.getSelectionPath();
-          JTreeNode leafNode = (JTreeNode) path.getLastPathComponent();
-          JTreeNode leafParent = (JTreeNode) leafNode.getParent();
-          int filterIndex = leafParent.getIndex(leafNode);
-          controller.removeFilter(filterIndex);
-          UIUtils.reloadTreeAndKeepState(filterTree, controller.getFilterTree());
-          refreshUI();
-        }).createPanel();
-    filterPanel.setBorder(BorderFactory.createTitledBorder("Filters"));
-    dataTree = new JTree(new DefaultMutableTreeNode());
+    filterPanel = ToolbarDecorator.createDecorator(filterTree)
+        .setAddAction(anActionButton -> addFilter())
+        .setRemoveAction(anActionButton -> removeFilter())
+        .createPanel();
+    filterPanel.setBorder(BorderFactory.createTitledBorder(RESOURCE_LOADER.get("filters")));
+    dataTree = new Tree(new DefaultMutableTreeNode());
     dataTree.setRootVisible(false);
     dataTree.setCellRenderer(new TreeToolTipRenderer());
     dataPanel = ToolbarDecorator.createDecorator(dataTree).createPanel();
-    dataPanel.setBorder(BorderFactory.createTitledBorder("Data Collected"));
+    dataPanel.setBorder(BorderFactory.createTitledBorder(RESOURCE_LOADER.get("data_collected")));
     loadingPanel = new JPanel();
     loadingLabel = new JBLabel();
 
@@ -369,14 +346,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
     graphPanel = new JPanel(new VerticalLayout());
     graphPanel.setMaximumSize(new Dimension(500, 200));
     graphPanel.revalidate();
-    saveReport = new JButton("Save Report");
-    saveReport.setVisible(false);
-
-    saveReport.addActionListener(actionEvent -> {
-      controller.saveReport();
-    });
-    tabbedPane = new JBTabbedPane(JTabbedPane.TOP);
-    tabbedPane.setVisible(false);
+    saveReportButton.addActionListener(actionEvent -> controller.saveReport());
   }
 
   @Override
