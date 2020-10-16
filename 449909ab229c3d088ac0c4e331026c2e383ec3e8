@@ -16,6 +16,24 @@
       "message": "nit: I\u0027d suggest you don\u0027t break lines in your editor when writing the commit message",
       "revId": "449909ab229c3d088ac0c4e331026c2e383ec3e8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "999c30ee_44375157",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-16T09:27:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20c757fb_359211a7",
+      "revId": "449909ab229c3d088ac0c4e331026c2e383ec3e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
