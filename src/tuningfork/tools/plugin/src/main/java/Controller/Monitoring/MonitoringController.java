@@ -20,6 +20,7 @@ import Model.MonitorFilterModel;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
 import View.Monitoring.MonitoringTab.JTreeNode;
+import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.gson.Gson;
@@ -27,6 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -35,7 +37,13 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileSaverDescriptor;
+import com.intellij.openapi.fileChooser.FileSaverDialog;
+import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileWrapper;
 import com.intellij.util.ui.UIUtil;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -45,6 +53,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +72,7 @@ public class MonitoringController {
 
   private final PropertyChangeSupport monitoringPropertyChange;
   private HistogramTree histogramTree;
-  private Map<ByteString, Integer> annotationMap, fidelityMap;
+  private final Map<ByteString, Integer> annotationMap, fidelityMap;
   private List<MonitorFilterModel> filterModels;
 
   public MonitoringController() {
@@ -134,10 +143,28 @@ public class MonitoringController {
     return histogramTree;
   }
 
+  private String toBold(String string) {
+    return "<b>" + string + "</b>";
+  }
+
+  private String getDeviceInfo(UploadTelemetryRequest telemetryRequest) {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(toBold("Apk Name: ")).append(telemetryRequest.getName()).append("\n");
+    DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
+    stringBuilder.append(toBold("Brand: ")).append(deviceSpec.getBrand()).append("\n");
+    stringBuilder.append(toBold("Build Version: ")).append(deviceSpec.getBuildVersion())
+        .append("\n");
+    stringBuilder.append(toBold("Cpu Cores Frequency: "))
+        .append(Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray())).append("\n");
+    stringBuilder.append(toBold("Device: ")).append(deviceSpec.getDevice()).append("\n");
+    stringBuilder.append(toBold("Model: ")).append(deviceSpec.getModel()).append("\n");
+    return splitMessageIntoHTML(stringBuilder.toString());
+  }
+
   public void makeTree(UploadTelemetryRequest telemetryRequest) {
     String deviceName = telemetryRequest.getSessionContext().getDevice().getBrand() + "/" +
         telemetryRequest.getSessionContext().getDevice().getModel();
-    Node deviceNode = new Node(deviceName);
+    Node deviceNode = new Node(deviceName, getDeviceInfo(telemetryRequest));
     for (Telemetry telemetry : telemetryRequest.getTelemetryList()) {
       ByteString annotationByteString = telemetry.getContext().getAnnotations();
       ByteString fidelityByteString = telemetry.getContext().getTuningParameters()
@@ -184,12 +211,14 @@ public class MonitoringController {
   }
 
   public void saveReport() {
-    FileChooserDescriptor descriptor = FileChooserDescriptorFactory
-        .createSingleFileDescriptor("json");
-    VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
+    FileSaverDescriptor descriptor = new FileSaverDescriptor("Save Report",
+        "", "json");
+    final FileSaverDialog dialog = new FileSaverDialogImpl(descriptor, (Project) null);
+    final VirtualFileWrapper save = dialog
+        .save(LocalFileSystem.getInstance().findFileByPath(System.getProperty("user.home")), "");
     Gson gson = new Gson();
-    if (file != null) {
-      File selectedFile = new File(file.getPath());
+    if (save != null) {
+      File selectedFile = save.getFile();
       JsonObject jsonObject = new JsonObject();
       jsonObject.add("histograms_data", gson.toJsonTree(histogramTree, HistogramTree.class));
       Gson filterGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -202,7 +231,17 @@ public class MonitoringController {
     }
   }
 
-  public JsonObject loadReport() {
+  public boolean loadReport() {
+    JsonObject data = loadReportData();
+    // Silently Ignore choosing no file or null data
+    if (data != null) {
+      refreshData(data);
+      return true;
+    }
+    return false;
+  }
+
+  private JsonObject loadReportData() {
     FileChooserDescriptor descriptor = FileChooserDescriptorFactory
         .createSingleFileDescriptor("json");
     VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
@@ -211,7 +250,7 @@ public class MonitoringController {
       try {
         String data = FileUtils.readFileToString(selectedFile, StandardCharsets.UTF_16);
         return (JsonObject) new JsonParser().parse(data);
-      } catch (IOException e) {
+      } catch (IOException | JsonSyntaxException e) {
         e.printStackTrace();
       }
     }
@@ -225,7 +264,14 @@ public class MonitoringController {
     filterModels.clear();
   }
 
+  public boolean validData(JsonObject data) {
+    return data.has("histograms_data") && data.has("filters_data");
+  }
+
   public void refreshData(JsonObject jsonData) {
+    if (!validData(jsonData)) {
+      return;
+    }
     clearData();
     Gson histogramJson = new Gson();
     Gson filterJson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
