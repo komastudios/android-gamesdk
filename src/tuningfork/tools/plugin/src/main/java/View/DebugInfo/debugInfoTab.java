@@ -33,6 +33,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
 import java.util.Base64;
 import java.util.List;
@@ -99,6 +100,7 @@ public class debugInfoTab extends TabLayout {
     debugInfoLabel.setFont(getMainFont());
     descriptorPanel = new LabelScrollPane(275, 200);
     settingsPanel = new LabelScrollPane(275, 200);
+    jTree.setBackground(UIUtil.getWindowColor());
   }
 
   private void addComponents() {
