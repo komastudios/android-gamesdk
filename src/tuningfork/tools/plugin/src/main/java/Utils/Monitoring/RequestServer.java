@@ -46,7 +46,7 @@ public class RequestServer {
 
   private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor) Executors
       .newFixedThreadPool(5);
-  private HttpServer httpServer;
+  private final HttpServer localNetworkHttpServer, localHostHttpServer;
   private static boolean isBound = false;
   private final String EXPONENT_PATTERN = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
 
@@ -56,12 +56,15 @@ public class RequestServer {
   private static RequestServer requestServer;
 
   private RequestServer() throws IOException {
-    httpServer = HttpServer
+    localNetworkHttpServer = HttpServer
         .create(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000), 0);
-    httpServer.setExecutor(THREAD_POOL_EXECUTOR);
-    httpServer.createContext("/applications",
-        new TuningForkHandler());
-    httpServer.start();
+    localNetworkHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localNetworkHttpServer.createContext("/applications", new TuningForkHandler());
+    localNetworkHttpServer.start();
+    localHostHttpServer = HttpServer.create(new InetSocketAddress("localhost", 9000), 0);
+    localHostHttpServer.createContext("/applications", new TuningForkHandler());
+    localHostHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localHostHttpServer.start();
     isBound = true;
   }
 
@@ -90,7 +93,8 @@ public class RequestServer {
 
   public void stopListening() {
     if (isBound) {
-      httpServer.stop(0);
+      localNetworkHttpServer.stop(0);
+      localHostHttpServer.stop(0);
       isBound = false;
     } else {
       throw new IllegalStateException("Server is not running!");

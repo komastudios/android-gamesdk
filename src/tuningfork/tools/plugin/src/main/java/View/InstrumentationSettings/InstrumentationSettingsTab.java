@@ -19,7 +19,7 @@ package View.InstrumentationSettings;
 import Controller.InstrumentationSettings.InstrumentationSettingsTabController;
 import Controller.InstrumentationSettings.InstrumentationSettingsTableModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.UIValidator;
+import Utils.UI.UIValidator;
 import Utils.Validation.ValidationTool;
 import View.Decorator.RoundedCornerBorder;
 import View.Decorator.RoundedCornerBorder.BorderType;

@@ -19,7 +19,9 @@ import Controller.Monitoring.HistogramTree.Node;
 import Model.MonitorFilterModel;
 import Model.QualityDataModel;
 import Utils.DataModelTransformer;
+import Utils.Resources.ResourceLoader;
 import View.Monitoring.MonitoringTab.JTreeNode;
+import com.google.android.performanceparameters.v1.PerformanceParameters.DeviceSpec;
 import com.google.android.performanceparameters.v1.PerformanceParameters.Telemetry;
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.gson.Gson;
@@ -27,6 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -35,7 +38,13 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileSaverDescriptor;
+import com.intellij.openapi.fileChooser.FileSaverDialog;
+import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileWrapper;
 import com.intellij.util.ui.UIUtil;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -45,6 +54,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,8 +73,11 @@ public class MonitoringController {
 
   private final PropertyChangeSupport monitoringPropertyChange;
   private HistogramTree histogramTree;
-  private Map<ByteString, Integer> annotationMap, fidelityMap;
+  private final Map<ByteString, Integer> annotationMap, fidelityMap;
   private List<MonitorFilterModel> filterModels;
+  private final static String HISTOGRAMS_DATA_JSON = "histograms_data";
+  private final static String FILTER_DATA_JSON = "filters_data";
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
 
   public MonitoringController() {
     monitoringPropertyChange = new PropertyChangeSupport(this);
@@ -134,10 +147,21 @@ public class MonitoringController {
     return histogramTree;
   }
 
+  private String getDeviceInfo(UploadTelemetryRequest telemetryRequest) {
+    DeviceSpec deviceSpec = telemetryRequest.getSessionContext().getDevice();
+    return String.format(RESOURCE_LOADER.get("monitoring_phone_tooltip"),
+        telemetryRequest.getName(),
+        deviceSpec.getBrand(),
+        deviceSpec.getBuildVersion(),
+        Arrays.toString(deviceSpec.getCpuCoreFreqsHzList().toArray()),
+        deviceSpec.getDevice(),
+        deviceSpec.getModel());
+  }
+
   public void makeTree(UploadTelemetryRequest telemetryRequest) {
     String deviceName = telemetryRequest.getSessionContext().getDevice().getBrand() + "/" +
         telemetryRequest.getSessionContext().getDevice().getModel();
-    Node deviceNode = new Node(deviceName);
+    Node deviceNode = new Node(deviceName, getDeviceInfo(telemetryRequest));
     for (Telemetry telemetry : telemetryRequest.getTelemetryList()) {
       ByteString annotationByteString = telemetry.getContext().getAnnotations();
       ByteString fidelityByteString = telemetry.getContext().getTuningParameters()
@@ -168,9 +192,10 @@ public class MonitoringController {
     JTreeNode root = new JTreeNode();
     for (int i = 0; i < filterModels.size(); i++) {
       MonitorFilterModel model = filterModels.get(i);
-      JTreeNode filterNode = new JTreeNode(String.format("Filter %d", i + 1));
-      filterNode.add(new JTreeNode("Phone Model: " + model.getPhoneModel()));
-      JTreeNode annotationsNode = new JTreeNode("Annotations");
+      JTreeNode filterNode = new JTreeNode(String.format(RESOURCE_LOADER.get("filter"), i + 1));
+      filterNode.add(
+          new JTreeNode(String.format(RESOURCE_LOADER.get("phone_model"), model.getPhoneModel())));
+      JTreeNode annotationsNode = new JTreeNode(RESOURCE_LOADER.get("annotations"));
       filterNode.add(annotationsNode);
       model.getAnnotations().forEach(annotationsNode::add);
       filterNode.add(model.getFidelity());
@@ -184,16 +209,18 @@ public class MonitoringController {
   }
 
   public void saveReport() {
-    FileChooserDescriptor descriptor = FileChooserDescriptorFactory
-        .createSingleFileDescriptor("json");
-    VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
+    FileSaverDescriptor descriptor = new FileSaverDescriptor(RESOURCE_LOADER.get("save_report"),
+        "", "json");
+    final FileSaverDialog dialog = new FileSaverDialogImpl(descriptor, (Project) null);
+    final VirtualFileWrapper save = dialog
+        .save(LocalFileSystem.getInstance().findFileByPath(System.getProperty("user.home")), "");
     Gson gson = new Gson();
-    if (file != null) {
-      File selectedFile = new File(file.getPath());
+    if (save != null) {
+      File selectedFile = save.getFile();
       JsonObject jsonObject = new JsonObject();
-      jsonObject.add("histograms_data", gson.toJsonTree(histogramTree, HistogramTree.class));
+      jsonObject.add(HISTOGRAMS_DATA_JSON, gson.toJsonTree(histogramTree, HistogramTree.class));
       Gson filterGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-      jsonObject.add("filters_data", filterGson.toJsonTree(filterModels));
+      jsonObject.add(FILTER_DATA_JSON, filterGson.toJsonTree(filterModels));
       try (FileOutputStream writer = new FileOutputStream(selectedFile)) {
         writer.write(jsonObject.toString().getBytes(StandardCharsets.UTF_16));
       } catch (IOException e) {
@@ -202,7 +229,18 @@ public class MonitoringController {
     }
   }
 
-  public JsonObject loadReport() {
+  public boolean loadReport() {
+    JsonObject data = loadReportData();
+    try {
+      loadJsonMonitoringData(data);
+      return true;
+    } catch (InvalidMonitoringDataException e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  private JsonObject loadReportData() {
     FileChooserDescriptor descriptor = FileChooserDescriptorFactory
         .createSingleFileDescriptor("json");
     VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
@@ -211,7 +249,7 @@ public class MonitoringController {
       try {
         String data = FileUtils.readFileToString(selectedFile, StandardCharsets.UTF_16);
         return (JsonObject) new JsonParser().parse(data);
-      } catch (IOException e) {
+      } catch (IOException | JsonSyntaxException e) {
         e.printStackTrace();
       }
     }
@@ -225,12 +263,19 @@ public class MonitoringController {
     filterModels.clear();
   }
 
-  public void refreshData(JsonObject jsonData) {
+  public boolean isValidData(JsonObject data) {
+    return data != null && data.has(HISTOGRAMS_DATA_JSON) && data.has(FILTER_DATA_JSON);
+  }
+
+  public void loadJsonMonitoringData(JsonObject jsonData) throws InvalidMonitoringDataException {
+    if (!isValidData(jsonData)) {
+      throw new InvalidMonitoringDataException();
+    }
     clearData();
     Gson histogramJson = new Gson();
     Gson filterJson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    JsonElement histogramJsonElement = jsonData.get("histograms_data");
-    JsonElement filterJsonElement = jsonData.get("filters_data");
+    JsonElement histogramJsonElement = jsonData.get(HISTOGRAMS_DATA_JSON);
+    JsonElement filterJsonElement = jsonData.get(FILTER_DATA_JSON);
     histogramTree = histogramJson.fromJson(histogramJsonElement, HistogramTree.class);
     Type listType = new TypeToken<List<MonitorFilterModel>>() {
     }.getType();
@@ -256,9 +301,10 @@ public class MonitoringController {
         List<Integer> histogram = filterData.getOrDefault(key, new ArrayList<>());
         collection.addSeries(makeSeries(histogram, i));
       }
-      JFreeChart histogram = ChartFactory.createXYBarChart("Render Time Histogram",
-          "Frame Time(ms)", false, "Count", collection,
-          PlotOrientation.VERTICAL, true, false, false);
+      JFreeChart histogram = ChartFactory
+          .createXYBarChart(RESOURCE_LOADER.get("render_time_histograms"),
+              RESOURCE_LOADER.get("frame_time"), false, RESOURCE_LOADER.get("count"), collection,
+              PlotOrientation.VERTICAL, true, false, false);
       ChartPanel chartPanel = new ChartPanel(histogram);
       setTheme(histogram, chartPanel);
       monitoringPropertyChange.firePropertyChange("addChart", key, chartPanel);
@@ -283,7 +329,7 @@ public class MonitoringController {
 
   private XYSeries makeSeries(List<Integer> seriesData, int filterNumber) {
     XYSeries xySeries = new XYSeries(
-        String.format("Filter %d", filterNumber + 1));
+        String.format(RESOURCE_LOADER.get("filter"), filterNumber + 1));
     int totalSum = seriesData.stream().mapToInt(val -> val).sum();
     for (int i = 0; i < seriesData.size(); i++) {
       xySeries.add(i, (1.00 * seriesData.get(i)) / (double) (totalSum));
