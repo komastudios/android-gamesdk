@@ -33,8 +33,8 @@ android {
 dependencies {
     api 'com.google.guava:guava:28.0-android'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.games:memory-advice:0.15'
-    implementation 'com.google.android.games:memory-advice-common:0.15'
+    implementation 'com.google.android.games:memory-advice:0.16'
+    implementation 'com.google.android.games:memory-advice-common:0.16'
     implementation 'commons-io:commons-io:2.6'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
