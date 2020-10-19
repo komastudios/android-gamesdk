@@ -37,6 +37,7 @@ public class MemoryWatcher {
       public void run() {
         long start = System.currentTimeMillis();
         JSONObject advice = memoryAdvisor.getAdvice();
+        client.receiveAdvice(advice);
         MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
         long late = start - expectedTime;
         if (late > UNRESPONSIVE_THRESHOLD) {
@@ -85,7 +86,19 @@ public class MemoryWatcher {
   /**
    * A client for the MemoryWatcher class.
    */
-  public abstract static class Client {
-    public abstract void newState(MemoryAdvisor.MemoryState state);
+  public interface Client {
+    void newState(MemoryAdvisor.MemoryState state);
+    void receiveAdvice(JSONObject advice);
+  }
+
+  /**
+   * A client for the MemoryWatcher class, which allows only the methods required to be overridden.
+   */
+  public abstract static class DefaultClient implements Client {
+    @Override
+    public void newState(MemoryAdvisor.MemoryState state) {}
+
+    @Override
+    public void receiveAdvice(JSONObject advice) {}
   }
 }

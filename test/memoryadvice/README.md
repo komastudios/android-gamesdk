@@ -164,7 +164,7 @@ resolution. These can be restored when no more memory warnings (including
 ## Adding the library to an Android project
 
 The library is published on
-[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.15).
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.16).
 
 In the application root `build.gradle` file, ensure `google()` is specified as a
 repository for the project, as well as `jitpack.io` for some of its
@@ -188,10 +188,14 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.games:memory-advice:0.15'
+    implementation 'com.google.android.games:memory-advice:0.16'
 
 }
 ```
+
+Since the library has *AndroidX* dependencies, it is necesary to enable
+*AndroidX* in the application, if it is not already. Instructions can be
+[found here](https://developer.android.com/jetpack/androidx/migrate).
 
 ### Building the library from source
 
@@ -301,7 +305,7 @@ class MyActivity extends Activity {
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
-    new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.Client() {
+    new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.DefaultClient() {
       @Override
       public void newState(MemoryAdvisor.MemoryState memoryState) {
         switch (memoryState) {
