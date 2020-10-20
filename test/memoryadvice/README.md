@@ -85,9 +85,14 @@ The API can be called at any time to discover:
 *   A collection of raw memory metrics that can be captured for diagnostic
     purposes.
 
-The choice of polling rate is left to the developer, to strike the correct
-balance between calling cost (this varies significantly by device but the
-ballpark is between 5 and 20 ms per call) and the rate of memory allocation
+The library provides a class `MemoryWatcher` that will perform the task of
+polling the `MemoryAdvisor` on behalf of the application; calling back the
+application when the advice state changes, as well as enforcing a budget for how
+much CPU time is allocated to this task.
+
+Otherwise, the choice of polling rate is left to the developer, to strike the
+correct balance between calling cost (this varies significantly by device but
+the ballpark is between 5 and 20 ms per call) and the rate of memory allocation
 performed by the app (higher rate allows a more timely reaction to warnings ).
 The API does not cache or rate limit, nor does it use a timer or other thread
 mechanism.
