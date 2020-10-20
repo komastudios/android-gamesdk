@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e166dd53_2b8c0e0c",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Monitoring/MonitoringController.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-20T17:11:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3e1c945_0ba6f2ef",
+      "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8607fcab_702750ef",
