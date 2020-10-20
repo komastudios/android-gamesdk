@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f3e1c945_0ba6f2ef",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Monitoring/MonitoringController.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-20T13:54:35Z",
+      "side": 1,
+      "message": "I shifted the validation of data to the refreshData Method. It will first check the validity of the data and if it meets the \"basic requirements\" then it will load it. otherwise it will throw a InvalidMonitoringDataException",
+      "parentUuid": "1cc74a43_fd09d9d2",
+      "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8607fcab_702750ef",
         "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Monitoring/MonitoringController.java",
         "patchSetId": 2
@@ -48,6 +66,24 @@
       "writtenOn": "2020-10-20T08:48:45Z",
       "side": 1,
       "message": "Return an error code or throw an exception?",
+      "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "427ebacc_7ba2afc1",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/Controller/Monitoring/MonitoringController.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-20T13:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8607fcab_702750ef",
       "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -65,6 +101,30 @@
       "writtenOn": "2020-10-20T08:48:45Z",
       "side": 1,
       "message": "Should these be static, too?",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 0
+      },
+      "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf73f41d_de9dcf30",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-20T13:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2033330_090f5d6d",
       "range": {
         "startLine": 84,
         "startChar": 2,
