@@ -1,4 +1,4 @@
-Android Game SDK
+# Android Game SDK
 
 ## Integrating the Game SDK in your game
 
