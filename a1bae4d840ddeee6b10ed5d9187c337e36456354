@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b6bb72e_11f20ab7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-20T14:04:17Z",
+      "side": 1,
+      "message": "Nits about comments, otherwise looks good to me.",
+      "revId": "a1bae4d840ddeee6b10ed5d9187c337e36456354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eae02883_a73ad72f",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-20T14:04:17Z",
+      "side": 1,
+      "message": "I recommend moving these comments to the header file - as this is in theory what is first looked at by a potential user of the class.\n(where when you\u0027re reading the implementation, the function name and the code is telling you what the function is doing - especially here it\u0027s very clear :))\n\nLike the class comment, you can use:\n\n  /** @brief Get a list of memory metrics stored in /proc/meminfo. */\n\nfor a short function commented that will get parsed into the docs, or something like this with parameters if needed:\n\n  /** \n   * @brief Get a list of memory metrics stored in /proc/meminfo.\n   * @param parameterName Some blabla about this parameter.\n   */\n\nNote that this is just because these are public methods and something that could be of interest to the potential users.\nIf it\u0027s a private field/not intended to be used, a comment without Doxygen annotations/in the .c file is I guess ok!",
+      "revId": "a1bae4d840ddeee6b10ed5d9187c337e36456354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f68a35c_2bdddd58",
+        "filename": "src/memory_advice/core/metrics_provider.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-20T14:04:17Z",
+      "side": 1,
+      "message": "If you use a Doxygen style comment like:\n\n  /**\n   * @brief Provides memory info from various metrics\n   */\n\nyou\u0027ll get the comments extracted for you as a description of the class in the future DAC documentation.",
+      "revId": "a1bae4d840ddeee6b10ed5d9187c337e36456354",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
