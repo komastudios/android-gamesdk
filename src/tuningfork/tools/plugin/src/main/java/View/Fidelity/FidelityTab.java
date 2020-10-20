@@ -23,9 +23,9 @@ import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
 import Utils.Validation.UIValidator;
 import View.Decorator.TableRenderer;
-import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
-import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
+import View.Fidelity.FidelityTableDecorators.FidelityFieldComboBox;
 import View.TabLayout;
+import View.TableComboBox;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
@@ -54,7 +54,12 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   private JPanel fidelityDecoratorPanel;
 
   private final Disposable disposable;
-
+  private final static FidelityFieldComboBox TABLE_FIELD_CELL_RENDERER = new FidelityFieldComboBox(
+      new TableComboBox<>(),
+      new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM});
+  private final static FidelityFieldComboBox TABLE_FIELD_CELL_EDITOR = new FidelityFieldComboBox(
+      new TableComboBox<>(),
+      new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM});
 
   public FidelityTab(FidelityTabController controller, Disposable disposable) {
     this.fidelityTabController = controller;
@@ -124,9 +129,8 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     TableColumn typeColumn = fidelityTable.getColumnModel().getColumn(0);
     typeColumn.setMinWidth(150);
     typeColumn.setMaxWidth(300);
-    typeColumn.setCellEditor(
-        new ComboBoxEditor(new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM}));
-    typeColumn.setCellRenderer(new ComboBoxRenderer());
+    typeColumn.setCellEditor(TABLE_FIELD_CELL_EDITOR);
+    typeColumn.setCellRenderer(TABLE_FIELD_CELL_RENDERER);
 
     setDecoratorPanelSize(fidelityDecoratorPanel);
     setTableSettings(fidelityTable);

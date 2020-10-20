@@ -72,6 +72,7 @@ public class TabLayout extends JPanel {
     table.setSelectionBackground(null);
     table.setSelectionForeground(null);
     table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+    table.setSurrendersFocusOnKeystroke(true);
     table.setIntercellSpacing(new Dimension(0, 0));
     table.setShowGrid(false);
   }
