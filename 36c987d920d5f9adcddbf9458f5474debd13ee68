@@ -54,6 +54,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eef33a79_0d84944c",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-10-20T13:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00116df2_0a6eb61f",
+      "revId": "36c987d920d5f9adcddbf9458f5474debd13ee68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f503c2b6_8f0da0ae",
