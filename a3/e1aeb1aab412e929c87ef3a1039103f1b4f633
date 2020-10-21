@@ -1,0 +1,11 @@
+Bypass-Presubmit+1: Barış Kaya <bkaya@google.com>
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Presubmit-Verified-1: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Code-Review+1: Jim Blackler <jimblackler@google.com>
+Code-Review+2: Florian Rival <florianrival@google.com>
+Submitted-by: Barış Kaya <bkaya@google.com>
+Submitted-at: Wed, 21 Oct 2020 10:03:30 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1460342
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
