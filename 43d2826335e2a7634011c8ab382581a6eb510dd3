@@ -151,6 +151,30 @@
       },
       "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a86e6ff2_8570ca70",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Monitoring/MonitoringTab.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-21T10:59:28Z",
+      "side": 1,
+      "message": "The buttons can\u0027t be static because \"Listeners\" are being attached to them. so If they\u0027re static, Listeners will stack each time the MonitoringTab class is initiated.",
+      "parentUuid": "cf73f41d_de9dcf30",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 0
+      },
+      "revId": "43d2826335e2a7634011c8ab382581a6eb510dd3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
