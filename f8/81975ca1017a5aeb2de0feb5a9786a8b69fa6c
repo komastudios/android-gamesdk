@@ -1,0 +1,11 @@
+Autosubmit+1: Jim Blackler <jimblackler@google.com>
+Code-Review+2: Barış Kaya <bkaya@google.com>
+Presubmit-Verified-1: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Bypass-Presubmit+1: Jim Blackler <jimblackler@google.com>
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Submitted-by: Jim Blackler <jimblackler@google.com>
+Submitted-at: Wed, 21 Oct 2020 18:26:33 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1467825
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
