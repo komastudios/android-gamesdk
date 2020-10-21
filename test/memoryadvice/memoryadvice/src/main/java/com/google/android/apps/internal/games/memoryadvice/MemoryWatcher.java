@@ -1,7 +1,9 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 /**
@@ -13,7 +15,7 @@ public class MemoryWatcher {
 
   private final long watcherStartTime;
   private final Runnable runner;
-  private final Timer timer = new Timer();
+
   private long expectedTime;
   private long unresponsiveTime;
   private MemoryAdvisor.MemoryState lastReportedState = MemoryAdvisor.MemoryState.UNKNOWN;
@@ -32,6 +34,14 @@ public class MemoryWatcher {
       long minimumFrequency, Client client) {
     watcherStartTime = System.currentTimeMillis();
     expectedTime = watcherStartTime;
+
+    ScheduledExecutorService scheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor(runnable -> {
+          Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+          thread.setPriority(Thread.MIN_PRIORITY);
+          return thread;
+        });
+
     runner = new Runnable() {
       @Override
       public void run() {
@@ -72,12 +82,7 @@ public class MemoryWatcher {
           sleepFor = minimumFrequency;  // Impose minimum frequency.
         }
         expectedTime = System.currentTimeMillis() + sleepFor;
-        timer.schedule(new TimerTask() {
-          @Override
-          public void run() {
-            runner.run();
-          }
-        }, sleepFor);
+        scheduledExecutorService.schedule(runner, sleepFor, TimeUnit.MILLISECONDS);
       }
     };
     runner.run();
