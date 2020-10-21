@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2716a530_e2b7f0f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-10-21T09:58:50Z",
+      "side": 1,
+      "message": "Bypassing the presubmit gamesdk-full-win, as it is a new presubmit and it\u0027s not yet working properly.",
+      "revId": "a3e1aeb1aab412e929c87ef3a1039103f1b4f633",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
