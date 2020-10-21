@@ -42,6 +42,7 @@ import com.intellij.openapi.fileChooser.FileSaverDescriptor;
 import com.intellij.openapi.fileChooser.FileSaverDialog;
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
@@ -225,17 +226,27 @@ public class MonitoringController {
         writer.write(jsonObject.toString().getBytes(StandardCharsets.UTF_16));
       } catch (IOException e) {
         e.printStackTrace();
+        Messages.showErrorDialog(
+            RESOURCE_LOADER.get("fail_save_report_message"),
+            RESOURCE_LOADER.get("fail_save_report_title"));
       }
     }
   }
 
   public boolean loadReport() {
     JsonObject data = loadReportData();
+    if (data == null) {
+      return false;
+    }
     try {
       loadJsonMonitoringData(data);
       return true;
     } catch (InvalidMonitoringDataException e) {
-      e.printStackTrace();
+      // e.printStackTrace();
+      Messages.showErrorDialog(
+          String.format(RESOURCE_LOADER.get("fail_load_report_message"),
+              "Invalid monitoring file."),
+          RESOURCE_LOADER.get("fail_load_report_title"));
     }
     return false;
   }
@@ -249,10 +260,25 @@ public class MonitoringController {
       try {
         String data = FileUtils.readFileToString(selectedFile, StandardCharsets.UTF_16);
         return (JsonObject) new JsonParser().parse(data);
-      } catch (IOException | JsonSyntaxException e) {
+      } catch (IOException e) {
         e.printStackTrace();
+        Messages.showErrorDialog(
+            String.format(RESOURCE_LOADER.get("fail_load_report_message"),
+                "Unable to read file."),
+            RESOURCE_LOADER.get("fail_load_report_title"));
+      } catch (JsonSyntaxException e) {
+        e.printStackTrace();
+        Messages.showErrorDialog(
+            String.format(RESOURCE_LOADER.get("fail_load_report_message"),
+                "Unable to parse file as JSON object"),
+            RESOURCE_LOADER.get("fail_load_report_title"));
       }
     }
+    /*
+     * If the loading reached here without throwing exception then user clicked "Cancel"
+     * On the loading dialog. If it threw an exception. then the file is probably
+     * not JSON-parsable.
+     */
     return null;
   }
 
@@ -264,7 +290,7 @@ public class MonitoringController {
   }
 
   public boolean isValidData(JsonObject data) {
-    return data != null && data.has(HISTOGRAMS_DATA_JSON) && data.has(FILTER_DATA_JSON);
+    return data.has(HISTOGRAMS_DATA_JSON) && data.has(FILTER_DATA_JSON);
   }
 
   public void loadJsonMonitoringData(JsonObject jsonData) throws InvalidMonitoringDataException {
