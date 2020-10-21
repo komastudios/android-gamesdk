@@ -28,6 +28,7 @@ import com.google.android.performanceparameters.v1.PerformanceParameters.UploadT
 import com.google.gson.annotations.Expose;
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.treeStructure.Tree;
@@ -258,7 +259,10 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       afterLoadingButtonsPanel.setVisible(true);
       retrievedInformationPanel.setVisible(true);
       loadingPanel.setVisible(false);
-    } // Silently ignore invalid report or user not choosing anything.
+    } else {
+      Messages.showErrorDialog(RESOURCE_LOADER.get("fail_load_report_message"),
+          RESOURCE_LOADER.get("fail_load_report_title"));
+    }
   }
 
   private void addFilter() {
