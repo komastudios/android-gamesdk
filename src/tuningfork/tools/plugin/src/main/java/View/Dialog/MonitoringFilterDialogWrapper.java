@@ -20,11 +20,14 @@ import Controller.Monitoring.HistogramTree;
 import Controller.Monitoring.HistogramTree.Node;
 import Model.MonitorFilterModel;
 import Utils.Resources.ResourceLoader;
+import Utils.UI.UIValidator;
 import View.Monitoring.MonitoringTab.JTreeNode;
 import View.Monitoring.MonitoringTab.TreeToolTipRenderer;
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import java.awt.Dimension;
@@ -58,6 +61,7 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
   private final HistogramTree histogramTree;
   private final PropertyChangeSupport propertyChangeSupport;
   private FilterPanel filterPanel;
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
 
   public MonitoringFilterDialogWrapper(HistogramTree tree) {
     super(true);
@@ -80,6 +84,12 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
+    if (!filterPanel.isViewValid()) {
+      Messages
+          .showErrorDialog(RESOURCE_LOADER.get("fix_errors_first"),
+              RESOURCE_LOADER.get("unable_to_close_title"));
+      return;
+    }
     MonitorFilterModel model = new MonitorFilterModel(filterPanel.getPhoneModel(),
         filterPanel.getAnnotations(), filterPanel.getFidelity());
     propertyChangeSupport.firePropertyChange("addFilter", null, model);
@@ -99,6 +109,38 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
       selectedAnnotationNodes = new ArrayList<>();
       initComponent();
       addComponents();
+      initValidators();
+    }
+
+    private void initValidators() {
+      UIValidator.createComboBoxValidation(getDisposable(), phoneModelComboBox,
+          () -> {
+            if (phoneModelComboBox.getSelectedIndex() == -1) {
+              return new ValidationInfo(resourceLoader.get("empty_phone_model_error"));
+            }
+            return null;
+          });
+      UIValidator.createSimpleValidation(getDisposable(), annotationsTree,
+          () -> {
+            if (selectedAnnotationNodes.isEmpty()) {
+              return new ValidationInfo(resourceLoader.get("empty_annotation_list_error"));
+            }
+            return null;
+          });
+      UIValidator.createComboBoxValidation(getDisposable(), fidelityComboBox,
+          () -> {
+            if (fidelityComboBox.getSelectedIndex() == -1) {
+              return new ValidationInfo(resourceLoader.get("empty_fidelity_error"));
+            }
+            return null;
+          });
+    }
+
+    // & was used instead of && to prevent short-circuit evaluation
+    public boolean isViewValid() {
+      return UIValidator.isComponentValid(phoneModelComboBox) &
+          UIValidator.isComponentValid(annotationsTree) &
+          UIValidator.isComponentValid(fidelityComboBox);
     }
 
     private String getPhoneModel() {
@@ -128,6 +170,8 @@ public class MonitoringFilterDialogWrapper extends DialogWrapper {
       for (Node node : getAllFidelity()) {
         fidelityComboBox.addItem(node);
       }
+      // Update tree validation.
+      UIValidator.isComponentValid(annotationsTree);
     }
 
     private void addComponents() {

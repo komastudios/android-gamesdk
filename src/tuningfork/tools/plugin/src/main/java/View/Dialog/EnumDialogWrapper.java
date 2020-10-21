@@ -21,6 +21,8 @@ import Controller.Enum.EnumController;
 import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
 import Utils.UI.UIValidator;
+import View.Decorator.RoundedCornerBorder;
+import View.Decorator.RoundedCornerBorder.BorderType;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.TabLayout;
@@ -139,6 +141,7 @@ public class EnumDialogWrapper extends DialogWrapper {
     private void addComponents() {
       JPanel namePanel = new JPanel(new HorizontalLayout());
       namePanel.add(nameLabel);
+      namePanel.add(Box.createHorizontalStrut(10));
       namePanel.add(nameTextField);
       this.add(namePanel);
       this.add(Box.createVerticalStrut(30));
@@ -199,6 +202,7 @@ public class EnumDialogWrapper extends DialogWrapper {
       optionsTable.setIntercellSpacing(new Dimension(0, 0));
       model.setColumnIdentifiers(new String[]{resourceLoader.get("table_column_options")});
       optionsTable.setModel(model);
+      nameTextField.setBorder(new RoundedCornerBorder(BorderType.NORMAL));
     }
 
     private void initValidators() {
