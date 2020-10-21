@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "501008bd_f6b415fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-10-21T08:16:05Z",
+      "side": 1,
+      "message": "Looks good! Feel free to bypass the broken presubmit",
+      "revId": "45cf663de3d5c60548881e0daf5d2c866684d9b1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
