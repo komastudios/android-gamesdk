@@ -258,7 +258,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
       afterLoadingButtonsPanel.setVisible(true);
       retrievedInformationPanel.setVisible(true);
       loadingPanel.setVisible(false);
-    } // Silently ignore invalid report or user not choosing anything.
+    } // Silently ignore user choosing "Cancel" on select file dialog
   }
 
   private void addFilter() {
