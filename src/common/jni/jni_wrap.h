@@ -20,7 +20,7 @@
 
 #include "jni/jni_helper.h"
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -444,4 +444,4 @@ android::content::Context AppContext();
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk

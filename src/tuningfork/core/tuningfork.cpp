@@ -245,7 +245,7 @@ bool CheckIfFirstRun() {
 std::string DefaultTuningForkSaveDirectory() {
     std::stringstream save_dir;
     // Try the app's cache dir or tmp storage.
-    if (jni::IsValid())
+    if (gamesdk::jni::IsValid())
         save_dir << file_utils::GetAppCacheDir();
     else
         save_dir << "/data/local/tmp";

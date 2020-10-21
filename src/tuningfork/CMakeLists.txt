@@ -70,9 +70,9 @@ set( TUNINGFORK_SRCS
   http_backend/json_serializer.cpp
   http_backend/uploadTelemetry.cpp
   http_backend/ultimate_uploader.cpp
-  jni/jni_helper.cpp
-  jni/jni_wrap.cpp
-  jni/jnictx.cpp
+  ../common/jni/jni_helper.cpp
+  ../common/jni/jni_wrap.cpp
+  ../common/jni/jnictx.cpp
   proto/protobuf_util.cpp
   unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp

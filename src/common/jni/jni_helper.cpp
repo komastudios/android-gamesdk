@@ -18,7 +18,7 @@
 
 #include "jnictx.h"
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -203,4 +203,4 @@ void DumpLocalRefTable() {
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk
