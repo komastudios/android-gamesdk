@@ -31,7 +31,6 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -47,6 +45,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jdesktop.swingx.prompt.PromptSupport;
+import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
@@ -129,7 +129,6 @@ public class EnumDialogWrapper extends DialogWrapper {
     private DefaultTableModel model;
     private final Disposable disposable;
     private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
-    private final JLabel nameLabel = new JBLabel(resourceLoader.get("label_name"));
 
     EnumLayout(Disposable disposable) {
       this.disposable = disposable;
@@ -140,11 +139,11 @@ public class EnumDialogWrapper extends DialogWrapper {
 
     private void addComponents() {
       JPanel namePanel = new JPanel(new HorizontalLayout());
-      namePanel.add(nameLabel);
-      namePanel.add(Box.createHorizontalStrut(10));
       namePanel.add(nameTextField);
+      PromptSupport.setPrompt(resourceLoader.get("label_name"), nameTextField);
+      PromptSupport.setFocusBehavior(FocusBehavior.HIDE_PROMPT, nameTextField);
       this.add(namePanel);
-      this.add(Box.createVerticalStrut(30));
+      this.add(Box.createVerticalStrut(20));
       this.add(decoratorPanel);
     }
 

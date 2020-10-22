@@ -139,9 +139,10 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
             }));
     nameColumn.setCellEditor(TabLayout.getTextFieldModel());
   }
+
   @Override
   public boolean isViewValid() {
-    return UIValidator.isComponentValid(annotationTable) && UIValidator
+    return UIValidator.isComponentValid(annotationTable) & UIValidator
         .isTableCellsValid(annotationTable);
   }
 
@@ -151,8 +152,10 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
       boolean isNamesDuplicate =
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {
-        return new ValidationInfo(resourceLoader.get("repeated_fields_error"),
-            annotationTable);
+        return new ValidationInfo(resourceLoader.get("repeated_fields_error"));
+      }
+      if (fieldNames.isEmpty()) {
+        return new ValidationInfo(resourceLoader.get("empty_table_error"));
       }
       return null;
     });

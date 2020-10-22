@@ -64,7 +64,9 @@ public final class RoundedCornerBorder extends AbstractBorder {
     Graphics2D graphics2D = (Graphics2D) graphics.create();
     graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     Shape border = getBorderShape(x, y, width - 1, height - 1);
-    graphics2D.setPaint(ALPHA_ZERO);
+    Color backgroundColor = component.getParent() != null ? component.getParent().getBackground() :
+        ALPHA_ZERO;
+    graphics2D.setPaint(backgroundColor);
     Area corner = new Area(new Rectangle2D.Double(x, y, width, height));
     corner.subtract(new Area(border));
     graphics2D.fill(corner);
