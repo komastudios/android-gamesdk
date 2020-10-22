@@ -49,9 +49,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -93,6 +96,8 @@ public class PluginLayout extends JPanel {
   private final Dimension menuSize = new Dimension(SCREEN_SIZE.width / 6, SCREEN_SIZE.height / 2);
 
   private final Disposable disposable;
+  // Refresh the tree to check if there's any invalid layout.
+  private final static int TREE_REFRESH_PERIOD = 250;
 
   public PluginLayout(MessageDataModel annotationData, MessageDataModel fidelityData,
       List<EnumDataModel> enumData, List<QualityDataModel> qualityData, Settings settingsData,
@@ -114,7 +119,8 @@ public class PluginLayout extends JPanel {
 
   public void initTreeValidationUpdater() {
     final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    scheduler.scheduleAtFixedRate(() -> SwingUtilities.invokeLater(() -> menu.repaint()), 0, 400,
+    scheduler.scheduleAtFixedRate(() -> SwingUtilities.invokeLater(() -> menu.repaint()), 0,
+        TREE_REFRESH_PERIOD,
         TimeUnit.MILLISECONDS);
     Disposer.register(disposable, scheduler::shutdown);
   }
@@ -142,7 +148,8 @@ public class PluginLayout extends JPanel {
     }
   }
 
-  private Map<String, TabLayout> initLayoutTree() {
+  // Only include layout that needs validation or may have invalid fields.
+  private Map<String, TabLayout> getAllLayoutsNeedValidation() {
     Map<String, TabLayout> layoutMap = new HashMap<>();
     layoutMap.put(resourceLoader.get("annotation_settings"), annotationsLayout);
     layoutMap.put(resourceLoader.get("fidelity_settings"), fidelitySettingsLayout);
@@ -186,7 +193,7 @@ public class PluginLayout extends JPanel {
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
-    menu.setCellRenderer(new CustomCellRenderer(initLayoutTree()));
+    menu.setCellRenderer(new CustomCellRenderer(getAllLayoutsNeedValidation()));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     menu.setRootVisible(false);
     menu.addTreeSelectionListener(treeSelectionEvent -> {
@@ -240,19 +247,21 @@ public class PluginLayout extends JPanel {
 
     // Quality Setting Initialization.
     QualityTabController qualityTabController = new QualityTabController(qualityData,
-        fidelityData, enumData);
+        fidelityData, enumData,
+        getDefaultQuality(settingsData.getDefaultFidelityParametersFilename()));
     qualityLayout = new QualityTab(qualityTabController, disposable);
     fidelityTabController.addPropertyChangeListener(qualityLayout);
     annotationTabController.addPropertyChangeListener(qualityLayout);
     qualityLayout.setSize(panelSize);
     qualityLayout.setVisible(false);
 
-    // Validation settings initialization.
+    // Instrumentation settings initialization.
     instrumentationSettingsTabController = new InstrumentationSettingsTabController(settingsData);
     instrumentationSettingsTab = new InstrumentationSettingsTab(
         instrumentationSettingsTabController, disposable);
     instrumentationSettingsTab.setSize(panelSize);
     instrumentationSettingsTab.setVisible(false);
+    qualityTabController.addPropertyChangeListener(instrumentationSettingsTab);
 
     // Monitoring initialization.
     monitoringTab = new MonitoringTab();
@@ -276,6 +285,15 @@ public class PluginLayout extends JPanel {
     panels.add(fidelityChanger);
     panels.add(debugInfoTab);
     initMenuTree();
+  }
+
+  public Optional<Integer> getDefaultQuality(String qualityString) {
+    Pattern pattern = Pattern.compile("\\d+");
+    Matcher matcher = pattern.matcher(qualityString);
+    if (matcher.find()) {
+      return Optional.of(Integer.parseInt(matcher.group()));
+    }
+    return Optional.empty();
   }
 
   private static class CustomCellRenderer extends DefaultTreeCellRenderer {
