@@ -28,6 +28,7 @@ import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.EnumTable;
 import View.TabLayout;
+import View.TableComboBox;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
@@ -105,11 +106,12 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
 
   private void initColumnViews() {
     TableColumn enumColumn = annotationTable.getColumnModel().getColumn(0);
-    enumColumn.setCellEditor(new EnumComboBoxDecorator(
+    enumColumn.setCellEditor(new EnumComboBoxDecorator(new TableComboBox<>(),
         annotationController.getEnums()));
     //noinspection UnstableApiUsage
     enumColumn
-        .setCellRenderer(TableRenderer.getRendererComboBoxWithValidation(new EnumComboBoxDecorator(
+        .setCellRenderer(TableRenderer.getRendererComboBoxWithValidation(
+            new EnumComboBoxDecorator(new TableComboBox<>(),
                 annotationController.getEnums()),
             (value, row, column) -> {
               String strVal = value.toString();

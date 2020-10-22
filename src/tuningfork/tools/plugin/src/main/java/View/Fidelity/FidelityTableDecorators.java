@@ -17,12 +17,12 @@
 package View.Fidelity;
 
 import View.Decorator.RoundedCornerBorder;
-import com.intellij.openapi.ui.ComboBox;
+import View.TableComboBox;
+import View.TableComboBox.BaseComboBoxTableCell;
 import com.intellij.util.ui.UIUtil;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -30,46 +30,48 @@ import javax.swing.table.TableCellRenderer;
 
 public class FidelityTableDecorators {
 
-  public static final class ComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
+  public static final class FidelityFieldComboBox extends BaseComboBoxTableCell {
 
-    JComboBox<FieldType> comboBox;
+    TableComboBox<FieldType> tableComboBox;
+    FieldType[] fieldTypes;
 
-    public ComboBoxEditor(FieldType[] fieldTypes) {
-      comboBox = new ComboBox<>();
-      for (FieldType fieldType : fieldTypes) {
-        comboBox.addItem(fieldType);
-      }
+    public FidelityFieldComboBox(TableComboBox<FieldType> tableComboBox, FieldType[] fieldTypes) {
+      super(tableComboBox);
+      this.tableComboBox = tableComboBox;
+      this.fieldTypes = fieldTypes;
       // Used to update the UI.
-      comboBox.addItemListener(itemEvent -> fireEditingStopped());
+      tableComboBox.addItemListener(itemEvent -> fireEditingStopped());
+    }
+
+    private void refreshComboBoxItems() {
+      tableComboBox.removeAllItems();
+      for (FieldType fieldType : fieldTypes) {
+        tableComboBox.addItem(fieldType);
+      }
     }
 
     @Override
     public Component getTableCellEditorComponent(
         JTable table, Object value, boolean isSelected, int row, int column) {
+      super.getTableCellEditorComponent(table, value, isSelected, row, column);
+      refreshComboBoxItems();
       FidelityTableData feed = (FidelityTableData) value;
-      comboBox.setSelectedItem(feed.getFieldType());
-      return comboBox;
+      tableComboBox.setSelectedItem(feed.getFieldType());
+      return tableComboBox;
     }
 
     @Override
     public Object getCellEditorValue() {
-      return comboBox.getSelectedItem();
-    }
-  }
-
-  public static final class ComboBoxRenderer extends JComboBox<String>
-      implements TableCellRenderer {
-
-    public ComboBoxRenderer() {
-
+      return tableComboBox.getSelectedItem();
     }
 
     @Override
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-      removeAllItems();
-      this.addItem(((FidelityTableData) value).getFieldType().getName());
-      return this;
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      refreshComboBoxItems();
+      tableComboBox.setSelectedItem(((FidelityTableData) value).getFieldType());
+      return tableComboBox;
     }
   }
 

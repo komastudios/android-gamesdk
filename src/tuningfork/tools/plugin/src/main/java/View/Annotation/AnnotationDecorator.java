@@ -17,64 +17,70 @@
 package View.Annotation;
 
 import Model.EnumDataModel;
-import View.ValidatableComboBox;
+import View.TableComboBox;
+import View.TableComboBox.BaseComboBoxTableCell;
 import java.awt.Component;
 import java.util.List;
-import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 public class AnnotationDecorator {
 
-  public static class EnumComboBoxDecorator extends AbstractCellEditor
-      implements TableCellEditor, TableCellRenderer {
+  public static class EnumComboBoxDecorator extends BaseComboBoxTableCell {
 
     final List<EnumDataModel> enums;
-    final ValidatableComboBox<String> comboBox;
+    final TableComboBox<String> tableComboBox;
 
-    public EnumComboBoxDecorator(List<EnumDataModel> enumsTemp) {
+    public EnumComboBoxDecorator(TableComboBox<String> tableComboBox,
+        List<EnumDataModel> enumsTemp) {
+      super(tableComboBox);
       this.enums = enumsTemp;
-      this.comboBox = new ValidatableComboBox<>();
+      this.tableComboBox = tableComboBox;
     }
 
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
         int row, int column) {
+      super.getTableCellEditorComponent(table, value, isSelected, row, column);
       String strValue = value.toString();
       setComboBoxChoices(enums);
-      comboBox.setSelectedItem(strValue);
-      comboBox.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
-      comboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
-      return comboBox;
+      tableComboBox.setSelectedItem(strValue);
+      tableComboBox
+          .setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+      tableComboBox
+          .setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+      return tableComboBox;
     }
 
     private void setComboBoxChoices(List<EnumDataModel> choices) {
-      comboBox.removeAllItems();
+      tableComboBox.removeAllItems();
       for (EnumDataModel enumDataModel : choices) {
-        comboBox.addItem(enumDataModel.getName());
+        tableComboBox.addItem(enumDataModel.getName());
       }
     }
 
     @Override
     public Object getCellEditorValue() {
-      return comboBox.getSelectedIndex() == -1 ? "" : comboBox.getSelectedItem().toString();
+      return tableComboBox.getSelectedIndex() == -1 ? ""
+          : tableComboBox.getSelectedItem().toString();
     }
 
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+      super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       String strValue = value.toString();
       setComboBoxChoices(enums);
       if (enums.stream()
           .anyMatch(enumDataModel -> enumDataModel.getName().equals(strValue))) {
-        comboBox.setSelectedItem(strValue);
+        tableComboBox.setSelectedItem(strValue);
       } else {
-        comboBox.setSelectedIndex(-1);
+        tableComboBox.setSelectedIndex(-1);
       }
-      comboBox.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
-      comboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
-      return comboBox;
+      tableComboBox
+          .setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+      tableComboBox
+          .setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+      return tableComboBox;
     }
   }
 }
