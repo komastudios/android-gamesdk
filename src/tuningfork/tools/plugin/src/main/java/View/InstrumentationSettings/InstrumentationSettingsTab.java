@@ -107,6 +107,9 @@ public class InstrumentationSettingsTab extends TabLayout implements PropertyCha
     });
     UIValidator.createTableValidator(disposable, instrumentationTable, () -> {
       int histogramsCount = controller.getDataModel().getHistogramsCount();
+      if (histogramsCount == 0) {
+        return new ValidationInfo(RESOURCE_LOADER.get("empty_table_error"));
+      }
       for (int i = 0; i < histogramsCount; i++) {
         Histogram histogram = controller.getDataModel().getHistograms(i);
         if (histogram.getBucketMin() > histogram.getBucketMax()) {
@@ -158,10 +161,11 @@ public class InstrumentationSettingsTab extends TabLayout implements PropertyCha
   }
 
   public boolean isViewValid() {
-    return UIValidator.isComponentValid(apiKey) && UIValidator.isComponentValid(baseUrl)
-        && UIValidator.isTableCellsValid(instrumentationTable)
-        && UIValidator.isComponentValid(intervalSlider)
-        && UIValidator.isComponentValid(radioButtonsPanel);
+    return UIValidator.isComponentValid(apiKey) & UIValidator.isComponentValid(baseUrl)
+        & UIValidator.isComponentValid(instrumentationTable)
+        & UIValidator.isTableCellsValid(instrumentationTable)
+        & UIValidator.isComponentValid(intervalSlider)
+        & UIValidator.isComponentValid(radioButtonsPanel);
   }
 
   private boolean histogramCoversRecommendedSettings(Histogram histogram) {

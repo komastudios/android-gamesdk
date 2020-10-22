@@ -162,7 +162,8 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   }
 
   public boolean isViewValid() {
-    return UIValidator.isTableCellsValidDeep(fidelityTable);
+    return UIValidator.isTableCellsValidDeep(fidelityTable) &
+        UIValidator.isComponentValid(fidelityTable);
   }
 
   private void initValidators() {
@@ -172,6 +173,9 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
           fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
       if (isNamesDuplicate) {
         return new ValidationInfo(resourceLoader.get("repeated_fields_error"), fidelityTable);
+      }
+      if (fieldNames.isEmpty()) {
+        return new ValidationInfo(resourceLoader.get("empty_table_error"));
       }
       return null;
     });

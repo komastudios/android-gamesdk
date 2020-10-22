@@ -69,7 +69,7 @@ public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
   private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
   private final static String LOADING_TEXT = RESOURCE_LOADER.get("retrieving_histograms");
-  private final static JLabel MONITORING_INFO = new JLabel(RESOURCE_LOADER.get("monitoring_info"));
+  private final JLabel MONITORING_INFO = new JLabel(RESOURCE_LOADER.get("monitoring_info"));
   private final JButton startMonitoringButton = new JButton(
       RESOURCE_LOADER.get("start_monitoring"));
   private final JButton loadReportButton = new JButton(RESOURCE_LOADER.get("load_report"));

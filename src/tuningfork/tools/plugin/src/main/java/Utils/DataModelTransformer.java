@@ -63,6 +63,8 @@ public final class DataModelTransformer {
     this.compiler = compiler;
     if (devTuningfork.isPresent()) {
       devTuningforkDesc = compiler.compile(devTuningfork.get(), Optional.empty());
+    } else {
+      devTuningforkDesc = null;
     }
   }
 
