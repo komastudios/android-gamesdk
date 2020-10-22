@@ -46,7 +46,7 @@ public class RequestServer {
 
   private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor) Executors
       .newFixedThreadPool(5);
-  private HttpServer httpServer;
+  private final HttpServer localNetworkHttpServer, localHostHttpServer;
   private static boolean isBound = false;
   private final String EXPONENT_PATTERN = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
 
@@ -56,12 +56,15 @@ public class RequestServer {
   private static RequestServer requestServer;
 
   private RequestServer() throws IOException {
-    httpServer = HttpServer
+    localNetworkHttpServer = HttpServer
         .create(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000), 0);
-    httpServer.setExecutor(THREAD_POOL_EXECUTOR);
-    httpServer.createContext("/applications",
-        new TuningForkHandler());
-    httpServer.start();
+    localNetworkHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localNetworkHttpServer.createContext("/applications", new TuningForkHandler());
+    localNetworkHttpServer.start();
+    localHostHttpServer = HttpServer.create(new InetSocketAddress("localhost", 9000), 0);
+    localHostHttpServer.createContext("/applications", new TuningForkHandler());
+    localHostHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localHostHttpServer.start();
     isBound = true;
   }
 
@@ -90,7 +93,8 @@ public class RequestServer {
 
   public void stopListening() {
     if (isBound) {
-      httpServer.stop(0);
+      localNetworkHttpServer.stop(0);
+      localHostHttpServer.stop(0);
       isBound = false;
     } else {
       throw new IllegalStateException("Server is not running!");
@@ -131,29 +135,24 @@ public class RequestServer {
     return telemetryBuilder.build();
   }
 
-  private final class TuningForkHandler implements HttpHandler {
-
-    @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-      String requestPath = httpExchange.getRequestURI().toASCIIString();
-      if (requestPath.contains(":uploadTelemetry")) {
-        handleUploadTelemetry(httpExchange);
-      } else if (requestPath.contains(":generateTuningParameters")) {
-        handleGenerateTuningParameters(httpExchange);
-      } else if (requestPath.contains(":debugInfo")) {
-        handleDebugInfo(httpExchange);
-      }
-    }
+  // Respond with code 200 for now
+  private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
+    InputStream inputStream = httpExchange.getRequestBody();
+    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
+    debugInfo.ifPresent(jsonObjectConsumer -> jsonObjectConsumer.accept(jsonObject));
+    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    httpExchange.getResponseBody().flush();
+    httpExchange.getResponseBody().close();
   }
 
   private void handleUploadTelemetry(HttpExchange httpExchange) throws IOException {
     String requestBody = new String(ByteStreams.toByteArray(httpExchange.getRequestBody()));
     if (monitoringAction.isPresent()) {
       monitoringAction.get().accept(parseJsonTelemetry(requestBody));
+      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    } else {
       // Just to keep caching histograms until we need them
       httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_ACCEPTABLE, 0);
-    } else {
-      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
     }
     httpExchange.getResponseBody().close();
   }
@@ -175,15 +174,22 @@ public class RequestServer {
     httpExchange.getResponseBody().close();
   }
 
-  // Respond with code 200 for now
-  private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
-    InputStream inputStream = httpExchange.getRequestBody();
-    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
-    if (debugInfo.isPresent()) {
-      debugInfo.get().accept(jsonObject);
+  private final class TuningForkHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+      String requestPath = httpExchange.getRequestURI().toASCIIString();
+      try {
+        if (requestPath.contains(":uploadTelemetry")) {
+          handleUploadTelemetry(httpExchange);
+        } else if (requestPath.contains(":generateTuningParameters")) {
+          handleGenerateTuningParameters(httpExchange);
+        } else if (requestPath.contains(":debugInfo")) {
+          handleDebugInfo(httpExchange);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-    httpExchange.getResponseBody().flush();
-    httpExchange.getResponseBody().close();
   }
 }

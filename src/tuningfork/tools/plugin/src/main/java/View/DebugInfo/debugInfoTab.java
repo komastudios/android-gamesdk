@@ -18,7 +18,9 @@ package View.DebugInfo;
 
 import Controller.DebugInfo.DebugInfoController;
 import Utils.Monitoring.RequestServer;
+import Utils.UI.UIUtils;
 import View.Decorator.LabelScrollPane;
+import View.Decorator.TreeSelections.NonLeafSelection;
 import View.TabLayout;
 import com.google.common.collect.Streams;
 import com.google.gson.JsonArray;
@@ -31,8 +33,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.tuningfork.Tuningfork.Settings;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,10 +43,6 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
@@ -102,6 +100,7 @@ public class debugInfoTab extends TabLayout {
     debugInfoLabel.setFont(getMainFont());
     descriptorPanel = new LabelScrollPane(275, 200);
     settingsPanel = new LabelScrollPane(275, 200);
+    jTree.setBackground(UIUtil.getWindowColor());
   }
 
   private void addComponents() {
@@ -125,34 +124,7 @@ public class debugInfoTab extends TabLayout {
   }
 
   public void reloadTree(JTree jTree, List<String> fidelityStrings, FileDescriptor descriptor) {
-    ((DefaultTreeModel) jTree.getModel()).setRoot(debugInfoController.getQualityAsTree(
-        debugInfoController.convertByteStringToModel(fidelityStrings, descriptor)
-    ));
-  }
-
-
-  private static class NonLeafSelection extends DefaultTreeSelectionModel {
-
-    private TreePath[] getLeafs(TreePath[] fullPaths) {
-      ArrayList<TreePath> paths = new ArrayList<>();
-
-      for (TreePath fullPath : fullPaths) {
-        if (!((DefaultMutableTreeNode) fullPath.getLastPathComponent()).isLeaf()) {
-          paths.add(fullPath);
-        }
-      }
-
-      return paths.toArray(fullPaths);
-    }
-
-    @Override
-    public void setSelectionPaths(TreePath[] treePaths) {
-      super.setSelectionPaths(getLeafs(treePaths));
-    }
-
-    @Override
-    public void addSelectionPaths(TreePath[] treePaths) {
-      super.addSelectionPaths(getLeafs(treePaths));
-    }
+    UIUtils.reloadTreeAndKeepState(jTree, debugInfoController.getQualityAsTree(
+        debugInfoController.convertByteStringToModel(fidelityStrings, descriptor)));
   }
 }

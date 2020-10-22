@@ -16,7 +16,9 @@
 
 package View.Decorator;
 
+import Utils.Resources.ResourceLoader;
 import java.awt.Dimension;
+import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,25 +29,36 @@ public class LabelScrollPane {
 
   private JPanel jPanel;
   private JScrollPane scrollPane;
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
-  public LabelScrollPane(int width, int height) {
+  public LabelScrollPane() {
     jPanel = new JPanel(new VerticalLayout());
     scrollPane = new JScrollPane();
-    Dimension dimension = new Dimension(width, height);
-    scrollPane.setMaximumSize(dimension);
-    scrollPane.setMinimumSize(dimension);
-    scrollPane.setPreferredSize(dimension);
     scrollPane.setViewportView(jPanel);
     scrollPane
         .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     scrollPane
         .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     scrollPane.setViewportBorder(null);
-    addText("Nothing To Be Shown Currently");
+    addText(resourceLoader.get("empty_place_holder"));
+  }
+
+  public LabelScrollPane(int width, int height) {
+    this();
+    Dimension dimension = new Dimension(width, height);
+    scrollPane.setMaximumSize(dimension);
+    scrollPane.setMinimumSize(dimension);
+    scrollPane.setPreferredSize(dimension);
   }
 
   public void addText(String text) {
     jPanel.add(new JLabel(text));
+  }
+
+  public void addText(String text, Font font) {
+    JLabel jLabel = new JLabel(text);
+    jLabel.setFont(font);
+    jPanel.add(jLabel);
   }
 
   public void removeAll() {

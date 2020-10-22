@@ -15,13 +15,13 @@
  */
 package View.Fidelity;
 
-import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
+import static Utils.UI.UIValidator.ILLEGAL_TEXT_PATTERN;
 
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
 import Model.EnumDataModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.UIValidator;
+import Utils.UI.UIValidator;
 import View.Decorator.TableRenderer;
 import View.Fidelity.FidelityTableDecorators.FidelityFieldComboBox;
 import View.TabLayout;

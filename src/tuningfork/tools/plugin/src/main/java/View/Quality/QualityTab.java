@@ -19,7 +19,7 @@ package View.Quality;
 import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
 import Utils.Resources.ResourceLoader;
-import Utils.Validation.UIValidator;
+import Utils.UI.UIValidator;
 import Utils.Validation.ValidationTool;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
