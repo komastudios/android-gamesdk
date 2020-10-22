@@ -34,6 +34,24 @@
       "parentUuid": "bf3a57c6_b45ec151",
       "revId": "2860eae9b7138baf0503459a82e88df2420c799b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef0b291b_aed419df",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-10-22T13:55:45Z",
+      "side": 1,
+      "message": "OK, cool. Maybe put that in the CL description too.",
+      "parentUuid": "6221b5a0_440dd853",
+      "revId": "2860eae9b7138baf0503459a82e88df2420c799b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
