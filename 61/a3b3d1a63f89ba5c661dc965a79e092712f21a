@@ -1,0 +1,10 @@
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Code-Review+2: Kseniia Taraimovich <kseniia@google.com>
+Autosubmit+1: Kseniia Taraimovich <kseniia@google.com>
+Bypass-Presubmit+1: Kseniia Taraimovich <kseniia@google.com>
+Presubmit-Ready+1: Treehugger Robot <treehugger-gerrit@google.com>
+Submitted-by: Kseniia Taraimovich <kseniia@google.com>
+Submitted-at: Thu, 22 Oct 2020 15:44:13 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1469628
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
