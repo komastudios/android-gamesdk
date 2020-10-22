@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6c793a01_d6109e59",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/PluginLayout.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-10-22T15:38:53Z",
+      "side": 1,
+      "message": "return Optional?",
+      "range": {
+        "startLine": 230,
+        "startChar": 0,
+        "endLine": 230,
+        "endChar": 54
+      },
+      "revId": "aefe621ed78b170d41a5bee37b0b8bf6e54c865c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f22ebdcc_9da9e9bf",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Quality/QualityTab.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-10-22T15:38:53Z",
+      "side": 1,
+      "message": "Could you return Optional?",
+      "range": {
+        "startLine": 83,
+        "startChar": 6,
+        "endLine": 86,
+        "endChar": 18
+      },
+      "revId": "aefe621ed78b170d41a5bee37b0b8bf6e54c865c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
