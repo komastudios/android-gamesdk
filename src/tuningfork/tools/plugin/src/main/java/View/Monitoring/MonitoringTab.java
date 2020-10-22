@@ -49,20 +49,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jfree.chart.ChartPanel;
-
 /*
- * The Logic of the monitoring goes as follow
- * 1-A new UploadTelemetry report is sent to the plugin
- * 2-Loading thread is interrupted
- * 3-The telemetry report is checked for the fidelity byte string. If it exists then isNewQuality = false
- * else isNewQuality = true and addFidelity property is fired
- * 4-Device specification is set
- * 5-Histograms are merged together. For each instrument key and the same fidelity parameters. they get merged
- * 6-Combobox is renewed with the unique instrument keys that exists so far.
- * 7-UI is refreshed by deleting all the old charts and making new charts
- * 8-Each chart represent a single instrument key. each chart will have data for all different quality
- * at the beginning. but the "Not selected quality" is deleted later on. But XYSeries originally saves
- * all quality settings data and deletes the one it doesn't need on plotting.
+ * Check README.MD#Monitoring_Tab for more information on how Monitoring works
  */
 public class MonitoringTab extends TabLayout implements PropertyChangeListener {
 
