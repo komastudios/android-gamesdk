@@ -22,6 +22,29 @@
       },
       "revId": "035fd4315acc89e9c9f310f300100873269409c1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4dec9308_f22aaf14",
+        "filename": "src/tuningfork/tools/plugin/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-10-22T12:01:33Z",
+      "side": 1,
+      "message": "Can you also add section how to start monitoring from device? What if one device is disconnected / another is connected, if report is loaded will it append the data or not.",
+      "range": {
+        "startLine": 47,
+        "startChar": 3,
+        "endLine": 47,
+        "endChar": 13
+      },
+      "revId": "035fd4315acc89e9c9f310f300100873269409c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
