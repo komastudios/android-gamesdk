@@ -18,6 +18,8 @@ package Utils.Monitoring;
 
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.common.io.ByteStreams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -25,8 +27,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.Optional;
@@ -47,10 +52,12 @@ public class RequestServer {
 
   private Optional<Consumer<UploadTelemetryRequest>> monitoringAction = Optional.empty();
   private Optional<Supplier<ByteString>> fidelitySupplier = Optional.empty();
+  private Optional<Consumer<JsonObject>> debugInfo = Optional.empty();
   private static RequestServer requestServer;
 
   private RequestServer() throws IOException {
-    httpServer = HttpServer.create(new InetSocketAddress("localhost", 9000), 0);
+    httpServer = HttpServer
+        .create(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000), 0);
     httpServer.setExecutor(THREAD_POOL_EXECUTOR);
     httpServer.createContext("/applications",
         new TuningForkHandler());
@@ -75,6 +82,10 @@ public class RequestServer {
 
   public void setFidelitySupplier(Supplier<ByteString> supplier) {
     this.fidelitySupplier = Optional.ofNullable(supplier);
+  }
+
+  public void setDebugInfoAction(Consumer<JsonObject> debugInfoAction) {
+    this.debugInfo = Optional.ofNullable(debugInfoAction);
   }
 
   public void stopListening() {
@@ -166,6 +177,11 @@ public class RequestServer {
 
   // Respond with code 200 for now
   private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
+    InputStream inputStream = httpExchange.getRequestBody();
+    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
+    if (debugInfo.isPresent()) {
+      debugInfo.get().accept(jsonObject);
+    }
     httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
     httpExchange.getResponseBody().flush();
     httpExchange.getResponseBody().close();

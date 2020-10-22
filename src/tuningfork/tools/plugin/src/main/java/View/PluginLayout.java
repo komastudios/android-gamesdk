@@ -17,8 +17,8 @@
 package View;
 
 import Controller.Annotation.AnnotationTabController;
-import Controller.Experimental.ExperimentalTabController;
 import Controller.Fidelity.FidelityTabController;
+import Controller.FidelityChanger.FidelityChangerController;
 import Controller.InstrumentationSettings.InstrumentationSettingsTabController;
 import Controller.Quality.QualityTabController;
 import Model.EnumDataModel;
@@ -26,8 +26,9 @@ import Model.MessageDataModel;
 import Model.QualityDataModel;
 import Utils.Resources.ResourceLoader;
 import View.Annotation.AnnotationTab;
-import View.Experimental.ExperimentalTab;
+import View.DebugInfo.debugInfoTab;
 import View.Fidelity.FidelityTab;
+import View.FidelityChanger.FidelityChanger;
 import View.InstrumentationSettings.InstrumentationSettingsTab;
 import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
@@ -73,6 +74,8 @@ public class PluginLayout extends JPanel {
   private FidelityTab fidelitySettingsLayout;
   private InstrumentationSettingsTab instrumentationSettingsTab;
   private MonitoringTab monitoringTab;
+  private FidelityChanger fidelityChanger;
+  private debugInfoTab debugInfoTab;
   private InstrumentationSettingsTabController instrumentationSettingsTabController;
   private JPanel menuPanel;
   private JTree menu;
@@ -129,7 +132,8 @@ public class PluginLayout extends JPanel {
     this.add(qualityLayout);
     this.add(instrumentationSettingsTab);
     this.add(monitoringTab);
-    this.add(experimentalTab);
+    this.add(fidelityChanger);
+    this.add(debugInfoTab);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -170,12 +174,15 @@ public class PluginLayout extends JPanel {
         resourceLoader.get("monitoring"));
     DefaultMutableTreeNode telemetryNode =
         new DefaultMutableTreeNode(resourceLoader.get("telemetry_report"));
-
+    DefaultMutableTreeNode debugInfo =
+        new DefaultMutableTreeNode(resourceLoader.get("debug_info"));
+    DefaultMutableTreeNode experimentalNode = new DefaultMutableTreeNode(
+        resourceLoader.get("fidelity_changer"));
     monitoringRoot.add(telemetryNode);
-    DefaultMutableTreeNode experimentalNode = new DefaultMutableTreeNode("Experimental");
+    monitoringRoot.add(debugInfo);
+    monitoringRoot.add(experimentalNode);
     root.add(settingsRoot);
     root.add(monitoringRoot);
-    root.add(experimentalNode);
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
@@ -196,7 +203,9 @@ public class PluginLayout extends JPanel {
       } else if (node.equals(telemetryNode)) {
         changeLayoutVisibility(monitoringTab);
       } else if (node.equals(experimentalNode)) {
-        changeLayoutVisibility(experimentalTab);
+        changeLayoutVisibility(fidelityChanger);
+      } else if (node.equals(debugInfo)) {
+        changeLayoutVisibility(debugInfoTab);
       } else if (!node.isLeaf()) {
         menu.setMinimumSize(menuSize);
       }
@@ -248,10 +257,13 @@ public class PluginLayout extends JPanel {
     monitoringTab.setSize(panelSize);
     monitoringTab.setVisible(false);
 
-    //Experimental initialization
-    experimentalTab = new ExperimentalTab(new ExperimentalTabController(qualityData));
-    experimentalTab.setVisible(false);
+    //Fidelity Changer initialization
+    fidelityChanger = new FidelityChanger(new FidelityChangerController(qualityData));
+    fidelityChanger.setVisible(false);
 
+    //Debug Info initialization.
+    debugInfoTab = new debugInfoTab();
+    debugInfoTab.setVisible(false);
     menuPanel = new JPanel();
 
     panels.add(qualityLayout);
@@ -259,7 +271,8 @@ public class PluginLayout extends JPanel {
     panels.add(fidelitySettingsLayout);
     panels.add(instrumentationSettingsTab);
     panels.add(monitoringTab);
-    panels.add(experimentalTab);
+    panels.add(fidelityChanger);
+    panels.add(debugInfoTab);
     initMenuTree();
   }
 
