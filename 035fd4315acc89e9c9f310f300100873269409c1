@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3ded1ed1_67337ca3",
+        "filename": "src/tuningfork/tools/plugin/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-22T15:16:14Z",
+      "side": 1,
+      "message": "The Launching headline is done for \"Launching In development mode\". I\u0027ll clarify that part. For launching in \"User Mode\". It\u0027ll be simply using the plugin in android studio as any other plugin.",
+      "parentUuid": "ed36d98b_b17ee096",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 0
+      },
+      "revId": "035fd4315acc89e9c9f310f300100873269409c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4dec9308_f22aaf14",
         "filename": "src/tuningfork/tools/plugin/README.md",
         "patchSetId": 4
@@ -37,6 +61,30 @@
       "writtenOn": "2020-10-22T12:01:33Z",
       "side": 1,
       "message": "Can you also add section how to start monitoring from device? What if one device is disconnected / another is connected, if report is loaded will it append the data or not.",
+      "range": {
+        "startLine": 47,
+        "startChar": 3,
+        "endLine": 47,
+        "endChar": 13
+      },
+      "revId": "035fd4315acc89e9c9f310f300100873269409c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8cac532f_10101a27",
+        "filename": "src/tuningfork/tools/plugin/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-22T15:16:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dec9308_f22aaf14",
       "range": {
         "startLine": 47,
         "startChar": 3,
