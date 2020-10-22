@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c8f638cc_09a085d7",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/PluginLayout.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-22T15:49:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6c793a01_d6109e59",
+      "range": {
+        "startLine": 230,
+        "startChar": 0,
+        "endLine": 230,
+        "endChar": 54
+      },
+      "revId": "aefe621ed78b170d41a5bee37b0b8bf6e54c865c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f22ebdcc_9da9e9bf",
@@ -37,6 +61,30 @@
       "writtenOn": "2020-10-22T15:38:53Z",
       "side": 1,
       "message": "Could you return Optional?",
+      "range": {
+        "startLine": 83,
+        "startChar": 6,
+        "endLine": 86,
+        "endChar": 18
+      },
+      "revId": "aefe621ed78b170d41a5bee37b0b8bf6e54c865c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51bdee77_49bbfbf1",
+        "filename": "src/tuningfork/tools/plugin/src/main/java/View/Quality/QualityTab.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1750078
+      },
+      "writtenOn": "2020-10-22T15:49:47Z",
+      "side": 1,
+      "message": "Returning Optional will be relatively hard as all of the validation calls expects \"null\" on good condition, otherwise a ValidationInfo. It will need changes and to be tested.",
+      "parentUuid": "f22ebdcc_9da9e9bf",
       "range": {
         "startLine": 83,
         "startChar": 6,
