@@ -137,7 +137,7 @@ public class AnnotationTab extends TabLayout implements PropertyChangeListener {
             }));
     nameColumn.setCellEditor(TabLayout.getTextFieldModel());
   }
-
+  @Override
   public boolean isViewValid() {
     return UIValidator.isComponentValid(annotationTable) && UIValidator
         .isTableCellsValid(annotationTable);

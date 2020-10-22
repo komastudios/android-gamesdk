@@ -30,21 +30,33 @@ import View.InstrumentationSettings.InstrumentationSettingsTab;
 import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
 import com.google.tuningfork.Tuningfork.Settings;
+import com.intellij.icons.AllIcons.General;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.ui.OnePixelDivider;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.JBUI.Borders;
 import com.intellij.util.ui.UIUtil;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeSelectionModel;
@@ -92,6 +104,14 @@ public class PluginLayout extends JPanel {
     this.setLayout(new HorizontalLayout());
     initComponents();
     addComponents();
+    initTreeValidationUpdater();
+  }
+
+  public void initTreeValidationUpdater() {
+    final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    scheduler.scheduleAtFixedRate(() -> SwingUtilities.invokeLater(() -> menu.repaint()), 0, 400,
+        TimeUnit.MILLISECONDS);
+    Disposer.register(disposable, scheduler::shutdown);
   }
 
   public boolean isViewValid() {
@@ -113,6 +133,15 @@ public class PluginLayout extends JPanel {
     for (JPanel panel : panels) {
       panel.setVisible(panel.equals(toSetVisible));
     }
+  }
+
+  private Map<String, TabLayout> initLayoutTree() {
+    Map<String, TabLayout> layoutMap = new HashMap<>();
+    layoutMap.put(resourceLoader.get("annotation_settings"), annotationsLayout);
+    layoutMap.put(resourceLoader.get("fidelity_settings"), fidelitySettingsLayout);
+    layoutMap.put(resourceLoader.get("quality_settings"), qualityLayout);
+    layoutMap.put(resourceLoader.get("instrumentation_settings"), instrumentationSettingsTab);
+    return layoutMap;
   }
 
   private void initMenuTree() {
@@ -145,7 +174,7 @@ public class PluginLayout extends JPanel {
     root.add(monitoringRoot);
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
-    menu.setCellRenderer(new CustomCellRenderer());
+    menu.setCellRenderer(new CustomCellRenderer(initLayoutTree()));
     menu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     menu.setRootVisible(false);
     menu.addTreeSelectionListener(treeSelectionEvent -> {
@@ -223,33 +252,57 @@ public class PluginLayout extends JPanel {
     initMenuTree();
   }
 
-  static class CustomCellRenderer extends DefaultTreeCellRenderer {
+  private static class CustomCellRenderer extends DefaultTreeCellRenderer {
 
-    CustomCellRenderer() {
+    private final JPanel jPanel;
+    private final JLabel iconLabel;
+    private final Map<String, TabLayout> layoutMap;
+
+    public CustomCellRenderer(Map<String, TabLayout> layoutMap) {
+      this.layoutMap = layoutMap;
       setLeafIcon(null);
       setClosedIcon(null);
       setOpenIcon(null);
+      jPanel = new JPanel(new BorderLayout(0, 0));
+      iconLabel = new JLabel();
+      jPanel.add(iconLabel, BorderLayout.EAST);
+      iconLabel.setOpaque(false);
+      iconLabel.setBorder(null);
+      setBorderSelectionColor(null);
+    }
+
+    private static Border iconBorder() {
+      return Borders.emptyRight(UIUtil.isUnderWin10LookAndFeel() ? 4 : 3);
+    }
+
+    private TabLayout findLayoutByName(String name) {
+      return layoutMap.getOrDefault(name, null);
     }
 
     @Override
-    public Component getTreeCellRendererComponent(
-        JTree jTree,
-        Object value,
-        boolean selected,
-        boolean expanded,
-        boolean leaf,
-        int row,
-        boolean hasFocus) {
-      Component cell =
-          super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
+    public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected,
+        boolean expanded, boolean leaf, int row, boolean hasFocus) {
+      JLabel cell =
+          (JLabel) super
+              .getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
 
       if (!leaf) {
         cell.setFont(new Font("Roboto", Font.BOLD, 13));
+        iconLabel.setIcon(null);
       } else {
         cell.setFont(new Font("Roboto", Font.PLAIN, 12));
+        TabLayout layout = findLayoutByName(value.toString());
+        if (layout != null && !layout.isViewValid()) {
+          iconLabel.setIcon(General.BalloonError);
+        } else {
+          iconLabel.setIcon(null);
+        }
       }
 
-      return cell;
+      iconLabel.setBorder(iconBorder());
+      jPanel.add(cell, BorderLayout.CENTER);
+      jPanel.setBackground(cell.getBackground());
+      return jPanel;
     }
   }
 
