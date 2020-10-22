@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed36d98b_b17ee096",
+        "filename": "src/tuningfork/tools/plugin/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2020-10-22T11:59:36Z",
+      "side": 1,
+      "message": "How would it work for developers if plugin is already published and no need to clone source code of the project?",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 0
+      },
+      "revId": "035fd4315acc89e9c9f310f300100873269409c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
