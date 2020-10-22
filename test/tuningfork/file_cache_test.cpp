@@ -60,7 +60,7 @@ class FileCacheTest {
     static std::string GetPath() {
         // Use JNI if we can, for app cache usage rather than /data/local/tmp
         init_jni_for_tests();
-        if (jni::IsValid()) {
+        if (gamesdk::jni::IsValid()) {
             return file_utils::GetAppCacheDir() + "/tuningfork_file_test";
         } else {
             return kBasePath;

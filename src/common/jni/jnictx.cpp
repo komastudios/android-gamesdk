@@ -21,7 +21,7 @@
 #include "Log.h"
 #define LOG_TAG "JniCtx"
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -72,4 +72,4 @@ void Ctx::DetachThread() const {
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk

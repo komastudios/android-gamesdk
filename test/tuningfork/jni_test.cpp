@@ -22,7 +22,7 @@
 // available, return false.
 extern "C" bool init_jni_for_tests();
 
-using namespace tuningfork;
+using namespace gamesdk;
 
 TEST(JNI, Init) {
     EXPECT_EQ(jni::IsValid(), false) << ": should not be valid before init";

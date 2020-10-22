@@ -28,7 +28,7 @@
         return A;                                          \
     }
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -227,4 +227,4 @@ inline void DumpLocalRefTable() {}
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk

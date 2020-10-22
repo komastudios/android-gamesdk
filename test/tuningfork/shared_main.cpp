@@ -121,10 +121,10 @@ class GTestRecorder : public EmptyTestEventListener {
 }  // namespace
 
 extern "C" bool init_jni_for_tests() {
-    tuningfork::jni::Init(s_env, s_context);
+    gamesdk::jni::Init(s_env, s_context);
     return true;
 }
-extern "C" void clear_jni_for_tests() { tuningfork::jni::Destroy(); }
+extern "C" void clear_jni_for_tests() { gamesdk::jni::Destroy(); }
 
 extern "C" int shared_main(int argc, char* argv[], JNIEnv* env, jobject context,
                            std::string& messages) {

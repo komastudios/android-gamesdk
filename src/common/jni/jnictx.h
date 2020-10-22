@@ -18,7 +18,7 @@
 
 #include <jni.h>
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -50,4 +50,4 @@ class Ctx {
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk

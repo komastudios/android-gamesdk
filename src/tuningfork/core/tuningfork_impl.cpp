@@ -238,7 +238,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
             *training_mode_params_;
     }
     RequestInfo::CachedValue().experiment_id = experiment_id;
-    if (Debugging() && jni::IsValid()) {
+    if (Debugging() && gamesdk::jni::IsValid()) {
         backend_->UploadDebugInfo(web_request);
     }
     return result;
@@ -532,7 +532,7 @@ bool TuningForkImpl::Debugging() const {
     return true;
 #else
     // Otherwise, check the APK and system settings
-    if (jni::IsValid())
+    if (gamesdk::jni::IsValid())
         return apk_utils::GetDebuggable();
     else
         return false;

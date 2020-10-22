@@ -16,7 +16,7 @@
 
 #include "jni/jni_wrap.h"
 
-namespace tuningfork {
+namespace gamesdk {
 
 namespace jni {
 
@@ -32,4 +32,4 @@ constexpr const char Build::class_name[];
 
 }  // namespace jni
 
-}  // namespace tuningfork
+}  // namespace gamesdk
