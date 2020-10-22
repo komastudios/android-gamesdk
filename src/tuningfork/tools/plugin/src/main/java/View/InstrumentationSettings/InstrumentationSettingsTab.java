@@ -61,7 +61,7 @@ public class InstrumentationSettingsTab extends TabLayout {
   private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
   private final static float LOWEST_RECOMMENDED_BUCKET = (float) (1.00 / 60 * 1000);
   private final static float HIGHEST_RECOMMENDED_BUCKET = (float) (1.00 / 30 * 1000);
-  private final JBLabel instrumentationLabel = new JBLabel("Settings parameters");
+  private final JBLabel instrumentationLabel = new JBLabel("Instrumentation Settings");
   private JPanel decoratorPanel;
 
   private JRadioButton radioButtonTimeBased;
@@ -194,7 +194,7 @@ public class InstrumentationSettingsTab extends TabLayout {
     aggregationPanel.add(radioButtonsPanel);
     JPanel sliderPanel = new JPanel(new HorizontalLayout(0));
     sliderPanel.add(intervalSlider);
-    // This panel was made just to aligh slider with the label on horizontal level
+    // This panel was made just to align slider with the label on horizontal level
     JPanel temporaryPanel = new JPanel(new VerticalLayout());
     temporaryPanel.add(Box.createVerticalStrut(5));
     temporaryPanel.add(sliderValueLabel);
@@ -239,10 +239,10 @@ public class InstrumentationSettingsTab extends TabLayout {
     radioButtonGroup.add(radioButtonTimeBased);
     radioButtonTimeBased.addItemListener(new TimeRadioButtonsChange());
     radioButtonIntervalBased.addItemListener(new TickRadioButtonsChange());
-    initIntegerTextField(instrumentationTable, 0);
+    initIntegerTextField(instrumentationTable, 0, true);
     initNumberTextField(instrumentationTable, 1);
     initNumberTextField(instrumentationTable, 2);
-    initIntegerTextField(instrumentationTable, 3);
+    initIntegerTextField(instrumentationTable, 3, false);
     decoratorPanel.setMinimumSize(new Dimension(300, 120));
     decoratorPanel.setPreferredSize(new Dimension(600, 180));
     intervalSlider.setPreferredSize(new Dimension(500, 50));
@@ -281,12 +281,20 @@ public class InstrumentationSettingsTab extends TabLayout {
     instrumentationTable.clearSelection();
   }
 
-  public void initIntegerTextField(JTable table, int col) {
+  public void initIntegerTextField(JTable table, int col, boolean canBeZero) {
     TableColumn column = table.getColumnModel().getColumn(col);
     column.setCellEditor(getIntegerTextFieldModel());
-    column
-        .setCellRenderer(TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
-            new IntegerTextFieldValidator()));
+    if (!canBeZero) {
+      column
+          .setCellRenderer(
+              TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+                  new IntegerTextFieldValidator()));
+    } else {
+      column
+          .setCellRenderer(
+              TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+                  new NonNegativeTextFieldValidator()));
+    }
   }
 
   public void initNumberTextField(JTable table, int col) {
@@ -310,6 +318,24 @@ public class InstrumentationSettingsTab extends TabLayout {
       // A zero or negative integer
       if (bigInteger.compareTo(BigInteger.ZERO) <= 0) {
         return new ValidationInfo(String.format(RESOURCE_LOADER.get("less_than_zero_error"), str));
+      }
+      return null;
+    }
+  }
+
+  private static final class NonNegativeTextFieldValidator implements TableCellValidator {
+
+    @Override
+    public ValidationInfo validate(Object o, int i, int i1) {
+      String str = o.toString();
+      ValidationInfo validationInfo = ValidationTool.getIntegerValueValidationInfo(str);
+      if (validationInfo != null) {
+        return validationInfo;
+      }
+      BigInteger bigInteger = new BigInteger(str);
+      // A zero or negative integer
+      if (bigInteger.compareTo(BigInteger.ZERO) < 0) {
+        return new ValidationInfo(String.format(RESOURCE_LOADER.get("non_negative_error"), str));
       }
       return null;
     }

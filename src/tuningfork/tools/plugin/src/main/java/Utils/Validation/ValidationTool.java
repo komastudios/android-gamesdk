@@ -90,6 +90,14 @@ public final class ValidationTool {
     return null;
   }
 
+  public static boolean isInteger(String strValue) {
+    return getIntegerValueValidationInfo(strValue) == null;
+  }
+
+  public static boolean isDecimal(String strValue) {
+    return getFloatValueValidationInfo(strValue) == null;
+  }
+
   public static ValidationInfo getFloatValueValidationInfo(String strValue) {
     if (strValue.isEmpty()) {
       return new ValidationInfo(RESOURCE_LOADER.get("field_empty_error"));

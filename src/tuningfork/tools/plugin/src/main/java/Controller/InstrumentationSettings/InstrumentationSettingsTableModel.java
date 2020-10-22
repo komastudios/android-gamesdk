@@ -16,6 +16,7 @@
 
 package Controller.InstrumentationSettings;
 
+import Utils.Validation.ValidationTool;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,14 +81,15 @@ public class InstrumentationSettingsTableModel extends AbstractTableModel {
   @Override
   public void setValueAt(Object value, int row, int column) {
     data.get(row)[column] = value.toString();
-    if (column == 0) {
-      controller.setHistogramInstrumentID(row, value.toString());
-    } else if (column == 1) {
-      controller.setHistogramMinimumBucketSize(row, value.toString());
-    } else if (column == 2) {
-      controller.setHistogramMaximumBucketSize(row, value.toString());
-    } else if (column == 3) {
-      controller.setHistogramNumberOfBuckets(row, value.toString());
+    String strValue = value.toString();
+    if (column == 0 && ValidationTool.isInteger(strValue)) {
+      controller.setHistogramInstrumentID(row, strValue);
+    } else if (column == 1 && ValidationTool.isDecimal(strValue)) {
+      controller.setHistogramMinimumBucketSize(row, strValue);
+    } else if (column == 2 && ValidationTool.isDecimal(strValue)) {
+      controller.setHistogramMaximumBucketSize(row, strValue);
+    } else if (column == 3 && ValidationTool.isInteger(strValue)) {
+      controller.setHistogramNumberOfBuckets(row, strValue);
     }
     fireTableCellUpdated(row, column);
   }

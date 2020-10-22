@@ -26,14 +26,18 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -46,37 +50,42 @@ public class UIValidator {
 
   public static final String ILLEGAL_TEXT_PATTERN = "[{|}]";
   public static final String VALIDATION_METHOD = "ComponentValidation.Method";
+  public static final String ORIGINAL_BORDER = "Component.Border";
 
   public static void createTableValidator(Disposable disposable, JTable table,
       Supplier<ValidationInfo> validationMethod) {
     TableModelListener tableModelListener = new ComponentTableValidationUpdater(table,
         validationMethod);
     table.getModel().addTableModelListener(tableModelListener);
-    FocusListener focusListener = new ComponentFocusValidationUpdater(table, validationMethod);
-    table.addFocusListener(focusListener);
-    Disposer.register(disposable, () -> {
-      table.removeFocusListener(focusListener);
-      table.getModel().removeTableModelListener(tableModelListener);
-    });
-    table.putClientProperty(VALIDATION_METHOD, validationMethod);
+    Disposer
+        .register(disposable, () -> table.getModel().removeTableModelListener(tableModelListener));
+    createSimpleValidation(disposable, table, validationMethod);
   }
 
   public static void createSimpleValidation(Disposable disposable, JComponent jComponent,
       Supplier<ValidationInfo> validationMethod) {
+    FocusListener focusListener = new ComponentFocusValidationUpdater(jComponent, validationMethod);
+    jComponent.addFocusListener(focusListener);
     jComponent.putClientProperty(VALIDATION_METHOD, validationMethod);
+    jComponent.putClientProperty(ORIGINAL_BORDER, jComponent.getBorder());
+    Disposer.register(disposable, () -> jComponent.removeFocusListener(focusListener));
+  }
+
+  public static void createComboBoxValidation(Disposable disposable, JComboBox<?> jComponent,
+      Supplier<ValidationInfo> validationMethod) {
+    createSimpleValidation(disposable, jComponent, validationMethod);
+    ActionListener actionListener = new ComponentActionValidationUpdater(jComponent,
+        validationMethod);
+    jComponent.addActionListener(actionListener);
+    Disposer.register(disposable, () -> jComponent.removeActionListener(actionListener));
   }
 
   public static void createSliderValidator(Disposable disposable, JSlider jSlider,
       Supplier<ValidationInfo> validationMethod) {
-    FocusListener focusListener = new ComponentFocusValidationUpdater(jSlider, validationMethod);
-    jSlider.addFocusListener(focusListener);
     ChangeListener changeListener = new ComponentSliderValidationUpdate(jSlider, validationMethod);
     jSlider.addChangeListener(changeListener);
-    Disposer.register(disposable, () -> {
-      jSlider.removeFocusListener(focusListener);
-      jSlider.removeChangeListener(changeListener);
-    });
-    jSlider.putClientProperty(VALIDATION_METHOD, validationMethod);
+    Disposer.register(disposable, () -> jSlider.removeChangeListener(changeListener));
+    createSimpleValidation(disposable, jSlider, validationMethod);
   }
 
   public static void createTextValidator(Disposable disposable, JTextField jTextField,
@@ -166,7 +175,7 @@ public class UIValidator {
       return;
     }
     jComponent.setToolTipText("");
-    jComponent.setBorder(null);
+    jComponent.setBorder((Border) jComponent.getClientProperty(ORIGINAL_BORDER));
   }
 
   private static void updateValidationRoundedBorder(
@@ -207,6 +216,23 @@ public class UIValidator {
 
     @Override
     public void focusLost(FocusEvent e) {
+      updateValidationLineBorder(validationMethod, jComponent);
+    }
+  }
+
+  private final static class ComponentActionValidationUpdater implements ActionListener {
+
+    private final JComponent jComponent;
+    private final Supplier<ValidationInfo> validationMethod;
+
+    public ComponentActionValidationUpdater(JComponent jComponent,
+        Supplier<ValidationInfo> supplier) {
+      this.jComponent = jComponent;
+      this.validationMethod = supplier;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
       updateValidationLineBorder(validationMethod, jComponent);
     }
   }
