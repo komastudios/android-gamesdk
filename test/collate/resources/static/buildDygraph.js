@@ -20,6 +20,8 @@ function hashCode(str) {
 }
 
 export function buildDygraph(graphDiv, deviceInfo, result) {
+  const seriesForm = document.getElementById('seriesForm');
+
   const highlights = [];
 
   const annotations = [];
@@ -246,5 +248,30 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
 
   });
 
+  for (let idx = 0; idx !== fields.length; idx++) {
+    const field = fields[idx];
+    if (!(field in series)) {
+      continue;
+    }
+    const _series = series[field];
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    label.appendChild(input);
+    label.style.setProperty('color', _series.color);
+    input.setAttribute('type', 'checkbox');
+    input.setAttribute('name', field);
+    if (localStorage.getItem(field) === 'false') {
+      graph.setVisibility(idx - 1, false);
+    } else {
+      input.checked = true;
+    }
+
+    input.addEventListener('change', evt => {
+      localStorage.setItem(field, input.checked);
+      graph.setVisibility(idx - 1, input.checked);
+    });
+    label.appendChild(document.createTextNode(field));
+    seriesForm.appendChild(label);
+  }
   graph.ready(() => graph.setAnnotations(annotations));
 }
