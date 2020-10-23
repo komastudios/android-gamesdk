@@ -21,8 +21,7 @@ for (const result of data) {
 
   result.sort((a, b) => rowTime(a) > rowTime(b) ? 1 : -1);
 
-  const section = document.createElement('section');
-  document.body.appendChild(section);
+const section = document.getElementsByTagName('main')[0];
 
   if ('extra' in first) {
     const extra = first.extra;
