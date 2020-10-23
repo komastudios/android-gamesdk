@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set( _MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 set( THIRD_PARTY_LOCATION "${_MY_DIR}/../../third_party")
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror" )
 
 # Include Google Test
 set(ANDROID_GTEST_DIR "../../../external/googletest")

@@ -1,5 +1,7 @@
 package net.jimblackler.collate;
 
+import static net.jimblackler.collate.JsonUtils.getSchema;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +44,7 @@ class Collector {
 
   static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
       throws IOException {
+    Schema resultsRowSchema = getSchema("resultsRow.schema.json");
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
     // noinspection HardcodedFileSeparator
@@ -47,7 +52,7 @@ class Collector {
         "/storage/emulated/0/Android/data/" + appName + "/files", "-type", "f");
     for (String file : files.split(System.lineSeparator())) {
       Utils.execute("adb", "pull", file, outputFile.toString());
-      collectResult(emitter, Files.readString(outputFile), null);
+      collectResult(emitter, Files.readString(outputFile), null, resultsRowSchema);
     }
   }
 
@@ -58,6 +63,7 @@ class Collector {
 
     String projectId = Utils.getProjectId();
 
+    Schema resultsRowSchema = getSchema("resultsRow.schema.json");
     Map<String, JSONObject> launcherDevices = new HashMap<>();
     DeviceFetcher.fetch(device -> { launcherDevices.put(device.getString("id"), device); });
 
@@ -162,7 +168,7 @@ class Collector {
                       }
                     }
                   }
-                  collectResult(emitter, contents, extra);
+                  collectResult(emitter, contents, extra, resultsRowSchema);
                 }
                 String nextPageToken1 = response1.getNextPageToken();
                 if (nextPageToken1 == null) {
@@ -210,15 +216,18 @@ class Collector {
   }
 
   private static void collectResult(
-      Consumer<? super JSONArray> emitter, String text, JSONObject extra) {
+      Consumer<? super JSONArray> emitter, String text, JSONObject extra, Schema resultsRowSchema) {
     JSONArray data = new JSONArray();
     text.lines().forEach(line -> {
       line = line.trim();
       try {
         JSONObject value = new JSONObject(line);
+        resultsRowSchema.validate(value);
         data.put(value);
       } catch (JSONException e) {
         System.out.println("Not JSON: " + line);
+      } catch (ValidationException e) {
+        System.out.println("Did not validate: " + e.getMessage());
       }
     });
     if (data.isEmpty()) {

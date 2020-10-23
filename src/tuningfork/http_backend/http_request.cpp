@@ -34,15 +34,36 @@ std::string HttpRequest::GetURL(std::string rpcname) const {
     return url.str();
 }
 
+static TuningFork_ErrorCode ConnectionIsMetered(bool& value) {
+    using namespace gamesdk::jni;
+    java::Object obj = AppContext().getSystemService(
+        android::content::Context::CONNECTIVITY_SERVICE);
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TUNINGFORK_ERROR_JNI_EXCEPTION);
+    if (obj.IsNull())
+        return TUNINGFORK_ERROR_BAD_PARAMETER;  // Can't get service
+    android::net::ConnectivityManager cm(std::move(obj));
+    value = cm.isActiveNetworkMetered();
+    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION);  // Most likely missing
+                                          // Manifest.permission.ACCESS_NETWORK_STATE
+                                          // or no active network.
+    return TUNINGFORK_ERROR_OK;
+}
+
 TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
                                        const std::string& request_json,
                                        int& response_code,
                                        std::string& response_body) {
-    if (!jni::IsValid()) return TUNINGFORK_ERROR_JNI_BAD_ENV;
+    if (!gamesdk::jni::IsValid()) return TUNINGFORK_ERROR_JNI_BAD_ENV;
+    bool connection_is_metered;
+    auto err = ConnectionIsMetered(connection_is_metered);
+    if (err != TUNINGFORK_ERROR_OK) return err;
+    if ((!allow_metered_) && connection_is_metered)
+        return TUNINGFORK_ERROR_METERED_CONNECTION_DISALLOWED;
     auto uri = GetURL(rpc_name);
     ALOGI("Connecting to: %s", uri.c_str());
 
-    using namespace jni;
+    using namespace gamesdk::jni;
 
     auto url = java::net::URL(uri);
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(

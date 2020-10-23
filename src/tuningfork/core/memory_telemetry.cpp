@@ -113,7 +113,7 @@ void MemInfoTask::DoWork(Session *session) {
 }
 
 uint64_t DefaultMemInfoProvider::GetNativeHeapAllocatedSize() {
-    if (jni::IsValid()) {
+    if (gamesdk::jni::IsValid()) {
         // Call android.os.Debug.getNativeHeapAllocatedSize()
         return android_debug_.getNativeHeapAllocatedSize();
     }

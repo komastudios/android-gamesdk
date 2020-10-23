@@ -25,27 +25,25 @@ import org.json.JSONObject;
  * The limits are compatible with the lab test stress results.
  */
 class OnDeviceStressTester {
-  private static final String TAG = OnDeviceStressTester.class.getSimpleName();
-
   // Message codes for inter-process communication.
   public static final int GET_BASELINE_METRICS = 1;
   public static final int GET_BASELINE_METRICS_RETURN = 2;
   public static final int OCCUPY_MEMORY = 3;
   public static final int OCCUPY_MEMORY_OK = 4;
   public static final int OCCUPY_MEMORY_FAILED = 5;
-
   public static final int SERVICE_CHECK_FREQUENCY = 250;
-
+  private static final String TAG = OnDeviceStressTester.class.getSimpleName();
   private final ServiceConnection serviceConnection;
 
   /**
    * Construct an on-device stress tester.
-   * @param context The current context.
-   * @param params The configuration parameters for the tester.
+   *
+   * @param context  The current context.
+   * @param params   The configuration parameters for the tester.
    * @param consumer The handler to call back when the test is complete.
    */
-  OnDeviceStressTester(final Context context, final JSONObject params, final Consumer consumer) {
-    final Intent launchIntent = new Intent(context, StressService.class);
+  OnDeviceStressTester(Context context, JSONObject params, Consumer consumer) {
+    Intent launchIntent = new Intent(context, StressService.class);
     serviceConnection = new ServiceConnection() {
       private Messenger messenger;
       private JSONObject baseline;
@@ -76,7 +74,7 @@ class OnDeviceStressTester {
                 } catch (JSONException e) {
                   throw new MemoryAdvisorException(e);
                 }
-                final int servicePid = msg.arg1;
+                int servicePid = msg.arg1;
                 serviceWatcherTimer = new Timer();
                 serviceWatcherTimer.scheduleAtFixedRate(new TimerTask() {
                   @Override

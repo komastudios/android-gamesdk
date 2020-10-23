@@ -20,19 +20,17 @@ import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 
 public class FidelityTablePanel extends JPanel {
 
   private final JComboBox<String> enumTypes;
-  private final JTextField enumName;
+  private final FidelityValidatablePanelWithTextField enumName;
   private FidelityTableData fidelityData;
 
   public FidelityTablePanel() {
     setLayout(new GridLayout(1, 2));
     enumTypes = new ComboBox<>();
-    enumName = new JTextField();
+    enumName = new FidelityValidatablePanelWithTextField();
     fidelityData = new FidelityTableData();
     add(enumTypes);
     add(enumName);
@@ -42,8 +40,12 @@ public class FidelityTablePanel extends JPanel {
     return enumTypes;
   }
 
+  public FidelityValidatablePanelWithTextField getTextFieldPanel() {
+    return enumName;
+  }
+
   public String getEnumName() {
-    return enumName.getText();
+    return enumName.getTextField().getText();
   }
 
   public String getEnumType() {
@@ -60,14 +62,9 @@ public class FidelityTablePanel extends JPanel {
     }
   }
 
-  public void updateData(FidelityTableData fidelityData, boolean isSelected, JTable table) {
+  public void updateData(FidelityTableData fidelityData) {
     this.fidelityData = fidelityData;
     enumTypes.setSelectedItem(this.fidelityData.getFieldEnumName());
-    enumName.setText(this.fidelityData.getFieldParamName());
-    if (isSelected) {
-      setBackground(table.getSelectionBackground());
-    } else {
-      setBackground(table.getBackground());
-    }
+    enumName.getTextField().setText(this.fidelityData.getFieldParamName());
   }
 }

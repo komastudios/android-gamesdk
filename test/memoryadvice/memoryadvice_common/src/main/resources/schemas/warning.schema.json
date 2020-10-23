@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Warning",
+  "description": "A memory warning sent by the memory advice library.",
+  "type": "object",
+  "maxProperties": 2,
+  "properties": {
+    "level": {
+      "enum": ["red", "yellow"]
+    }
+  },
+  "required": ["level"]
+}

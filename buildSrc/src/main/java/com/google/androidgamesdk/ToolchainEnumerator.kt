@@ -1,6 +1,8 @@
 package com.google.androidgamesdk
 
 import org.gradle.api.Project
+import java.lang.reflect.UndeclaredThrowableException
+import java.util.stream.Collectors
 
 /**
  * Expose the toolchains to use to compile a library against all combinations
@@ -88,9 +90,9 @@ class ToolchainEnumerator {
         project: Project,
         abi: String,
         stl: String,
-        ndkToSdks: Map<String, List<Int>>
+        ndksToSdks: Map<String, List<Int>>
     ): List<EnumeratedToolchain> {
-        return ndkToSdks.flatMap { ndkToSdks ->
+        return ndksToSdks.flatMap { ndkToSdks ->
             val ndk: String = ndkToSdks.key
             ndkToSdks.value.map { sdk ->
                 EnumeratedToolchain(
@@ -101,9 +103,65 @@ class ToolchainEnumerator {
         }
     }
 
+    /**
+     * Execute the specified function concurrently on the toolchains.
+     * In case of an exception, it will be rethrown early (not waiting for
+     * all tasks to finish).
+     */
+    @Throws(Exception::class)
+    fun <T> parallelMap(
+        toolchains: List<EnumeratedToolchain>,
+        f: (EnumeratedToolchain) -> T
+    ): List<T> {
+        return toolchains.parallelStream().map { toolchain ->
+            try {
+                f(toolchain)
+            } catch (e: UndeclaredThrowableException) {
+                // Groovy thrown exceptions will be wrapped in a
+                // UndeclaredThrowableException. Unwrap them.
+                throw e.cause ?: e
+            }
+        }.collect(Collectors.toList())
+    }
+
     data class EnumeratedToolchain(
         val abi: String,
         val stl: String,
         val toolchain: Toolchain
     )
+
+    companion object {
+        /**
+         * Filter the libraries to keep only those who are compatible
+         * with the Android version, NDK version and STL specified in the
+         * toolchain/build options.
+         */
+        @JvmStatic
+        fun filterBuiltLibraries(
+            libraries: Collection<NativeLibrary>,
+            buildOptions: BuildOptions,
+            toolchain: Toolchain
+        ): Collection<NativeLibrary> {
+            return libraries.filter { nativeLibrary ->
+                val androidVersion = toolchain.getAndroidVersion().toInt()
+                val ndkVersion = toolchain.getNdkVersionNumber().toInt()
+                if (nativeLibrary.minimumAndroidApiLevel != null &&
+                    nativeLibrary.minimumAndroidApiLevel!! > androidVersion
+                ) {
+                    false
+                } else if (nativeLibrary.minimumNdkVersion != null &&
+                    nativeLibrary.minimumNdkVersion!! > ndkVersion
+                ) {
+                    false
+                } else if (nativeLibrary.supportedStlVersions != null &&
+                    !nativeLibrary.supportedStlVersions!!
+                        .contains(buildOptions.stl)
+                ) {
+                    false
+                } else {
+                    true
+                }
+            }
+        }
+    }
 }

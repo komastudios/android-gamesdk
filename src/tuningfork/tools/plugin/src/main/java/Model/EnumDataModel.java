@@ -47,6 +47,10 @@ public class EnumDataModel {
     return name;
   }
 
+  public int size() {
+    return options.size();
+  }
+
   public void updateName(String name) {
     this.name = name;
   }

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Heuristics",
+  "description": "Configuration for a set of memory management (heuristic) techniques.",
+  "properties": {
+    "try": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "lowMemory": {
+      "type": "boolean"
+    },
+    "mapTester": {
+      "type": "boolean"
+    },
+    "canaryProcessTester": {
+      "type": "boolean"
+    },
+    "onTrim": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": {
+    "$ref": "heuristic.schema.json"
+  },
+  "type": "object"
+}

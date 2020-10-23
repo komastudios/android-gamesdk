@@ -29,6 +29,7 @@ class HttpRequest {
     std::string base_url_;
     std::string api_key_;
     Duration timeout_;
+    bool allow_metered_ = false;
 
    public:
     HttpRequest(std::string base_url, std::string api_key, Duration timeout)
@@ -39,6 +40,10 @@ class HttpRequest {
                                       const std::string& request_json,
                                       int& response_code,
                                       std::string& response_body);
+    HttpRequest& AllowMetered(bool allow) {
+        allow_metered_ = allow;
+        return *this;
+    }
 };
 
 }  // namespace tuningfork

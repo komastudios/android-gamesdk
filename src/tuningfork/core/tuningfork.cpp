@@ -29,7 +29,6 @@
 #include "Log.h"
 #include "annotation_util.h"
 #include "histogram.h"
-#include "http_backend/http_backend.h"
 #include "memory_telemetry.h"
 #include "metric.h"
 #include "tuningfork_utils.h"
@@ -63,24 +62,8 @@
 
 namespace tuningfork {
 
-class ChronoTimeProvider : public ITimeProvider {
-   public:
-    TimePoint Now() override { return std::chrono::steady_clock::now(); }
-    SystemTimePoint SystemNow() override {
-        return std::chrono::system_clock::now();
-    }
-    Duration TimeSinceProcessStart() override {
-        return GetTimeSinceProcessStart();
-    }
-};
-
 static std::unique_ptr<TuningForkImpl> s_impl;
-static std::unique_ptr<ChronoTimeProvider> s_chrono_time_provider =
-    std::make_unique<ChronoTimeProvider>();
-static HttpBackend s_backend;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
-static std::unique_ptr<DefaultMemInfoProvider> s_meminfo_provider =
-    std::make_unique<DefaultMemInfoProvider>();
 
 TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
@@ -95,29 +78,14 @@ TuningFork_ErrorCode Init(const Settings &settings,
             RequestInfo::ForThisGameAndDevice(settings);
     }
 
-    if (backend == nullptr) {
-        TuningFork_ErrorCode err = s_backend.Init(settings);
-        if (err == TUNINGFORK_ERROR_OK) {
-            ALOGI("TuningFork.GoogleEndpoint: OK");
-            backend = &s_backend;
-        } else {
-            ALOGE("TuningFork.GoogleEndpoint: FAILED");
-            return err;
-        }
-    }
-
-    if (time_provider == nullptr) {
-        time_provider = s_chrono_time_provider.get();
-    }
-
-    if (meminfo_provider == nullptr) {
-        meminfo_provider = s_meminfo_provider.get();
-        meminfo_provider->SetDeviceMemoryBytes(
-            RequestInfo::CachedValue().total_memory_bytes);
-    }
-
     s_impl = std::make_unique<TuningForkImpl>(settings, backend, time_provider,
                                               meminfo_provider, first_run);
+
+    if (s_impl->InitializationErrorCode() != TUNINGFORK_ERROR_OK) {
+        auto err = s_impl->InitializationErrorCode();
+        s_impl.reset();
+        return err;
+    }
 
     // Set up the Swappy tracer after TuningFork is initialized
     if (settings.c_settings.swappy_tracer_fn != nullptr) {
@@ -203,7 +171,6 @@ TuningFork_ErrorCode Destroy() {
     if (!s_impl) {
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
-        s_backend.KillThreads();
         s_impl.reset();
         return TUNINGFORK_ERROR_OK;
     }
@@ -237,7 +204,8 @@ TuningFork_ErrorCode RecordLoadingTime(
     if (!s_impl)
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else
-        return s_impl->RecordLoadingTime(duration, d, annotation);
+        return s_impl->RecordLoadingTime(duration, d, annotation,
+                                         false /*relativeToStart*/);
 }
 
 TuningFork_ErrorCode StartRecordingLoadingTime(
@@ -277,7 +245,7 @@ bool CheckIfFirstRun() {
 std::string DefaultTuningForkSaveDirectory() {
     std::stringstream save_dir;
     // Try the app's cache dir or tmp storage.
-    if (jni::IsValid())
+    if (gamesdk::jni::IsValid())
         save_dir << file_utils::GetAppCacheDir();
     else
         save_dir << "/data/local/tmp";

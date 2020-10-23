@@ -18,55 +18,86 @@ package Utils.Monitoring;
 
 import com.google.android.performanceparameters.v1.PerformanceParameters.UploadTelemetryRequest;
 import com.google.common.io.ByteStreams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Base64;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestServer {
 
-  private static Thread serverThread;
-  private static ServerSocket serverSocket;
+  private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor) Executors
+      .newFixedThreadPool(5);
+  private final HttpServer localNetworkHttpServer, localHostHttpServer;
   private static boolean isBound = false;
-  private static final String EXPONENT_PATTERN = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
+  private final String EXPONENT_PATTERN = "\"duration\": \"[0-9]+\\.[0-9]+[eE][+-][0-9]+s\"";
 
-  public static void listen(Consumer<UploadTelemetryRequest> consumer)
-      throws IOException {
-    serverSocket = new ServerSocket(9000);
-    if (serverSocket.isBound()) {
-      isBound = true;
-    }
-    serverThread = new Thread("Device Listener") {
-      public void run() {
-        try {
-          Socket socket = null;
-          while ((socket = serverSocket.accept()) != null) {
-            String stringResponse = new String(ByteStreams.toByteArray(socket.getInputStream()));
-            if (stringResponse.contains("uploadTelemetry HTTP/1.1")) {
-              String jsonFromResponse = "{" + stringResponse.split("\\{", 2)[1];
-              consumer.accept(parseJsonTelemetry(jsonFromResponse));
-            }
-          }
-          serverSocket.close();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    };
-    serverThread.start();
+  private Optional<Consumer<UploadTelemetryRequest>> monitoringAction = Optional.empty();
+  private Optional<Supplier<ByteString>> fidelitySupplier = Optional.empty();
+  private Optional<Consumer<JsonObject>> debugInfo = Optional.empty();
+  private static RequestServer requestServer;
+
+  private RequestServer() throws IOException {
+    localNetworkHttpServer = HttpServer
+        .create(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9000), 0);
+    localNetworkHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localNetworkHttpServer.createContext("/applications", new TuningForkHandler());
+    localNetworkHttpServer.start();
+    localHostHttpServer = HttpServer.create(new InetSocketAddress("localhost", 9000), 0);
+    localHostHttpServer.createContext("/applications", new TuningForkHandler());
+    localHostHttpServer.setExecutor(THREAD_POOL_EXECUTOR);
+    localHostHttpServer.start();
+    isBound = true;
   }
 
-  public static void stopListening() throws IOException {
+  public static RequestServer getInstance() {
+    if (!isBound) {
+      try {
+        requestServer = new RequestServer();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return requestServer;
+  }
+
+  public void setMonitoringAction(Consumer<UploadTelemetryRequest> monitoringAction) {
+    this.monitoringAction = Optional.ofNullable(monitoringAction);
+  }
+
+  public void setFidelitySupplier(Supplier<ByteString> supplier) {
+    this.fidelitySupplier = Optional.ofNullable(supplier);
+  }
+
+  public void setDebugInfoAction(Consumer<JsonObject> debugInfoAction) {
+    this.debugInfo = Optional.ofNullable(debugInfoAction);
+  }
+
+  public void stopListening() {
     if (isBound) {
-      serverSocket.close();
-      serverThread.interrupt();
+      localNetworkHttpServer.stop(0);
+      localHostHttpServer.stop(0);
       isBound = false;
+    } else {
+      throw new IllegalStateException("Server is not running!");
     }
   }
 
@@ -74,7 +105,7 @@ public class RequestServer {
    * Replaces durations that have exponent floating point values, because protocol buffers can't
    * process that.
    */
-  private static Optional<String> replaceExponentSubstrings(String jsonString) {
+  private Optional<String> replaceExponentSubstrings(String jsonString) {
     Pattern pattern = Pattern.compile(EXPONENT_PATTERN);
     StringBuffer stringBuffer = new StringBuffer();
     Matcher matcher = pattern.matcher(jsonString);
@@ -95,12 +126,70 @@ public class RequestServer {
     return Optional.empty();
   }
 
-  private static UploadTelemetryRequest parseJsonTelemetry(String jsonString)
+  private UploadTelemetryRequest parseJsonTelemetry(String jsonString)
       throws InvalidProtocolBufferException {
     UploadTelemetryRequest.Builder telemetryBuilder = UploadTelemetryRequest.newBuilder();
     Optional<String> replacedSubstrings = replaceExponentSubstrings(jsonString);
-    jsonString = replacedSubstrings.isPresent() ? replacedSubstrings.get() : jsonString;
+    jsonString = replacedSubstrings.orElse(jsonString);
     JsonFormat.parser().ignoringUnknownFields().merge(jsonString, telemetryBuilder);
     return telemetryBuilder.build();
+  }
+
+  // Respond with code 200 for now
+  private void handleDebugInfo(HttpExchange httpExchange) throws IOException {
+    InputStream inputStream = httpExchange.getRequestBody();
+    JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(inputStream));
+    debugInfo.ifPresent(jsonObjectConsumer -> jsonObjectConsumer.accept(jsonObject));
+    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    httpExchange.getResponseBody().flush();
+    httpExchange.getResponseBody().close();
+  }
+
+  private void handleUploadTelemetry(HttpExchange httpExchange) throws IOException {
+    String requestBody = new String(ByteStreams.toByteArray(httpExchange.getRequestBody()));
+    if (monitoringAction.isPresent()) {
+      monitoringAction.get().accept(parseJsonTelemetry(requestBody));
+      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    } else {
+      // Just to keep caching histograms until we need them
+      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_ACCEPTABLE, 0);
+    }
+    httpExchange.getResponseBody().close();
+  }
+
+  private void handleGenerateTuningParameters(HttpExchange httpExchange) throws IOException {
+    ByteString fidelityParam =
+        fidelitySupplier.isPresent() ? fidelitySupplier.get().get() : ByteString.EMPTY;
+    if (!fidelityParam.equals(ByteString.EMPTY)) {
+      String parsedString = Base64.getEncoder()
+          .encodeToString(fidelityParam.toByteArray());
+      String reply =
+          "{\"parameters\": {\"serializedFidelityParameters\": \"" + parsedString + "\"}}";
+      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, reply.length());
+      httpExchange.getResponseBody().write(reply.getBytes());
+    } else {
+      httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_ACCEPTABLE, 0);
+    }
+    httpExchange.getResponseBody().flush();
+    httpExchange.getResponseBody().close();
+  }
+
+  private final class TuningForkHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+      String requestPath = httpExchange.getRequestURI().toASCIIString();
+      try {
+        if (requestPath.contains(":uploadTelemetry")) {
+          handleUploadTelemetry(httpExchange);
+        } else if (requestPath.contains(":generateTuningParameters")) {
+          handleGenerateTuningParameters(httpExchange);
+        } else if (requestPath.contains(":debugInfo")) {
+          handleDebugInfo(httpExchange);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 }

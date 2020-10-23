@@ -16,13 +16,15 @@
 
 package View;
 
+import static View.TabLayout.setTableSettings;
+
 import Controller.Enum.EnumController;
+import Utils.Resources.ResourceLoader;
 import View.Dialog.EnumDialogWrapper;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 
@@ -48,7 +50,8 @@ public class EnumTable extends JPanel {
         return false;
       }
     };
-    tableModel.setColumnIdentifiers(new Object[]{"Options"});
+    tableModel.setColumnIdentifiers(
+        new Object[]{ResourceLoader.getInstance().get("table_column_options")});
     controller.addEnumsToModel(tableModel);
     this.enumTable = new JBTable(tableModel);
     this.controller = controller;
@@ -57,18 +60,10 @@ public class EnumTable extends JPanel {
         .setRemoveAction(it -> removeEnum())
         .setEditAction(it -> editEnum())
         .createPanel();
-    initComponent();
+    setTableSettings(enumTable);
     enumDecoratePanel.setPreferredSize(new Dimension(TABLE_WIDTH, TABLE_HEIGHT));
     enumDecoratePanel.setMinimumSize(new Dimension(TABLE_WIDTH, TABLE_HEIGHT));
     this.add(enumDecoratePanel);
-  }
-
-  private void initComponent() {
-    enumTable.setFillsViewportHeight(true);
-    enumTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    enumTable.getTableHeader().setReorderingAllowed(false);
-    enumTable.setRowSelectionAllowed(true);
-    enumTable.setIntercellSpacing(new Dimension(0, 0));
   }
 
   private void addEnum() {

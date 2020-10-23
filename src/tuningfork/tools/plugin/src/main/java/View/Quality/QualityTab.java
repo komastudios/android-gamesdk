@@ -18,14 +18,26 @@ package View.Quality;
 
 import Controller.Quality.QualityTabController;
 import Controller.Quality.QualityTableModel;
+import Utils.Resources.ResourceLoader;
+import Utils.UI.UIValidator;
+import Utils.Validation.ValidationTool;
+import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
+import View.Fidelity.FieldType;
 import View.Quality.QualityDecorators.EnumOptionsDecorator;
 import View.Quality.QualityDecorators.HeaderCenterLabel;
 import View.Quality.QualityDecorators.ParameterNameRenderer;
 import View.Quality.QualityDecorators.TrendRenderer;
 import View.TabLayout;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
+import com.intellij.ui.AnActionButton;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,29 +50,41 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jetbrains.annotations.NotNull;
 
 public class QualityTab extends TabLayout implements PropertyChangeListener {
 
-  private final static JLabel title = new JLabel("Quality levels");
-
-  private final static JLabel aboutQualitySettings = new JLabel(
-      "<html> All quality settings are saved into " +
-          "app/src/main/assets/tuningfork/dev_tuningfork_fidelityparams_*.txt files. <br>" +
-          "You should have at least one quality level. <br>" +
-          "Once you add a new level, you can edit/add data it by" +
-          "modifying the text in the table below.</html> ");
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
+  private final JLabel title;
+  private final JLabel aboutQualitySettings;
 
   private JBTable qualityParametersTable;
   private QualityTableModel qualityTableModel;
   private final QualityTabController qualityTabController;
   private JPanel decoratorPanel;
 
-  public QualityTab(QualityTabController qualityTabController) {
+  private final Disposable disposable;
+
+  public QualityTab(QualityTabController qualityTabController, Disposable disposable) {
     this.setLayout(new VerticalLayout());
     this.qualityTabController = qualityTabController;
+    this.disposable = disposable;
+    title = new JLabel(RESOURCE_LOADER.get("quality_levels"));
+    aboutQualitySettings = new JLabel(RESOURCE_LOADER.get("quality_info"));
     setSize();
     initComponents();
     addComponents();
+    initValidators();
+  }
+
+  private void initValidators() {
+    UIValidator.createTableValidator(disposable, qualityParametersTable, () ->
+    {
+      if (qualityTabController.getDefaultQuality() == -1) {
+        return new ValidationInfo(RESOURCE_LOADER.get("default_quality_error"));
+      }
+      return null;
+    });
   }
 
   public QualityTabController getQualityTabController() {
@@ -74,6 +98,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initComponents() {
+
     title.setFont(getMainFont());
     aboutQualitySettings.setFont(getSecondaryFont());
 
@@ -96,7 +121,8 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
           if (qualityTabController.isEnum(row)) {
             return new EnumOptionsDecorator(qualityTabController.getEnumOptionsByIndex(row));
           } else {
-            return new RoundedCornerRenderer();
+            return TableRenderer.getRendererTextBoxWithValidation(new RoundedCornerRenderer(),
+                new NumberTextFieldValidator());
           }
         }
 
@@ -113,7 +139,6 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
             return getIntegerTextFieldModel();
           }
         }
-
       }
     };
     qualityTabController.addInitialQuality(qualityParametersTable);
@@ -123,6 +148,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
             anActionButton -> qualityTabController.removeColumn(qualityParametersTable))
         .setRemoveActionUpdater(e -> qualityParametersTable.getSelectedColumn() > 1)
         .setMinimumSize(new Dimension(600, 500))
+        .addExtraAction(new ChangeButton())
         .createPanel();
 
     setDecoratorPanelSize(decoratorPanel);
@@ -135,11 +161,12 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
     qualityParametersTable.setRowSelectionAllowed(false);
     qualityParametersTable.setCellSelectionEnabled(false);
     qualityParametersTable.setColumnSelectionAllowed(true);
-    qualityParametersTable.setSelectionBackground(null);
-    qualityParametersTable.setSelectionForeground(null);
+    qualityParametersTable.setSelectionBackground(UIUtil.getTableBackground());
+    qualityParametersTable.setSelectionForeground(UIUtil.getTableForeground());
     qualityParametersTable.setIntercellSpacing(new Dimension(0, 0));
     qualityParametersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     qualityParametersTable.setRowHeight(25);
+    qualityParametersTable.setShowGrid(false);
     setColumnsSize(qualityParametersTable.getTableHeader());
   }
 
@@ -174,6 +201,7 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
       case "removeField":
         int row = Integer.parseInt(evt.getNewValue().toString());
         qualityTabController.removeRow(qualityParametersTable, row);
+        qualityTabController.removeFieldRowData(row);
         break;
       case "typeChange":
         int index = (int) evt.getNewValue();
@@ -187,6 +215,49 @@ public class QualityTab extends TabLayout implements PropertyChangeListener {
         currentIndex.ifPresent(value -> qualityTableModel
             .setRowValue(value, qualityTabController.getDefaultValueByIndex(value)));
 
+    }
+  }
+
+
+  public boolean isViewValid() {
+    return UIValidator.isComponentValid(qualityParametersTable)
+        && UIValidator.isTableCellsValid(qualityParametersTable);
+  }
+
+  public void saveSettings() {
+    qualityParametersTable.clearSelection();
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private final class NumberTextFieldValidator implements TableCellValidator {
+
+    @Override
+    public ValidationInfo validate(Object value, int row, int column) {
+      FieldType fieldType = qualityTabController.getFieldTypeByRow(row);
+      if (fieldType.equals(FieldType.INT32)) {
+        return ValidationTool.getIntegerValueValidationInfo(value.toString());
+      } else if (fieldType.equals(FieldType.FLOAT)) {
+        return ValidationTool.getFloatValueValidationInfo(value.toString());
+      } else {
+        return null;
+      }
+    }
+  }
+
+  private final class ChangeButton extends AnActionButton {
+
+    public ChangeButton() {
+      super("Set Default Quality", AllIcons.Actions.SetDefault);
+    }
+
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+      qualityTabController.setDefaultQuality(qualityParametersTable);
+    }
+
+    @Override
+    public void updateButton(@NotNull AnActionEvent e) {
+      e.getPresentation().setEnabled(qualityParametersTable.getSelectedColumn() >= 2);
     }
   }
 }

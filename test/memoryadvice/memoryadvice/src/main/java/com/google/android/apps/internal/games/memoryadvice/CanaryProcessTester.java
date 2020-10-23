@@ -32,6 +32,7 @@ class CanaryProcessTester {
   /**
    * Returns true if the connection has been lost, and therefore a low memory situation is likely
    * to be in effect.
+   *
    * @return If a low memory situation is likely to be in effect.
    */
   public boolean warning() {

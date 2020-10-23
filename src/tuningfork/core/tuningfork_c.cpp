@@ -28,7 +28,7 @@
 extern "C" {
 
 namespace tf = tuningfork;
-namespace jni = tuningfork::jni;
+namespace jni = gamesdk::jni;
 
 TuningFork_ErrorCode TuningFork_init_internal(
     const TuningFork_Settings *c_settings_in, JNIEnv *env, jobject context) {

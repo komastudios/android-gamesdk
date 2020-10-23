@@ -48,7 +48,7 @@ class HttpBackend : public IBackend {
     // Perform a blocking call to upload debug info to a server.
     virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override;
 
-    void KillThreads();
+    virtual void Stop() override;
 
    private:
     std::shared_ptr<UltimateUploader> ultimate_uploader_;

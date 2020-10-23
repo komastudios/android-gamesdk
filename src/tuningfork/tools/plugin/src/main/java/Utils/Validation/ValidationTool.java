@@ -20,12 +20,19 @@ package Utils.Validation;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.QualityDataModel;
+import Utils.Resources.ResourceLoader;
+import View.Fidelity.FieldType;
+import com.intellij.openapi.ui.ValidationInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class ValidationTool {
+
+  private final static ResourceLoader RESOURCE_LOADER = ResourceLoader.getInstance();
+  private final static String INTEGER_REGEX = "-?\\d+";
+  private final static String NUMBER_REGEX = "-?\\d+(\\.\\d+)?";
 
   private static ArrayList<String> getQualityForOneField(
       List<QualityDataModel> qualityDataModels, int row) {
@@ -70,6 +77,51 @@ public final class ValidationTool {
     }
 
     return transformed;
+  }
+
+  public static ValidationInfo getIntegerValueValidationInfo(String strValue) {
+    if (strValue.isEmpty()) {
+      return new ValidationInfo(RESOURCE_LOADER.get("field_empty_error"));
+    }
+    if (!strValue.matches(INTEGER_REGEX)) {
+      return new ValidationInfo(
+          String.format(RESOURCE_LOADER.get("invalid_integer_error"), strValue));
+    }
+    return null;
+  }
+
+  public static boolean isInteger(String strValue) {
+    return getIntegerValueValidationInfo(strValue) == null;
+  }
+
+  public static boolean isDecimal(String strValue) {
+    return getFloatValueValidationInfo(strValue) == null;
+  }
+
+  public static ValidationInfo getFloatValueValidationInfo(String strValue) {
+    if (strValue.isEmpty()) {
+      return new ValidationInfo(RESOURCE_LOADER.get("field_empty_error"));
+    }
+    if (!strValue.matches(NUMBER_REGEX)) {
+      return new ValidationInfo(
+          String.format(RESOURCE_LOADER.get("invalid_number_error"), strValue));
+    }
+    return null;
+  }
+
+  public static boolean isRowValid(List<QualityDataModel> qualityDataModels, int row,
+      FieldType fieldType) {
+    ArrayList<String> qualityParams = getQualityForOneField(qualityDataModels, row);
+    if (fieldType.equals(FieldType.INT32)) {
+      return IntStream.range(0, qualityDataModels.size())
+          .allMatch(i -> getIntegerValueValidationInfo(qualityParams.get(i)) == null);
+    } else if (fieldType.equals(FieldType.FLOAT)) {
+      return IntStream.range(0, qualityDataModels.size())
+          .allMatch(i -> getFloatValueValidationInfo(qualityParams.get(i)) == null);
+    } else {
+      return IntStream.range(0, qualityDataModels.size())
+          .noneMatch(i -> qualityParams.get(i).isEmpty());
+    }
   }
 
   public static boolean isIncreasingSingleField(List<QualityDataModel> qualityDataModels,

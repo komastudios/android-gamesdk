@@ -12,6 +12,14 @@ class CMakeWrapper {
             project.mkdir(buildFolders.outputFolder)
         }
 
+        /**
+         * Run CMake on the specified folders using the specified Android
+         * toolchain and build options.
+         * Flags are set to only compile the specified libraries.
+         *
+         * In case of error, a verbose exception is thrown to help pinpoint
+         * the configuration that led to the error.
+         */
         @JvmStatic
         fun runAndroidCMake(
             project: Project,
@@ -57,18 +65,59 @@ class CMakeWrapper {
                 cmdLine.add("-D$nativeLibraryCMakeOption=ON")
             }
 
-            project.exec {
-                val protocBinDir = toolchain.getProtobufInstallPath() + "/bin"
-                environment(
-                    "PATH",
-                    protocBinDir + ":" +
-                        environment.get("PATH")
+            try {
+                project.exec {
+                    val protocBinDir = toolchain.getProtobufInstallPath() +
+                        "/bin"
+                    environment(
+                        "PATH",
+                        protocBinDir + ":" +
+                            environment.get("PATH")
+                    )
+                    workingDir(buildFolders.workingFolder)
+                    commandLine(cmdLine)
+                }
+            } catch (cmakeException: Throwable) {
+                val libraryNames = libraries.map { it.nativeLibraryName }
+                    .joinToString()
+                throw Exception(
+                    "Error when running CMake for " +
+                        libraryNames + " with " +
+                        toolchain + " and " + buildOptions,
+                    cmakeException
                 )
-                workingDir(buildFolders.workingFolder)
-                commandLine(cmdLine)
             }
         }
 
+        /**
+         * Run Ninja, after CMake was
+         * run in a folder (@see runAndroidCMake).
+         */
+        @JvmStatic
+        fun runNinja(
+            project: Project,
+            toolchain: Toolchain,
+            workingFolder: String
+        ) {
+            try {
+                project.exec {
+                    workingDir(workingFolder)
+                    commandLine(mutableListOf(toolchain.getNinjaPath()))
+                }
+            } catch (makeException: Throwable) {
+                throw Exception(
+                    "Error when building with " +
+                        toolchain + " in " + workingFolder
+                )
+            }
+        }
+
+        /**
+         * Run CMake on the specified folders.
+         *
+         * In case of error, a verbose exception is thrown to help pinpoint
+         * the configuration that led to the error.
+         */
         @JvmStatic
         fun runHostCMake(
             project: Project,
@@ -83,12 +132,23 @@ class CMakeWrapper {
                 buildFolders.projectFolder,
                 "-DCMAKE_BUILD_TYPE=$buildType",
                 "-DCMAKE_CXX_FLAGS=",
-                "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + buildFolders.outputFolder
+                "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=" + buildFolders.outputFolder,
+                "-DCMAKE_MAKE_PROGRAM=" + toolchain.getNinjaPath(),
+                "-GNinja"
             )
 
-            project.exec {
-                workingDir(buildFolders.workingFolder)
-                commandLine(cmdLine)
+            try {
+                project.exec {
+                    workingDir(buildFolders.workingFolder)
+                    commandLine(cmdLine)
+                }
+            } catch (cmakeException: Throwable) {
+                throw Exception(
+                    "Error when running CMake for " +
+                        buildFolders + " (build type: " +
+                        buildType + ").",
+                    cmakeException
+                )
             }
         }
     }
