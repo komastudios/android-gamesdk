@@ -46,7 +46,7 @@ namespace tuningfork {
 bool GetSavedFileName(std::string& name) {
     // Create tuningfork/version folder if it doesn't exist
     std::stringstream tf_path_str;
-    tf_path_str << file_utils::GetAppCacheDir() << "/tuningfork";
+    tf_path_str << DefaultTuningForkSaveDirectory();
     if (!file_utils::CheckAndCreateDir(tf_path_str.str())) {
         return false;
     }
@@ -143,7 +143,7 @@ TuningFork_ErrorCode StartFidelityParamDownloadThread(
                     upload_defaults_first_time();
                 } else {
                     ALOGI("Got fidelity params from server");
-                    if (jni::IsValid()) SaveFidelityParams(params);
+                    if (gamesdk::jni::IsValid()) SaveFidelityParams(params);
                     TuningFork_CProtobufSerialization cpbs;
                     ToCProtobufSerialization(params, cpbs);
                     if (fidelity_params_callback) {
@@ -166,7 +166,7 @@ TuningFork_ErrorCode StartFidelityParamDownloadThread(
                 waitTime *= 2;  // back off
             }
         }
-        if (jni::IsValid()) jni::DetachThread();
+        if (gamesdk::jni::IsValid()) gamesdk::jni::DetachThread();
     });
     return TUNINGFORK_ERROR_OK;
 }
@@ -267,7 +267,7 @@ TuningFork_ErrorCode TuningFork_findFidelityParamsInApk(
     JNIEnv* env, jobject context, const char* filename,
     TuningFork_CProtobufSerialization* c_fps) {
     if (c_fps == nullptr) return TUNINGFORK_ERROR_BAD_PARAMETER;
-    jni::Init(env, context);
+    gamesdk::jni::Init(env, context);
     ProtobufSerialization fps;
     auto err = FindFidelityParamsInApk(filename, fps);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -283,7 +283,7 @@ TuningFork_ErrorCode TuningFork_setUploadCallback(
 TuningFork_ErrorCode TuningFork_saveOrDeleteFidelityParamsFile(
     JNIEnv* env, jobject context,
     const TuningFork_CProtobufSerialization* fps) {
-    jni::Init(env, context);
+    gamesdk::jni::Init(env, context);
     if (fps) {
         if (SaveFidelityParams(ToProtobufSerialization(*fps)))
             return TUNINGFORK_ERROR_OK;

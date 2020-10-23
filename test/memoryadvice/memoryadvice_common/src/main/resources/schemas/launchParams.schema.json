@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Launch Params",
+  "description": "Information about the launch as reported by the device.",
+  "additionalProperties": false,
+  "properties": {
+    "tests": {
+      "$ref": "testArray.schema.json"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "run": {
+      "type": "string"
+    },
+    "started": {
+      "$ref": "time.schema.json"
+    }
+  },
+  "type": "object"
+}

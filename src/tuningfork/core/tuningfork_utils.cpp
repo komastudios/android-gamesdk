@@ -55,9 +55,9 @@ class NativeAsset {
 
    public:
     NativeAsset(const char* name) {
-        auto java_asset_manager = jni::AppContext().getAssets();
+        auto java_asset_manager = gamesdk::jni::AppContext().getAssets();
         AAssetManager* mgr = AAssetManager_fromJava(
-            jni::Env(), (jobject)java_asset_manager.obj_);
+            gamesdk::jni::Env(), (jobject)java_asset_manager.obj_);
         asset = AAssetManager_open(mgr, name, AASSET_MODE_BUFFER);
         if (asset == nullptr) {
             ALOGW("Can't find %s in APK", name);
@@ -92,7 +92,7 @@ bool GetAssetAsSerialization(const char* name, ProtobufSerialization& out) {
 // Get the app's version code. Also fills packageNameStr with the package name
 //  if it is non-null.
 int GetVersionCode(std::string* packageNameStr, uint32_t* gl_es_version) {
-    using namespace jni;
+    using namespace gamesdk::jni;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
@@ -126,7 +126,7 @@ int GetVersionCode(std::string* packageNameStr, uint32_t* gl_es_version) {
 }
 
 std::string GetSignature() {
-    using namespace jni;
+    using namespace gamesdk::jni;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
@@ -148,8 +148,8 @@ std::string GetSignature() {
 }
 
 bool GetDebuggable() {
-    using namespace jni;
-    if (!jni::IsValid()) return false;
+    using namespace gamesdk::jni;
+    if (!gamesdk::jni::IsValid()) return false;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
     CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
@@ -193,7 +193,8 @@ bool FileExists(const std::string& fname) {
     return (stat(fname.c_str(), &buffer) == 0);
 }
 std::string GetAppCacheDir() {
-    jni::String path = jni::AppContext().getCacheDir().getPath();
+    gamesdk::jni::String path =
+        gamesdk::jni::AppContext().getCacheDir().getPath();
     return path.C();
 }
 bool DeleteFile(const std::string& path) {
@@ -277,7 +278,7 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
 }  // namespace json_utils
 
 std::string UniqueId() {
-    using namespace jni;
+    using namespace gamesdk::jni;
     return java::util::UUID::randomUUID().toString().C();
 }
 

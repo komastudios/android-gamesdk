@@ -26,6 +26,7 @@ import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
+import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,9 +47,6 @@ import org.json.JSONObject;
 public class MainActivity extends Activity {
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  // Set LAUNCH_DURATION to a value in milliseconds to trigger the launch test.
-  private static final int LAUNCH_DURATION = 0;
-  private static final int RETURN_DURATION = LAUNCH_DURATION + 1000 * 20;
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
@@ -59,6 +57,7 @@ public class MainActivity extends Activity {
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
   private static final String FREE_ACTION = "Free";
+  public static final int MINIMUM_SAMPLE_INTERVAL = 20;
 
   static {
     System.loadLibrary("native-lib");
@@ -314,151 +313,164 @@ public class MainActivity extends Activity {
     long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
     int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
 
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        try {
-          JSONObject report = standardInfo();
-          if (criticalLogLines.get() != null) {
-            report.put("criticalLogLines", criticalLogLines.get());
-            criticalLogLines.set(null);
+    new MemoryWatcher(memoryAdvisor, 1000 / samplesPerSecond, MINIMUM_SAMPLE_INTERVAL,
+        new MemoryWatcher.Client() {
+          @Override
+          public void newState(MemoryAdvisor.MemoryState state) {
+            Log.i(TAG, "New memory state: " + state.name());
           }
-          if (allocationStartedTime != -1) {
-            long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
-            if (sinceAllocationStarted > 0) {
-              boolean shouldAllocate = true;
 
-              JSONObject advice = memoryAdvisor.getAdvice();
-              report.put("advice", advice);
-
-              if (MemoryAdvisor.anyWarnings(advice)) {
-                if (yellowLightTesting) {
-                  shouldAllocate = false;
-                  if (MemoryAdvisor.anyRedWarnings(advice)) {
-                    freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                  }
-                } else if (MemoryAdvisor.anyRedWarnings(advice)) {
-                  shouldAllocate = false;
-                  // Allocating 0 MB
-                  releaseMemory();
-                }
-              }
-              if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                long owed =
-                    sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
-                if (owed > 0) {
-                  boolean succeeded = nativeConsume(owed);
-                  if (succeeded) {
-                    nativeAllocatedByTest += owed;
-                  } else {
-                    report.put("allocFailed", true);
-                  }
-                }
-              }
-              if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                TestSurface testSurface = findViewById(R.id.glsurfaceView);
-                testSurface.getRenderer().setTarget(target);
-              }
-
-              if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                long owed = sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                if (owed > 0) {
-                  long allocated = vkAlloc(owed);
-                  if (allocated >= owed) {
-                    vkAllocatedByTest += owed;
-                  } else {
-                    report.put("allocFailed", true);
-                  }
-                }
-              }
-
-              if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                long owed = sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                if (owed > 0) {
-                  long allocated = vkAlloc(owed);
-                  if (allocated >= owed) {
-                    vkAllocatedByTest += owed;
-                  } else {
-                    report.put("allocFailed", true);
-                  }
-                }
-              }
-
-              if (mmapAnonBytesPerMillisecond > 0) {
-                long owed =
-                    sinceAllocationStarted * mmapAnonBytesPerMillisecond - mmapAnonAllocatedByTest;
-                if (owed > MMAP_ANON_BLOCK_BYTES) {
-                  long allocated = mmapAnonConsume(owed);
-                  if (allocated != 0) {
-                    mmapAnonAllocatedByTest += allocated;
-                  } else {
-                    report.put("mmapAnonFailed", true);
-                  }
-                }
-              }
-              if (mmapFileBytesPerMillisecond > 0) {
-                long owed =
-                    sinceAllocationStarted * mmapFileBytesPerMillisecond - mmapFileAllocatedByTest;
-                if (owed > MMAP_FILE_BLOCK_BYTES) {
-                  MmapFileInfo file = mmapFiles.alloc(owed);
-                  long allocated =
-                      mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                  if (allocated == 0) {
-                    report.put("mmapFileFailed", true);
-                  } else {
-                    mmapFileAllocatedByTest += allocated;
-                  }
-                }
-              }
-            }
-          }
-          long timeRunning = System.currentTimeMillis() - testStartTime;
-          if (LAUNCH_DURATION != 0) {
-            long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-            if (appSwitchTimeRunning > LAUNCH_DURATION && lastLaunched < LAUNCH_DURATION) {
-              lastLaunched = appSwitchTimeRunning;
-              Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-              File file = new File(
-                  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                  + File.separator + "pic.jpg");
-              String authority = getApplicationContext().getPackageName() + ".provider";
-              Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
-              intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-              startActivityForResult(intent, 1);
-            }
-            if (appSwitchTimeRunning > RETURN_DURATION && lastLaunched < RETURN_DURATION) {
-              lastLaunched = appSwitchTimeRunning;
-              finishActivity(1);
-              appSwitchTimerStart = System.currentTimeMillis();
-              lastLaunched = 0;
-            }
-          }
-          if (timeRunning > timeout) {
+          @Override
+          public void receiveAdvice(JSONObject advice) {
             try {
-              report.put("exiting", true);
+              JSONObject report = standardInfo();
+              if (criticalLogLines.get() != null) {
+                report.put("criticalLogLines", criticalLogLines.get());
+                criticalLogLines.set(null);
+              }
+              if (allocationStartedTime != -1) {
+                long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
+                if (sinceAllocationStarted > 0) {
+                  boolean shouldAllocate = true;
+
+                  report.put("advice", advice);
+
+                  if (MemoryAdvisor.anyWarnings(advice)) {
+                    if (yellowLightTesting) {
+                      shouldAllocate = false;
+                      if (MemoryAdvisor.anyRedWarnings(advice)) {
+                        freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                      }
+                    } else if (MemoryAdvisor.getMemoryState(advice)
+                        == MemoryAdvisor.MemoryState.CRITICAL) {
+                      shouldAllocate = false;
+                      // Allocating 0 MB
+                      releaseMemory();
+                    }
+                  }
+                  if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
+                    long owed =
+                        sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
+                    if (owed > 0) {
+                      boolean succeeded = nativeConsume(owed);
+                      if (succeeded) {
+                        nativeAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
+                    }
+                  }
+                  if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                    long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
+                    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                    testSurface.getRenderer().setTarget(target);
+                  }
+
+                  if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                    long owed =
+                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                    if (owed > 0) {
+                      long allocated = vkAlloc(owed);
+                      if (allocated >= owed) {
+                        vkAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
+                    }
+                  }
+
+                  if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                    long owed =
+                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                    if (owed > 0) {
+                      long allocated = vkAlloc(owed);
+                      if (allocated >= owed) {
+                        vkAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
+                    }
+                  }
+
+                  if (mmapAnonBytesPerMillisecond > 0) {
+                    long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
+                        - mmapAnonAllocatedByTest;
+                    if (owed > MMAP_ANON_BLOCK_BYTES) {
+                      long allocated = mmapAnonConsume(owed);
+                      if (allocated != 0) {
+                        mmapAnonAllocatedByTest += allocated;
+                      } else {
+                        report.put("mmapAnonFailed", true);
+                      }
+                    }
+                  }
+                  if (mmapFileBytesPerMillisecond > 0) {
+                    long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
+                        - mmapFileAllocatedByTest;
+                    if (owed > MMAP_FILE_BLOCK_BYTES) {
+                      MmapFileInfo file = mmapFiles.alloc(owed);
+                      long allocated =
+                          mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                      if (allocated == 0) {
+                        report.put("mmapFileFailed", true);
+                      } else {
+                        mmapFileAllocatedByTest += allocated;
+                      }
+                    }
+                  }
+                }
+              }
+              long timeRunning = System.currentTimeMillis() - testStartTime;
+              JSONObject switchTest = params.optJSONObject("switchTest");
+              if (switchTest != null && switchTest.optBoolean("enabled")) {
+                long launchDuration =
+                    getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
+                long returnDuration =
+                    getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
+                long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+                if (appSwitchTimeRunning > launchDuration && lastLaunched < launchDuration) {
+                  lastLaunched = appSwitchTimeRunning;
+                  Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                  File file = new File(
+                      Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                      + File.separator + "pic.jpg");
+                  String authority = getApplicationContext().getPackageName() + ".provider";
+                  Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+                  intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+                  startActivityForResult(intent, 1);
+                }
+                if (appSwitchTimeRunning > returnDuration && lastLaunched < returnDuration) {
+                  lastLaunched = appSwitchTimeRunning;
+                  finishActivity(1);
+                  appSwitchTimerStart = System.currentTimeMillis();
+                  lastLaunched = 0;
+                }
+              }
+              if (timeRunning > timeout) {
+                try {
+                  report.put("exiting", true);
+                } catch (JSONException e) {
+                  throw new IllegalStateException(e);
+                }
+              }
+
+              if (!report.has("advice")) {  // 'advice' already includes metrics.
+                report.put("metrics",
+                    memoryAdvisor.getMemoryMetrics(
+                        params.getJSONObject("metrics").getJSONObject("variable")));
+              }
+              resultsStream.println(report);
+
+              if (timeRunning > timeout) {
+                resultsStream.close();
+                finish();
+              }
+              updateInfo(report);
             } catch (JSONException e) {
               throw new IllegalStateException(e);
             }
           }
-
-          if (!report.has("advice")) {  // 'advice' already includes metrics.
-            report.put("metrics",
-                memoryAdvisor.getMemoryMetrics(
-                    params.getJSONObject("metrics").getJSONObject("variable")));
-          }
-          resultsStream.println(report);
-
-          if (timeRunning > timeout) {
-            resultsStream.close();
-            finish();
-          }
-          updateInfo(report);
-        } catch (JSONException e) {
-          throw new IllegalStateException(e);
-        }
-      }
-    }, 0, 1000 / samplesPerSecond);
+        });
   }
 
   private void activateServiceBlocker() {

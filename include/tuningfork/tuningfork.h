@@ -49,9 +49,11 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 1
+#define TUNINGFORK_BUGFIX_VERSION 4
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
-                                   TUNINGFORK_MINOR_VERSION)
+                                   TUNINGFORK_MINOR_VERSION, \
+                                   TUNINGFORK_BUGFIX_VERSION)
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
@@ -181,6 +183,9 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT =
         34,  ///< TuningFork_startRecordingLoadingTime was called with the same
              ///< parameters twice without a stop function inbetween.
+    TUNINGFORK_ERROR_METERED_CONNECTION_DISALLOWED =
+        35,  ///< An HTTP request could not be made because there is no
+             ///< unmetered connection available.
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 

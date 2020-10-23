@@ -16,12 +16,12 @@
 
 package Utils;
 
-import Files.AssetsParser;
 import Model.EnumDataModel;
 import Model.MessageDataModel;
 import Model.MessageDataModel.Type;
 import Model.QualityDataModel;
 import Utils.Assets.AssetsFinder;
+import Utils.Assets.AssetsParser;
 import Utils.Proto.CompilationException;
 import Utils.Proto.ProtoCompiler;
 import com.google.common.io.Files;
@@ -32,34 +32,44 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.tuningfork.Tuningfork.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class DataModelTransformer {
 
-  private File assetsDir;
-  private Optional<File> devTuningfork;
-  private Optional<List<File>> qualityFiles;
-  private FileDescriptor devTuningforkDesc;
-  private ProtoCompiler compiler;
+  private final Optional<byte[]> settingsData;
+  private final Optional<File> devTuningfork;
+  private final Optional<List<File>> qualityFiles;
+  private static FileDescriptor devTuningforkDesc;
+  private final ProtoCompiler compiler;
 
 
   public DataModelTransformer(String projectPath, ProtoCompiler compiler)
       throws IOException, CompilationException {
-    assetsDir = new File(
+    File assetsDir = new File(
         AssetsFinder.findAssets(projectPath).getAbsolutePath());
     AssetsParser parser = new AssetsParser(assetsDir);
     parser.parseFiles();
     devTuningfork = parser.getDevTuningForkFile();
     qualityFiles = parser.getDevFidelityParamFiles();
+    settingsData = parser.getTuningForkSettings();
     this.compiler = compiler;
     if (devTuningfork.isPresent()) {
       devTuningforkDesc = compiler.compile(devTuningfork.get(), Optional.empty());
+    } else {
+      devTuningforkDesc = null;
     }
+  }
+
+  public static FileDescriptor getDevTuningforkDesc() {
+    return devTuningforkDesc;
   }
 
   public static List<EnumDataModel> getEnums(List<EnumDescriptor> enumDescriptors) {
@@ -100,6 +110,21 @@ public final class DataModelTransformer {
     }
 
     return Optional.of(qualityDataModel);
+  }
+
+  public static List<DynamicMessage> convertByteStringToDynamicMessage(List<String> messages,
+      FileDescriptor fileDescriptor) {
+    Descriptor descriptor = fileDescriptor.findMessageTypeByName("FidelityParams");
+    List<DynamicMessage> dynamicMessages = new ArrayList<>();
+    messages.forEach(byteMessage -> {
+      try {
+        dynamicMessages.add(DynamicMessage
+            .parseFrom(descriptor, Base64.getDecoder().decode(byteMessage)));
+      } catch (InvalidProtocolBufferException e) {
+        e.printStackTrace();
+      }
+    });
+    return dynamicMessages;
   }
 
   public static Optional<MessageDataModel> transformToFidelity(Descriptor desc) {
@@ -185,5 +210,12 @@ public final class DataModelTransformer {
     }
 
     return qualityDataModelList;
+  }
+
+  public Settings initProtoSettings() throws InvalidProtocolBufferException {
+    if (!settingsData.isPresent()) {
+      return Settings.getDefaultInstance();
+    }
+    return Settings.parseFrom(settingsData.get());
   }
 }

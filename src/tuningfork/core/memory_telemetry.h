@@ -62,7 +62,7 @@ struct MemInfo {
 class DefaultMemInfoProvider : public IMemInfoProvider {
     bool enabled_ = false;
     uint64_t device_memory_bytes = 0;
-    jni::android::os::DebugClass android_debug_;
+    gamesdk::jni::android::os::DebugClass android_debug_;
 
    protected:
     MemInfo memInfo;

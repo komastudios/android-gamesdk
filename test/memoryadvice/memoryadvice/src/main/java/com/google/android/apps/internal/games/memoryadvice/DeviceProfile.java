@@ -17,6 +17,7 @@ import org.json.JSONObject;
 class DeviceProfile {
   /**
    * Return the first index where two strings differ.
+   *
    * @param a The first string to compare.
    * @param b The second string to compare.
    * @return The first index where the two strings have a different character, or either terminate.
@@ -36,8 +37,9 @@ class DeviceProfile {
 
   /**
    * Selects the device profile from all available.
-   * @param assets The assert manager used to load files.
-   * @param params Configuration parameters (can affect selection method).
+   *
+   * @param assets   The assert manager used to load files.
+   * @param params   Configuration parameters (can affect selection method).
    * @param baseline This device's baseline metrics (can be used to aid selection).
    * @return The selected device profile, plus metadata.
    */
@@ -65,6 +67,7 @@ class DeviceProfile {
 
   /**
    * This method finds the device with the most similar fingerprint string.
+   *
    * @param lookup The lookup table.
    * @return The selected device.
    */
@@ -85,7 +88,8 @@ class DeviceProfile {
 
   /**
    * this method finds the device with the most similar baseline metrics.
-   * @param lookup The lookup table.
+   *
+   * @param lookup   The lookup table.
    * @param baseline The current device metrics baseline.
    * @return The selected device.
    */
@@ -141,8 +145,9 @@ class DeviceProfile {
 
   /**
    * Finds the position of the first value exceeding the supplied value, in a sorted list.
+   *
    * @param values The sorted list.
-   * @param value The value to find the position of.
+   * @param value  The value to find the position of.
    * @return the position of the first value exceeding the supplied value.
    */
   private static int getPositionInList(Iterable<Long> values, long value) {
@@ -160,6 +165,7 @@ class DeviceProfile {
   /**
    * For each metric in the lookup table, get a sorted list of values as seen for devices' baseline
    * values.
+   *
    * @param lookup The device lookup table.
    * @return A dictionary of sorted values indexed by metric name.
    */

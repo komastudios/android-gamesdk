@@ -22,7 +22,10 @@
 #include "annotation_map.h"
 #include "async_telemetry.h"
 #include "crash_handler.h"
+#include "http_backend/http_backend.h"
+#include "meminfo_provider.h"
 #include "session.h"
+#include "time_provider.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_swappy.h"
 #include "uploadthread.h"
@@ -56,9 +59,15 @@ class TuningForkImpl : public IdProvider {
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
     bool app_first_run_;
-    std::unordered_map<LoadingHandle, TimePoint> live_loading_events_;
+    std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
+
+    std::unique_ptr<ITimeProvider> default_time_provider_;
+    std::unique_ptr<HttpBackend> default_backend_;
+    std::unique_ptr<IMemInfoProvider> default_meminfo_provider_;
+
+    TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -108,7 +117,7 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode RecordLoadingTime(
         Duration duration, const LoadingTimeMetadata &metadata,
-        const ProtobufSerialization &annotation);
+        const ProtobufSerialization &annotation, bool relativeToStart);
 
     TuningFork_ErrorCode StartRecordingLoadingTime(
         const LoadingTimeMetadata &metadata,
@@ -117,6 +126,10 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
     TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
+
+    TuningFork_ErrorCode InitializationErrorCode() {
+        return initialization_error_code_;
+    }
 
    private:
     // Record the time between t and the previous tick in the histogram

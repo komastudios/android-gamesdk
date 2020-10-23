@@ -33,6 +33,17 @@ public class QualityTableModel extends AbstractTableModel {
     this.qualityTabController = qualityTabController;
   }
 
+  public void updateColumnNames() {
+    for (int i = 2; i < columnNames.size(); i++) {
+      String name = String.valueOf(i - 1);
+      if (qualityTabController.getDefaultQuality() == i) {
+        name += "(Default)";
+      }
+      columnNames.set(i, name);
+    }
+    fireTableStructureChanged();
+  }
+
   public void setInitialData(List<List<String>> data) {
     for (List<String> datum : data) {
       for (int j = 0; j < getRowCount(); j++) {
@@ -40,6 +51,7 @@ public class QualityTableModel extends AbstractTableModel {
       }
       columnNames.add(String.valueOf(columnNames.size() - 1));
     }
+    updateColumnNames();
     fireTableStructureChanged();
   }
 
@@ -101,9 +113,8 @@ public class QualityTableModel extends AbstractTableModel {
         setValueAt("increase", i, 1);
       }
     }
-    for (int i = 2; i < getColumnCount(); i++) {
-      columnNames.set(i, String.valueOf(i - 1));
-    }
+    qualityTabController.setDefaultQuality(-1);
+    updateColumnNames();
     fireTableStructureChanged();
   }
 
@@ -150,7 +161,9 @@ public class QualityTableModel extends AbstractTableModel {
   }
 
   public void updateTrend(int row) {
-    setValueAt(qualityTabController.getNewTrendState(row), row, 1);
+    if (qualityTabController.isRowValid(row)) {
+      setValueAt(qualityTabController.getNewTrendState(row), row, 1);
+    }
   }
 
 }

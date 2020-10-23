@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Params",
+  "description": "A set of parameters to configure the stress test application.",
+  "additionalProperties": false,
+  "properties": {
+    "apk_base": {
+      "type": "string"
+    },
+    "apk_name": {
+      "type": "string"
+    },
+    "firebase": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": ["string", "number", "boolean"]
+        }
+      }
+    },
+    "glTest": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "heuristics": {
+      "$ref": "heuristics.schema.json"
+    },
+    "malloc": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "matchStrategy": {
+      "enum": [
+        "baseline",
+        "fingerprint"
+      ]
+    },
+    "maxConsumer": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "constant": {
+          "$ref": "metricsSpecs.schema.json"
+        },
+        "variable": {
+          "$ref": "metricsSpecs.schema.json"
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "type": "object"
+    },
+    "onDeviceStressTest": {
+      "additionalProperties": false,
+      "properties": {
+        "segmentSize": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "required": [
+        "segmentSize"
+      ],
+      "type": "object"
+    },
+    "orientation": {
+      "enum": [
+        "landscape",
+        "portrait"
+      ],
+      "type": "string"
+    },
+    "predictions": {
+      "$ref": "predictionsSpec.schema.json"
+    },
+    "timeout": {
+      "$ref": "duration.schema.json"
+    },
+    "switchTest": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "launchDuration": {
+          "$ref": "duration.schema.json"
+        },
+        "returnDuration": {
+          "$ref": "duration.schema.json"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "type": "object"
+    }
+  },
+  "type": "object"
+}

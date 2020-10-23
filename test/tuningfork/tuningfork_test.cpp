@@ -81,6 +81,8 @@ class TestBackend : public IBackend {
         return TUNINGFORK_ERROR_OK;
     }
 
+    void Stop() override {}
+
     void Clear() { result = ""; }
 
     void SetDownloadBackend(const std::shared_ptr<IBackend>& dl) {
@@ -138,6 +140,8 @@ class TestDownloadBackend : public IBackend {
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
+
+    void Stop() override {}
 };
 
 // Increment time with a known tick size
@@ -230,7 +234,7 @@ class TuningForkTest {
           time_provider_(tick_size),
           meminfo_provider_(enable_meminfo) {
         RequestInfo info = {};
-        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0);
+        info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0, 0);
         init_return_value_ =
             tuningfork::Init(settings, &info, &test_backend_, &time_provider_,
                              &meminfo_provider_);
@@ -469,6 +473,7 @@ static std::string ReplaceReturns(std::string in) {
 
 static const std::string session_context = R"TF(
 {
+  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -485,7 +490,7 @@ static const std::string session_context = R"TF(
   },
   "game_sdk_info": {
     "session_id": "",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.020000Z",
@@ -497,6 +502,7 @@ static const std::string session_context = R"TF(
 // This has extra time for the app and asset loading
 static const std::string session_context_loading = R"TF(
 {
+  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -513,7 +519,7 @@ static const std::string session_context_loading = R"TF(
   },
   "game_sdk_info": {
     "session_id": "",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "time_period": {
     "end_time": "1970-01-01T00:00:02.220000Z",
@@ -624,18 +630,18 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
         "loading":{
           "loading_events":[
             {
+              "intervals":[{"end":"0.21s", "start":"0s"}],
               "loading_metadata":{
                 "source":8,
                 "state":2
-              },
-              "times_ms":[210]
+              }
             },
             {
+              "intervals":[{"end":"0.1s", "start":"0s"}],
               "loading_metadata":{
                 "source":7,
                 "state":2
-              },
-              "times_ms":[100]
+              }
             }
           ]
         }
@@ -653,6 +659,7 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
       "report":{
         "loading":{
           "loading_events": [{
+            "intervals":[{"end":"0.2s", "start":"0.1s"}],
             "loading_metadata": {
               "compression_level": 100,
               "network_info": {
@@ -661,8 +668,7 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
               },
               "source": 5,
               "state": 3
-            },
-            "times_ms": [100]
+            }
           }]
         }
       }
@@ -854,6 +860,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
 {
   "name": "applications//apks/0",
   "session_context":{
+    "crash_reports": [],
     "device": {
       "brand": "",
       "build_version": "",
@@ -870,7 +877,7 @@ TEST(TuningForkTest, EndToEndWithMemory) {
     },
     "game_sdk_info": {
       "session_id": "",
-      "version": "1.0"
+      "version": "1.0.0"
     },
     "time_period": {
       "end_time": "1970-01-01T00:00:20.020000Z",

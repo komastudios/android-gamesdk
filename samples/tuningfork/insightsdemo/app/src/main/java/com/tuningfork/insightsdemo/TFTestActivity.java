@@ -37,6 +37,7 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
     public static native void onChoreographer(long t);
     public static native void start();
     public static native void stop();
+    public static native void destroy();
     public static native void raiseSignal(int signal);
     public static native void setFidelityParameters();
 
@@ -63,10 +64,17 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
         start();
         Choreographer.getInstance().postFrameCallback(this);
     }
+
     @Override
     protected void onStop() {
         super.onStop();
         stop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        destroy();
     }
 
     @Override

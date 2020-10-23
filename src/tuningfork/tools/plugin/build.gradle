@@ -5,7 +5,6 @@ plugins {
     id 'com.google.protobuf' version '0.8.8'
 }
 
-
 group 'org.example'
 version '1.0-SNAPSHOT'
 
@@ -33,16 +32,21 @@ dependencies {
     testCompile 'com.google.truth:truth:0.43'
     testCompile 'org.junit.jupiter:junit-jupiter:5.4.1'
     protobuf files('src/main/java/Utils/Monitoring/proto/performanceparameters.proto')
+    protobuf files('../../proto/tuningfork.proto')
+}
+
+def getAndroidStudioPath() {
+    Properties properties = new Properties()
+    if (project.rootProject.file('local.properties').canRead()) {
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    }
+    return properties.getProperty('android.studio.dir').toString()
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '193.6911.18'
-    type 'IC'
-    plugins 'android'
+    setLocalPath(getAndroidStudioPath())
 }
-
-// testing on Android studio -- uncomment next 3 lines and change path
 /*
    runIde {
     ideDirectory <path_to_android-studio>
@@ -67,6 +71,7 @@ sourceSets {
     main {
         proto {
             include 'src/main/java/Utils/Monitoring/proto/performanceparameters.proto'
+            include '../../proto/tuningfork.proto'
         }
     }
 }

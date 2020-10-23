@@ -1,6 +1,7 @@
 apply plugin: 'java'
 
 repositories {
+    google()
     mavenLocal()
     mavenCentral()
     maven {
@@ -9,8 +10,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.google.android.games:memory-advice-common:0.16'
     implementation 'com.google.cloud:google-cloud-storage:1.92.0'
     implementation 'com.google.api-client:google-api-client:1.30.3'
     implementation 'org.json:json:20190722'
+    implementation 'com.github.everit-org.json-schema:org.everit.json.schema:1.12.1'
     implementation 'com.google.apis:google-api-services-toolresults:v1beta3-rev20190826-1.30.1'
 }

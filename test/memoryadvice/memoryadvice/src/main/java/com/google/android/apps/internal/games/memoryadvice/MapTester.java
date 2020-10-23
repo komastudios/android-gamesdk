@@ -20,6 +20,7 @@ class MapTester {
 
   /**
    * Make a new map tester.
+   *
    * @param directory The (ideally temporary) folder in which the file should be created.
    */
   MapTester(File directory) {

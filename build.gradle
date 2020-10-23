@@ -4,6 +4,7 @@ import com.google.androidgamesdk.ExternalAndroidProject
 import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
+import com.google.androidgamesdk.OboeDownloader
 import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
@@ -14,12 +15,14 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
 import static groovy.lang.Closure.IDENTITY;
-import groovyx.gpars.GParsPool;
 import org.apache.tools.ant.filters.ReplaceTokens;
 import com.google.androidgamesdk.ExternalToolName;
 import static com.google.androidgamesdk.OsSpecificTools.osFolderName;
+import static com.google.androidgamesdk.OsSpecificTools.joinPath;
 import static com.google.androidgamesdk.CMakeWrapper.runAndroidCMake;
 import static com.google.androidgamesdk.CMakeWrapper.runHostCMake;
+import static com.google.androidgamesdk.CMakeWrapper.runNinja;
+import static com.google.androidgamesdk.ToolchainEnumerator.filterBuiltLibraries;
 
 buildscript {
     repositories {
@@ -28,12 +31,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath "org.codehaus.gpars:gpars:1.2.0"
     }
-}
-
-def joinPath(String first, String... more) {
-    return Paths.get(first, more).toString()
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
@@ -56,6 +54,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
         )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
         .setAarLibrary("games-performance-tuner", "1.1.0-alpha01")
+        .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
                         .copySourcesTo("samples/tuningfork/insightsdemo")
@@ -83,6 +82,16 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
                 new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
         .addSampleExtraFolder(
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
+
+def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice', 'GAMESDK_BUILD_MEMORY_ADVICE')
+        .setAarLibrary("games-memory-advice", "1.0.0-alpha01")
+
+def oboeNativeLibrary = new NativeLibrary('oboe', 'GAMESDK_BUILD_OBOE')
+        .setAarLibrary("games-oboe", "1.0.0-alpha01")
+        .setThirdParty()
+        .setMinimumAndroidApiLevel(16)
+        .setMinimumNdkVersion(17)
+        .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -128,6 +137,17 @@ task prepare_proto(dependsOn: prepare_proto_before) {
     }
 }
 
+// Download third party libraries that are distributed in the Game SDK
+// but not part of the Game SDK sources.
+task prepare_third_party_libraries {
+    outputs.dir("src/oboe")
+    outputs.dir("include/oboe")
+
+    doLast {
+        def oboeDownloader = new OboeDownloader(project)
+        oboeDownloader.fetchAndInstall();
+    }
+}
 
 allprojects {
     buildDir = getOutPath()
@@ -137,7 +157,7 @@ allprojects {
     }
 }
 
-def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary]
+def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary, oboeNativeLibrary]
 
 def getBuildPath() {
     return new File("$projectDir/build").getPath()
@@ -173,12 +193,8 @@ def buildHostModule(subdir, buildType) {
     def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
 
     runHostCMake(project, buildFolders, toolchain, buildType)
+    runNinja(project, toolchain, workingFolder)
 
-    def cmdLine = ["make", "-j"]
-    exec {
-        workingDir workingFolder
-        commandLine cmdLine
-    }
     return [buildKey: buildKey, outputFolder: outputFolder]
 }
 
@@ -189,14 +205,10 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
     def outputFolder = joinPath(getOutPath(), buildKey)
     def cmakeProjectFolder = joinPath("$projectDir", subdir)
     def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
+    def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
 
-    runAndroidCMake(project, buildFolders, toolchain, buildOptions, libraries)
-
-    def cmdLine = !toolchain.getNinjaPath().isEmpty() ? [toolchain.getNinjaPath()] : ["make", "-j"]
-    exec {
-        workingDir workingFolder
-        commandLine cmdLine
-    }
+    runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
+    runNinja(project, toolchain, workingFolder)
 
     def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
     jsonDescription.text = '{"abi":"'+buildOptions.arch+'","api":'+toolchain.getAndroidVersion()+
@@ -456,38 +468,36 @@ def unityNativeBuild(libraries, buildType="Release") {
 
 def sdkNativeBuild(libraries, buildType="Release") {
     def threadChecks = false
-    def allToolchains = new ToolchainEnumerator().enumerateAllToolchains(project)
-    GParsPool.withPool {
-        return allToolchains.collectParallel { enumeratedToolchain ->
-            buildNativeModules(
-                    new BuildOptions(
-                            buildType,
-                            threadChecks,
-                            enumeratedToolchain.stl,
-                            enumeratedToolchain.abi),
-                    enumeratedToolchain.toolchain,
-                    libraries,
-                    "src")
-        }
-    }
+    def toolchainEnumerator = new ToolchainEnumerator()
+    def allToolchains = toolchainEnumerator.enumerateAllToolchains(project)
+    return toolchainEnumerator.parallelMap(allToolchains, { enumeratedToolchain ->
+        buildNativeModules(
+                new BuildOptions(
+                        buildType,
+                        threadChecks,
+                        enumeratedToolchain.stl,
+                        enumeratedToolchain.abi),
+                enumeratedToolchain.toolchain,
+                libraries,
+                "src")
+    })
 }
 
 def sdkAarNativeBuild(libraries, buildType) {
     def threadChecks = false
-    def allAarToolchains = new ToolchainEnumerator().enumerateAllAarToolchains(project)
-    GParsPool.withPool {
-        return allAarToolchains.collectParallel { enumeratedToolchain ->
-            buildNativeModules(
-                    new BuildOptions(
-                            buildType,
-                            threadChecks,
-                            enumeratedToolchain.stl,
-                            enumeratedToolchain.abi),
-                    enumeratedToolchain.toolchain,
-                    libraries,
-                    "src")
-        }
-    }
+    def toolchainEnumerator = new ToolchainEnumerator()
+    def allAarToolchains = toolchainEnumerator.enumerateAllAarToolchains(project)
+    return toolchainEnumerator.parallelMap(allAarToolchains, { enumeratedToolchain ->
+        buildNativeModules(
+                new BuildOptions(
+                        buildType,
+                        threadChecks,
+                        enumeratedToolchain.stl,
+                        enumeratedToolchain.abi),
+                enumeratedToolchain.toolchain,
+                libraries,
+                "src")
+    })
 }
 
 def specificNativeBuild(specificToolchainConfiguration, libraries,
@@ -611,23 +621,29 @@ task buildSpecific(type: BuildTask) {
 }
 
 tasks.withType(BuildTask) {
-    dependsOn ':extras:assembleRelease', prepare_proto
+    def libraries = filterLibraries(allLibraries)
+
+    dependsOn ':extras:assembleRelease'
+    libraries.each { nativeLibrary ->
+        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
+        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+    }
+
     doFirst {
         // Ensure some libraries to build were set
-        def libraries = filterLibraries(allLibraries)
         if (libraries.isEmpty()) {
             throw new GradleException("""
 Must specify which libraries to build,
 e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
         }
     }
+
     doLast {
         def packageName = getPackageName()
         // Clear the package path to ensure the task zip is not polluted
         // by previous build tasks.
         delete joinPath(getPackagePath(), packageName)
 
-        def libraries = filterLibraries(allLibraries)
         nativeBuild().each {
             copyLibs(it, packageName, libraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
@@ -644,21 +660,29 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
 
 // Build task for making an AAR that can be used with Prefab
 task buildAar {
+    def libraries = filterLibraries(allLibraries)
+
+    dependsOn ':extras:assembleRelease'
+    libraries.each { nativeLibrary ->
+        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
+        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+    }
+
     doFirst {
         // Clear the package path to ensure AAR generation is not polluted
         // by previous build tasks.
         delete joinPath(getPackagePath(), getPackageName())
     }
-    dependsOn ':extras:assembleRelease', prepare_proto
+
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.nativeBuild = { -> sdkAarNativeBuild(filterLibraries(allLibraries), getBuildType()) }
+    ext.nativeBuild = { -> sdkAarNativeBuild(libraries, getBuildType()) }
     doLast {
         def packageName = getPackageName()
         nativeBuild().each { buildInfo ->
-            filterLibraries(allLibraries).forEach {
+            libraries.forEach {
                 library -> copyLibraryToPrefabAar(buildInfo, packageName, library)
             }
         }
@@ -678,7 +702,7 @@ task localUnitTests {
         def parch = 'arm64-v8a'
         if (project.hasProperty('arch'))
             parch = arch
-        def buildInfo = localNativeBuild([swappyNativeLibrary, tuningForkNativeLibrary], "test/$pcomponent")
+        def buildInfo = localNativeBuild([swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary], "test/$pcomponent")
         def buildKey = buildInfo.buildKey.findAll{it.contains(parch)}[0]
         def cmakeFolder = getTempPath() + "/$buildKey/.cmake"
         def toolchain = getLocalToolchain();

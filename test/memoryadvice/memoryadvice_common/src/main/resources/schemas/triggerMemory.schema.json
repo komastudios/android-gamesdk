@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Trigger Memory",
+  "description": "Trigger values for a heuristic based on memory quantity.",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "red": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "yellow": {
+      "$ref": "memoryQuantity.schema.json"
+    }
+  },
+  "required": [
+    "red",
+    "yellow"
+  ]
+}

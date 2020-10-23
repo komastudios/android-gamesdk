@@ -102,7 +102,7 @@ bool findSwappy() {
 
 }  // anonymous namespace
 
-namespace jni = tuningfork::jni;
+namespace jni = gamesdk::jni;
 
 extern "C" {
 

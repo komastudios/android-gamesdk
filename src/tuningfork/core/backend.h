@@ -45,6 +45,10 @@ class IBackend {
 
     // Perform a blocking call to upload debug info to a server.
     virtual TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) = 0;
+
+    // Tell all threads to complete activity and wait for all current work to
+    // finish.
+    virtual void Stop() = 0;
 };
 
 }  // namespace tuningfork

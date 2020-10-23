@@ -15,22 +15,22 @@
  */
 package View.Dialog;
 
-import static Utils.Validation.UIValidator.ILLEGAL_TEXT_PATTERN;
-import static View.Decorator.TableRenderer.getEditorTextBoxWithValidation;
+import static Utils.UI.UIValidator.ILLEGAL_TEXT_PATTERN;
 
 import Controller.Enum.EnumController;
 import Model.EnumDataModel;
-import Utils.Validation.UIValidator;
+import Utils.Resources.ResourceLoader;
+import Utils.UI.UIValidator;
+import View.Decorator.RoundedCornerBorder;
+import View.Decorator.RoundedCornerBorder.BorderType;
 import View.Decorator.TableRenderer;
 import View.Decorator.TableRenderer.RoundedCornerRenderer;
 import View.TabLayout;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.ui.ComponentValidator;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -46,6 +45,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jdesktop.swingx.prompt.PromptSupport;
+import org.jdesktop.swingx.prompt.PromptSupport.FocusBehavior;
 import org.jetbrains.annotations.Nullable;
 
 public class EnumDialogWrapper extends DialogWrapper {
@@ -56,17 +57,18 @@ public class EnumDialogWrapper extends DialogWrapper {
   private boolean isEdit;
   private int editingRow;
   private EnumDataModel enumDataModel;
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
   public EnumDialogWrapper(EnumController controller) {
     super(true);
-    setTitle("Add Enum");
+    setTitle(resourceLoader.get("add_enum_title"));
     this.controller = controller;
     init();
   }
 
   public EnumDialogWrapper(EnumController controller, int row, EnumDataModel enumDataModel) {
     super(true);
-    setTitle("Edit Enum");
+    setTitle(resourceLoader.get("edit_enum_title"));
     this.controller = controller;
     this.isEdit = true;
     this.editingRow = row;
@@ -86,7 +88,8 @@ public class EnumDialogWrapper extends DialogWrapper {
   protected void doOKAction() {
     stopCellEditingMomentarily();
     if (!enumLayout.isViewValid()) {
-      Messages.showErrorDialog("Please Fix the errors first", "Unable To Close");
+      Messages.showErrorDialog(resourceLoader.get("fix_errors_first"),
+          resourceLoader.get("unable_to_close_title"));
       return;
     }
     if (isEdit) {
@@ -94,14 +97,16 @@ public class EnumDialogWrapper extends DialogWrapper {
         super.doOKAction();
       } else {
         Messages.showInfoMessage(
-            "Conflicting enums names. Please change the enum name", "Unable to Edit Enum!");
+            String.format(resourceLoader.get("enum_name_already_exist"), enumLayout.getName()),
+            resourceLoader.get("unable_to_close_title"));
       }
     } else {
       if (controller.addEnum(enumLayout.getName(), enumLayout.getOptions())) {
         super.doOKAction();
       } else {
         Messages.showInfoMessage(
-            "Enum name already exists. Please change the enum name", "Unable to Add Enum!");
+            String.format(resourceLoader.get("enum_name_already_exist"), enumLayout.getName()),
+            resourceLoader.get("unable_to_close_title"));
       }
     }
   }
@@ -122,8 +127,8 @@ public class EnumDialogWrapper extends DialogWrapper {
     private JPanel decoratorPanel;
     private JTextField nameTextField;
     private DefaultTableModel model;
-    private final JLabel nameLabel = new JBLabel("Name");
     private final Disposable disposable;
+    private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
 
     EnumLayout(Disposable disposable) {
       this.disposable = disposable;
@@ -134,10 +139,11 @@ public class EnumDialogWrapper extends DialogWrapper {
 
     private void addComponents() {
       JPanel namePanel = new JPanel(new HorizontalLayout());
-      namePanel.add(nameLabel);
       namePanel.add(nameTextField);
+      PromptSupport.setPrompt(resourceLoader.get("label_name"), nameTextField);
+      PromptSupport.setFocusBehavior(FocusBehavior.HIDE_PROMPT, nameTextField);
       this.add(namePanel);
-      this.add(Box.createVerticalStrut(30));
+      this.add(Box.createVerticalStrut(20));
       this.add(decoratorPanel);
     }
 
@@ -193,37 +199,43 @@ public class EnumDialogWrapper extends DialogWrapper {
       optionsTable.setSelectionForeground(null);
       optionsTable.setSelectionBackground(null);
       optionsTable.setIntercellSpacing(new Dimension(0, 0));
-      model.setColumnIdentifiers(new String[]{"Options"});
+      model.setColumnIdentifiers(new String[]{resourceLoader.get("table_column_options")});
       optionsTable.setModel(model);
+      nameTextField.setBorder(new RoundedCornerBorder(BorderType.NORMAL));
     }
 
     private void initValidators() {
-      new ComponentValidator(disposable).withValidator(() -> {
+      UIValidator.createTextValidator(disposable, nameTextField, () -> {
         String name = nameTextField.getText();
         if (name.isEmpty()) {
-          return new ValidationInfo("Field Can Not Be Empty", nameTextField);
+          return new ValidationInfo(resourceLoader.get("field_empty_error"),
+              nameTextField);
         }
         if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(name).find()) {
-          return new ValidationInfo(name + " contains illegal characters", nameTextField);
+          return new ValidationInfo(
+              String.format(resourceLoader.get("field_illegal_character_error"), name),
+              nameTextField);
         }
         return null;
-      }).andRegisterOnDocumentListener(nameTextField).installOn(nameTextField);
+      });
 
       UIValidator.createTableValidator(disposable, optionsTable,
           () -> {
             if (optionsTable.getRowCount() == 0) {
-              return new ValidationInfo("Options Table Can Not Be Empty", optionsTable);
+              return new ValidationInfo(resourceLoader.get("options_table_empty_error"),
+                  optionsTable);
             }
             ArrayList<String> options = getOptions();
             boolean isOptionDuplicate =
                 options.stream().anyMatch(option -> Collections.frequency(options, option) > 1);
             if (isOptionDuplicate) {
-              return new ValidationInfo("Repeated Fields Are Not Allowed", optionsTable);
+              return new ValidationInfo(resourceLoader.get("repeated_fields_error"),
+                  optionsTable);
             }
             return null;
           });
-      optionsTable.getColumnModel().getColumn(0)
-          .setCellEditor(getEditorTextBoxWithValidation(disposable));
+      optionsTable.getColumnModel()
+          .getColumn(0).setCellEditor(TabLayout.getTextFieldModel());
 
       //noinspection UnstableApiUsage
       optionsTable.getColumnModel().getColumn(0)
@@ -232,15 +244,16 @@ public class EnumDialogWrapper extends DialogWrapper {
                   (value, row, column) -> {
                     String strVal = value.toString();
                     if (strVal.isEmpty()) {
-                      return new ValidationInfo("Field Can Not Be Empty!");
+                      return new ValidationInfo(resourceLoader.get("field_empty_error"));
                     }
                     if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
-                      return new ValidationInfo(strVal + " contains illegal characters");
+                      return new ValidationInfo(
+                          String
+                              .format(resourceLoader.get("field_illegal_character_error"), strVal));
                     }
                     return null;
                   }));
 
-      TableRenderer.addCellToolTipManager(optionsTable, disposable);
     }
 
     public boolean isViewValid() {

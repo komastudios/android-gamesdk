@@ -18,19 +18,34 @@ task sourceJar(type: Jar) {
     classifier 'sources'
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    classifier 'javadoc'
+}
+
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                description = 'Parts of the Memory Advice library that are written in Java and make ' +
-                        'sense being run in desktop application as well as Android. ' +
-                        'This enables desktop tools written in Java to use these functions, for ' +
-                        'example to interpret output from the library.'
-                groupId = 'com.google.android.apps.internal.games'
-                artifactId = 'memoryadvice_common'
-                version = '0.9'
+                groupId = 'com.google.android.games'
+                artifactId = 'memory-advice-common'
+                version = '0.16'
                 artifact(sourceJar)
+                artifact(javadocJar)
                 from components.java
+                pom {
+                    name = 'Memory Advice for Java : Common components'
+                    url = 'https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice'
+                    description = 'Parts of the Memory Advice library that are written in Java can be ' +
+                            'run in desktop application as well as Android.'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+                }
             }
         }
     }

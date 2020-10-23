@@ -41,7 +41,8 @@ phones that have run a stress test application in the Firebase Test Lab. This
 dictionary is bundled directly with the library.
 
 The library is only intended for use while applications are running in the
-foreground (currently operated by users).
+foreground (currently operated by users). (In the event that the application is
+put into the background, this will be reported in the `MemoryState`.)
 
 "Memory" means specifically native heap memory allocated by malloc, and graphics
 memory allocated by the OpenGL ES and Vulkan Graphics APIs. (Note: Memory is
@@ -84,9 +85,14 @@ The API can be called at any time to discover:
 *   A collection of raw memory metrics that can be captured for diagnostic
     purposes.
 
-The choice of polling rate is left to the developer, to strike the correct
-balance between calling cost (this varies significantly by device but the
-ballpark is between 5 and 20 ms per call) and the rate of memory allocation
+The library offers an optional class `MemoryWatcher` that can perform the task of
+polling the `MemoryAdvisor` on behalf of the application; calling back the
+application when the advice state changes, as well as enforcing a budget for how
+much CPU time is allocated to this task.
+
+Otherwise, the choice of polling rate is left to the developer, to strike the
+correct balance between calling cost (this varies significantly by device but
+the ballpark is between 5 and 20 ms per call) and the rate of memory allocation
 performed by the app (higher rate allows a more timely reaction to warnings ).
 The API does not cache or rate limit, nor does it use a timer or other thread
 mechanism.
@@ -160,27 +166,13 @@ resolution. These can be restored when no more memory warnings (including
 
 # API specifics
 
-## Getting the library
-
-Get the [repo tool](https://gerrit.googlesource.com/git-repo/) and sync the
-Games SDK project
-[games-sdk project](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master);
-
-```bash
-repo init -u https://android.googlesource.com/platform/manifest -b my-branch
-```
-
 ## Adding the library to an Android project
 
-The Memory Advice library is found in folder
-[test/memoryadvice](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/test/memoryadvice/).
+The library is published on
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.16).
 
-Currently the process is to first load the library project with Android Studio
-and publish it to the local Maven repository by running
-`gradle build publishToMavenLocal`.
-
-In the application root `build.gradle` file, ensure ```mavenLocal()`` is
-specified as a repository for the project, as well as `jitpack.io` for its
+In the application root `build.gradle` file, ensure `google()` is specified as a
+repository for the project, as well as `jitpack.io` for some of its
 dependencies. For example:
 
 ```gradle
@@ -188,7 +180,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenLocal()
         maven {
             url 'https://jitpack.io'
         }
@@ -202,10 +193,28 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.apps.internal.games:memoryadvice:0.9'
+    implementation 'com.google.android.games:memory-advice:0.16'
 
 }
 ```
+
+Since the library has *AndroidX* dependencies, it is necesary to enable
+*AndroidX* in the application, if it is not already. Instructions can be
+[found here](https://developer.android.com/jetpack/androidx/migrate).
+
+### Building the library from source
+
+If you prefer to build your own version of the libary, get the
+[repo tool](https://gerrit.googlesource.com/git-repo/) and sync the Games SDK
+project
+[games-sdk project](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master);
+
+```bash
+repo init -u https://android.googlesource.com/platform/manifest -b my-branch
+```
+
+Built with `gradle publishToMavenLocal` and add `mavenLocal()` to `repositories`
+in the `build.gradle` of clients.
 
 ### Code
 
@@ -270,6 +279,9 @@ class MyActivity extends Activity {
       case CRITICAL:
         // The application should free memory as soon as possible, until the memory state changes.
         break;
+      case BACKGROUNDED:
+        // The application has been put into the background.
+        break;
     }
   }
 }
@@ -297,10 +309,10 @@ class MyActivity extends Activity {
   // ...
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
-    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, 10, 3000,
-        new MemoryWatcher.Client(){
+    MemoryWatcher memoryWatcher =
+    new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.DefaultClient() {
       @Override
-      public void newState(MemoryAdvisor.MemoryState state) {
+      public void newState(MemoryAdvisor.MemoryState memoryState) {
         switch (memoryState) {
           case OK:
             // The application can safely allocate significant memory.
@@ -311,6 +323,9 @@ class MyActivity extends Activity {
           case CRITICAL:
             // The application should free memory as soon as possible, until the memory state
             // changes.
+            break;
+          case BACKGROUNDED:
+            // The application has been put into the background.
             break;
         }
       }

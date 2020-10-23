@@ -1,7 +1,9 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 /**
@@ -13,7 +15,7 @@ public class MemoryWatcher {
 
   private final long watcherStartTime;
   private final Runnable runner;
-  private final Timer timer = new Timer();
+
   private long expectedTime;
   private long unresponsiveTime;
   private MemoryAdvisor.MemoryState lastReportedState = MemoryAdvisor.MemoryState.UNKNOWN;
@@ -22,20 +24,30 @@ public class MemoryWatcher {
   /**
    * Create a MemoryWatcher object. This calls back the supplied client when the memory state
    * changes.
-   * @param memoryAdvisor The memory advisor object to employ.
+   *
+   * @param memoryAdvisor            The memory advisor object to employ.
    * @param maxMillisecondsPerSecond The budget for overhead introduced by the advisor and watcher.
-   * @param minimumFrequency The minimum time duration between iterations, in milliseconds.
-   * @param client The client to call back when the state changes.
+   * @param minimumFrequency         The minimum time duration between iterations, in milliseconds.
+   * @param client                   The client to call back when the state changes.
    */
-  public MemoryWatcher(final MemoryAdvisor memoryAdvisor, final long maxMillisecondsPerSecond,
-      final long minimumFrequency, final Client client) {
+  public MemoryWatcher(MemoryAdvisor memoryAdvisor, long maxMillisecondsPerSecond,
+      long minimumFrequency, Client client) {
     watcherStartTime = System.currentTimeMillis();
     expectedTime = watcherStartTime;
+
+    ScheduledExecutorService scheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor(runnable -> {
+          Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+          thread.setPriority(Thread.MIN_PRIORITY);
+          return thread;
+        });
+
     runner = new Runnable() {
       @Override
       public void run() {
         long start = System.currentTimeMillis();
         JSONObject advice = memoryAdvisor.getAdvice();
+        client.receiveAdvice(advice);
         MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
         long late = start - expectedTime;
         if (late > UNRESPONSIVE_THRESHOLD) {
@@ -70,12 +82,7 @@ public class MemoryWatcher {
           sleepFor = minimumFrequency;  // Impose minimum frequency.
         }
         expectedTime = System.currentTimeMillis() + sleepFor;
-        timer.schedule(new TimerTask() {
-          @Override
-          public void run() {
-            runner.run();
-          }
-        }, sleepFor);
+        scheduledExecutorService.schedule(runner, sleepFor, TimeUnit.MILLISECONDS);
       }
     };
     runner.run();
@@ -84,7 +91,19 @@ public class MemoryWatcher {
   /**
    * A client for the MemoryWatcher class.
    */
-  public abstract static class Client {
-    public abstract void newState(MemoryAdvisor.MemoryState state);
+  public interface Client {
+    void newState(MemoryAdvisor.MemoryState state);
+    void receiveAdvice(JSONObject advice);
+  }
+
+  /**
+   * A client for the MemoryWatcher class, which allows only the methods required to be overridden.
+   */
+  public abstract static class DefaultClient implements Client {
+    @Override
+    public void newState(MemoryAdvisor.MemoryState state) {}
+
+    @Override
+    public void receiveAdvice(JSONObject advice) {}
   }
 }

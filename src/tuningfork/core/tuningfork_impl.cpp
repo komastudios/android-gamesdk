@@ -50,7 +50,33 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       loading_start_(TimePoint::min()),
       before_first_tick_(true),
       app_first_run_(first_run) {
+    if (backend == nullptr) {
+        default_backend_ = std::make_unique<HttpBackend>();
+        TuningFork_ErrorCode err = default_backend_->Init(settings);
+        if (err == TUNINGFORK_ERROR_OK) {
+            ALOGI("TuningFork.GoogleEndpoint: OK");
+            backend_ = default_backend_.get();
+        } else {
+            ALOGE("TuningFork.GoogleEndpoint: FAILED");
+            initialization_error_code_ = err;
+            return;
+        }
+    }
+
+    if (time_provider_ == nullptr) {
+        default_time_provider_ = std::make_unique<ChronoTimeProvider>();
+        time_provider_ = default_time_provider_.get();
+    }
+
+    if (meminfo_provider_ == nullptr) {
+        default_meminfo_provider_ = std::make_unique<DefaultMemInfoProvider>();
+        meminfo_provider_ = default_meminfo_provider_.get();
+        meminfo_provider_->SetDeviceMemoryBytes(
+            RequestInfo::CachedValue().total_memory_bytes);
+    }
+
     auto start_time = time_provider_->TimeSinceProcessStart();
+
     ALOGI(
         "TuningFork Settings:\n  method: %d\n  interval: %d\n  n_ikeys: %d\n  "
         "n_annotations: %zu"
@@ -117,7 +143,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                 app_first_run_ ? LoadingTimeMetadata::LoadingState::FIRST_RUN
                                : LoadingTimeMetadata::LoadingState::COLD_START,
                 LoadingTimeMetadata::LoadingSource::PRE_ACTIVITY},
-            {}) != TUNINGFORK_ERROR_OK) {
+            {}, true /* relativeToStart */) != TUNINGFORK_ERROR_OK) {
         ALOGW(
             "Warning: could not record pre-activity loading time. Increase the "
             "maximum number of loading time metrics?");
@@ -128,8 +154,9 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
 
 TuningForkImpl::~TuningForkImpl() {
     // Stop the threads before we delete Tuning Fork internals
+    if (backend_) backend_->Stop();
     upload_thread_.Stop();
-    async_telemetry_->Stop();
+    if (async_telemetry_) async_telemetry_->Stop();
 }
 
 void TuningForkImpl::CreateSessionFrameHistograms(
@@ -211,7 +238,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
             *training_mode_params_;
     }
     RequestInfo::CachedValue().experiment_id = experiment_id;
-    if (Debugging() && jni::IsValid()) {
+    if (Debugging() && gamesdk::jni::IsValid()) {
         backend_->UploadDebugInfo(web_request);
     }
     return result;
@@ -320,7 +347,7 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
                         : LoadingTimeMetadata::LoadingState::COLD_START,
                     LoadingTimeMetadata::LoadingSource::
                         FIRST_TOUCH_TO_FIRST_FRAME},
-                {}) != TUNINGFORK_ERROR_OK) {
+                {}, true /* relativeToStart */) != TUNINGFORK_ERROR_OK) {
             ALOGW(
                 "Warning: could not record first frame loading time. Increase "
                 "the maximum number of loading time metrics?");
@@ -505,7 +532,7 @@ bool TuningForkImpl::Debugging() const {
     return true;
 #else
     // Otherwise, check the APK and system settings
-    if (jni::IsValid())
+    if (gamesdk::jni::IsValid())
         return apk_utils::GetDebuggable();
     else
         return false;
@@ -573,7 +600,7 @@ TuningFork_ErrorCode TuningForkImpl::MetricIdToLoadingTimeMetadata(
 
 TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     Duration duration, const LoadingTimeMetadata &metadata,
-    const ProtobufSerialization &annotation) {
+    const ProtobufSerialization &annotation, bool relativeToStart) {
     LoadingTimeMetadataId metadata_id;
     LoadingTimeMetadataToId(metadata, metadata_id);
     AnnotationId ann_id = 0;
@@ -583,7 +610,10 @@ TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
     if (data == nullptr)
         return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
-    data->Record(duration);
+    if (relativeToStart)
+        data->Record({std::chrono::nanoseconds(0), duration});
+    else
+        data->Record(duration);
     return TUNINGFORK_ERROR_OK;
 }
 
@@ -600,19 +630,19 @@ TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
     std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
     if (live_loading_events_.find(handle) != live_loading_events_.end())
         return TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT;
-    live_loading_events_[handle] = time_provider_->Now();
+    live_loading_events_[handle] = time_provider_->TimeSinceProcessStart();
     return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
     LoadingHandle handle) {
-    Duration duration;
+    ProcessTimeInterval interval;
     {
         std::lock_guard<std::mutex> lock(live_loading_events_mutex_);
         auto it = live_loading_events_.find(handle);
         if (it == live_loading_events_.end())
             return TUNINGFORK_ERROR_INVALID_LOADING_HANDLE;
-        duration = time_provider_->Now() - it->second;
+        interval = {it->second, time_provider_->TimeSinceProcessStart()};
         live_loading_events_.erase(it);
     }
     MetricId metric_id;
@@ -620,7 +650,7 @@ TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
     auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
     if (data == nullptr)
         return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
-    data->Record(duration);
+    data->Record(interval);
     return TUNINGFORK_ERROR_OK;
 }
 

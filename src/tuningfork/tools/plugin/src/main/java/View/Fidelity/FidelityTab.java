@@ -15,18 +15,28 @@
  */
 package View.Fidelity;
 
+import static Utils.UI.UIValidator.ILLEGAL_TEXT_PATTERN;
+
 import Controller.Fidelity.FidelityTabController;
 import Controller.Fidelity.FidelityTableModel;
 import Model.EnumDataModel;
-import View.Fidelity.FidelityTableDecorators.ComboBoxEditor;
-import View.Fidelity.FidelityTableDecorators.ComboBoxRenderer;
+import Utils.Resources.ResourceLoader;
+import Utils.UI.UIValidator;
+import View.Decorator.TableRenderer;
+import View.Fidelity.FidelityTableDecorators.FidelityFieldComboBox;
 import View.TabLayout;
+import View.TableComboBox;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.cellvalidators.TableCellValidator;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.table.TableCellEditor;
@@ -36,17 +46,27 @@ import org.jdesktop.swingx.VerticalLayout;
 
 public class FidelityTab extends TabLayout implements PropertyChangeListener {
 
-  private final JBLabel fidelityLabel = new JBLabel("Fidelity Settings");
-  private final JBLabel informationLabel = new JBLabel("Fidelity parameters settings info.");
+  private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+  private final JBLabel fidelityLabel = new JBLabel(resourceLoader.get("fidelity_settings"));
+  private final JBLabel informationLabel = new JBLabel(resourceLoader.get("fidelity_info"));
   FidelityTabController fidelityTabController;
-  private JBScrollPane scrollPane;
   private JBTable fidelityTable;
   private JPanel fidelityDecoratorPanel;
 
-  public FidelityTab(FidelityTabController controller) {
+  private final Disposable disposable;
+  private final static FidelityFieldComboBox TABLE_FIELD_CELL_RENDERER = new FidelityFieldComboBox(
+      new TableComboBox<>(),
+      new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM});
+  private final static FidelityFieldComboBox TABLE_FIELD_CELL_EDITOR = new FidelityFieldComboBox(
+      new TableComboBox<>(),
+      new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM});
+
+  public FidelityTab(FidelityTabController controller, Disposable disposable) {
     this.fidelityTabController = controller;
+    this.disposable = disposable;
     initVariables();
     initComponents();
+    initValidators();
   }
 
   public FidelityTabController getFidelityTabController() {
@@ -54,7 +74,6 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
   }
 
   private void initVariables() {
-    scrollPane = new JBScrollPane();
     fidelityTable =
         new JBTable() {
           @Override
@@ -83,6 +102,8 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
         ToolbarDecorator.createDecorator(fidelityTable)
             .setAddAction(it -> fidelityTabController.addRowAction(fidelityTable))
             .setRemoveAction(it -> fidelityTabController.removeRowAction(fidelityTable))
+            .setMinimumSize(getMinimumSize())
+            .setPreferredSize(getPreferredSize())
             .createPanel();
 
     fidelityLabel.setFont(TabLayout.getMainFont());
@@ -108,21 +129,25 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
     TableColumn typeColumn = fidelityTable.getColumnModel().getColumn(0);
     typeColumn.setMinWidth(150);
     typeColumn.setMaxWidth(300);
-    typeColumn.setCellEditor(
-        new ComboBoxEditor(new FieldType[]{FieldType.INT32, FieldType.FLOAT, FieldType.ENUM}));
-    typeColumn.setCellRenderer(new ComboBoxRenderer());
+    typeColumn.setCellEditor(TABLE_FIELD_CELL_EDITOR);
+    typeColumn.setCellRenderer(TABLE_FIELD_CELL_RENDERER);
 
     setDecoratorPanelSize(fidelityDecoratorPanel);
-    setTableSettings(scrollPane, fidelityDecoratorPanel, fidelityTable);
-    this.add(scrollPane);
+    setTableSettings(fidelityTable);
+    this.add(fidelityDecoratorPanel);
     this.add(Box.createVerticalStrut(10));
   }
 
   private TableCellRenderer getCellRendererByValue(FidelityTableData data) {
     if (data.getFieldType().equals(FieldType.ENUM)) {
-      return new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames());
+      return
+          new FidelityCellPanelValidationRendererWrapper(
+              new FidelityTableDecorators.JPanelDecorator(fidelityTabController.getEnumNames()))
+              .withCellValidator(new FidelityTextCellValidation());
     }
-    return new FidelityTableDecorators.TextBoxRenderer();
+    return TableRenderer
+        .getRendererTextBoxWithValidation(new FidelityTableDecorators.TextBoxRenderer(),
+            new FidelityTextCellValidation());
   }
 
   private TableCellEditor getCellEditorByValue(FidelityTableData data) {
@@ -134,6 +159,26 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
 
   public void saveSettings() {
     fidelityTable.clearSelection();
+  }
+
+  public boolean isViewValid() {
+    return UIValidator.isTableCellsValidDeep(fidelityTable) &
+        UIValidator.isComponentValid(fidelityTable);
+  }
+
+  private void initValidators() {
+    UIValidator.createTableValidator(disposable, fidelityTable, () -> {
+      List<String> fieldNames = fidelityTabController.getFidelityData().getFieldNames();
+      boolean isNamesDuplicate =
+          fieldNames.stream().anyMatch(option -> Collections.frequency(fieldNames, option) > 1);
+      if (isNamesDuplicate) {
+        return new ValidationInfo(resourceLoader.get("repeated_fields_error"), fidelityTable);
+      }
+      if (fieldNames.isEmpty()) {
+        return new ValidationInfo(resourceLoader.get("empty_table_error"));
+      }
+      return null;
+    });
   }
 
   @Override
@@ -164,4 +209,25 @@ public class FidelityTab extends TabLayout implements PropertyChangeListener {
       }
     }
   }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private static class FidelityTextCellValidation implements TableCellValidator {
+
+    private final ResourceLoader resourceLoader = ResourceLoader.getInstance();
+
+    @Override
+    public ValidationInfo validate(Object value, int row, int column) {
+      FidelityTableData data1 = (FidelityTableData) value;
+      String strVal = data1.getFieldParamName();
+      if (strVal.isEmpty()) {
+        return new ValidationInfo(resourceLoader.get("field_empty_error"));
+      }
+      if (Pattern.compile(ILLEGAL_TEXT_PATTERN).matcher(strVal).find()) {
+        return new ValidationInfo(
+            String.format(resourceLoader.get("field_illegal_character_error"), strVal));
+      }
+      return null;
+    }
+  }
+
 }

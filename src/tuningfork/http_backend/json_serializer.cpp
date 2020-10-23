@@ -79,9 +79,9 @@ using namespace date;
 
 static std::string GetVersionString(uint32_t ver) {
     std::stringstream version_str;
-    uint32_t major_version = ver >> 16;
-    uint32_t minor_version = ver & 0xffff;
-    version_str << major_version << "." << minor_version;
+    version_str << ANDROID_GAMESDK_MAJOR_VERSION(ver) << "."
+                << ANDROID_GAMESDK_MINOR_VERSION(ver) << "."
+                << ANDROID_GAMESDK_BUGFIX_VERSION(ver);
     return version_str.str();
 }
 Json::object GameSdkInfoJson(const RequestInfo& request_info) {
@@ -201,6 +201,17 @@ Json::object JsonSerializer::LoadingTimeMetadataJson(
     return ret;
 }
 
+static Json::array SerializeIntervalVector(
+    const std::vector<ProcessTimeInterval>& intervals) {
+    Json::array result;
+    for (const auto& i : intervals) {
+        result.push_back(
+            Json::object{{"start", DurationToSecondsString(i.Start())},
+                         {"end", DurationToSecondsString(i.End())}});
+    }
+    return result;
+}
+
 Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
                                                  bool& empty,
                                                  Duration& duration) {
@@ -222,20 +233,33 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     for (const auto& th :
          session_.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
         if (th->metric_id_.detail.annotation != annotation) continue;
-        std::vector<int>
-            loading_events_times;  // Ignore fractional milliseconds
-        for (auto c : th->histogram_.samples()) {
-            auto v = static_cast<int>(c);
-            if (v != 0) loading_events_times.push_back(v);
+        std::vector<int> loading_events_times;
+        std::vector<ProcessTimeInterval> loading_events_intervals;
+        for (const auto& c : th->data_.Samples()) {
+            if (c.IsDuration()) {
+                loading_events_times.push_back(
+                    std::chrono::duration_cast<std::chrono::milliseconds>(
+                        c.Duration())
+                        .count());
+            } else {
+                loading_events_intervals.push_back(c);
+            }
         }
-        LoadingTimeMetadata md;
-        if (id_provider_->MetricIdToLoadingTimeMetadata(th->metric_id_, md) ==
-            TUNINGFORK_ERROR_OK) {
-            Json::object o({});
-            o["times_ms"] = loading_events_times;
-            o["loading_metadata"] = LoadingTimeMetadataJson(md);
-            loading_events.push_back(o);
-            duration += th->duration_;
+        if (loading_events_times.size() > 0 ||
+            loading_events_intervals.size() > 0) {
+            LoadingTimeMetadata md;
+            if (id_provider_->MetricIdToLoadingTimeMetadata(
+                    th->metric_id_, md) == TUNINGFORK_ERROR_OK) {
+                Json::object o({});
+                if (loading_events_times.size() > 0)
+                    o["times_ms"] = loading_events_times;
+                if (loading_events_intervals.size() > 0)
+                    o["intervals"] =
+                        SerializeIntervalVector(loading_events_intervals);
+                o["loading_metadata"] = LoadingTimeMetadataJson(md);
+                loading_events.push_back(o);
+                duration += th->duration_;
+            }
         }
     }
     int total_size = render_histograms.size() + loading_events.size();

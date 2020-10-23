@@ -10,7 +10,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** A helper class with static methods to help with Heuristics and file IO */
+/**
+ * A helper class with static methods to help with Heuristics and file IO
+ */
 public class Utils {
   private static final String TAG = Utils.class.getSimpleName();
   private static final Pattern MEMINFO_REGEX = Pattern.compile("([^:]+)[^\\d]*(\\d+).*\n");
@@ -30,8 +32,8 @@ public class Utils {
   /**
    * Returns the OOM score associated with a process.
    *
-   * @return The OOM score, or -1 if the score cannot be obtained.
    * @param pid The process ID (pid).
+   * @return The OOM score, or -1 if the score cannot be obtained.
    */
   static int getOomScore(int pid) {
     try {

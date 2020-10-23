@@ -116,7 +116,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     info.build_version_sdk = getSystemProp("ro.build.version.sdk");
     info.build_fingerprint = getSystemProp("ro.build.fingerprint");
 
-    if (jni::IsValid()) {
+    if (gamesdk::jni::IsValid()) {
         std::stringstream session_id_path;
         session_id_path << file_utils::GetAppCacheDir() << "/tuningfork";
         file_utils::CheckAndCreateDir(session_id_path.str());
@@ -153,13 +153,13 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
         info.cpu_max_freq_hz.push_back(freq * 1000);  // File is in kHz
     }
 
-    if (jni::IsValid()) {
+    if (gamesdk::jni::IsValid()) {
         info.apk_version_code = apk_utils::GetVersionCode(
             &info.apk_package_name, &info.gl_es_version);
-        info.model = jni::android::os::Build::MODEL().C();
-        info.brand = jni::android::os::Build::BRAND().C();
-        info.product = jni::android::os::Build::PRODUCT().C();
-        info.device = jni::android::os::Build::DEVICE().C();
+        info.model = gamesdk::jni::android::os::Build::MODEL().C();
+        info.brand = gamesdk::jni::android::os::Build::BRAND().C();
+        info.product = gamesdk::jni::android::os::Build::PRODUCT().C();
+        info.device = gamesdk::jni::android::os::Build::DEVICE().C();
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
     info.swappy_version = settings.c_settings.swappy_version;
