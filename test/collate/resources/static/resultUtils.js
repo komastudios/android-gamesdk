@@ -10,12 +10,12 @@ export function rowMetrics(row) {
   }
 }
 
-export function getValues(combined, object) {
+export function getValues(combined, object, path) {
   for (const [key, value] of Object.entries(object)) {
     if (Number.isInteger(value)) {
-      combined[key] = value;
+      combined[path + key] = value;
     } else if (value.constructor === Object) {
-      getValues(combined, value);
+      getValues(combined, value, key + '/');
     }
   }
 }
