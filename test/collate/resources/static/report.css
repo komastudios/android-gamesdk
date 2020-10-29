@@ -7,5 +7,26 @@ main {
 }
 
 div.graph {
-  margin: 20px;
+  margin: 4px;
+}
+
+form.seriesForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+form.seriesForm > fieldset {
+  border-style: dotted;
+  padding: 0;
+  margin-right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+form.seriesForm > fieldset > legend {
+  font-weight: bold;
+}
+
+form.seriesForm > fieldset > label {
+  margin-right: 5px
 }

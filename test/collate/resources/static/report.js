@@ -98,8 +98,9 @@ const section = document.getElementsByTagName('main')[0];
   const graphDiv = document.createElement('div');
   section.appendChild(graphDiv);
   graphDiv.classList.add('graph');
-
-  buildDygraph(graphDiv, deviceInfo, result);
+  const extrasDiv = document.createElement('div');
+  section.appendChild(extrasDiv);
+  buildDygraph(graphDiv, extrasDiv, deviceInfo, result);
 
   let totalDuration = 0;
   let durationCount = 0;
