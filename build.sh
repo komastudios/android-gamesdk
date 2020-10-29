@@ -15,43 +15,53 @@ export ANDROID_HOME=$(pwd)/../prebuilts/sdk
 export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r20
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
-# Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,
-# build in the default location.
-if [[ -z $DIST_DIR ]]
-then
-    dist_dir=$(pwd)/../package
-else
-    dist_dir=$DIST_DIR
-fi
+mkdir aosp && cd aosp
+repo init -u  https://android.googlesource.com/platform/manifest -b master
+repo sync -c -j8
 
-# Build the Game SDK distribution zip and the zips for Maven AARs
-if [[ $1 == "full" ]]
-then
-    # Don't distribute Oboe in the full Game SDK zip distribution.
-    package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
-elif [[ $1 == "samples" ]]
-then
-    package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
-else
-    package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PdistPath="$dist_dir"
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
-fi
+source build/envsetup.sh
+lunch aosp_arm64-eng
+make heapprofd_standalone_client
 
-# Calculate hash of the zip file
-pushd "$dist_dir/$package_name"
-sha256sum gamesdk.zip > gamesdk.zip.sha256
-popd
+cp out/target/product/generic_arm64/system/lib64/heapprofd_standalone_client.so $DIST_DIR
 
-pushd "$dist_dir/$package_name"
-# Remove intermediate files that would be very costly to store
-rm -rf libs prefab
-# Remove other files that we don't care about and are polluting the output
-rm -rf external third_party src include samples aar
-popd
+# # Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,
+# # build in the default location.
+# if [[ -z $DIST_DIR ]]
+# then
+#     dist_dir=$(pwd)/../package
+# else
+#     dist_dir=$DIST_DIR
+# fi
+
+# # Build the Game SDK distribution zip and the zips for Maven AARs
+# if [[ $1 == "full" ]]
+# then
+#     # Don't distribute Oboe in the full Game SDK zip distribution.
+#     package_name=fullsdk
+#     ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+#     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
+#     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+# elif [[ $1 == "samples" ]]
+# then
+#     package_name=gamesdk
+#     ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
+#     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
+# else
+#     package_name=gamesdk
+#     ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PdistPath="$dist_dir"
+#     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
+#     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+# fi
+
+# # Calculate hash of the zip file
+# pushd "$dist_dir/$package_name"
+# sha256sum gamesdk.zip > gamesdk.zip.sha256
+# popd
+
+# pushd "$dist_dir/$package_name"
+# # Remove intermediate files that would be very costly to store
+# rm -rf libs prefab
+# # Remove other files that we don't care about and are polluting the output
+# rm -rf external third_party src include samples aar
+# popd
