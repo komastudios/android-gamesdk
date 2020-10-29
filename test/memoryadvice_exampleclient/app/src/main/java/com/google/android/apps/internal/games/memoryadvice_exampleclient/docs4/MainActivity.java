@@ -11,7 +11,7 @@ class MyActivity extends Activity {
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
-        new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.DefaultClient() {
+        new MemoryWatcher(memoryAdvisor, 10, 100, 2000, new MemoryWatcher.DefaultClient() {
           @Override
           public void newState(MemoryAdvisor.MemoryState memoryState) {
             switch (memoryState) {

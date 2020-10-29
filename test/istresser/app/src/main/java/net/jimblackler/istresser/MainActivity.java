@@ -311,9 +311,11 @@ public class MainActivity extends Activity {
     }
 
     long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
-    int samplesPerSecond = (int) getOrDefault(params, "samplesPerSecond", 4);
+    int maxMillisecondsPerSecond = (int) getOrDefault(params, "maxMillisecondsPerSecond", 1000);
+    int minimumFrequency = (int) getOrDefault(params, "minimumFrequency", 200);
+    int maximumFrequency = (int) getOrDefault(params, "maximumFrequency", 2000);
 
-    new MemoryWatcher(memoryAdvisor, 1000 / samplesPerSecond, MINIMUM_SAMPLE_INTERVAL,
+    new MemoryWatcher(memoryAdvisor, maxMillisecondsPerSecond, minimumFrequency, maximumFrequency,
         new MemoryWatcher.Client() {
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {

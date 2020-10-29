@@ -21,10 +21,13 @@ public class MainActivity extends Activity {
         int maxMillisecondsPerSecond = 10;
 
         // The minimum time duration between iterations, in milliseconds.
-        int minimumFrequency = 1000;
+        int minimumFrequency = 100;
+
+        // The maximum time duration between iterations, in milliseconds.
+        int maximumFrequency = 2000;
 
         MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, maxMillisecondsPerSecond,
-            minimumFrequency, new MemoryWatcher.DefaultClient() {
+            minimumFrequency, maximumFrequency, new MemoryWatcher.DefaultClient() {
               @Override
               public void newState(MemoryAdvisor.MemoryState state) {}
             });
