@@ -8,6 +8,9 @@
         "timeout" : "11m"
       },
       "orientation" : "landscape",
+      "maxMillisecondsPerSecond": 1000,
+      "minimumFrequency": 200,
+      "maximumFrequency": 2000,
       "metrics": {
         "constant": {
           "MemoryInfo": {

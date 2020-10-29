@@ -28,10 +28,11 @@ public class MemoryWatcher {
    * @param memoryAdvisor            The memory advisor object to employ.
    * @param maxMillisecondsPerSecond The budget for overhead introduced by the advisor and watcher.
    * @param minimumFrequency         The minimum time duration between iterations, in milliseconds.
+   * @param maximumFrequency         The maximum time duration between iterations, in milliseconds.
    * @param client                   The client to call back when the state changes.
    */
   public MemoryWatcher(MemoryAdvisor memoryAdvisor, long maxMillisecondsPerSecond,
-      long minimumFrequency, Client client) {
+      long minimumFrequency, long maximumFrequency, Client client) {
     watcherStartTime = System.currentTimeMillis();
     expectedTime = watcherStartTime;
 
@@ -76,10 +77,10 @@ public class MemoryWatcher {
         // Sleep until the moment that the method will be within its budget.
         long sleepFor = targetTime - timeSinceStart;
 
-        if (sleepFor < 1) {
-          sleepFor = 1;  // Run immediately in the case of being well under budget.
-        } else if (sleepFor > minimumFrequency) {
+        if (sleepFor < minimumFrequency) {
           sleepFor = minimumFrequency;  // Impose minimum frequency.
+        } else if (sleepFor > maximumFrequency) {
+          sleepFor = maximumFrequency;  // Impose maximum frequency.
         }
         expectedTime = System.currentTimeMillis() + sleepFor;
         scheduledExecutorService.schedule(runner, sleepFor, TimeUnit.MILLISECONDS);

@@ -70,6 +70,19 @@
       ],
       "type": "string"
     },
+    "maxMillisecondsPerSecond": {
+      "minimum": 0,
+      "maximum": 1000,
+      "type": "number"
+    },
+    "minimumFrequency": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "maximumFrequency": {
+      "minimum": 0,
+      "type": "number"
+    },
     "predictions": {
       "$ref": "predictionsSpec.schema.json"
     },
