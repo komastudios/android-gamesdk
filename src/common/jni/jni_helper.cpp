@@ -172,6 +172,20 @@ int LocalObject::GetIntField(const char* field_name) const {
     else
         return BAD_FIELD;
 }
+bool LocalObject::GetBooleanField(const char* field_name) const {
+    jfieldID fid = Env()->GetFieldID(clz_, field_name, "Z");
+    if (!RawExceptionCheck())
+        return Env()->GetBooleanField(obj_, fid);
+    else
+        return false;
+}
+int64_t LocalObject::GetLongField(const char* field_name) const {
+    jfieldID fid = Env()->GetFieldID(clz_, field_name, "J");
+    if (!RawExceptionCheck())
+        return Env()->GetLongField(obj_, fid);
+    else
+        return BAD_FIELD;
+}
 std::vector<unsigned char> GetByteArrayBytesAndDeleteRef(jbyteArray jbs) {
     jbyte* bs = Env()->GetByteArrayElements(jbs, 0);
     std::vector<unsigned char> ret(bs, bs + Env()->GetArrayLength(jbs));

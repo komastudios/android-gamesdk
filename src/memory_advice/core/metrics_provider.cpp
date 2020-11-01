@@ -29,11 +29,18 @@
 #include <utility>
 #include <vector>
 
+#include "jni/jni_wrap.h"
+
+using namespace gamesdk::jni;
+
 constexpr size_t BYTES_IN_KB = 1024;
+constexpr int64_t BYTES_IN_MB = 1024 * 1024;
 const std::regex MEMINFO_REGEX("([^:]+)[^\\d]*(\\d+).*\n");
 const std::regex STATUS_REGEX("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
 
 namespace memory_advice {
+std::unique_ptr<android::app::ActivityManager>
+    MetricsProvider::activity_manager_;
 
 std::map<std::string, int64_t> MetricsProvider::GetMeminfoValues() {
     return GetMemoryValuesFromFile("/proc/meminfo", MEMINFO_REGEX);
@@ -49,6 +56,40 @@ std::map<std::string, int64_t> MetricsProvider::GetProcValues() {
     std::map<std::string, int64_t> proc_map;
     proc_map["oom_score"] = GetOomScore();
     return proc_map;
+}
+
+std::map<std::string, int64_t> MetricsProvider::GetActivityManagerValues() {
+    std::map<std::string, int64_t> metrics_map;
+
+    metrics_map["MemoryClass"] =
+        activity_manager_->getMemoryClass() * BYTES_IN_MB;
+    metrics_map["LargeMemoryClass"] =
+        activity_manager_->getLargeMemoryClass() * BYTES_IN_MB;
+    metrics_map["LowRamDevice"] = activity_manager_->isLowRamDevice();
+
+    return metrics_map;
+}
+
+std::map<std::string, int64_t> MetricsProvider::GetActivityManagerMemoryInfo() {
+    android::app::MemoryInfo memory_info;
+    std::map<std::string, int64_t> metrics_map;
+    activity_manager_->getMemoryInfo(memory_info.J());
+    metrics_map["threshold"] = memory_info.threshold();
+    metrics_map["availMem"] = memory_info.availMem();
+    metrics_map["totalMem"] = memory_info.totalMem();
+    metrics_map["lowMemory"] = memory_info.lowMemory();
+
+    return metrics_map;
+}
+
+std::map<std::string, int64_t> MetricsProvider::GetDebugValues() {
+    std::map<std::string, int64_t> metrics_map;
+    metrics_map["nativeHeapAllocatedSize"] =
+        android_debug_.getNativeHeapAllocatedSize();
+    metrics_map["nativeHeapFreeSize"] = android_debug_.getNativeHeapFreeSize();
+    metrics_map["nativeHeapSize"] = android_debug_.getNativeHeapSize();
+
+    return metrics_map;
 }
 
 std::map<std::string, int64_t> MetricsProvider::GetMemoryValuesFromFile(
@@ -83,5 +124,12 @@ int64_t MetricsProvider::GetOomScore() {
         oom_file >> oom_score;
         return oom_score;
     }
+}
+
+void MetricsProvider::InitActivityManager() {
+    java::Object obj = AppContext().getSystemService(
+        android::content::Context::ACTIVITY_SERVICE);
+    activity_manager_ =
+        std::make_unique<android::app::ActivityManager>(std::move(obj));
 }
 }  // namespace memory_advice

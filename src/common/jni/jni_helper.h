@@ -99,10 +99,10 @@ class String {
 // NB you cannot share these objects between threads. Create global refs in
 // order to do that.
 class LocalObject {
-    jobject obj_;
     jclass clz_;
 
    public:
+    jobject obj_;
     static constexpr int BAD_FIELD = -1;
 
     LocalObject(jobject o = nullptr, jclass c = nullptr) : obj_(o), clz_(c) {}
@@ -188,6 +188,8 @@ class LocalObject {
     LocalObject GetObjectField(const char* field_name, const char* sig) const;
     // Returns BAD_FIELD is the field could not be found (and exception is set)
     int GetIntField(const char* field_name) const;
+    bool GetBooleanField(const char* field_name) const;
+    int64_t GetLongField(const char* field_name) const;
 
    private:
     void Release() {

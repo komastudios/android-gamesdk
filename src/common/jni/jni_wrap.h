@@ -44,6 +44,7 @@ class Object {
             obj_.Cast();  // Cast to the object's own class.
         }
     }
+    jobject J() { return obj_.obj_; }
     bool valid() const { return !obj_.ClassIsNull(); }
     void CallVVMethod(const char* name) { obj_.CallVoidMethod(name, "()V"); }
     void CallIVMethod(const char* name, int a) {
@@ -76,6 +77,12 @@ class Object {
         str << "()L" << returnClass << ";";
         jobject o = obj_.CallObjectMethod(name, str.str().c_str());
         return Object(o);
+    }
+    void CallOVMethod(const char* name, const char* parameterClassA,
+                      jobject a) {
+        std::stringstream str;
+        str << "(L" << parameterClassA << ";)V";
+        obj_.CallVoidMethod(name, str.str().c_str(), a);
     }
     Object CallSIOMethod(const char* name, const char* a, int b,
                          const char* returnClass) {
@@ -363,6 +370,7 @@ class AssetManager : public java::Object {
 class Context : public java::Object {
    public:
     static constexpr const char* CONNECTIVITY_SERVICE = "connectivity";
+    static constexpr const char* ACTIVITY_SERVICE = "activity";
     Context(jobject o) : java::Object(o) {}
     pm::PackageManager getPackageManager() {
         return CallVOMethod("getPackageManager",
@@ -402,6 +410,33 @@ class DebugClass {
         return 0;
     }
 
+    static uint64_t getNativeHeapFreeSize() {
+        JNIEnv* env = Env();
+        if (env != nullptr) {
+            LocalObject obj;
+            obj.Cast("android/os/Debug");
+            jclass clz = obj;
+            jmethodID method =
+                env->GetStaticMethodID(clz, "getNativeHeapFreeSize", "()J");
+            if (method != NULL)
+                return (uint64_t)env->CallStaticLongMethod(clz, method);
+        }
+        return 0;
+    }
+
+    static uint64_t getNativeHeapSize() {
+        JNIEnv* env = Env();
+        if (env != nullptr) {
+            LocalObject obj;
+            obj.Cast("android/os/Debug");
+            jclass clz = obj;
+            jmethodID method =
+                env->GetStaticMethodID(clz, "getNativeHeapSize", "()J");
+            if (method != NULL)
+                return (uint64_t)env->CallStaticLongMethod(clz, method);
+        }
+        return 0;
+    }
 };  // class Debug
 
 class Build {
@@ -436,6 +471,35 @@ class ConnectivityManager : java::Object {
 };
 
 }  // namespace net
+
+namespace app {
+
+class MemoryInfo : public java::Object {
+   public:
+    MemoryInfo(java::Object&& o) : java::Object(std::move(o)) {}
+    MemoryInfo()
+        : java::Object("android/app/ActivityManager$MemoryInfo", "()V") {}
+    int64_t threshold() const { return obj_.GetLongField("threshold"); }
+    int64_t availMem() const { return obj_.GetLongField("availMem"); }
+    bool lowMemory() const { return obj_.GetBooleanField("lowMemory"); }
+    int64_t totalMem() const { return obj_.GetLongField("totalMem"); }
+};
+
+class ActivityManager : java::Object {
+   public:
+    ActivityManager(java::Object&& o) : java::Object(std::move(o)) {}
+    void getMemoryInfo(jobject memoryInfo) {
+        CallOVMethod("getMemoryInfo", "android/app/ActivityManager$MemoryInfo",
+                     memoryInfo);
+    }
+    int32_t getMemoryClass() { return CallVIMethod("getMemoryClass"); }
+    int32_t getLargeMemoryClass() {
+        return CallVIMethod("getLargeMemoryClass");
+    }
+    bool isLowRamDevice() { return CallVZMethod("isLowRamDevice"); }
+};
+
+}  // namespace app
 
 }  // namespace android
 
