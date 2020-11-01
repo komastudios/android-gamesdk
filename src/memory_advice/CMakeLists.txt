@@ -21,6 +21,9 @@ set(MEMORY_ADVICE_SRCS
   core/memory_advice.cpp
   core/memory_advice_c.cpp
   core/metrics_provider.cpp
+  ../common/jni/jni_helper.cpp
+  ../common/jni/jni_wrap.cpp
+  ../common/jni/jnictx.cpp
 )
 
 add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})

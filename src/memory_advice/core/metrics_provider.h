@@ -15,11 +15,16 @@
  */
 
 #include <map>
+#include <memory>
 #include <regex>
 #include <string>
 
+#include "jni/jni_wrap.h"
+
 #define LOG_TAG "MemoryAdvice"
 #include "Log.h"
+
+using namespace gamesdk::jni;
 
 namespace memory_advice {
 
@@ -37,8 +42,24 @@ class MetricsProvider {
      * folder.
      */
     static std::map<std::string, int64_t> GetProcValues();
+    /**
+     * @brief Get a list of memory metrics available from ActivityManager
+     */
+    static std::map<std::string, int64_t> GetActivityManagerValues();
+    /**
+     * @brief Get a list of memory metrics available from
+     * ActivityManager#getMemoryInfo().
+     */
+    static std::map<std::string, int64_t> GetActivityManagerMemoryInfo();
+    /**
+     * @brief Get a list of memory metrics available from android.os.Debug
+     */
+    static std::map<std::string, int64_t> GetDebugValues();
+    static void InitActivityManager();
 
    private:
+    static std::unique_ptr<android::app::ActivityManager> activity_manager_;
+    static android::os::DebugClass android_debug_;
     /**
      * @brief Reads the given file and dumps the memory values within as a map
      */
