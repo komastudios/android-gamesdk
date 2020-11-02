@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1e866f5_8d9e5a1b",
+        "filename": "src/common/jni/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-11-02T15:44:40Z",
+      "side": 1,
+      "message": "Use the jobject cast operator instead.",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f79310d_d29f6869",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-11-02T15:44:40Z",
+      "side": 1,
+      "message": "This shouldn\u0027t be needed.",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff844bb2_5a26f1ee",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-11-02T15:44:40Z",
+      "side": 1,
+      "message": "Should this take an Object reference rather than a jobject?",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de14c77a_5042986e",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 491,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2020-11-02T15:44:40Z",
+      "side": 1,
+      "message": "This should take a reference to a MemInfo object, not a jobject?",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
