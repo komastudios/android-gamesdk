@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+#include "jni/jni_helper.h"
 #include "memory_advice/memory_advice.h"
 #include "memory_advice_internal.h"
+#include "metrics_provider.h"
+
+using namespace gamesdk::jni;
 
 extern "C" {
 
 void MemoryAdvice_init_internal(JNIEnv *env, jobject context) {
-    // TODO: implementation
+    Init(env, context);
+    memory_advice::MetricsProvider::InitActivityManager();
 }
 
 uint32_t MemoryAdvice_testLibraryAccess(uint32_t testValue) {
