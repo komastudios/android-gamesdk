@@ -49,7 +49,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * Create an Android memory advice fetcher.
    *
    * @param context      The Android context to employ.
-   * @param params       The active configuration.
+   * @param params       The active configuration; described by advisorParameters.schema.json.
    * @param readyHandler A callback used when on device stress test is required.
    * @throws MemoryAdvisorException
    */

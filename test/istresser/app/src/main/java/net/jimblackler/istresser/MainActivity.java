@@ -280,11 +280,11 @@ public class MainActivity extends Activity {
       }
 
       resultsStream.println(report);
+      memoryAdvisor = new MemoryAdvisor(
+          this, params.getJSONObject("advisorParameters"), () -> runOnUiThread(this::startTest));
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
       throw new IllegalStateException(e);
     }
-
-    memoryAdvisor = new MemoryAdvisor(this, params, () -> runOnUiThread(this::startTest));
   }
 
   void startTest() {
@@ -539,8 +539,9 @@ public class MainActivity extends Activity {
       JSONObject report = standardInfo();
       report.put("activityPaused", true);
       report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(
-              params.getJSONObject("metrics").getJSONObject("variable")));
+          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                             .getJSONObject("metrics")
+                                             .getJSONObject("variable")));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
@@ -554,8 +555,9 @@ public class MainActivity extends Activity {
       JSONObject report = standardInfo();
       report.put("activityPaused", false);
       report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(
-              params.getJSONObject("metrics").getJSONObject("variable")));
+          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                             .getJSONObject("metrics")
+                                             .getJSONObject("variable")));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);

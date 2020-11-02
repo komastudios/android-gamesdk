@@ -27,9 +27,13 @@ public class Discover {
       }
       JSONObject deviceInfo = first.getJSONObject("deviceInfo");
       JSONObject flattened = deviceInfo.getJSONObject("params");
-      if (flattened.has("heuristics") && !flattened.getJSONObject("heuristics").isEmpty()) {
-        // Runs with heuristics are not useful.
-        return;
+      if (flattened.has("advisorParameters")) {
+        JSONObject advisorParameters = flattened.getJSONObject("advisorParameters");
+        if (advisorParameters.has("heuristics")
+            && !advisorParameters.getJSONObject("heuristics").isEmpty()) {
+          // Runs with heuristics are not useful.
+          return;
+        }
       }
       if (!flattened.has("malloc") && !flattened.has("glTest")) {
         // Only interested in these kinds of stress tests.
