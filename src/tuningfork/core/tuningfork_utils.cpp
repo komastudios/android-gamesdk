@@ -172,7 +172,6 @@ namespace file_utils {
 // Creates the directory if it does not exist. Returns true if the directory
 //  already existed or could be created.
 bool CheckAndCreateDir(const std::string& path) {
-    ALOGV("CheckAndCreateDir:%s", path.c_str());
     struct stat sb;
     int32_t res = stat(path.c_str(), &sb);
     if (0 == res && sb.st_mode & S_IFDIR) {
@@ -188,7 +187,6 @@ bool CheckAndCreateDir(const std::string& path) {
     return false;
 }
 bool FileExists(const std::string& fname) {
-    ALOGV("FileExists:%s", fname.c_str());
     struct stat buffer;
     return (stat(fname.c_str(), &buffer) == 0);
 }
