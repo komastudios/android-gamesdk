@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2776295_4f1437f1",
+        "filename": "src/common/jni/jni_helper.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T16:55:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1e866f5_8d9e5a1b",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0f79310d_d29f6869",
@@ -31,6 +49,24 @@
       "writtenOn": "2020-11-02T15:44:40Z",
       "side": 1,
       "message": "This shouldn\u0027t be needed.",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f70d13e0_11af9d05",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T16:55:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f79310d_d29f6869",
       "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "91174bfd_793d13d2",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T16:55:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff844bb2_5a26f1ee",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "de14c77a_5042986e",
@@ -65,6 +119,24 @@
       "writtenOn": "2020-11-02T15:44:40Z",
       "side": 1,
       "message": "This should take a reference to a MemInfo object, not a jobject?",
+      "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19f06840_db87d541",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 491,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T16:55:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de14c77a_5042986e",
       "revId": "c8c49dd770513939a57d8f767804a8b88a606565",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
