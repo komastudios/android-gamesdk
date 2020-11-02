@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab44f40e_2bdf8196",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T15:25:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31c16efe_7036c9ce",
+      "range": {
+        "startLine": 9,
+        "startChar": 21,
+        "endLine": 9,
+        "endChar": 25
+      },
+      "revId": "35587df8afbc9244cb3296d6f47f83faed93466b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c8893746_535b828b",
@@ -37,6 +61,30 @@
       "writtenOn": "2020-11-02T10:56:20Z",
       "side": 1,
       "message": "Nit, inconsistent terms, KB (not KILOBYTE), then MEGABYTE (not MB).",
+      "range": {
+        "startLine": 37,
+        "startChar": 18,
+        "endLine": 37,
+        "endChar": 35
+      },
+      "revId": "35587df8afbc9244cb3296d6f47f83faed93466b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40960019_4c5b6294",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-02T15:25:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8893746_535b828b",
       "range": {
         "startLine": 37,
         "startChar": 18,
