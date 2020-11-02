@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Advisor parameters",
+  "description": "Configuration for the memory advisor.",
+  "additionalProperties": false,
+  "properties": {
+    "heuristics": {
+      "$ref": "heuristics.schema.json"
+    },
+    "matchStrategy": {
+      "enum": [
+        "baseline",
+        "fingerprint"
+      ]
+    },
+    "metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "constant": {
+          "$ref": "metricsSpecs.schema.json"
+        },
+        "variable": {
+          "$ref": "metricsSpecs.schema.json"
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "type": "object"
+    },
+    "onDeviceStressTest": {
+      "additionalProperties": false,
+      "properties": {
+        "segmentSize": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "required": [
+        "segmentSize"
+      ],
+      "type": "object"
+    },
+    "predictions": {
+      "$ref": "predictionsSpec.schema.json"
+    }
+  },
+  "type": "object"
+}

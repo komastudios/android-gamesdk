@@ -21,47 +21,11 @@
     "glTest": {
       "$ref": "memoryQuantity.schema.json"
     },
-    "heuristics": {
-      "$ref": "heuristics.schema.json"
-    },
     "malloc": {
       "$ref": "memoryQuantity.schema.json"
     },
-    "matchStrategy": {
-      "enum": [
-        "baseline",
-        "fingerprint"
-      ]
-    },
     "maxConsumer": {
       "$ref": "memoryQuantity.schema.json"
-    },
-    "metrics": {
-      "additionalProperties": false,
-      "properties": {
-        "constant": {
-          "$ref": "metricsSpecs.schema.json"
-        },
-        "variable": {
-          "$ref": "metricsSpecs.schema.json"
-        }
-      },
-      "required": [
-        "variable"
-      ],
-      "type": "object"
-    },
-    "onDeviceStressTest": {
-      "additionalProperties": false,
-      "properties": {
-        "segmentSize": {
-          "$ref": "memoryQuantity.schema.json"
-        }
-      },
-      "required": [
-        "segmentSize"
-      ],
-      "type": "object"
     },
     "orientation": {
       "enum": [
@@ -83,13 +47,11 @@
       "minimum": 0,
       "type": "number"
     },
-    "predictions": {
-      "$ref": "predictionsSpec.schema.json"
-    },
     "timeout": {
       "$ref": "duration.schema.json"
     },
     "switchTest": {
+      "description": "Enables a test where the stress application is put into the background by launching another app.",
       "additionalProperties": false,
       "properties": {
         "enabled": {
@@ -106,6 +68,12 @@
         "enabled"
       ],
       "type": "object"
+    },
+    "advisorParameters": {
+      "$ref": "advisorParameters.schema.json"
+    },
+    "package": {
+      "type": "string"
     }
   },
   "type": "object"
