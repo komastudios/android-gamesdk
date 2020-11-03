@@ -174,7 +174,7 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode GetOrCreateInstrumentKeyIndex(InstrumentationKey key,
                                                        int &index);
 
-    bool LoadingNextScene() const { return loading_start_ != TimePoint::min(); }
+    bool Loading() const { return live_loading_events_.size() > 0; }
 
     void SwapSessions();
 
