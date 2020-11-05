@@ -3,25 +3,10 @@
   "title": "Metrics Specs",
   "description": "Specification for which metrics to collect.",
   "additionalProperties": false,
+  "type": "object",
   "properties": {
     "ActivityManager": {
       "$ref": "metricsSpecGroup.schema.json"
-    },
-    "canaryProcessTester": {
-      "anyOf": [
-        {
-          "type": "boolean"
-        },
-        {
-          "additionalProperties": false,
-          "properties": {
-            "memory": {
-              "$ref": "memoryQuantity.schema.json"
-            }
-          },
-          "type": "object"
-        }
-      ]
     },
     "debug": {
       "$ref": "metricsSpecGroup.schema.json"
@@ -40,6 +25,22 @@
     },
     "summary": {
       "$ref": "metricsSpecGroup.schema.json"
+    },
+    "canaryProcessTester": {
+      "$ref": "canaryProcessTesterSpec.schema.json"
     }
-  }
+  },
+  "examples": [
+    {
+      "MemoryInfo": {
+        "totalMem": true,
+        "threshold": true
+      },
+      "meminfo": true,
+      "ActivityManager": true,
+      "proc": {
+        "oom_score": true
+      }
+    }
+  ]
 }

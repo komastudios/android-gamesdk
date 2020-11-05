@@ -4,8 +4,14 @@
   "description": "A set of predictions to enable.",
   "patternProperties": {
     "[A-Za-z0-9_]*": {
+      "description": "The name of the property to enable",
       "type": "boolean"
     }
   },
-  "type": "object"
+  "type": "object",
+  "examples": [
+    {
+        "oom_score": true
+    }
+  ]
 }

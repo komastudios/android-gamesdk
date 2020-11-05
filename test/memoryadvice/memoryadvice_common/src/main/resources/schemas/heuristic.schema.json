@@ -8,6 +8,9 @@
     "baselineRatio": {
       "$ref": "triggerRatios.schema.json"
     },
+    "limit": {
+      "$ref": "triggerRatios.schema.json"
+    },
     "deltaLimit": {
       "$ref": "triggerRatios.schema.json"
     },
