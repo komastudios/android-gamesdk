@@ -13,12 +13,9 @@ import java.nio.charset.StandardCharsets;
 public class LogMonitor {
   private static final String TAG = LogMonitor.class.getSimpleName();
 
-  interface LogReaderClient {
-    void receive(String line);
-  }
-
   /**
    * Create a new log monitor.
+   *
    * @param client The client to send every new log line to on a best-effort basis.
    */
   public LogMonitor(LogReaderClient client) {
@@ -58,5 +55,9 @@ public class LogMonitor {
         Log.w(TAG, "Log monitor could not access logcat", e);
       }
     }).start();
+  }
+
+  interface LogReaderClient {
+    void receive(String line);
   }
 }

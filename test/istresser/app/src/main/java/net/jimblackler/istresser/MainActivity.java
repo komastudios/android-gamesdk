@@ -43,21 +43,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/** The main activity of the istresser app */
+/**
+ * The main activity of the istresser app
+ */
 public class MainActivity extends Activity {
+  public static final int MINIMUM_SAMPLE_INTERVAL = 20;
   private static final String TAG = MainActivity.class.getSimpleName();
-
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
   private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
   private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
   private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
-
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
   private static final String FREE_ACTION = "Free";
-  public static final int MINIMUM_SAMPLE_INTERVAL = 20;
 
   static {
     System.loadLibrary("native-lib");
@@ -75,29 +75,35 @@ public class MainActivity extends Activity {
   private long testStartTime;
   private long appSwitchTimerStart;
   private long lastLaunched;
-  private int serviceTotalMb = 0;
+  private int serviceTotalMb;
   private ServiceCommunicationHelper serviceCommunicationHelper;
-  private boolean isServiceCrashed = false;
+  private boolean isServiceCrashed;
   private long mallocBytesPerMillisecond;
   private long glAllocBytesPerMillisecond;
   private long vkAllocBytesPerMillisecond;
   private JSONObject params;
-  private boolean yellowLightTesting = false;
+  private boolean yellowLightTesting;
   private long mmapAnonBytesPerMillisecond;
   private long mmapFileBytesPerMillisecond;
   private MmapFileGroup mmapFiles;
   private long maxConsumer;
   private long delayBeforeRelease;
   private long delayAfterRelease;
-
-  enum ServiceState {
-    ALLOCATING_MEMORY,
-    ALLOCATED,
-    FREEING_MEMORY,
-    DEALLOCATED,
-  }
-
   private ServiceState serviceState;
+
+  public static native void initNative();
+
+  public static native void initGl();
+
+  public static native int nativeDraw(int toAllocate);
+
+  public static native void release();
+
+  public static native long vkAlloc(long size);
+
+  public static native void vkRelease();
+
+  public static native boolean writeRandomFile(String path, long bytes);
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -285,6 +291,64 @@ public class MainActivity extends Activity {
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    try {
+      JSONObject report = standardInfo();
+      report.put("activityPaused", false);
+      report.put("metrics",
+          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                             .getJSONObject("metrics")
+                                             .getJSONObject("variable")));
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    try {
+      JSONObject report = standardInfo();
+      report.put("activityPaused", true);
+      report.put("metrics",
+          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                             .getJSONObject("metrics")
+                                             .getJSONObject("variable")));
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    try {
+      JSONObject report = standardInfo();
+      report.put("onDestroy", true);
+      report.put("metrics",
+          memoryAdvisor.getMemoryMetrics(
+              params.getJSONObject("metrics").getJSONObject("variable")));
+      resultsStream.println(report);
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
+    super.onDestroy();
+  }
+
+  @Override
+  public void onTrimMemory(int level) {
+    memoryAdvisor.setOnTrim(level);
+    super.onTrimMemory(level);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
   }
 
   void startTest() {
@@ -512,58 +576,6 @@ public class MainActivity extends Activity {
     }.start();
   }
 
-  @Override
-  protected void onDestroy() {
-    try {
-      JSONObject report = standardInfo();
-      report.put("onDestroy", true);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(
-              params.getJSONObject("metrics").getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
-    super.onDestroy();
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    try {
-      JSONObject report = standardInfo();
-      report.put("activityPaused", true);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                             .getJSONObject("metrics")
-                                             .getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    try {
-      JSONObject report = standardInfo();
-      report.put("activityPaused", false);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                             .getJSONObject("metrics")
-                                             .getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
-  }
-
   private void updateInfo(JSONObject metrics) {
     runOnUiThread(() -> {
       WebView webView = findViewById(R.id.webView);
@@ -586,12 +598,6 @@ public class MainActivity extends Activity {
     } catch (OutOfMemoryError e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  @Override
-  public void onTrimMemory(int level) {
-    memoryAdvisor.setOnTrim(level);
-    super.onTrimMemory(level);
   }
 
   private void releaseMemory() {
@@ -700,18 +706,6 @@ public class MainActivity extends Activity {
     return report;
   }
 
-  public static native void initNative();
-
-  public static native void initGl();
-
-  public static native int nativeDraw(int toAllocate);
-
-  public static native void release();
-
-  public static native long vkAlloc(long size);
-
-  public static native void vkRelease();
-
   public native void freeAll();
 
   public native void freeMemory(int bytes);
@@ -724,12 +718,17 @@ public class MainActivity extends Activity {
 
   public native long mmapFileConsume(String path, long bytes, long offset);
 
-  public static native boolean writeRandomFile(String path, long bytes);
+  enum ServiceState {
+    ALLOCATING_MEMORY,
+    ALLOCATED,
+    FREEING_MEMORY,
+    DEALLOCATED,
+  }
 
   static class MmapFileInfo {
     private final long fileSize;
-    private long allocSize;
     private final String path;
+    private long allocSize;
     private long offset;
 
     public MmapFileInfo(String path) {
