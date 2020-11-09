@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cecad53f_62318af9",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T16:14:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b078d52_2d31d70e",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "88090d69_a930b583",
@@ -66,6 +84,24 @@
       "writtenOn": "2020-11-09T15:40:04Z",
       "side": 1,
       "message": "Would `./lookup.cpp` work?\n\nAlso lookup.cpp might be consistent with lookup.json, but I think it\u0027s a bit of a generic name. device_profiler_lookup.cpp would maybe have been a bit more useful, especially for someone not familiar with the library as it\u0027s growing.",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "337e27e6_737b2228",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T16:14:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88090d69_a930b583",
       "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -87,6 +123,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "77a54946_a4a61bfa",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T16:14:13Z",
+      "side": 1,
+      "message": "Done. It still needed the extern though.",
+      "parentUuid": "3b34d7ed_b3f9011a",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e14f754_3689e98e",
@@ -104,6 +158,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe7816d7_1872451c",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T16:14:13Z",
+      "side": 1,
+      "message": "I would like to keep the int since it\u0027ll be shorter and less error prone if I can set the starting score to -1 without having to worry about std::string::npos.",
+      "parentUuid": "6e14f754_3689e98e",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "be1d8949_2d243f0c",
@@ -117,6 +189,24 @@
       "writtenOn": "2020-11-09T15:40:04Z",
       "side": 1,
       "message": "nit: consider using a range-based for loop: `for(auto\u0026 it : lookup_table_) { }`, slightly shorter and less room for an error when typing it.",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e60036c_76e2263a",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T16:14:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be1d8949_2d243f0c",
       "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
