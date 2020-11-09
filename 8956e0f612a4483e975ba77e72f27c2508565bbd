@@ -1,6 +1,40 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "34218b88_0f1ce21d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T16:44:26Z",
+      "side": 1,
+      "message": "Added a few nits, otherwise looks good to me!",
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a8ab5ea_314107f2",
+        "filename": "src/memory_advice/core/device_profiler.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T16:44:26Z",
+      "side": 1,
+      "message": "See if you can make these two methods const, as they are not changing the internal state of DeviceProfiler.\n\nYou might need `const auto\u0026 it` in MatchByFingerprint.",
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d378b31_1598460d",
@@ -20,6 +54,23 @@
         "endLine": 28,
         "endChar": 5
       },
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dbf55f32_7a79be88",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T16:44:26Z",
+      "side": 1,
+      "message": "this can be const:\n`MemoryAdvice_ErrorCode InitializationErrorCode() const {`",
       "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
