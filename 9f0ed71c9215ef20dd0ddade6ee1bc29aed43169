@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddc92d93_da4cc535",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T15:45:37Z",
+      "side": 1,
+      "message": "There\u0027s no connection; removing.",
+      "parentUuid": "150b4878_2a0b7bc7",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2b078d52_2d31d70e",
