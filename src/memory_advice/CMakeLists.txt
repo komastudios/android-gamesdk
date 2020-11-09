@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+include("../../samples/gamesdk.cmake")
+
+set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
+set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
+
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
@@ -12,18 +17,31 @@ set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--hash-style=both" )
 
+file(READ "${MEMORYADVICE_ASSETS_DIR}/lookup.json" LOOKUP_TABLE)
+set(LOOKUP_STRING "namespace memory_advice {\nconst char* lookup_string = R\"LOOKUP(\n")
+string(APPEND LOOKUP_STRING "${LOOKUP_TABLE}")
+string(APPEND LOOKUP_STRING "\n )LOOKUP\";\n}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/device_profiler_lookup.cpp" "${LOOKUP_STRING}")
+
 include_directories( . )
 include_directories( ../../include )
 include_directories( ../common )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+include_directories( ${THIRD_PARTY_DIR} )
+
 
 set(MEMORY_ADVICE_SRCS
   c_header_check.c
+  core/device_profiler.cpp
   core/memory_advice.cpp
+  core/memory_advice_impl.cpp
   core/memory_advice_c.cpp
   core/metrics_provider.cpp
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
+  ${THIRD_PARTY_DIR}/json11/json11.cpp
+  device_profiler_lookup.cpp
 )
 
 add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})

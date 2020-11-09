@@ -19,13 +19,14 @@
 #include "memory_advice_internal.h"
 #include "metrics_provider.h"
 
-using namespace gamesdk::jni;
+namespace jni = gamesdk::jni;
 
 extern "C" {
 
-void MemoryAdvice_init_internal(JNIEnv *env, jobject context) {
-    Init(env, context);
-    memory_advice::MetricsProvider::InitActivityManager();
+MemoryAdvice_ErrorCode MemoryAdvice_init_internal(JNIEnv *env,
+                                                  jobject context) {
+    jni::Init(env, context);
+    return memory_advice::Init();
 }
 
 uint32_t MemoryAdvice_testLibraryAccess(uint32_t testValue) {
