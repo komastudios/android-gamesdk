@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7068d887_5df3c289",
+        "filename": "src/memory_advice/core/device_profiler.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T18:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a8ab5ea_314107f2",
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d378b31_1598460d",
@@ -58,6 +76,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ab30ff5_aa1d460c",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T18:25:21Z",
+      "side": 1,
+      "message": "Removing that part; the error code is returned to the caller of the Init function anyway.",
+      "parentUuid": "6d378b31_1598460d",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 5
+      },
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dbf55f32_7a79be88",
@@ -71,6 +113,24 @@
       "writtenOn": "2020-11-09T16:44:26Z",
       "side": 1,
       "message": "this can be const:\n`MemoryAdvice_ErrorCode InitializationErrorCode() const {`",
+      "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdbe8be4_5b920ca2",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-09T18:25:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dbf55f32_7a79be88",
       "revId": "8956e0f612a4483e975ba77e72f27c2508565bbd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
