@@ -56,8 +56,21 @@ extern "C" {
                                  MEMORY_ADVICE_MAJOR_VERSION, \
                                  MEMORY_ADVICE_MINOR_VERSION)
 
+/**
+ * @brief All the error codes that can be returned by MemoryAdvice functions.
+ */
+typedef enum MemoryAdvice_ErrorCode {
+    MEMORYADVICE_ERROR_OK = 0,  ///< No error
+    MEMORYADVICE_ERROR_TUNINGFORK_NOT_INITIALIZED =
+        1,  ///< A call was made before MemoryAdvice was initialized.
+    MEMORYADVICE_ERROR_ALREADY_INITIALIZED =
+        2,  ///< MemoryAdvice_init was called more than once.
+    MEMORYADVICE_ERROR_LOOKUP_TABLE_INVALID =
+        3,  ///< The provided lookup table was not a valid json object.
+} MemoryAdvice_ErrorCode;
+
 // Internal init function. Do not call directly.
-void MemoryAdvice_init_internal(JNIEnv *env, jobject context);
+MemoryAdvice_ErrorCode MemoryAdvice_init_internal(JNIEnv *env, jobject context);
 
 // Internal function to track MemoryAdvice version bundled in a binary. Do not
 // call directly. If you are getting linker errors related to
@@ -71,12 +84,13 @@ void MEMORY_ADVICE_VERSION_SYMBOL();
  * Initialize the Memory Advice library. This must be called before any other
  * function.
  */
-static inline void MemoryAdvice_init(JNIEnv *env, jobject context) {
+static inline MemoryAdvice_ErrorCode MemoryAdvice_init(JNIEnv *env,
+                                                       jobject context) {
     // This call ensures that the header and the linked library are from the
     // same version (if not, a linker error will be triggered because of an
     // undefined symbol).
     MEMORY_ADVICE_VERSION_SYMBOL();
-    MemoryAdvice_init_internal(env, context);
+    return MemoryAdvice_init_internal(env, context);
 }
 
 /**

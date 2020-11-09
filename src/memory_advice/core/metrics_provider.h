@@ -34,39 +34,39 @@ namespace memory_advice {
 class MetricsProvider {
    public:
     /** @brief Get a list of memory metrics stored in /proc/meminfo */
-    static std::map<std::string, int64_t> GetMeminfoValues();
+    std::map<std::string, int64_t> GetMeminfoValues();
     /** @brief Get a list of memory metrics stored in /proc/{pid}/status */
-    static std::map<std::string, int64_t> GetStatusValues();
+    std::map<std::string, int64_t> GetStatusValues();
     /**
      * @brief Get a list of various memory metrics stored in /proc/{pid}
      * folder.
      */
-    static std::map<std::string, int64_t> GetProcValues();
+    std::map<std::string, int64_t> GetProcValues();
     /**
      * @brief Get a list of memory metrics available from ActivityManager
      */
-    static std::map<std::string, int64_t> GetActivityManagerValues();
+    std::map<std::string, int64_t> GetActivityManagerValues();
     /**
      * @brief Get a list of memory metrics available from
      * ActivityManager#getMemoryInfo().
      */
-    static std::map<std::string, int64_t> GetActivityManagerMemoryInfo();
+    std::map<std::string, int64_t> GetActivityManagerMemoryInfo();
     /**
      * @brief Get a list of memory metrics available from android.os.Debug
      */
-    static std::map<std::string, int64_t> GetDebugValues();
-    static void InitActivityManager();
+    std::map<std::string, int64_t> GetDebugValues();
+    MetricsProvider();
 
    private:
-    static std::unique_ptr<android::app::ActivityManager> activity_manager_;
-    static android::os::DebugClass android_debug_;
+    std::unique_ptr<android::app::ActivityManager> activity_manager_;
+    android::os::DebugClass android_debug_;
     /**
      * @brief Reads the given file and dumps the memory values within as a map
      */
-    static std::map<std::string, int64_t> GetMemoryValuesFromFile(
+    std::map<std::string, int64_t> GetMemoryValuesFromFile(
         const std::string &path, const std::regex &pattern);
     /** @brief Reads the OOM Score of the app from /proc/{pid}/oom_score */
-    static int64_t GetOomScore();
+    int64_t GetOomScore();
 };
 
 }  // namespace memory_advice
