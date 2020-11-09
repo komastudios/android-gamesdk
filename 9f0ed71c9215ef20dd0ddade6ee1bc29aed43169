@@ -16,6 +16,91 @@
       "message": "What\u0027s the connection with Tuning Fork?",
       "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b078d52_2d31d70e",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T15:40:04Z",
+      "side": 1,
+      "message": "nit: THIRD_PARTY_DIR?",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88090d69_a930b583",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T15:40:04Z",
+      "side": 1,
+      "message": "Would `./lookup.cpp` work?\n\nAlso lookup.cpp might be consistent with lookup.json, but I think it\u0027s a bit of a generic name. device_profiler_lookup.cpp would maybe have been a bit more useful, especially for someone not familiar with the library as it\u0027s growing.",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b34d7ed_b3f9011a",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T15:40:04Z",
+      "side": 1,
+      "message": "Might be a good idea to wrap the lookup_string into the memory_advice namespace, to reduce chance of global variable conflicts?\nIn this case it might not need extern",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e14f754_3689e98e",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T15:40:04Z",
+      "side": 1,
+      "message": "nit: you could use a `size_t` (because the score represents a length, which is usually typed with `size_t` in the C++ STL, which is usually an unsigned int) and initialize it to `std::string::npos` (http://www.cplusplus.com/reference/string/string/npos/).\n\nThen, when checking `mismatch_index \u003e best_score`, also check if `best_score \u003d\u003d std::string::npos` (**important to do** because size_t is unsigned, so -1 is actually the largest number possible).\n\nNot a huge deal, fingerprints are not that long (they won\u0027t ever overflow a signed int), just more idiomatic C++ I think. You can keep -1 and a signed int if you think this is more equivalent to what is done in the Java version.",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be1d8949_2d243f0c",
+        "filename": "src/memory_advice/core/device_profiler.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-09T15:40:04Z",
+      "side": 1,
+      "message": "nit: consider using a range-based for loop: `for(auto\u0026 it : lookup_table_) { }`, slightly shorter and less room for an error when typing it.",
+      "revId": "9f0ed71c9215ef20dd0ddade6ee1bc29aed43169",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
