@@ -16,15 +16,25 @@
 
 #pragma once
 
-#include "memory_advice/memory_advice.h"
+#include <memory>
+#include <string>
 
-// These functions are implemented in memory_advice.cpp.
-// They are mostly the same as the C interface, but take C++ types.
+#include "json11/json11.hpp"
+#include "memory_advice/memory_advice.h"
 
 namespace memory_advice {
 
-MemoryAdvice_ErrorCode Init();
+using namespace json11;
 
-uint32_t TestLibraryAccess(uint32_t testValue);
+class DeviceProfiler {
+   private:
+    std::unique_ptr<Json::object> lookup_table_;
+    std::string fingerprint_;
+
+   public:
+    MemoryAdvice_ErrorCode Init();
+    Json::object GetDeviceProfile() const;
+    std::string MatchByFingerprint() const;
+};
 
 }  // namespace memory_advice

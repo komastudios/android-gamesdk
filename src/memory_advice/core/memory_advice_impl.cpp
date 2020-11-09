@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include "memory_advice/memory_advice.h"
-
-// These functions are implemented in memory_advice.cpp.
-// They are mostly the same as the C interface, but take C++ types.
+#include "memory_advice_impl.h"
 
 namespace memory_advice {
 
-MemoryAdvice_ErrorCode Init();
+MemoryAdviceImpl::MemoryAdviceImpl() {
+    metrics_provider_ = std::make_unique<MetricsProvider>();
+    device_profiler_ = std::make_unique<DeviceProfiler>();
 
-uint32_t TestLibraryAccess(uint32_t testValue);
+    initialization_error_code_ = device_profiler_->Init();
+}
 
 }  // namespace memory_advice

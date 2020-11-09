@@ -16,15 +16,26 @@
 
 #pragma once
 
-#include "memory_advice/memory_advice.h"
+#include <memory>
 
-// These functions are implemented in memory_advice.cpp.
-// They are mostly the same as the C interface, but take C++ types.
+#include "device_profiler.h"
+#include "metrics_provider.h"
 
 namespace memory_advice {
 
-MemoryAdvice_ErrorCode Init();
+class MemoryAdviceImpl {
+   private:
+    std::unique_ptr<MetricsProvider> metrics_provider_;
+    std::unique_ptr<DeviceProfiler> device_profiler_;
 
-uint32_t TestLibraryAccess(uint32_t testValue);
+    MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;
+
+   public:
+    MemoryAdviceImpl();
+
+    MemoryAdvice_ErrorCode InitializationErrorCode() const {
+        return initialization_error_code_;
+    }
+};
 
 }  // namespace memory_advice
