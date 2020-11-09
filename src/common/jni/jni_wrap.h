@@ -454,6 +454,9 @@ class Build {
     static jni::String DEVICE() {
         return GetStaticStringField(class_name, "DEVICE");
     }
+    static jni::String FINGERPRINT() {
+        return GetStaticStringField(class_name, "FINGERPRINT");
+    }
 };  // Class Build
 
 }  // namespace os

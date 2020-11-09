@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
+#include "memory_advice/memory_advice.h"
+
 #include <string>
 
+#include "memory_advice_impl.h"
 #include "memory_advice_internal.h"
 
 #define LOG_TAG "MemoryAdvice"
 #include "Log.h"
 
 namespace memory_advice {
+
+static std::unique_ptr<MemoryAdviceImpl> s_impl;
+
+MemoryAdvice_ErrorCode Init() {
+    if (s_impl.get() != nullptr) return MEMORYADVICE_ERROR_ALREADY_INITIALIZED;
+    s_impl = std::make_unique<MemoryAdviceImpl>();
+    return s_impl->InitializationErrorCode();
+}
 
 uint32_t TestLibraryAccess(uint32_t testValue) { return testValue; }
 }  // namespace memory_advice

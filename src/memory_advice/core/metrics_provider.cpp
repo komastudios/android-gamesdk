@@ -39,8 +39,6 @@ const std::regex MEMINFO_REGEX("([^:]+)[^\\d]*(\\d+).*\n");
 const std::regex STATUS_REGEX("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
 
 namespace memory_advice {
-std::unique_ptr<android::app::ActivityManager>
-    MetricsProvider::activity_manager_;
 
 std::map<std::string, int64_t> MetricsProvider::GetMeminfoValues() {
     return GetMemoryValuesFromFile("/proc/meminfo", MEMINFO_REGEX);
@@ -126,7 +124,7 @@ int64_t MetricsProvider::GetOomScore() {
     }
 }
 
-void MetricsProvider::InitActivityManager() {
+MetricsProvider::MetricsProvider() {
     java::Object obj = AppContext().getSystemService(
         android::content::Context::ACTIVITY_SERVICE);
     activity_manager_ =
