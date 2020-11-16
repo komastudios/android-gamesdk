@@ -67,6 +67,8 @@ typedef enum MemoryAdvice_ErrorCode {
         2,  ///< MemoryAdvice_init was called more than once.
     MEMORYADVICE_ERROR_LOOKUP_TABLE_INVALID =
         3,  ///< The provided lookup table was not a valid json object.
+    MEMORYADVICE_ERROR_ADVISOR_PARAMETERS_INVALID =
+        4,  ///< The provided advisor parameters was not a valid json object.
 } MemoryAdvice_ErrorCode;
 
 // Internal init function. Do not call directly.

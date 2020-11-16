@@ -23,6 +23,12 @@ string(APPEND LOOKUP_STRING "${LOOKUP_TABLE}")
 string(APPEND LOOKUP_STRING "\n )LOOKUP\";\n}\n")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/device_profiler_lookup.cpp" "${LOOKUP_STRING}")
 
+file(READ "${MEMORYADVICE_ASSETS_DIR}/default.json" PARAMS_FILE)
+set(PARAMS_STRING "namespace memory_advice {\nconst char* parameters_string = R\"PARAMS(\n")
+string(APPEND PARAMS_STRING "${PARAMS_FILE}")
+string(APPEND PARAMS_STRING "\n )PARAMS\";\n}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/advisor_parameters.cpp" "${PARAMS_STRING}")
+
 include_directories( . )
 include_directories( ../../include )
 include_directories( ../common )
@@ -42,6 +48,7 @@ set(MEMORY_ADVICE_SRCS
   ../common/jni/jnictx.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   device_profiler_lookup.cpp
+  advisor_parameters.cpp
 )
 
 add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})
