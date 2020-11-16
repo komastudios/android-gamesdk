@@ -23,15 +23,30 @@
 
 namespace memory_advice {
 
+using namespace json11;
+
 class MemoryAdviceImpl {
    private:
     std::unique_ptr<MetricsProvider> metrics_provider_;
     std::unique_ptr<DeviceProfiler> device_profiler_;
+    Json::object advisor_parameters_;
+    Json::object baseline_;
+    Json::object device_profile_;
 
     MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;
 
+    MemoryAdvice_ErrorCode ProcessAdvisorParameters(const char* parameters);
+    Json::object GenerateMetricsFromFields(Json::object fields);
+    Json::object ExtractValues(
+        MetricsProvider::MetricsFunction metrics_function, Json fields);
+    double MillisecondsSinceEpoch();
+    Json GetValue(Json::object object, std::string key);
+
    public:
     MemoryAdviceImpl();
+    Json::object GetAdvice();
+    Json::object GenerateVariableMetrics();
+    Json::object GenerateConstantMetrics();
 
     MemoryAdvice_ErrorCode InitializationErrorCode() const {
         return initialization_error_code_;
