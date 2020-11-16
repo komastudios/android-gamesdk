@@ -22,6 +22,30 @@
       },
       "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6a24d62_ddd8964f",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-16T15:05:57Z",
+      "side": 1,
+      "message": "Yes. the json library I\u0027m using uses int or double for numbers, so I moved all 64 bits to be either doubles or 32 bit integers.",
+      "parentUuid": "f06e68d9_fb5a659b",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 118,
+        "endChar": 7
+      },
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
