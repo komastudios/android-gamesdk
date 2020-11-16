@@ -33,67 +33,71 @@
 
 using namespace gamesdk::jni;
 
-constexpr size_t BYTES_IN_KB = 1024;
-constexpr int64_t BYTES_IN_MB = 1024 * 1024;
+constexpr double BYTES_IN_KB = 1024;
+constexpr double BYTES_IN_MB = 1024 * 1024;
 const std::regex MEMINFO_REGEX("([^:]+)[^\\d]*(\\d+).*\n");
 const std::regex STATUS_REGEX("([a-zA-Z]+)[^\\d]*(\\d+) kB.*\n");
 
 namespace memory_advice {
 
-std::map<std::string, int64_t> MetricsProvider::GetMeminfoValues() {
+using namespace json11;
+
+Json::object MetricsProvider::GetMeminfoValues() {
     return GetMemoryValuesFromFile("/proc/meminfo", MEMINFO_REGEX);
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetStatusValues() {
+Json::object MetricsProvider::GetStatusValues() {
     std::stringstream ss_path;
     ss_path << "/proc/" << getpid() << "/status";
     return GetMemoryValuesFromFile(ss_path.str(), STATUS_REGEX);
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetProcValues() {
-    std::map<std::string, int64_t> proc_map;
-    proc_map["oom_score"] = GetOomScore();
+Json::object MetricsProvider::GetProcValues() {
+    Json::object proc_map;
+    proc_map["oom_score"] = Json(GetOomScore());
     return proc_map;
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetActivityManagerValues() {
-    std::map<std::string, int64_t> metrics_map;
+Json::object MetricsProvider::GetActivityManagerValues() {
+    Json::object metrics_map;
 
     metrics_map["MemoryClass"] =
-        activity_manager_->getMemoryClass() * BYTES_IN_MB;
+        Json(activity_manager_->getMemoryClass() * BYTES_IN_MB);
     metrics_map["LargeMemoryClass"] =
-        activity_manager_->getLargeMemoryClass() * BYTES_IN_MB;
-    metrics_map["LowRamDevice"] = activity_manager_->isLowRamDevice();
+        Json(activity_manager_->getLargeMemoryClass() * BYTES_IN_MB);
+    metrics_map["LowRamDevice"] = Json(activity_manager_->isLowRamDevice());
 
     return metrics_map;
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetActivityManagerMemoryInfo() {
+Json::object MetricsProvider::GetActivityManagerMemoryInfo() {
     android::app::MemoryInfo memory_info;
-    std::map<std::string, int64_t> metrics_map;
+    Json::object metrics_map;
     activity_manager_->getMemoryInfo(memory_info);
-    metrics_map["threshold"] = memory_info.threshold();
-    metrics_map["availMem"] = memory_info.availMem();
-    metrics_map["totalMem"] = memory_info.totalMem();
-    metrics_map["lowMemory"] = memory_info.lowMemory();
+    metrics_map["threshold"] = Json((double)memory_info.threshold());
+    metrics_map["availMem"] = Json((double)memory_info.availMem());
+    metrics_map["totalMem"] = Json((double)memory_info.totalMem());
+    metrics_map["lowMemory"] = Json(memory_info.lowMemory());
 
     return metrics_map;
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetDebugValues() {
-    std::map<std::string, int64_t> metrics_map;
+Json::object MetricsProvider::GetDebugValues() {
+    Json::object metrics_map;
     metrics_map["nativeHeapAllocatedSize"] =
-        android_debug_.getNativeHeapAllocatedSize();
-    metrics_map["nativeHeapFreeSize"] = android_debug_.getNativeHeapFreeSize();
-    metrics_map["nativeHeapSize"] = android_debug_.getNativeHeapSize();
+        Json((double)android_debug_.getNativeHeapAllocatedSize());
+    metrics_map["nativeHeapFreeSize"] =
+        Json((double)android_debug_.getNativeHeapFreeSize());
+    metrics_map["nativeHeapSize"] =
+        Json((double)android_debug_.getNativeHeapSize());
 
     return metrics_map;
 }
 
-std::map<std::string, int64_t> MetricsProvider::GetMemoryValuesFromFile(
+Json::object MetricsProvider::GetMemoryValuesFromFile(
     const std::string &path, const std::regex &pattern) {
     std::ifstream file_stream(path);
-    std::map<std::string, int64_t> metrics_map;
+    Json::object metrics_map;
     if (!file_stream) {
         ALOGE("Could not open %s", path.c_str());
         return metrics_map;
@@ -104,13 +108,14 @@ std::map<std::string, int64_t> MetricsProvider::GetMemoryValuesFromFile(
     std::smatch match;
     while (std::regex_search(file, match, pattern)) {
         metrics_map[match[1].str()] =
-            strtoll(match[2].str().c_str(), nullptr, 10) * BYTES_IN_KB;
+            Json((double)(strtoll(match[2].str().c_str(), nullptr, 10) *
+                          BYTES_IN_KB));
         file = match.suffix().str();
     }
     return metrics_map;
 }
 
-int64_t MetricsProvider::GetOomScore() {
+int32_t MetricsProvider::GetOomScore() {
     std::stringstream ss_path;
     ss_path << "/proc/" << getpid() << "/oom_score";
     std::ifstream oom_file(ss_path.str());
@@ -118,7 +123,7 @@ int64_t MetricsProvider::GetOomScore() {
         ALOGE_ONCE("Could not open %s", ss_path.str().c_str());
         return -1;
     } else {
-        int64_t oom_score;
+        int32_t oom_score;
         oom_file >> oom_score;
         return oom_score;
     }
