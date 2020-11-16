@@ -1,0 +1,10 @@
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Autosubmit+1: Jim Blackler <jimblackler@google.com>
+Presubmit-Ready+1: Jim Blackler <jimblackler@google.com>
+Code-Review+2: Barış Kaya <bkaya@google.com>
+Bypass-Presubmit+1: Jim Blackler <jimblackler@google.com>
+Submitted-by: Jim Blackler <jimblackler@google.com>
+Submitted-at: Mon, 16 Nov 2020 19:09:00 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1499870
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
