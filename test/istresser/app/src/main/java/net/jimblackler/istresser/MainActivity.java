@@ -522,8 +522,9 @@ public class MainActivity extends Activity {
 
               if (!report.has("advice")) {  // 'advice' already includes metrics.
                 report.put("metrics",
-                    memoryAdvisor.getMemoryMetrics(
-                        params.getJSONObject("metrics").getJSONObject("variable")));
+                    memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                                       .getJSONObject("metrics")
+                                                       .getJSONObject("variable")));
               }
               resultsStream.println(report);
 
@@ -607,8 +608,9 @@ public class MainActivity extends Activity {
       try {
         report2 = standardInfo();
         report2.put("metrics",
-            memoryAdvisor.getMemoryMetrics(
-                params.getJSONObject("metrics").getJSONObject("variable")));
+            memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                               .getJSONObject("metrics")
+                                               .getJSONObject("variable")));
       } catch (JSONException e) {
         throw new IllegalStateException(e);
       }
