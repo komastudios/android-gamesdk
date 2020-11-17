@@ -1,6 +1,57 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c010761d_c44e4b51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-17T10:32:45Z",
+      "side": 1,
+      "message": "Looks good overall. I\u0027ll have another look before +2\u0027ing.\nWould be good thinking if this worth testing to some extent (even if it\u0027s a translation of the Java implementation). Not necessarily in this CL, but later have a few smoke tests could be useful (not sure though how much abstraction/mocking this would need).",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5757c214_ddfdc32a",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-17T10:32:45Z",
+      "side": 1,
+      "message": "Can you add a comment explaining what this is doing exactly to find the value in the object?",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2d4d3a4_44c6f63d",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-17T10:32:45Z",
+      "side": 1,
+      "message": "Might be worth explaining what is the expected shapes of `fields`",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f06e68d9_fb5a659b",
