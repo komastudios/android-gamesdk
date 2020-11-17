@@ -43,7 +43,7 @@ MemoryAdvice_ErrorCode DeviceProfiler::Init() {
     lookup_table_ = std::make_unique<Json::object>(
         Json::parse(lookup_string, err).object_items());
     if (!err.empty()) {
-        ALOGE("Parsing error: %s", err.c_str());
+        ALOGE("Error while parsing lookup table: %s", err.c_str());
         return MEMORYADVICE_ERROR_LOOKUP_TABLE_INVALID;
     }
 
