@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "152e3c09_5cf590da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-17T14:48:51Z",
+      "side": 1,
+      "message": "Once the whole library is implemented, I\u0027ll discuss with Jim on what kind of testing should go with the library.",
+      "parentUuid": "c010761d_c44e4b51",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5757c214_ddfdc32a",
@@ -35,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "380ae62f_2edcd6c3",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-17T14:48:51Z",
+      "side": 1,
+      "message": "Added documentation on the .h file for most of the functions.",
+      "parentUuid": "5757c214_ddfdc32a",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e2d4d3a4_44c6f63d",
@@ -48,6 +84,24 @@
       "writtenOn": "2020-11-17T10:32:45Z",
       "side": 1,
       "message": "Might be worth explaining what is the expected shapes of `fields`",
+      "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb63dc45_7abdbd68",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-17T14:48:51Z",
+      "side": 1,
+      "message": "Added documentation on the .h file for most of the functions.",
+      "parentUuid": "e2d4d3a4_44c6f63d",
       "revId": "18f771f834485e849ff3d4904050af6ffaf71bb7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
