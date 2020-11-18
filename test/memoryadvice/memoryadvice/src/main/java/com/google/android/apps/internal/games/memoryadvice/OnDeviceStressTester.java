@@ -107,6 +107,7 @@ class OnDeviceStressTester {
                 if (limit == null
                     || limit.getJSONObject("meta").getLong("time")
                         < received.getJSONObject("meta").getLong("time")) {
+                  consumer.progress(received);
                   // Metrics can be received out of order. The latest only is recorded as the limit.
                   limit = received;
                 }
@@ -153,5 +154,8 @@ class OnDeviceStressTester {
     context.bindService(launchIntent, serviceConnection, Context.BIND_AUTO_CREATE);
   }
 
-  abstract static class Consumer { abstract void accept(JSONObject baseline, JSONObject limit); }
+  interface Consumer {
+    void progress(JSONObject metrics);
+    void accept(JSONObject baseline, JSONObject limit);
+  }
 }
