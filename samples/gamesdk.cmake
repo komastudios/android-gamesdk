@@ -57,13 +57,20 @@ function(add_gamesdk_target)
     endif()
     string(REPLACE "+" "p" GAMESDK_ANDROID_STL ${ANDROID_STL}) # Game SDK build names use a sanitized STL name (c++ => cpp)
 
-    # Set up the "gamesdk" library
+    # Set up the "gamesdk" libraries
     set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_MAJOR_VERSION}_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
-    set(GAMESDK_LIB_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
+    set(GAMESDK_LIBS_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
-    get_filename_component(DEP_LIB "${GAMESDK_LIB_DIR}/libgamesdk.a" REALPATH)
-    add_library(gamesdk STATIC IMPORTED GLOBAL)
+
+    get_filename_component(SWAPPY_DEP_LIB "${GAMESDK_LIBS_DIR}/libswappy_static.a" REALPATH)
+    get_filename_component(TUNINGFORK_DEP_LIB "${GAMESDK_LIBS_DIR}/libtuningfork_static.a" REALPATH)
+    get_filename_component(MEMORY_ADVICE_DEP_LIB "${GAMESDK_LIBS_DIR}/libmemory_advice_static.a" REALPATH)
+    get_filename_component(OBOE_DEP_LIB "${GAMESDK_LIBS_DIR}/liboboe_static.a" REALPATH)
+    add_library(swappy STATIC IMPORTED GLOBAL)
+    add_library(tuningfork STATIC IMPORTED GLOBAL)
+    add_library(memory_advice STATIC IMPORTED GLOBAL)
+    add_library(oboe STATIC IMPORTED GLOBAL)
 
     if(GAMESDK_DO_LOCAL_BUILD)
         # Get the absolute path for the root dir, otherwise it can't be used as a working directory for commands.
@@ -86,24 +93,36 @@ function(add_gamesdk_target)
         endif()
         add_custom_command(
             OUTPUT
-                ${DEP_LIB}
+                ${SWAPPY_DEP_LIB} ${TUNINGFORK_DEP_LIB}  ${MEMORY_ADVICE_DEP_LIB} ${OBOE_DEP_LIB}
             COMMAND
                 ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local -Pndk=${GAMESDK_ANDROID_NDK_VERSION}
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
         )
-        add_custom_target(gamesdk_lib DEPENDS ${DEP_LIB})
-        add_dependencies(gamesdk gamesdk_lib)
+        add_custom_target(swappy_lib DEPENDS ${SWAPPY_DEP_LIB})
+        add_custom_target(tuningfork_lib DEPENDS ${TUNINGFORK_DEP_LIB})
+        add_custom_target(memory_advice_lib DEPENDS ${MEMORY_ADVICE_DEP_LIB})
+        add_custom_target(oboe_lib DEPENDS ${OBOE_DEP_LIB})
+        add_dependencies(swappy swappy_lib)
+        add_dependencies(tuningfork tuningfork_lib)
+        add_dependencies(memory_advice memory_advice_lib)
+        add_dependencies(oboe oboe_lib)
     else()
-        # Sanity check that the library file exists
-        if(NOT EXISTS ${DEP_LIB})
-            message(FATAL_ERROR "Can't find the gamesdk library in ${DEP_LIB}. Are you sure you are using a supported Android SDK/NDK and STL variant?")
+        # Sanity check that the library files exist
+        if(NOT EXISTS ${SWAPPY_DEP_LIB} AND
+            NOT EXISTS ${TUNINGFORK_DEP_LIB} AND
+            NOT EXISTS ${MEMORY_ADVICE_DEP_LIB} AND
+            NOT EXISTS ${OBOE_DEP_LIB})
+            message(FATAL_ERROR "Can't find any library in \"${GAMESDK_LIBS_DIR}\". Are you sure you are using a supported Android SDK/NDK and STL variant?")
         endif()
     endif()
 
-    # Set the gamesdk target to use the library (see https://gitlab.kitware.com/cmake/community/wikis/doc/tutorials/Exporting-and-Importing-Targets)
-    set_target_properties(gamesdk PROPERTIES IMPORTED_LOCATION ${DEP_LIB})
+    # Set targets to use the libraries (see https://gitlab.kitware.com/cmake/community/wikis/doc/tutorials/Exporting-and-Importing-Targets)
+    set_target_properties(swappy PROPERTIES IMPORTED_LOCATION ${SWAPPY_DEP_LIB})
+    set_target_properties(tuningfork PROPERTIES IMPORTED_LOCATION ${TUNINGFORK_DEP_LIB})
+    set_target_properties(memory_advice PROPERTIES IMPORTED_LOCATION ${MEMORY_ADVICE_DEP_LIB})
+    set_target_properties(oboe PROPERTIES IMPORTED_LOCATION ${OBOE_DEP_LIB})
 
 endfunction()
 
