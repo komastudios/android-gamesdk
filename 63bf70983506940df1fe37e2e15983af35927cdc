@@ -1,0 +1,108 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000006331456",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1508319?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "67e523c9_e08ddec6",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-11-23T17:29:11Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 4
+      },
+      "revId": "63bf70983506940df1fe37e2e15983af35927cdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000006331456",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1508319?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bf02f17e_1da335f6",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-11-23T17:29:11Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 113,
+        "startChar": 43,
+        "endLine": 113,
+        "endChar": 44
+      },
+      "revId": "63bf70983506940df1fe37e2e15983af35927cdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000006331456",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1508319?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f0f88b38_3732eb7f",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-11-23T17:29:11Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 114,
+        "startChar": 48,
+        "endLine": 114,
+        "endChar": 49
+      },
+      "revId": "63bf70983506940df1fe37e2e15983af35927cdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000006331456",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1508319?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "455c4015_b4da20bd",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-11-23T17:29:11Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 115,
+        "startChar": 51,
+        "endLine": 115,
+        "endChar": 52
+      },
+      "revId": "63bf70983506940df1fe37e2e15983af35927cdc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
