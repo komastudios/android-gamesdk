@@ -24,6 +24,9 @@
     "malloc": {
       "$ref": "memoryQuantity.schema.json"
     },
+    "vkTest": {
+      "$ref": "memoryQuantity.schema.json"
+    },
     "maxConsumer": {
       "$ref": "memoryQuantity.schema.json"
     },
