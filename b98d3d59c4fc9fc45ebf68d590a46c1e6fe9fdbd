@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000006358430",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1508319?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "87df9515_58e9260c",
+        "filename": "samples/gamesdk.cmake",
+        "patchSetId": 3
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2020-11-24T12:28:41Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027valid\u0027, \u0027validity check\u0027 or \u0027initial check\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 112,
+        "startChar": 10,
+        "endLine": 112,
+        "endChar": 16
+      },
+      "revId": "b98d3d59c4fc9fc45ebf68d590a46c1e6fe9fdbd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
