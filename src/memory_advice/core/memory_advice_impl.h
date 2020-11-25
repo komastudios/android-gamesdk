@@ -61,11 +61,15 @@ class MemoryAdviceImpl {
     Json GetValue(Json::object object, std::string key);
 
    public:
-    MemoryAdviceImpl();
+    MemoryAdviceImpl(const char* params);
     /** @brief Creates an advice object by reading variable metrics and
      * comparing them to baseline values and values provided by device profiler.
      */
     Json::object GetAdvice();
+    /** @brief Evaluates information from the current metrics and returns a
+     * memory state.
+     */
+    MemoryAdvice_MemoryState GetMemoryState();
     /** @brief Reads the variable part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateVariableMetrics();

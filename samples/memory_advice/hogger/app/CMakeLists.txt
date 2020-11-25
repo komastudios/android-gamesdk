@@ -16,6 +16,8 @@ add_gamesdk_target(
 )
 
 include_directories(../../../../include)
+include_directories(../../../common/include ) # Samples Includes
+
 
 add_library( native-lib
         SHARED

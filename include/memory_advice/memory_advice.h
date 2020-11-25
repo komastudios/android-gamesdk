@@ -69,10 +69,34 @@ typedef enum MemoryAdvice_ErrorCode {
         3,  ///< The provided lookup table was not a valid json object.
     MEMORYADVICE_ERROR_ADVISOR_PARAMETERS_INVALID =
         4,  ///< The provided advisor parameters was not a valid json object.
+    MEMORYADVICE_ERROR_WATCHER_ALREADY_SET =
+        5,  ///< SetWatcher function was called while there was already a
+            ///< watcher in place.
 } MemoryAdvice_ErrorCode;
 
+/**
+ * @brief All possible memory states that can be reported by the library.
+ */
+typedef enum MemoryAdvice_MemoryState {
+    MEMORYADVICE_STATE_UNKNOWN = 0,  ///< The memory state cannot be determined.
+    MEMORYADVICE_STATE_OK =
+        1,  ///< The application can safely allocate significant memory.
+    MEMORYADVICE_STATE_APPROACHING_LIMIT =
+        2,  ///< The application should not allocate significant memory.
+    MEMORYADVICE_STATE_CRITICAL =
+        3,  ///< The application should free memory as soon as possible, until
+            ///< the memory state changes.
+} MemoryAdvice_MemoryState;
+
+typedef void (*CallbackFunction)(MemoryAdvice_MemoryState);
+
 // Internal init function. Do not call directly.
-MemoryAdvice_ErrorCode MemoryAdvice_init_internal(JNIEnv *env, jobject context);
+MemoryAdvice_ErrorCode MemoryAdvice_initDefaultParams_internal(JNIEnv *env,
+                                                               jobject context);
+
+// Internal init function. Do not call directly.
+MemoryAdvice_ErrorCode MemoryAdvice_init_internal(JNIEnv *env, jobject context,
+                                                  char *params);
 
 // Internal function to track MemoryAdvice version bundled in a binary. Do not
 // call directly. If you are getting linker errors related to
@@ -86,20 +110,43 @@ void MEMORY_ADVICE_VERSION_SYMBOL();
  * Initialize the Memory Advice library. This must be called before any other
  * function.
  */
-static inline MemoryAdvice_ErrorCode MemoryAdvice_init(JNIEnv *env,
-                                                       jobject context) {
+static inline MemoryAdvice_ErrorCode MemoryAdvice_initDefaultParams(
+    JNIEnv *env, jobject context) {
     // This call ensures that the header and the linked library are from the
     // same version (if not, a linker error will be triggered because of an
     // undefined symbol).
     MEMORY_ADVICE_VERSION_SYMBOL();
-    return MemoryAdvice_init_internal(env, context);
+    return MemoryAdvice_initDefaultParams_internal(env, context);
 }
 
 /**
- * A simple function to test the library access. If linked correctly, this
- * function will return the testValue provided.
+ * Initialize the Memory Advice library. This must be called before any other
+ * function.
  */
-uint32_t MemoryAdvice_testLibraryAccess(uint32_t testValue);
+static inline MemoryAdvice_ErrorCode MemoryAdvice_init(JNIEnv *env,
+                                                       jobject context,
+                                                       char *params) {
+    // This call ensures that the header and the linked library are from the
+    // same version (if not, a linker error will be triggered because of an
+    // undefined symbol).
+    MEMORY_ADVICE_VERSION_SYMBOL();
+    return MemoryAdvice_init_internal(env, context, params);
+}
+
+// Returns the current memory state
+MemoryAdvice_ErrorCode MemoryAdvice_getMemoryState(
+    MemoryAdvice_MemoryState *state);
+
+// Returns an advice object, in form of a JSON
+MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(const char **advice);
+
+// Use to set a watcher that checks for memory state and invokes the callback
+// function if state goes critical
+MemoryAdvice_ErrorCode MemoryAdvice_setWatcher(uint64_t intervalMillis,
+                                               CallbackFunction callback);
+
+// Removes the watcher set
+MemoryAdvice_ErrorCode MemoryAdvice_removeWatcher();
 
 #ifdef __cplusplus
 }  // extern "C" {

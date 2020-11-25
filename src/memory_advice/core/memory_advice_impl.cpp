@@ -20,11 +20,9 @@
 
 namespace memory_advice {
 
-extern const char* parameters_string;
-
 using namespace json11;
 
-MemoryAdviceImpl::MemoryAdviceImpl() {
+MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     metrics_provider_ = std::make_unique<MetricsProvider>();
     device_profiler_ = std::make_unique<DeviceProfiler>();
 
@@ -32,7 +30,7 @@ MemoryAdviceImpl::MemoryAdviceImpl() {
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
-    initialization_error_code_ = ProcessAdvisorParameters(parameters_string);
+    initialization_error_code_ = ProcessAdvisorParameters(params);
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -51,6 +49,20 @@ MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
     }
 
     return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
+    Json::object advice = GetAdvice();
+    if (advice.find("warnings") != advice.end()) {
+        Json::array warnings = advice["warnings"].array_items();
+        for (auto& it : warnings) {
+            if (it.object_items().at("level").string_value() == "red") {
+                return MEMORYADVICE_STATE_CRITICAL;
+            }
+        }
+        return MEMORYADVICE_STATE_APPROACHING_LIMIT;
+    }
+    return MEMORYADVICE_STATE_OK;
 }
 
 Json::object MemoryAdviceImpl::GetAdvice() {
