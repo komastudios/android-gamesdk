@@ -24,7 +24,13 @@ public class StressService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     // Create a local memory monitor, to obtain the metrics.
-    memoryMonitor = new MemoryMonitor(this);
+    try {
+      JSONObject metrics = new JSONObject(intent.getStringExtra("params")).getJSONObject("metrics");
+      memoryMonitor = new MemoryMonitor(this, metrics);
+    } catch (JSONException e) {
+      throw new IllegalStateException(e);
+    }
+
     return START_NOT_STICKY;
   }
 
