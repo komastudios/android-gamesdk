@@ -16,19 +16,32 @@
 
 #pragma once
 
-#include "memory_advice/memory_advice.h"
+#include <atomic>
+#include <memory>
+#include <thread>
 
-// These functions are implemented in memory_advice.cpp.
-// They are mostly the same as the C interface, but take C++ types.
+#include "memory_advice_impl.h"
 
 namespace memory_advice {
 
-MemoryAdvice_ErrorCode Init();
-MemoryAdvice_ErrorCode Init(const char* params);
-MemoryAdvice_ErrorCode GetAdvice(const char** advice);
-MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state);
-MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
-                                  MemoryAdvice_WatcherCallback callback);
-MemoryAdvice_ErrorCode RemoveWatcher();
+class StateWatcher {
+   public:
+    StateWatcher(MemoryAdviceImpl* impl, MemoryAdvice_WatcherCallback callback,
+                 uint64_t interval)
+        : callback_(callback),
+          interval_(interval),
+          looping_(true),
+          impl_(impl),
+          thread_(std::make_unique<std::thread>(&StateWatcher::Looper, this)) {}
+    virtual ~StateWatcher();
+
+   private:
+    MemoryAdviceImpl* impl_;
+    std::atomic<bool> looping_;
+    std::unique_ptr<std::thread> thread_;
+    MemoryAdvice_WatcherCallback callback_;
+    uint64_t interval_;
+    void Looper();
+};
 
 }  // namespace memory_advice

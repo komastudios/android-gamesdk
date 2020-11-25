@@ -4,14 +4,23 @@
 
 #include <memory_advice/memory_advice.h>
 
+#define LOG_TAG "Hogger"
+#include "Log.h"
+
+void callback(MemoryAdvice_MemoryState state) {
+    ALOGE("State is: %d", state);
+    MemoryAdvice_removeWatcher();
+}
+
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_memory_1advice_hogger_MainActivity_stringFromJNI(
+Java_com_memory_1advice_hogger_MainActivity_getAdvice(
         JNIEnv* env,
         jobject activity) {
-    MemoryAdvice_init(env, activity);
-    std::stringstream hello;
-    hello << "Hello from C++. Library returned: ";
-    hello << MemoryAdvice_testLibraryAccess(42);
+    MemoryAdvice_initDefaultParams(env, activity);
+    const char* advice;
+    MemoryAdvice_getAdvice(&advice);
+    ALOGE("Advice is: %s", advice);
+    MemoryAdvice_setWatcher(1000, callback);
 
-    return env->NewStringUTF(hello.str().c_str());
+    return env->NewStringUTF(advice);
 }

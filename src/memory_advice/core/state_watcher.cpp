@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include "memory_advice/memory_advice.h"
-
-// These functions are implemented in memory_advice.cpp.
-// They are mostly the same as the C interface, but take C++ types.
+#include "state_watcher.h"
 
 namespace memory_advice {
 
-MemoryAdvice_ErrorCode Init();
-MemoryAdvice_ErrorCode Init(const char* params);
-MemoryAdvice_ErrorCode GetAdvice(const char** advice);
-MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state);
-MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
-                                  MemoryAdvice_WatcherCallback callback);
-MemoryAdvice_ErrorCode RemoveWatcher();
+void StateWatcher::Looper() {
+    while (looping_) {
+        MemoryAdvice_MemoryState state = impl_->GetMemoryState();
+        if (state != MEMORYADVICE_STATE_OK) {
+            callback_(state);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(interval_));
+    }
+}
+
+StateWatcher::~StateWatcher() {
+    looping_ = false;
+    thread_->detach();
+}
 
 }  // namespace memory_advice

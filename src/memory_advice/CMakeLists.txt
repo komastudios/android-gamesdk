@@ -43,6 +43,7 @@ set(MEMORY_ADVICE_SRCS
   core/memory_advice_impl.cpp
   core/memory_advice_c.cpp
   core/metrics_provider.cpp
+  core/state_watcher.cpp
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
