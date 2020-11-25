@@ -17,6 +17,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 
 #include "device_profiler.h"
 #include "metrics_provider.h"
@@ -32,6 +33,7 @@ class MemoryAdviceImpl {
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object device_profile_;
+    std::mutex advice_mutex_;
 
     MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;
 
@@ -61,11 +63,15 @@ class MemoryAdviceImpl {
     Json GetValue(Json::object object, std::string key);
 
    public:
-    MemoryAdviceImpl();
+    MemoryAdviceImpl(const char* params);
     /** @brief Creates an advice object by reading variable metrics and
      * comparing them to baseline values and values provided by device profiler.
      */
     Json::object GetAdvice();
+    /** @brief Evaluates information from the current metrics and returns a
+     * memory state.
+     */
+    MemoryAdvice_MemoryState GetMemoryState();
     /** @brief Reads the variable part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateVariableMetrics();
