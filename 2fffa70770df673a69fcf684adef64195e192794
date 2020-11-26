@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9561c3a_b9eb5fd2",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "instead of",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90162c0b_bc877abd",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "Not sure what \"empty pointer\" means? I would say:\n\"A pointer to a MemoryAdvice_MemoryState in which [...]\"",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75e2be6f_2d4c7d4b",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "I would write:\n\"a pointer to a const char*, where will be stored the address of the advice. Note that the caller is responsible for deallocating the memory pointed to by that pointer\".\n\nAs we\u0027re exposing a C interface, we should probably expose something to deallocate:\n\n  MemoryAdvice_deallocateAdvice(const char* advice);\n\nthat would do a simple `delete[] advice;` (if advice was allocated with new[]). If we allocate the buffer with `malloc`, we should ask the caller to use `free`. The reason is that if you\u0027re not using C++, you won\u0027t have the operator delete, and I\u0027m not sure if it\u0027s safe to call free on something that was allocated with C++ new operator (probably a very bad idea).",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc216503_1939f552",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "nit: \"every `intervalMillis`\"\n\nfor a nice formatting in the doc",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "895cf02c_94345e50",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "that will be invoked",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb14b73f_0881409a",
+        "filename": "src/memory_advice/core/memory_advice.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-11-26T14:33:58Z",
+      "side": 1,
+      "message": "I missed that initially: \n- dump() will return a std::string.\n- c_str() will return a pointer to the string array content \n- You put this address into advice - so far so good.\n- Then the function returns and at this point, the std::string goes out of scope, so is destroyed.\n\nWhich means we have a dangling pointer to something that was just deallocated. \n\nInstead, I think we must allocate another memory region where to store this, either by doing:\n- a malloc with the size + 1 of the string (+1 for the null terminator), then a memcpy, then asking the caller to use `free` on the pointer.\n- or using C++ new[] operator (with size + 1 of the string), then memcpy, then we expose a function to deallocate a pointer that is just `delete[] advice;` (because there is no delete operator in C or in the language using the C interface).\n- or using a std::vector https://stackoverflow.com/questions/347949/how-to-convert-a-stdstring-to-const-char-or-char, but we still need a call to delete[] somewhere",
+      "revId": "2fffa70770df673a69fcf684adef64195e192794",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
