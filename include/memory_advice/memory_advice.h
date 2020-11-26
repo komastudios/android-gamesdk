@@ -194,6 +194,19 @@ MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(
     MemoryAdvice_JsonSerialization *advice);
 
 /**
+ * @brief Calculates an estimate for the amount of memory that can safely be
+ * allocated, in bytes.
+ *
+ * @param estimate a pointer to an int64_t, in which the estimate will
+ * be written
+ *
+ * @return MEMORYADVICE_ERROR_OK if successful,
+ * @return MEMORYADVICE_ERROR_NOT_INITIALIZED if Memory Advice was not yet
+ * initialized.
+ */
+MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate);
+
+/**
  * @brief Sets a watcher that polls the Memory Advice library periodically, and
  * invokes the watcher callback when the memory state goes critical.
  *
