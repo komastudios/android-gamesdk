@@ -53,6 +53,10 @@ MemoryAdvice_ErrorCode MemoryAdvice_removeWatcher() {
     return memory_advice::RemoveWatcher();
 }
 
+MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate) {
+    return memory_advice::GetAvailableMemory(estimate);
+}
+
 void MEMORY_ADVICE_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.

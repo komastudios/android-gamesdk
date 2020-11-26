@@ -55,6 +55,12 @@ MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state) {
     return MEMORYADVICE_ERROR_OK;
 }
 
+MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate) {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    *estimate = s_impl->GetAvailableMemory();
+    return MEMORYADVICE_ERROR_OK;
+}
+
 MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
                                   MemoryAdvice_WatcherCallback callback) {
     if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;

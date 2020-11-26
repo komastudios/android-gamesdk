@@ -27,6 +27,7 @@ MemoryAdvice_ErrorCode Init();
 MemoryAdvice_ErrorCode Init(const char* params);
 MemoryAdvice_ErrorCode GetAdvice(const char** advice);
 MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state);
+MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate);
 MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
                                   MemoryAdvice_WatcherCallback callback);
 MemoryAdvice_ErrorCode RemoveWatcher();
