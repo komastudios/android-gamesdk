@@ -22,6 +22,30 @@
       },
       "revId": "14c82a4b0c2e428f7866b2464234bf7fa1f1ea45",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb5b0b8f_3b291b87",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-26T13:58:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "abc2c0eb_b4efd7d2",
+      "range": {
+        "startLine": 254,
+        "startChar": 20,
+        "endLine": 254,
+        "endChar": 21
+      },
+      "revId": "14c82a4b0c2e428f7866b2464234bf7fa1f1ea45",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
