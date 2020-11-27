@@ -16,6 +16,24 @@
       "message": "\"A pointer to a in64_t, in which [...]\"\n\n(whatever the value of the int64_t, the value will be overwritten)",
       "revId": "0c18bea3048b801d18e2d9247a2fc1e0b6bc5f41",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "df0d91d2_ca4ee62b",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2020-11-27T13:27:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ee22adf_3a871f0d",
+      "revId": "0c18bea3048b801d18e2d9247a2fc1e0b6bc5f41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
