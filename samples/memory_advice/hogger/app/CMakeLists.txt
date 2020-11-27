@@ -23,7 +23,7 @@ add_library( native-lib
         )
 
 target_link_libraries( native-lib
-        gamesdk
+        memory_advice
         android
         EGL
         GLESv2

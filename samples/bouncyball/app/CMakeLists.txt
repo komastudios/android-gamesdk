@@ -39,5 +39,5 @@ target_link_libraries( native-lib
                        EGL
                        GLESv2
                        log
-                       gamesdk
+                       swappy
                        )
