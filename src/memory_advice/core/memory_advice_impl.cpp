@@ -20,11 +20,9 @@
 
 namespace memory_advice {
 
-extern const char* parameters_string;
-
 using namespace json11;
 
-MemoryAdviceImpl::MemoryAdviceImpl() {
+MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     metrics_provider_ = std::make_unique<MetricsProvider>();
     device_profiler_ = std::make_unique<DeviceProfiler>();
 
@@ -32,7 +30,7 @@ MemoryAdviceImpl::MemoryAdviceImpl() {
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
-    initialization_error_code_ = ProcessAdvisorParameters(parameters_string);
+    initialization_error_code_ = ProcessAdvisorParameters(params);
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -53,9 +51,47 @@ MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
     return MEMORYADVICE_ERROR_OK;
 }
 
+MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
+    Json::object advice = GetAdvice();
+    if (advice.find("warnings") != advice.end()) {
+        Json::array warnings = advice["warnings"].array_items();
+        for (auto& it : warnings) {
+            if (it.object_items().at("level").string_value() == "red") {
+                return MEMORYADVICE_STATE_CRITICAL;
+            }
+        }
+        return MEMORYADVICE_STATE_APPROACHING_LIMIT;
+    }
+    return MEMORYADVICE_STATE_OK;
+}
+
+int64_t MemoryAdviceImpl::GetAvailableMemory() {
+    Json::object advice = GetAdvice();
+    if (advice.find("predictions") != advice.end()) {
+        int64_t smallest_estimate = 0;
+        Json::object predictions = advice["predictions"].object_items();
+        for (auto& it : predictions) {
+            if (smallest_estimate == 0 ||
+                it.second.number_value() < smallest_estimate) {
+                smallest_estimate = it.second.number_value();
+            }
+        }
+        return smallest_estimate;
+    }
+    return 0;
+}
+
 Json::object MemoryAdviceImpl::GetAdvice() {
+    std::lock_guard<std::mutex> lock(advice_mutex_);
+    double start_time = MillisecondsSinceEpoch();
     Json::object advice;
     advice["metrics"] = GenerateVariableMetrics();
+    Json::object device_limit =
+        device_profile_.at("limits").object_items().at("limit").object_items();
+    Json::object device_baseline = device_profile_.at("limits")
+                                       .object_items()
+                                       .at("baseline")
+                                       .object_items();
 
     if (advisor_parameters_.find("heuristics") != advisor_parameters_.end()) {
         Json::array warnings;
@@ -67,16 +103,8 @@ Json::object MemoryAdviceImpl::GetAdvice() {
             Json::object heuristic = it.second.object_items();
 
             Json metric_value = GetValue(advice["metrics"].object_items(), key);
-            Json device_limit_value = GetValue(device_profile_.at("limits")
-                                                   .object_items()
-                                                   .at("limit")
-                                                   .object_items(),
-                                               key);
-            Json device_baseline_value = GetValue(device_profile_.at("limits")
-                                                      .object_items()
-                                                      .at("baseline")
-                                                      .object_items(),
-                                                  key);
+            Json device_limit_value = GetValue(device_limit, key);
+            Json device_baseline_value = GetValue(device_baseline, key);
             Json baseline_value = GetValue(baseline_, key);
 
             if (metric_value.is_null() || device_limit_value.is_null() ||
@@ -187,6 +215,50 @@ Json::object MemoryAdviceImpl::GetAdvice() {
             advice["warnings"] = warnings;
         }
     }
+
+    if (device_limit.find("stressed") != device_limit.end()) {
+        Json::object stressed = device_limit["stressed"].object_items();
+        if (stressed.find("applicationAllocated") != stressed.end()) {
+            double application_allocated =
+                stressed["applicationAllocated"].number_value();
+            Json::object predictions;
+            Json::object predictions_params =
+                advisor_parameters_["predictions"].object_items();
+
+            for (auto& it : predictions_params) {
+                std::string key = it.first;
+
+                Json metric_value =
+                    GetValue(advice["metrics"].object_items(), key);
+                Json device_limit_value = GetValue(device_limit, key);
+                Json device_baseline_value = GetValue(device_baseline, key);
+                Json baseline_value = GetValue(baseline_, key);
+
+                if (metric_value.is_null() || device_limit_value.is_null() ||
+                    device_baseline_value.is_null() ||
+                    baseline_value.is_null()) {
+                    continue;
+                }
+
+                double delta =
+                    metric_value.number_value() - baseline_value.number_value();
+                double device_delta = device_limit_value.number_value() -
+                                      device_baseline_value.number_value();
+                if (device_delta == 0) {
+                    continue;
+                }
+
+                double percentage_estimate = delta / device_delta;
+
+                predictions[key] =
+                    application_allocated * (1 - percentage_estimate);
+            }
+
+            advice["predictions"] = predictions;
+        }
+    }
+    advice["meta"] =
+        (Json::object){{"duration", MillisecondsSinceEpoch() - start_time}};
     return advice;
 }
 
