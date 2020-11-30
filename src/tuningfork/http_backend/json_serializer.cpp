@@ -21,52 +21,11 @@
 
 #define LOG_TAG "TuningFork"
 #include "Log.h"
+#include "StringShim.h"
 #include "core/annotation_util.h"
 #include "core/tuningfork_impl.h"
 #include "core/tuningfork_utils.h"
 #include "modp_b64.h"
-
-// These string functions are needed for date.h when using gnustl in the NDK
-
-#if (defined ANDROID_GNUSTL) || \
-    ((defined ANDROID_NDK_VERSION) && ANDROID_NDK_VERSION <= 17)
-
-namespace std {
-
-template <typename T>
-std::string to_string(T value) {
-    std::stringstream os;
-    os << value;
-    return os.str();
-}
-template <typename T>
-std::wstring to_wstring(T value) {
-    std::wstringstream os;
-    os << value;
-    return os.str();
-}
-
-}  // namespace std
-
-#endif
-
-#if (defined ANDROID_GNUSTL)
-
-namespace std {
-
-long double stold(const std::string& str, std::size_t* pos = 0) {
-    long double d;
-    std::stringstream is(str);
-    auto p0 = is.tellg();
-    is >> d;
-    if (pos != nullptr) {
-        *pos = is.tellg() - p0;
-    }
-    return d;
-}
-
-}  // namespace std
-#endif
 
 // TODO(b/140155101): Move the date library into aosp/external
 #include "date/date.h"
@@ -155,7 +114,7 @@ std::string JsonUint64(uint64_t x) {
 Json::object JsonSerializer::TelemetryContextJson(
     const AnnotationId& annotation_id, const RequestInfo& request_info,
     const Duration& duration) {
-    SerializedAnnotation annotation;
+    SerializedAnnotation annotation{};
     id_provider_->AnnotationIdToSerializedAnnotation(annotation_id, annotation);
     return Json::object{
         {"annotations", B64Encode(annotation)},
@@ -275,6 +234,43 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     }
     return ret;
 }
+
+static int LifecycleEventType(TuningFork_LifecycleState state) {
+    switch (state) {
+        case TUNINGFORK_STATE_ONSTART:
+            return 1;
+        case TUNINGFORK_STATE_ONSTOP:
+            return 2;
+        default:
+            return 0;
+    }
+}
+
+Json::object JsonSerializer::PartialLoadingTelemetryReportJson(
+    const AnnotationId& annotation, const LifecycleUploadEvent& lifecycle_event,
+    Duration& duration) {
+    std::vector<Json::object> loading_events;
+    for (const auto& e : lifecycle_event.loading_events) {
+        if (e.id.detail.annotation != annotation) continue;
+        LoadingTimeMetadata md;
+        if (id_provider_->MetricIdToLoadingTimeMetadata(e.id, md) ==
+            TUNINGFORK_ERROR_OK) {
+            Json::object o({});
+            o["intervals"] = SerializeIntervalVector({e.interval});
+            duration += e.interval.Duration();
+            o["loading_metadata"] = LoadingTimeMetadataJson(md);
+            loading_events.push_back(o);
+        }
+    }
+    Json::object ret;
+    if (loading_events.size() > 0) {
+        ret["partial_loading"] = Json::object{
+            {"event_type", LifecycleEventType(lifecycle_event.state)},
+            {"report", Json::object{{"loading_events", loading_events}}}};
+    }
+    return ret;
+}
+
 Json::object JsonSerializer::MemoryTelemetryReportJson(bool& empty) {
     std::vector<Json::object> memory_histograms;
     auto histograms = session_.GetNonEmptyHistograms<MemoryMetricData>();
@@ -318,6 +314,16 @@ Json::object JsonSerializer::TelemetryJson(const AnnotationId& annotation,
                                            const RequestInfo& request_info,
                                            Duration& duration, bool& empty) {
     auto report = TelemetryReportJson(annotation, empty, duration);
+    return Json::object{
+        {"context", TelemetryContextJson(annotation, request_info, duration)},
+        {"report", report}};
+}
+Json::object JsonSerializer::PartialLoadingTelemetryJson(
+    const AnnotationId& annotation, const LifecycleUploadEvent& event,
+    const RequestInfo& request_info) {
+    Duration duration{};
+    auto report =
+        PartialLoadingTelemetryReportJson(annotation, event, duration);
     return Json::object{
         {"context", TelemetryContextJson(annotation, request_info, duration)},
         {"report", report}};
@@ -369,6 +375,32 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
         auto& a = *annotations.begin();
         auto tel = MemoryTelemetryJson(a, request_info, sum_duration, empty);
         if (!empty) telemetry.push_back(tel);
+    }
+    Json upload_telemetry_request =
+        Json::object{{"name", json_utils::GetResourceName(request_info)},
+                     {"session_context", session_context},
+                     {"telemetry", telemetry}};
+    evt_json_ser = upload_telemetry_request.dump();
+}
+
+void JsonSerializer::SerializeLifecycleEvent(const LifecycleUploadEvent& event,
+                                             const RequestInfo& request_info,
+                                             std::string& evt_json_ser) {
+    Json session_context = Json::object{
+        {"device", json_utils::DeviceSpecJson(request_info)},
+        {"game_sdk_info", GameSdkInfoJson(request_info)},
+        {"time_period",
+         Json::object{{"start_time", TimeToRFC3339(session_.time().start)},
+                      {"end_time", TimeToRFC3339(session_.time().end)}}}};
+    std::vector<Json::object> telemetry;
+    // Loop over unique annotations
+    std::set<AnnotationId> annotations;
+    for (const auto& p : event.loading_events) {
+        annotations.insert(p.id.detail.annotation);
+    }
+    for (const auto& a : annotations) {
+        telemetry.push_back(
+            PartialLoadingTelemetryJson(a, event, request_info));
     }
     Json upload_telemetry_request =
         Json::object{{"name", json_utils::GetResourceName(request_info)},

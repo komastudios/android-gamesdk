@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "core/id_provider.h"
+#include "core/lifecycle_upload_event.h"
 #include "core/session.h"
 
 namespace tuningfork {
@@ -31,6 +32,10 @@ class JsonSerializer {
         : session_(session), id_provider_(id_provider) {}
     void SerializeEvent(const RequestInfo& device_info,
                         std::string& evt_json_ser);
+
+    void SerializeLifecycleEvent(const LifecycleUploadEvent& event,
+                                 const RequestInfo& request_info,
+                                 std::string& evt_json_ser);
 
     static TuningFork_ErrorCode DeserializeAndMerge(
         const std::string& evt_json_ser, IdProvider& id_provider,
@@ -44,11 +49,19 @@ class JsonSerializer {
     json11::Json::object TelemetryReportJson(const AnnotationId& annotation,
                                              bool& empty, Duration& duration);
 
+    json11::Json::object PartialLoadingTelemetryReportJson(
+        const AnnotationId& annotation, const LifecycleUploadEvent& event,
+        Duration& duration);
+
     json11::Json::object MemoryTelemetryReportJson(bool& empty);
 
     json11::Json::object TelemetryJson(const AnnotationId& annotation,
                                        const RequestInfo& request_info,
                                        Duration& duration, bool& empty);
+
+    json11::Json::object PartialLoadingTelemetryJson(
+        const AnnotationId& annotation, const LifecycleUploadEvent& event,
+        const RequestInfo& request_info);
 
     json11::Json::object MemoryTelemetryJson(const AnnotationId& annotation,
                                              const RequestInfo& request_info,
