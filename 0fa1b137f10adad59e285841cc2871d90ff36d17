@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "32fb2faa_59bb2832",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 675,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2020-12-01T11:37:52Z",
+      "side": 1,
+      "message": "Understood now that it\u0027s when app is foregrounded. Make sense then. Can you confirm this will work when app is backgrounded and foregrounded multiple times?",
+      "parentUuid": "70498c92_c3f0657a",
+      "revId": "0fa1b137f10adad59e285841cc2871d90ff36d17",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0c44a25a_8e04c287",
         "filename": "src/tuningfork/core/uploadthread.cpp",
         "patchSetId": 1
