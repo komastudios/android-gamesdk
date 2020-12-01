@@ -76,7 +76,6 @@ TEST(SerializationTest, DeviceInfo) { CheckDeviceInfo(test_device_info); }
 std::string report_start = R"TF({
   "name": "applications/packname/apks/0",
   "session_context": {
-    "crash_reports": [],
     "device": {
       "brand": "BRAND",
       "build_version": "6.3",

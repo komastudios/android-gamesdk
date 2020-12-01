@@ -28,6 +28,7 @@
 #include "annotation_util.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
+#include "lifecycle_upload_event.h"
 #include "memory_telemetry.h"
 #include "metric.h"
 #include "tuningfork_utils.h"
@@ -649,11 +650,32 @@ TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
     return TUNINGFORK_ERROR_OK;
 }
 
+std::vector<LifecycleLoadingEvent> TuningForkImpl::GetLiveLoadingEvents() {
+    std::vector<LifecycleLoadingEvent> ret;
+    auto current_time = time_provider_->TimeSinceProcessStart();
+    for (auto &a : live_loading_events_) {
+        ret.push_back({a.first, {a.second, current_time}});
+    }
+    return ret;
+}
+
 TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
     TuningFork_LifecycleState state) {
     if (!activity_lifecycle_state_.SetNewState(state)) {
         ALOGV("Discrepancy in lifecycle states, reporting as a crash");
         current_session_->RecordCrash(CRASH_REASON_UNSPECIFIED);
+    }
+    // Send a message on stop if we have loading events outstanding.
+    if (state == TUNINGFORK_STATE_ONSTOP && Loading()) {
+        LifecycleUploadEvent event{state, GetLiveLoadingEvents()};
+        lifecycle_stop_event_sent_ =
+            upload_thread_.SendLifecycleEvent(event, current_session_);
+    }
+    // Send a message on start if we sent a stop event previously.
+    else if (state == TUNINGFORK_STATE_ONSTART && lifecycle_stop_event_sent_) {
+        LifecycleUploadEvent event{state, GetLiveLoadingEvents()};
+        lifecycle_stop_event_sent_ =
+            !upload_thread_.SendLifecycleEvent(event, current_session_);
     }
     return TUNINGFORK_ERROR_OK;
 }
