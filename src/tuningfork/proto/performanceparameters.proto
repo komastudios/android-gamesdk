@@ -33,7 +33,7 @@ service ParametersService {
   // If no device specification is provided, the API will return an empty
   // tuning configuration.
   rpc GenerateTuningParameters(GenerateTuningParametersRequest)
-    returns (GenerateTuningParametersResponse) {
+      returns (GenerateTuningParametersResponse) {
     option (google.api.http) = {
       post: "/v1/{name=applications/*/apks/*}:generateTuningParameters"
       body: "*"
@@ -146,8 +146,10 @@ message TelemetryReport {
   RenderingReport rendering = 4;
   // Information on scene loading times.
   LoadingReport loading = 5;
-  // Information on memory usage
+  // Information on memory usage.
   MemoryReport memory = 6;
+  // Loading events that may have been abandoned.
+  PartialLoadingReport partial_loading = 7;
 }
 
 // Self reported context from a device requesting telemetry logging.
@@ -282,9 +284,31 @@ message LoadingReport {
   repeated LoadingTimeEvents loading_events = 1;
 }
 
+// A report of loading times for active loading events when an app lifecycle
+// event occurred. Currently it is only app start and stop events that trigger
+// these reports.
+message PartialLoadingReport {
+  // Lifecycle event that caused a partial loading report.
+  enum LifecycleEventType {
+    // Unspecified.
+    LIFECYCLE_EVENT_TYPE_UNSPECIFIED = 0;
+    // App start event received (i.e. app was foregrounded).
+    START = 1;
+    // App stop event received (i.e. app was backgrounded).
+    STOP = 2;
+  }
+
+  // Lifecycle event that caused this partial loading report.
+  LifecycleEventType event_type = 1;
+
+  // A loading report with the loading events that were active when the
+  // lifecycle event happened.
+  LoadingReport report = 2;
+}
+
 // Representation of a set of loading times.
 // Where developers use start+stop functions to record loading time events (the
-// encouraged behaviour), they are recorded in 'intervals'. 'times_ms' will
+// enouraged behaviour), they are recorded in 'intervals'. 'times_ms' will
 // contain events that are recorded as durations.
 message LoadingTimeEvents {
   // Times in milliseconds
