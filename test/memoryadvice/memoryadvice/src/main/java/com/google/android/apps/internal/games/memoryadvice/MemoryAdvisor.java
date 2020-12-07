@@ -30,7 +30,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    *
    * @param context The Android context to employ.
    */
-  public MemoryAdvisor(Context context, Runnable readyHandler) {
+  public MemoryAdvisor(Context context, ReadyHandler readyHandler) {
     this(context, getDefaultParams(context.getAssets()), readyHandler);
   }
 
@@ -49,11 +49,11 @@ public class MemoryAdvisor extends MemoryMonitor {
    * Create an Android memory advice fetcher.
    *
    * @param context      The Android context to employ.
-   * @param params       The active configuration.
+   * @param params       The active configuration; described by advisorParameters.schema.json.
    * @param readyHandler A callback used when on device stress test is required.
    * @throws MemoryAdvisorException
    */
-  public MemoryAdvisor(Context context, JSONObject params, Runnable readyHandler) {
+  public MemoryAdvisor(Context context, JSONObject params, ReadyHandler readyHandler) {
     super(context, params.optJSONObject("metrics"));
     this.params = params;
     ScheduledExecutorService scheduledExecutorService =
@@ -66,11 +66,15 @@ public class MemoryAdvisor extends MemoryMonitor {
       try {
         new OnDeviceStressTester(context, params.getJSONObject("onDeviceStressTest"),
             new OnDeviceStressTester.Consumer() {
-              @Override
-              void accept(JSONObject baseline, JSONObject limit) {
+              public void progress(JSONObject metrics) {
+                readyHandler.stressTestProgress(metrics);
+              }
+
+              public void accept(JSONObject baseline, JSONObject limit) {
                 onDeviceBaseline = baseline;
                 onDeviceLimit = limit;
-                scheduledExecutorService.schedule(readyHandler, 1, TimeUnit.MILLISECONDS);
+                scheduledExecutorService.schedule(
+                    readyHandler::onComplete, 1, TimeUnit.MILLISECONDS);
               }
             });
       } catch (JSONException ex) {
@@ -79,7 +83,7 @@ public class MemoryAdvisor extends MemoryMonitor {
     } else {
       deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
       if (readyHandler != null) {
-        scheduledExecutorService.schedule(readyHandler, 1, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.schedule(readyHandler::onComplete, 1, TimeUnit.MILLISECONDS);
       }
     }
   }

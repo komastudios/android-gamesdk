@@ -3,43 +3,74 @@
   "title": "Metrics Specs",
   "description": "Specification for which metrics to collect.",
   "additionalProperties": false,
+  "type": "object",
   "properties": {
     "ActivityManager": {
       "$ref": "metricsSpecGroup.schema.json"
     },
-    "canaryProcessTester": {
-      "anyOf": [
+    "debug": {
+      "description": "Metrics obtained from android.os.debug.",
+      "allOf": [
         {
-          "type": "boolean"
-        },
-        {
-          "additionalProperties": false,
-          "properties": {
-            "memory": {
-              "$ref": "memoryQuantity.schema.json"
-            }
-          },
-          "type": "object"
+          "$ref": "metricsSpecGroup.schema.json"
         }
       ]
     },
-    "debug": {
-      "$ref": "metricsSpecGroup.schema.json"
-    },
     "meminfo": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "Metrics obtained from `/proc/meminfo`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
     },
     "MemoryInfo": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "Metrics obtained from `android.app.ActivityManager.MemoryInfo`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
     },
     "proc": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "Metrics obtained from `proc` folder",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
     },
     "status": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "Metrics obtained from `/proc/(pid)/status`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
     },
     "summary": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "From `android.os.Debug.MemoryInfo[]`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
+    },
+    "canaryProcessTester": {
+      "$ref": "canaryProcessTesterSpec.schema.json"
     }
-  }
+  },
+  "examples": [
+    {
+      "MemoryInfo": {
+        "totalMem": true,
+        "threshold": true
+      },
+      "meminfo": true,
+      "ActivityManager": true,
+      "proc": {
+        "oom_score": true
+      }
+    }
+  ]
 }

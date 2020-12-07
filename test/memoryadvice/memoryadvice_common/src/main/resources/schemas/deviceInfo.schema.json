@@ -14,7 +14,7 @@
       "$ref": "deviceProfile.schema.json"
     },
     "params": {
-      "$ref": "params.schema.json"
+      "$ref": "advisorParameters.schema.json"
     }
   },
   "type": "object"

@@ -52,7 +52,8 @@ add_library( native-lib
 )
 
 target_link_libraries( native-lib
-        gamesdk
+        swappy
+        tuningfork
         protobuf-static
         android
         EGL

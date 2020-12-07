@@ -128,7 +128,7 @@ class MemoryMonitor {
           metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
         }
         if (allFields || (debug != null && debug.optBoolean("Pss"))) {
-          metricsOut.put("Pss", Debug.getNativeHeapSize());
+          metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
         }
 
         JSONObject meta = new JSONObject();

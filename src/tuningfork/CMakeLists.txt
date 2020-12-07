@@ -66,9 +66,9 @@ set( TUNINGFORK_SRCS
   core/uploadthread.cpp
   http_backend/debugInfo.cpp
   http_backend/generateTuningParameters.cpp
+  http_backend/http_backend.cpp
   http_backend/http_request.cpp
   http_backend/json_serializer.cpp
-  http_backend/uploadTelemetry.cpp
   http_backend/ultimate_uploader.cpp
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp

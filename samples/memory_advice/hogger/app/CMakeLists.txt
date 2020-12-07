@@ -16,6 +16,8 @@ add_gamesdk_target(
 )
 
 include_directories(../../../../include)
+include_directories(../../../common/include ) # Samples Includes
+
 
 add_library( native-lib
         SHARED
@@ -23,7 +25,7 @@ add_library( native-lib
         )
 
 target_link_libraries( native-lib
-        gamesdk
+        memory_advice
         android
         EGL
         GLESv2

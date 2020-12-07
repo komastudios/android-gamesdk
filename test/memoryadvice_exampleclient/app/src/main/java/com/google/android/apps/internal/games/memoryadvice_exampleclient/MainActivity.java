@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
+import com.google.android.apps.internal.games.memoryadvice.ReadyHandler;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
@@ -14,17 +15,20 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    memoryAdvisor = new MemoryAdvisor(this, new Runnable() {
+    memoryAdvisor = new MemoryAdvisor(this, new ReadyHandler() {
       @Override
-      public void run() {
+      public void onComplete() {
         // The budget for overhead introduced by the advisor and watcher.
         int maxMillisecondsPerSecond = 10;
 
         // The minimum time duration between iterations, in milliseconds.
-        int minimumFrequency = 1000;
+        int minimumFrequency = 100;
+
+        // The maximum time duration between iterations, in milliseconds.
+        int maximumFrequency = 2000;
 
         MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, maxMillisecondsPerSecond,
-            minimumFrequency, new MemoryWatcher.DefaultClient() {
+            minimumFrequency, maximumFrequency, new MemoryWatcher.DefaultClient() {
               @Override
               public void newState(MemoryAdvisor.MemoryState state) {}
             });

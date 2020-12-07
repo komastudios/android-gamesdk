@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "title": "Launch Params",
-  "description": "Information about the launch as reported by the device.",
+  "title": "Launch Parameters",
+  "description": "Configuration for a test run.",
   "additionalProperties": false,
   "properties": {
     "tests": {
@@ -11,7 +11,8 @@
       "type": "array",
       "items": {
         "type": "integer",
-        "minimum": 0
+        "minimum": 0,
+        "maximum": 100
       }
     },
     "run": {

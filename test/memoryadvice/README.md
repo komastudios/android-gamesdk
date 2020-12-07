@@ -169,7 +169,7 @@ resolution. These can be restored when no more memory warnings (including
 ## Adding the library to an Android project
 
 The library is published on
-[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.16).
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.18).
 
 In the application root `build.gradle` file, ensure `google()` is specified as a
 repository for the project, as well as `jitpack.io` for some of its
@@ -193,7 +193,7 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.games:memory-advice:0.16'
+    implementation 'com.google.android.games:memory-advice:0.18'
 
 }
 ```
@@ -310,7 +310,7 @@ class MyActivity extends Activity {
   void myMethod() {
     JSONObject advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
-    new MemoryWatcher(memoryAdvisor, 10, 3000, new MemoryWatcher.DefaultClient() {
+        new MemoryWatcher(memoryAdvisor, 10, 100, 2000, new MemoryWatcher.DefaultClient() {
       @Override
       public void newState(MemoryAdvisor.MemoryState memoryState) {
         switch (memoryState) {
@@ -650,5 +650,4 @@ Average 4.318 milliseconds.
 ### Notes on timing
 
 Figures are based on 150+ lab devices, excluding outlier. The measurement is the
-average time it takes for the library to obtain all these metrics is xxx
-milliseconds.
+average time it takes for the library to obtain all these metrics.

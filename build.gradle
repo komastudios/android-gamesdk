@@ -35,7 +35,7 @@ buildscript {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
-        .setAarLibrary("games-frame-pacing", "1.7.0-alpha01")
+        .setAarLibrary("games-frame-pacing", "1.7.0-beta01")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -53,7 +53,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
-        .setAarLibrary("games-performance-tuner", "1.1.0-alpha01")
+        .setAarLibrary("games-performance-tuner", "1.1.0-beta01")
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -84,10 +84,10 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice', 'GAMESDK_BUILD_MEMORY_ADVICE')
-        .setAarLibrary("games-memory-advice", "1.0.0-alpha01")
+        .setAarLibrary("games-memory-advice", "1.0.0-beta01")
 
 def oboeNativeLibrary = new NativeLibrary('oboe', 'GAMESDK_BUILD_OBOE')
-        .setAarLibrary("games-oboe", "1.0.0-alpha01")
+        .setAarLibrary("games-oboe", "1.0.0-beta01")
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
@@ -237,26 +237,6 @@ def executeCmd(cmd, dir) {
         logger.error(err.toString())
 }
 
-// Create outAr from the contents of inArs
-// All files taken/created in dir
-def repackArchives(dir, inArs, outAr) {
-    def arPath = getLocalToolchain().getArPath()
-    if (OperatingSystem.current().isWindows()) {
-        inArs.each {
-            executeCmd("cmd /c ${arPath} -x ${it}", dir)
-        }
-        executeCmd("cmd /c for %i in (*.o) do ${arPath} -rcs ${outAr} %i", dir)
-        executeCmd("cmd /c del *.o", dir)
-    }  else {
-        def cmd = /pushd $dir &&/
-        inArs.each {
-            cmd <<= /$arPath -x $it &&/
-        }
-        cmd <<= /$arPath -rcs $outAr *.o && rm *.o && popd/
-        ['/bin/bash', '-c', cmd.toString()].execute().waitFor()
-    }
-}
-
 def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
     def libraryName = library.nativeLibraryName
     def prefabName = library.aarLibraryName
@@ -367,16 +347,15 @@ def copyLibs(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticTo
     if (staticToo) {
         def staticsFolder = joinPath(getOutPath(), buildKey)
         def staticLibsBuildFolder = joinPath(buildFolder, 'libs', buildKey)
-        def staticLibs = []
+
         libraries.forEach({nativeLibrary ->
-            staticLibs += "lib" + nativeLibrary.nativeLibraryName + "_static.a"
+            copy {
+                from file(staticsFolder)
+                include "lib" + nativeLibrary.nativeLibraryName + "_static.a"
+                into file(staticLibsBuildFolder)
+            }
         })
-        repackArchives(staticsFolder, staticLibs, 'libgamesdk.a')
-        copy {
-            from file(staticsFolder)
-            include "libgamesdk.a"
-            into file(staticLibsBuildFolder)
-        }
+
     }
 }
 

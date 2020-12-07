@@ -19,7 +19,7 @@ function hashCode(str) {
   return hash;
 }
 
-export function buildDygraph(graphDiv, deviceInfo, result) {
+export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
   const highlights = [];
 
   const annotations = [];
@@ -52,7 +52,7 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
 
     rowOut[0] = time;
 
-    getValues(combined, metrics);
+    getValues(combined, metrics, '');
     delete combined.time;
     delete combined.onTrim;
     const advice = row.advice;
@@ -82,7 +82,7 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
         }
       }
       rowOut[fields.indexOf(field)] =
-          field === 'oom_score' ? value : value / (1024 * 1024);
+          field === 'proc/oom_score' ? value : value / (1024 * 1024);
     }
 
     graphData.push(rowOut.slice(0));
@@ -124,7 +124,7 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
           continue;
         }
         for (const [key, value] of Object.entries(warning)) {
-          if (value.constructor !== Object) {
+          if (key === 'level') {
             continue;
           }
           annotations.push({
@@ -212,12 +212,14 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
     series.applicationAllocated.strokeWidth = 4;
     series.applicationAllocated.color = 'black';
   }
-  if ('oom_score' in series) {
-    series.oom_score.axis = 'y2';
+  if ('proc/oom_score' in series) {
+    series['proc/oom_score'].axis = 'y2';
   }
+  let wasHighlighted = null;
   const graph = new Dygraph(graphDiv, graphData, {
-    height: 800,
+    height: 725,
     labels: fields,
+    showLabelsOnHighlight: false,
     highlightCircleSize: 4,
     strokeWidth: 1,
     strokeBorderWidth: 1,
@@ -243,8 +245,89 @@ export function buildDygraph(graphDiv, deviceInfo, result) {
     pointClickCallback: (e, p) => {
       alert(p.name + '\n\n' + p.yval);
     },
+    highlightCallback: (e, lastx, selPoints, lastRow_, highlightSet) => {
+      const elements = document.getElementsByName(highlightSet);
+      if (elements.length !== 1) {
+        return;
+      }
+      const input = elements[0];
+      if (wasHighlighted !== null) {
+        wasHighlighted.style.color = wasHighlighted.style.backgroundColor;
+        wasHighlighted.style.backgroundColor = '';
+        wasHighlighted = null;
+      }
+      input.parentElement.style.backgroundColor =
+          input.parentElement.style.color;
+      input.parentElement.style.color = 'white';
+      wasHighlighted = input.parentElement;
+    },
+    unhighlightCallback: (e) => {
+      if (wasHighlighted !== null) {
+        wasHighlighted.style.color = wasHighlighted.style.backgroundColor;
+        wasHighlighted.style.backgroundColor = '';
+        wasHighlighted = null;
+      }
+    }
 
   });
 
+  const fieldsets = {};
+  const form = document.createElement('form');
+  form.classList.add('seriesForm');
+  extrasDiv.appendChild(form);
+
+  for (let idx = 0; idx !== fields.length; idx++) {
+    const field = fields[idx];
+    if (!(field in series)) {
+      continue;
+    }
+    const prefixPos = field.lastIndexOf('/');
+    const prefix = prefixPos === -1 ? 'root' : field.substring(0, prefixPos);
+    const suffix = prefixPos === -1 ? field : field.substring(prefixPos + 1);
+    let fieldset;
+    if (prefix in fieldsets) {
+      fieldset = fieldsets[prefix];
+    } else {
+      fieldset = document.createElement('fieldset');
+      const legend = document.createElement('legend');
+      legend.appendChild(document.createTextNode(prefix));
+      fieldset.appendChild(legend);
+      fieldsets[prefix] = fieldset;
+      form.appendChild(fieldset);
+    }
+
+    const _series = series[field];
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    label.appendChild(input);
+    label.style.setProperty('color', _series.color);
+    label.addEventListener('mouseover', evt => {
+      graph.setSelection(0, field);
+      label.style.backgroundColor = label.style.color;
+      label.style.color = 'white';
+      wasHighlighted = label;
+    });
+    label.addEventListener('mouseout', evt => {
+      if (wasHighlighted !== null) {
+        wasHighlighted.style.color = wasHighlighted.style.backgroundColor;
+        wasHighlighted.style.backgroundColor = '';
+        wasHighlighted = null;
+      }
+    });
+    input.setAttribute('type', 'checkbox');
+    input.setAttribute('name', field);
+    if (localStorage.getItem(field) === 'false') {
+      graph.setVisibility(idx - 1, false);
+    } else {
+      input.checked = true;
+    }
+
+    input.addEventListener('change', evt => {
+      localStorage.setItem(field, input.checked);
+      graph.setVisibility(idx - 1, input.checked);
+    });
+    label.appendChild(document.createTextNode(suffix));
+    fieldset.appendChild(label);
+  }
   graph.ready(() => graph.setAnnotations(annotations));
 }

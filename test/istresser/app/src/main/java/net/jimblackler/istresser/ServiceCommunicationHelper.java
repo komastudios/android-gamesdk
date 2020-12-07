@@ -8,23 +8,20 @@ import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
 class ServiceCommunicationHelper {
+  static final String CRASHED_BEFORE = "crashed_before";
+  static final String TOTAL_MEMORY_MB = "total_memory_mb";
   private static final String ACTION_TYPE = "action";
   private static final String QUERY_ACTION = "query";
   private static final String ALLOCATE_MEMORY_ACTION = "allocate";
   private static final String FREE_MEMORY_ACTION = "free";
   private static final String FIRST_TIME = "first_time";
-
   private static final String TAG = MainActivity.class.getSimpleName();
-
-  static final String CRASHED_BEFORE = "crashed_before";
-  static final String TOTAL_MEMORY_MB = "total_memory_mb";
-
-  private Context context;
+  private final Context context;
   private boolean isFirstTime;
 
   ServiceCommunicationHelper(Context context) {
     this.context = context;
-    this.isFirstTime = true;
+    isFirstTime = true;
   }
 
   void allocateServerMemory(int megabytes) {

@@ -8,53 +8,58 @@
         "timeout" : "11m"
       },
       "orientation" : "landscape",
-      "metrics": {
-        "constant": {
-          "MemoryInfo": {
-            "totalMem": true,
-            "threshold": true
+      "maxMillisecondsPerSecond": 1000,
+      "minimumFrequency": 200,
+      "maximumFrequency": 2000,
+      "advisorParameters": {
+        "metrics": {
+          "constant": {
+            "MemoryInfo": {
+              "totalMem": true,
+              "threshold": true
+            },
+            "meminfo": {
+              "CommitLimit": true,
+              "HighTotal": true,
+              "LowTotal": true,
+              "MemTotal": true
+            },
+            "ActivityManager": {
+              "MemoryClass": true,
+              "LargeMemoryClass": true,
+              "LowRamDevice": true
+            }
           },
-          "meminfo": {
-            "CommitLimit": true,
-            "HighTotal": true,
-            "LowTotal": true,
-            "MemTotal": true
-          },
-          "ActivityManager": {
-            "MemoryClass": true,
-            "LargeMemoryClass": true,
-            "LowRamDevice": true
+          "variable": {
+            "debug": {
+              "nativeHeapAllocatedSize": true
+            },
+            "MemoryInfo": {
+              "availMem": true,
+              "lowMemory": true
+            },
+            "meminfo": {
+              "Active": true,
+              "Active(anon)": true,
+              "Active(file)": true,
+              "AnonPages": true,
+              "MemAvailable": true,
+              "MemFree": true,
+              "VmData": true,
+              "VmRSS": true
+            },
+            "proc": {
+              "oom_score": true
+            },
+            "status": {
+              "VmRSS": true,
+              "VmSize": true
+            }
           }
         },
-        "variable": {
-          "debug": {
-            "nativeHeapAllocatedSize": true
-          },
-          "MemoryInfo": {
-            "availMem": true,
-            "lowMemory": true
-          },
-          "meminfo": {
-            "Active": true,
-            "Active(anon)": true,
-            "Active(file)": true,
-            "AnonPages": true,
-            "MemAvailable": true,
-            "MemFree": true,
-            "VmData": true,
-            "VmRSS": true
-          },
-          "proc": {
-            "oom_score": true
-          },
-          "status": {
-            "VmRSS": true,
-            "VmSize": true
-          }
+        "predictions": {
+          "oom_score": true
         }
-      },
-      "predictions": {
-        "oom_score": true
       }
     }
   ],
@@ -71,78 +76,90 @@
     {
     },
     {
-      "heuristics": {
-        "onTrim": true
+      "advisorParameters": {
+        "heuristics": {
+          "onTrim": true
+        }
       }
     },
     {
-      "heuristics": {
-        "oom_score": {
-          "deltaLimit": {
-            "red": 0.85,
-            "yellow": 0.75
+      "advisorParameters": {
+        "heuristics": {
+          "oom_score": {
+            "deltaLimit": {
+              "red": 0.85,
+              "yellow": 0.75
+            }
           }
         }
       }
     },
     {
-      "heuristics": {
-        "oom_score": {
-          "fixed": {
-            "red": 380,
-            "yellow": 300
+      "advisorParameters": {
+        "heuristics": {
+          "oom_score": {
+            "fixed": {
+              "red": 380,
+              "yellow": 300
+            }
           }
         }
       }
     },
     {
-      "heuristics": {
-        "VmRSS": {
-          "deltaLimit": {
-            "red": 0.90,
-            "yellow": 0.75
+      "advisorParameters": {
+        "heuristics": {
+          "VmRSS": {
+            "deltaLimit": {
+              "red": 0.90,
+              "yellow": 0.75
+            }
           }
         }
       }
     },
     {
-      "heuristics": {
-        "availMem": {
-          "baselineRatio": {
-            "red": 0.30,
-            "yellow": 0.40
+      "advisorParameters": {
+        "heuristics": {
+          "availMem": {
+            "baselineRatio": {
+              "red": 0.30,
+              "yellow": 0.40
+            }
+          },
+          "MemAvailable": {
+            "baselineRatio": {
+              "red": 0.30,
+              "yellow": 0.40
+            }
+          }
+        }
+      }
+    },
+    {
+      "advisorParameters": {
+        "heuristics": {
+          "Active": {
+            "fixed": {
+              "red": "300M",
+              "yellow": "400M"
+            }
+          }
+        }
+      }
+    },
+    {
+      "advisorParameters": {
+        "metrics": {
+          "variable": {
+            "canaryProcessTester": {
+              "memory": "1M"
+            }
           }
         },
-
-        "MemAvailable": {
-          "baselineRatio": {
-            "red": 0.30,
-            "yellow": 0.40
-          }
+        "heuristics": {
+          "canaryProcessTester": true
         }
-      }
-    },
-    {
-      "heuristics": {
-        "Active": {
-          "fixed  ": {
-            "red": "300M",
-            "yellow": "400M"
-          }
-        }
-      }
-    },
-    {
-      "metrics": {
-        "variable": {
-          "canaryProcessTester": {
-            "memory": "1M"
-          }
-        }
-      },
-
-      "heuristics": {
-        "canaryProcessTester": true
       }
     }
   ]

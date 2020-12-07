@@ -69,6 +69,8 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
+    bool lifecycle_stop_event_sent_ = false;
+
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
@@ -174,7 +176,7 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode GetOrCreateInstrumentKeyIndex(InstrumentationKey key,
                                                        int &index);
 
-    bool LoadingNextScene() const { return loading_start_ != TimePoint::min(); }
+    bool Loading() const { return live_loading_events_.size() > 0; }
 
     void SwapSessions();
 
@@ -186,6 +188,8 @@ class TuningForkImpl : public IdProvider {
         Session &session, size_t size, int max_num_instrumentation_keys,
         const std::vector<Settings::Histogram> &histogram_settings,
         const TuningFork_MetricLimits &limits);
+
+    std::vector<LifecycleLoadingEvent> GetLiveLoadingEvents();
 };
 
 }  // namespace tuningfork

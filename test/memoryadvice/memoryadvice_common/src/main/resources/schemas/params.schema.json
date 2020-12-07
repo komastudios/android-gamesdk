@@ -21,47 +21,14 @@
     "glTest": {
       "$ref": "memoryQuantity.schema.json"
     },
-    "heuristics": {
-      "$ref": "heuristics.schema.json"
-    },
     "malloc": {
       "$ref": "memoryQuantity.schema.json"
     },
-    "matchStrategy": {
-      "enum": [
-        "baseline",
-        "fingerprint"
-      ]
+    "vkTest": {
+      "$ref": "memoryQuantity.schema.json"
     },
     "maxConsumer": {
       "$ref": "memoryQuantity.schema.json"
-    },
-    "metrics": {
-      "additionalProperties": false,
-      "properties": {
-        "constant": {
-          "$ref": "metricsSpecs.schema.json"
-        },
-        "variable": {
-          "$ref": "metricsSpecs.schema.json"
-        }
-      },
-      "required": [
-        "variable"
-      ],
-      "type": "object"
-    },
-    "onDeviceStressTest": {
-      "additionalProperties": false,
-      "properties": {
-        "segmentSize": {
-          "$ref": "memoryQuantity.schema.json"
-        }
-      },
-      "required": [
-        "segmentSize"
-      ],
-      "type": "object"
     },
     "orientation": {
       "enum": [
@@ -70,13 +37,27 @@
       ],
       "type": "string"
     },
-    "predictions": {
-      "$ref": "predictionsSpec.schema.json"
+    "serviceBlocker": {
+      "type": "boolean"
+    },
+    "maxMillisecondsPerSecond": {
+      "minimum": 0,
+      "maximum": 1000,
+      "type": "number"
+    },
+    "minimumFrequency": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "maximumFrequency": {
+      "minimum": 0,
+      "type": "number"
     },
     "timeout": {
       "$ref": "duration.schema.json"
     },
     "switchTest": {
+      "description": "Enables a test where the stress application is put into the background by launching another app.",
       "additionalProperties": false,
       "properties": {
         "enabled": {
@@ -93,6 +74,12 @@
         "enabled"
       ],
       "type": "object"
+    },
+    "advisorParameters": {
+      "$ref": "advisorParameters.schema.json"
+    },
+    "package": {
+      "type": "string"
     }
   },
   "type": "object"

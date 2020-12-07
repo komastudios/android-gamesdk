@@ -8,7 +8,8 @@
       "$ref": "metricsResultsGroup.schema.json"
     },
     "canaryProcessTester": {
-      "type": "boolean"
+      "type": "string",
+      "enum": ["red", "yellow"]
     },
     "backgrounded": {
       "type": "boolean",

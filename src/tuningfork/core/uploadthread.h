@@ -17,6 +17,7 @@
 #pragma once
 
 #include "backend.h"
+#include "lifecycle_upload_event.h"
 #include "runnable.h"
 #include "session.h"
 
@@ -30,6 +31,9 @@ class UploadThread : public Runnable {
     TuningFork_UploadCallback upload_callback_;
     const TuningFork_Cache* persister_;
     IdProvider* id_provider_;
+    // Optional isn't available until C++17 so use vector instead.
+    std::vector<LifecycleUploadEvent> lifecycle_event_;
+    const Session* lifecycle_event_session_;
 
    public:
     UploadThread(IBackend* backend, IdProvider* id_provider);
@@ -49,6 +53,10 @@ class UploadThread : public Runnable {
     void SetUploadCallback(TuningFork_UploadCallback upload_callback) {
         upload_callback_ = upload_callback;
     }
+
+    // Returns true if there were no errors.
+    bool SendLifecycleEvent(const LifecycleUploadEvent& event,
+                            const Session* session);
 };
 
 }  // namespace tuningfork

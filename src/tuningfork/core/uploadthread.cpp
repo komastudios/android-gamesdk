@@ -57,6 +57,7 @@ class DebugBackend : public IBackend {
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }
+
     void Stop() override {}
 };
 
@@ -100,6 +101,18 @@ Duration UploadThread::DoWork() {
         }
         ready_ = nullptr;
     }
+    if (!lifecycle_event_.empty()) {
+        std::string evt_ser_json;
+        JsonSerializer serializer(*lifecycle_event_session_, id_provider_);
+        serializer.SerializeLifecycleEvent(
+            lifecycle_event_.back(), RequestInfo::CachedValue(), evt_ser_json);
+        if (upload_callback_) {
+            upload_callback_(evt_ser_json.c_str(), evt_ser_json.size());
+        }
+        backend_->UploadTelemetry(evt_ser_json);
+        lifecycle_event_.pop_back();
+        lifecycle_event_session_ = nullptr;
+    }
     return std::chrono::seconds(1);
 }
 
@@ -137,6 +150,21 @@ void UploadThread::InitialChecks(Session& session, IdProvider& id_provider,
     } else {
         ALOGI("No PAUSED histograms");
     }
+}
+
+bool UploadThread::SendLifecycleEvent(const LifecycleUploadEvent& event,
+                                      const Session* session) {
+    if (lifecycle_event_.empty()) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            lifecycle_event_.push_back(event);
+            lifecycle_event_session_ = session;
+        }
+        cv_.notify_one();
+        return true;
+    } else
+        return false;
+    return true;
 }
 
 }  // namespace tuningfork
