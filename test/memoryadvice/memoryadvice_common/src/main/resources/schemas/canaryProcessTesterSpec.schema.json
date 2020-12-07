@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "description": "Specification for a canary process tester. A value of `true` will enable the canary, otherwise the amount of memory for the canary is specified.",
+  "anyOf": [
+    {
+      "type": "boolean"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "memory": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "required": [
+        "memory"
+      ],
+      "type": "object",
+      "examples": [
+        {
+          "memory": "256M"
+        }
+      ]
+    }
+  ]
+}

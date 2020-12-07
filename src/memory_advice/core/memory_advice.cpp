@@ -14,14 +14,82 @@
  * limitations under the License.
  */
 
+#include "memory_advice/memory_advice.h"
+
 #include <string>
 
+#include "memory_advice_impl.h"
 #include "memory_advice_internal.h"
+#include "state_watcher.h"
 
 #define LOG_TAG "MemoryAdvice"
 #include "Log.h"
+#include "json11/json11.hpp"
 
 namespace memory_advice {
 
-uint32_t TestLibraryAccess(uint32_t testValue) { return testValue; }
+using namespace json11;
+
+extern const char* parameters_string;
+
+static MemoryAdviceImpl* s_impl;
+static std::unique_ptr<StateWatcher> s_watcher;
+
+MemoryAdvice_ErrorCode Init(const char* params) {
+    if (s_impl != nullptr) return MEMORYADVICE_ERROR_ALREADY_INITIALIZED;
+    s_impl = new MemoryAdviceImpl(params);
+    return s_impl->InitializationErrorCode();
+}
+
+MemoryAdvice_ErrorCode Init() { return Init(parameters_string); }
+
+extern "C" void MemoryAdvice_JsonSerialization_Dealloc(
+    MemoryAdvice_JsonSerialization* c) {
+    if (c->json) {
+        free(c->json);
+        c->json = nullptr;
+        c->size = 0;
+    }
+}
+
+MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice) {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    std::string dump = Json(s_impl->GetAdvice()).dump();
+
+    advice->json = (char*)malloc(dump.length() + 1);
+    strcpy(advice->json, dump.c_str());
+    advice->size = dump.length();
+    advice->dealloc = MemoryAdvice_JsonSerialization_Dealloc;
+
+    return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state) {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    *state = s_impl->GetMemoryState();
+    return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate) {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    *estimate = s_impl->GetAvailableMemory();
+    return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
+                                  MemoryAdvice_WatcherCallback callback) {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    if (s_watcher.get() != nullptr)
+        return MEMORYADVICE_ERROR_WATCHER_ALREADY_SET;
+    s_watcher =
+        std::make_unique<StateWatcher>(s_impl, callback, intervalMillis);
+    return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_ErrorCode RemoveWatcher() {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    if (s_watcher.get() != nullptr) s_watcher.reset();
+    return MEMORYADVICE_ERROR_OK;
+}
+
 }  // namespace memory_advice

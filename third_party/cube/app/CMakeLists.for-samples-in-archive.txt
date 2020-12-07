@@ -63,7 +63,7 @@ target_include_directories(native-lib
 
 target_link_libraries( native-lib
 
-                       gamesdk
+                       swappy
                        android
                        log
                        )

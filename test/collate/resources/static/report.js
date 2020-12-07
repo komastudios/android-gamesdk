@@ -21,8 +21,7 @@ for (const result of data) {
 
   result.sort((a, b) => rowTime(a) > rowTime(b) ? 1 : -1);
 
-  const section = document.createElement('section');
-  document.body.appendChild(section);
+const section = document.getElementsByTagName('main')[0];
 
   if ('extra' in first) {
     const extra = first.extra;
@@ -99,8 +98,9 @@ for (const result of data) {
   const graphDiv = document.createElement('div');
   section.appendChild(graphDiv);
   graphDiv.classList.add('graph');
-
-  buildDygraph(graphDiv, deviceInfo, result);
+  const extrasDiv = document.createElement('div');
+  section.appendChild(extrasDiv);
+  buildDygraph(graphDiv, extrasDiv, deviceInfo, result);
 
   let totalDuration = 0;
   let durationCount = 0;

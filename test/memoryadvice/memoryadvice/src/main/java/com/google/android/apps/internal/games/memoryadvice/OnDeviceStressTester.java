@@ -44,6 +44,7 @@ class OnDeviceStressTester {
    */
   OnDeviceStressTester(Context context, JSONObject params, Consumer consumer) {
     Intent launchIntent = new Intent(context, StressService.class);
+    launchIntent.putExtra("params", params.toString());
     serviceConnection = new ServiceConnection() {
       private Messenger messenger;
       private JSONObject baseline;
@@ -94,8 +95,9 @@ class OnDeviceStressTester {
           }));
           sendMessage(message);
         }
-        {
-          int toAllocate = (int) getMemoryQuantity(getOrDefault(params, "segmentSize", "4M"));
+        try {
+          int toAllocate = (int) getMemoryQuantity(
+              getOrDefault(params.getJSONObject("onDeviceStressTest"), "segmentSize", "4M"));
           Message message = Message.obtain(null, OCCUPY_MEMORY, toAllocate, 0);
           message.replyTo = new Messenger(new Handler(new Handler.Callback() {
             @Override
@@ -107,6 +109,7 @@ class OnDeviceStressTester {
                 if (limit == null
                     || limit.getJSONObject("meta").getLong("time")
                         < received.getJSONObject("meta").getLong("time")) {
+                  consumer.progress(received);
                   // Metrics can be received out of order. The latest only is recorded as the limit.
                   limit = received;
                 }
@@ -122,6 +125,8 @@ class OnDeviceStressTester {
             }
           }));
           sendMessage(message);
+        } catch (JSONException e) {
+          throw new IllegalStateException(e);
         }
       }
 
@@ -153,5 +158,8 @@ class OnDeviceStressTester {
     context.bindService(launchIntent, serviceConnection, Context.BIND_AUTO_CREATE);
   }
 
-  abstract static class Consumer { abstract void accept(JSONObject baseline, JSONObject limit); }
+  interface Consumer {
+    void progress(JSONObject metrics);
+    void accept(JSONObject baseline, JSONObject limit);
+  }
 }

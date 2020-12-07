@@ -14,17 +14,48 @@
  * limitations under the License.
  */
 
+#include "jni/jni_helper.h"
 #include "memory_advice/memory_advice.h"
 #include "memory_advice_internal.h"
+#include "metrics_provider.h"
+
+namespace jni = gamesdk::jni;
 
 extern "C" {
 
-void MemoryAdvice_init_internal(JNIEnv *env, jobject context) {
-    // TODO: implementation
+MemoryAdvice_ErrorCode MemoryAdvice_initDefaultParams_internal(
+    JNIEnv *env, jobject context) {
+    jni::Init(env, context);
+    return memory_advice::Init();
 }
 
-uint32_t MemoryAdvice_testLibraryAccess(uint32_t testValue) {
-    return memory_advice::TestLibraryAccess(testValue);
+MemoryAdvice_ErrorCode MemoryAdvice_init_internal(JNIEnv *env, jobject context,
+                                                  const char *params) {
+    jni::Init(env, context);
+    return memory_advice::Init(params);
+}
+
+MemoryAdvice_ErrorCode MemoryAdvice_getMemoryState(
+    MemoryAdvice_MemoryState *state) {
+    return memory_advice::GetMemoryState(state);
+}
+
+MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(
+    MemoryAdvice_JsonSerialization *advice) {
+    return memory_advice::GetAdvice(advice);
+}
+
+MemoryAdvice_ErrorCode MemoryAdvice_setWatcher(
+    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback) {
+    return memory_advice::SetWatcher(intervalMillis, callback);
+}
+
+MemoryAdvice_ErrorCode MemoryAdvice_removeWatcher() {
+    return memory_advice::RemoveWatcher();
+}
+
+MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate) {
+    return memory_advice::GetAvailableMemory(estimate);
 }
 
 void MEMORY_ADVICE_VERSION_SYMBOL() {

@@ -250,6 +250,8 @@ class TuningForkTest {
 
     TuningForkLogEvent Result() const { return test_backend_.result; }
 
+    void ClearResult() { test_backend_.Clear(); }
+
     void WaitForMemoryUpdates(size_t expected_num_requests) {
         const int maxWaits = 10;
         int waits = 0;
@@ -293,6 +295,21 @@ Settings TestSettings(Settings::AggregationStrategy::Submission method,
     s.loading_annotation_index = -1;
     s.level_annotation_index = -1;
     return s;
+}
+
+static bool CheckStrings(const std::string& name, const std::string& result,
+                         const std::string& expected) {
+    std::string error_message;
+    bool comp = CompareIgnoringWhitespace(result, expected, &error_message);
+    EXPECT_TRUE(comp) << "\nResult:\n"
+                      << result << "\n!=\nExpected:" << expected << "\n\n"
+                      << error_message;
+    return comp;
+}
+
+static std::string ReplaceReturns(std::string in) {
+    std::replace(in.begin(), in.end(), '\n', ' ');
+    return in;
 }
 
 TuningForkLogEvent TestEndToEnd() {
@@ -407,6 +424,126 @@ TuningForkLogEvent TestEndToEndWithLoadingTimes() {
 
     return test.Result();
 }
+static std::string AbandonedLoadingEvent(int type, const std::string& duration,
+                                         const std::string& interval) {
+    std::stringstream str;
+    str << R"TF(
+{ "name": "applications//apks/0",
+  "session_context": {
+    "device": {
+      "brand": "",
+      "build_version": "",
+      "cpu_core_freqs_hz": [],
+      "device": "",
+      "fingerprint": "",
+      "gles_version": {"major": 0, "minor": 0},
+      "model": "",
+      "product": "",
+      "total_memory_bytes": 0
+    },
+    "game_sdk_info": {"session_id": "", "version": "1.0.0"},
+    "time_period": {"end_time": "1970-01-01T00:00:00.000000Z",
+                    "start_time": "1970-01-01T00:00:00.000000Z"}
+  },
+  "telemetry": [{
+    "context": {
+      "annotations": "AQID",
+      "duration": ")TF";
+    str << duration;
+    str << R"TF(",
+      "tuning_parameters": {
+        "experiment_id": "",
+        "serialized_fidelity_parameters": ""
+      }
+    },
+    "report": {
+      "partial_loading": {
+        "event_type":
+)TF";
+    str << type;
+    str << R"TF(,
+        "report": {
+          "loading_events": [{
+            "intervals": [
+)TF";
+    str << interval;
+    str << R"TF(],
+            "loading_metadata": {
+              "compression_level": 100,
+              "network_info": {
+                "bandwidth_bps": "1000000000",
+                "connectivity": 1
+              },
+              "source": 5,
+              "state": 3
+            }
+          }]
+        }
+      }
+    }
+  }]
+}
+)TF";
+    return str.str();
+}
+TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
+    const int NTICKS =
+        101;  // note the first tick doesn't add anything to the histogram
+    const uint64_t kOneGigaBitPerSecond = 1000000000L;
+    auto settings =
+        TestSettings(Settings::AggregationStrategy::Submission::TICK_BASED,
+                     NTICKS - 1, 2, {}, {}, 0 /* use default */, 3);
+    TuningForkTest test(settings, milliseconds(10));
+    SerializedAnnotation loading_annotation = {1, 2, 3};
+    Annotation ann;
+    LoadingHandle loading_handle;
+    tuningfork::StartRecordingLoadingTime(
+        {LoadingTimeMetadata::LoadingState::WARM_START,
+         LoadingTimeMetadata::LoadingSource::NETWORK, 100,
+         LoadingTimeMetadata::NetworkConnectivity::WIFI, kOneGigaBitPerSecond,
+         0},
+        loading_annotation, loading_handle);
+    test.IncrementTime(5);
+    {
+        std::unique_lock<std::mutex> lock(*test.rmutex_);
+        tuningfork::ReportLifecycleEvent(TUNINGFORK_STATE_ONSTOP);
+        // Wait for the upload thread to complete writing the string
+        EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                    std::cv_status::no_timeout)
+            << "Timeout";
+        auto expected_result = AbandonedLoadingEvent(
+            2, "0.05s", "{\"end\": \"0.15s\",\"start\": \"0.1s\"}");
+        CheckStrings("Lifecycle event", test.Result(), expected_result);
+        test.ClearResult();
+    }
+    test.IncrementTime(5);
+    {
+        std::unique_lock<std::mutex> lock(*test.rmutex_);
+        tuningfork::ReportLifecycleEvent(TUNINGFORK_STATE_ONSTART);
+        // Wait for the upload thread to complete writing the string
+        EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                    std::cv_status::no_timeout)
+            << "Timeout";
+        auto expected_result = AbandonedLoadingEvent(
+            1, "0.1s", "{\"end\": \"0.2s\",\"start\": \"0.1s\"}");
+        CheckStrings("Lifecycle event", test.Result(), expected_result);
+        test.ClearResult();
+    }
+    tuningfork::StopRecordingLoadingTime(loading_handle);
+    std::unique_lock<std::mutex> lock(*test.rmutex_);
+    for (int i = 0; i < NTICKS; ++i) {
+        test.IncrementTime();
+        ann.set_level(com::google::tuningfork::LEVEL_1);
+        tuningfork::SetCurrentAnnotation(Serialize(ann));
+        tuningfork::FrameTick(TFTICK_PACED_FRAME_TIME);
+    }
+    // Wait for the upload thread to complete writing the string
+    EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
+                std::cv_status::no_timeout)
+        << "Timeout";
+
+    return test.Result();
+}
 
 TuningForkLogEvent TestEndToEndTimeBased() {
     const int NTICKS =
@@ -456,24 +593,8 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     return test.Result();
 }
 
-bool CheckStrings(const std::string& name, const std::string& result,
-                  const std::string& expected) {
-    std::string error_message;
-    bool comp = CompareIgnoringWhitespace(result, expected, &error_message);
-    EXPECT_TRUE(comp) << "\nResult:\n"
-                      << result << "\n!=\nExpected:" << expected << "\n\n"
-                      << error_message;
-    return comp;
-}
-
-static std::string ReplaceReturns(std::string in) {
-    std::replace(in.begin(), in.end(), '\n', ' ');
-    return in;
-}
-
 static const std::string session_context = R"TF(
 {
-  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -502,7 +623,6 @@ static const std::string session_context = R"TF(
 // This has extra time for the app and asset loading
 static const std::string session_context_loading = R"TF(
 {
-  "crash_reports": [],
   "device": {
     "brand": "",
     "build_version": "",
@@ -609,13 +729,11 @@ TEST(TuningForkTest, TestEndToEndWithLimits) {
     // to 1.
     CheckStrings("AnnotationWithLimits", result, expected_for_annotation_test);
 }
-TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
-    auto result = TestEndToEndWithLoadingTimes();
-    static TuningForkLogEvent expected = R"TF(
+
+static TuningForkLogEvent s_expected_result_with_loading = R"TF(
 {
   "name": "applications//apks/0",
-  "session_context":)TF" + session_context_loading +
-                                         R"TF(,
+  "session_context":)TF" + session_context_loading + R"TF(,
   "telemetry":[
     {
       "context":{
@@ -696,7 +814,15 @@ TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
   ]
 }
 )TF";
-    CheckStrings("LoadingTimes", result, expected);
+
+TEST(TuningForkTest, TestEndToEndWithLoadingTimes) {
+    auto result = TestEndToEndWithLoadingTimes();
+    CheckStrings("LoadingTimes", result, s_expected_result_with_loading);
+}
+
+TEST(TuningForkTest, TestEndToEndWithAbandonedLoadingTimes) {
+    auto result = TestEndToEndWithAbandonedLoadingTimes();
+    CheckStrings("LoadingTimes", result, s_expected_result_with_loading);
 }
 
 TEST(TuningForkTest, TestEndToEndTimeBased) {
@@ -860,7 +986,6 @@ TEST(TuningForkTest, EndToEndWithMemory) {
 {
   "name": "applications//apks/0",
   "session_context":{
-    "crash_reports": [],
     "device": {
       "brand": "",
       "build_version": "",

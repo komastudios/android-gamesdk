@@ -81,4 +81,12 @@ This release includes several bug fixes for Swappy and new features for APT.
    rather than allocating space for all possible annotation combinations.
    See TuningFork_MetricLimits in tuningfork.h.
 
+
+Version 1.2.1
+=============
+This release is an internal feature release for APT.
+When a player backgrounds a game during loading, an event is sent for later analysis of loading
+abandonment.
+There are no new features to Swappy.
+ 
 For more information, see https://developer.android.com/games/sdk/.

@@ -149,7 +149,7 @@ public class Score {
       JSONArray results1 = new JSONArray();
       results1.put(result);
       JSONObject group = new JSONObject(runParameters.toString());
-      group.remove("heuristics");
+      group.remove("advisorParameters");
       if (directory.get() == null) {
         String dirName = historyId.get();
         if (dirName == null) {

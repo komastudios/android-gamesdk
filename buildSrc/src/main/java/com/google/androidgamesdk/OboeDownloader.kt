@@ -6,7 +6,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
-private const val OBOE_VERSION: String = "1.4.3"
+private const val OBOE_VERSION: String = "1.5.0"
 
 /**
  * Downloads and patch Oboe (https://github.com/google/oboe) to be included

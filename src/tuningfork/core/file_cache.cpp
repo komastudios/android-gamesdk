@@ -54,14 +54,14 @@ TuningFork_ErrorCode FileCache::Get(uint64_t key,
     if (CheckAndCreateDir(path_)) {
         auto key_path = PathToKey(path_, key);
         if (FileExists(key_path)) {
-            ALOGV("File exists");
+            ALOGV("File %s exists", key_path.c_str());
             if (LoadBytesFromFile(key_path, value)) {
                 ALOGV("Loaded key %" PRId64 " from %s (%" PRIu32 " bytes)", key,
                       key_path.c_str(), value->size);
                 return TUNINGFORK_ERROR_OK;
             }
         } else {
-            ALOGV("File does not exist");
+            ALOGV("File %s does not exist", key_path.c_str());
         }
     }
     return TUNINGFORK_ERROR_NO_SUCH_KEY;

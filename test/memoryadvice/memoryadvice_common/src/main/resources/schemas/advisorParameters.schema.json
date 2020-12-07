@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Advisor parameters",
+  "description": "Configuration for the memory advisor.",
+  "additionalProperties": false,
+  "properties": {
+    "onDeviceStressTest": {
+      "description": "Configuration for a stress test performed on initialization.",
+      "properties": {
+        "segmentSize": {
+          "description": "How much memory to allocate on each iteration.",
+          "allOf": [
+            {
+              "$ref": "memoryQuantity.schema.json"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "matchStrategy": {
+      "description": "The algorithm to use when identifying the closest matching profile to a device.",
+      "enum": [
+        "baseline",
+        "fingerprint"
+      ]
+    },
+    "metrics": {
+      "description": "Two sets of metrics to collect",
+      "additionalProperties": false,
+      "properties": {
+        "constant": {
+          "description": "Metrics that don't change while an application is running.",
+          "allOf": [
+            {
+              "$ref": "metricsSpecs.schema.json"
+            }
+          ]
+        },
+        "variable": {
+          "description": "Metrics that can change while an application is running.",
+          "allOf": [
+            {
+              "$ref": "metricsSpecs.schema.json"
+            }
+          ]
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "type": "object",
+      "examples": [
+        {
+          "constant": {
+            "MemoryInfo": {
+              "totalMem": true
+            },
+            "meminfo": {
+              "CommitLimit": true,
+              "MemTotal": true
+            }
+          },
+          "variable": {
+            "debug": true,
+            "meminfo": true,
+            "proc": true
+          }
+        }
+      ]
+    },
+    "heuristics": {
+      "$ref": "heuristics.schema.json"
+    },
+    "predictions": {
+      "$ref": "predictionsSpec.schema.json"
+    }
+  },
+  "type": "object",
+  "examples": [
+    {
+      "matchStrategy": "fingerprint",
+      "metrics": {
+        "variable": {
+          "canaryProcessTester": {
+            "memory": "256M"
+          }
+        }
+      },
+      "heuristics": {
+        "try": "256M",
+        "canaryProcessTester": true,
+        "VmRSS": {
+          "limit": {
+            "red": 0.85,
+            "yellow": 0.75
+          }
+        }
+      },
+      "predictions": {
+        "oom_score": true
+      }
+    }
+  ]
+}

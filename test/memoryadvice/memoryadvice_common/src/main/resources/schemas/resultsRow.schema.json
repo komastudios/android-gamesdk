@@ -84,6 +84,10 @@
         "nativeAllocatedByTest": {
           "type": "integer",
           "minimum": 0
+        },
+        "vkAllocatedByTest": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "type": "object"

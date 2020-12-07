@@ -28,6 +28,7 @@
 #include "annotation_util.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
+#include "lifecycle_upload_event.h"
 #include "memory_telemetry.h"
 #include "metric.h"
 #include "tuningfork_utils.h"
@@ -47,7 +48,6 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       meminfo_provider_(meminfo_provider),
       ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
       next_ikey_(0),
-      loading_start_(TimePoint::min()),
       before_first_tick_(true),
       app_first_run_(first_run) {
     if (backend == nullptr) {
@@ -267,8 +267,7 @@ TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
 }
 TuningFork_ErrorCode TuningForkImpl::StartTrace(InstrumentationKey key,
                                                 TraceHandle &handle) {
-    if (LoadingNextScene())
-        return TUNINGFORK_ERROR_OK;  // No recording when loading
+    if (Loading()) return TUNINGFORK_ERROR_OK;  // No recording when loading
 
     MetricId id{0};
     auto err =
@@ -287,8 +286,7 @@ TuningFork_ErrorCode TuningForkImpl::StartTrace(InstrumentationKey key,
 }
 
 TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
-    if (LoadingNextScene())
-        return TUNINGFORK_ERROR_OK;  // No recording when loading
+    if (Loading()) return TUNINGFORK_ERROR_OK;  // No recording when loading
     if (h >= live_traces_.size()) return TUNINGFORK_ERROR_INVALID_TRACE_HANDLE;
     auto i = live_traces_[h];
     if (i != TimePoint::min()) {
@@ -302,8 +300,7 @@ TuningFork_ErrorCode TuningForkImpl::EndTrace(TraceHandle h) {
 }
 
 TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
-    if (LoadingNextScene())
-        return TUNINGFORK_ERROR_OK;  // No recording when loading
+    if (Loading()) return TUNINGFORK_ERROR_OK;  // No recording when loading
     MetricId id{0};
     auto err =
         MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
@@ -321,8 +318,7 @@ TuningFork_ErrorCode TuningForkImpl::FrameTick(InstrumentationKey key) {
 
 TuningFork_ErrorCode TuningForkImpl::FrameDeltaTimeNanos(InstrumentationKey key,
                                                          Duration dt) {
-    if (LoadingNextScene())
-        return TUNINGFORK_ERROR_OK;  // No recording when loading
+    if (Loading()) return TUNINGFORK_ERROR_OK;  // No recording when loading
     MetricId id{0};
     auto err =
         MakeCompoundId(key, current_annotation_id_.detail.annotation, id);
@@ -355,7 +351,7 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
     }
 
     // Don't record while we have any loading events live
-    if (live_loading_events_.size() > 0) return TUNINGFORK_ERROR_OK;
+    if (Loading()) return TUNINGFORK_ERROR_OK;
 
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
@@ -371,7 +367,7 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
 TuningFork_ErrorCode TuningForkImpl::TraceNanos(MetricId compound_id,
                                                 Duration dt, MetricData **pp) {
     // Don't record while we have any loading events live
-    if (live_loading_events_.size() > 0) return TUNINGFORK_ERROR_OK;
+    if (Loading()) return TUNINGFORK_ERROR_OK;
 
     // Find the appropriate histogram and add this time
     auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
@@ -654,11 +650,32 @@ TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
     return TUNINGFORK_ERROR_OK;
 }
 
+std::vector<LifecycleLoadingEvent> TuningForkImpl::GetLiveLoadingEvents() {
+    std::vector<LifecycleLoadingEvent> ret;
+    auto current_time = time_provider_->TimeSinceProcessStart();
+    for (auto &a : live_loading_events_) {
+        ret.push_back({a.first, {a.second, current_time}});
+    }
+    return ret;
+}
+
 TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
     TuningFork_LifecycleState state) {
     if (!activity_lifecycle_state_.SetNewState(state)) {
         ALOGV("Discrepancy in lifecycle states, reporting as a crash");
         current_session_->RecordCrash(CRASH_REASON_UNSPECIFIED);
+    }
+    // Send a message on stop if we have loading events outstanding.
+    if (state == TUNINGFORK_STATE_ONSTOP && Loading()) {
+        LifecycleUploadEvent event{state, GetLiveLoadingEvents()};
+        lifecycle_stop_event_sent_ =
+            upload_thread_.SendLifecycleEvent(event, current_session_);
+    }
+    // Send a message on start if we sent a stop event previously.
+    else if (state == TUNINGFORK_STATE_ONSTART && lifecycle_stop_event_sent_) {
+        LifecycleUploadEvent event{state, GetLiveLoadingEvents()};
+        lifecycle_stop_event_sent_ =
+            !upload_thread_.SendLifecycleEvent(event, current_session_);
     }
     return TUNINGFORK_ERROR_OK;
 }

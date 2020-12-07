@@ -5,7 +5,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/** A helper class with static methods to help with Heuristics and file IO */
+/**
+ * A helper class with static methods to help with Heuristics and file IO
+ */
 public class Utils {
   private static final String TAG = Utils.class.getSimpleName();
 
@@ -46,6 +48,7 @@ public class Utils {
   /**
    * Selects the parameters for a run based on the 'tests' and 'coordinates' of the test
    * specification file.
+   *
    * @param spec The test specification file.
    * @return The selected parameters.
    */
@@ -68,7 +71,8 @@ public class Utils {
 
   /**
    * Creates a deep union of two JSON objects. Arrays are concatenated and dictionaries are merged.
-   * @param in The first JSON object; read only.
+   *
+   * @param in  The first JSON object; read only.
    * @param out The second JSON object and the object into which changes are written.
    * @throws JSONException In the case of a JSON handling error.
    */
