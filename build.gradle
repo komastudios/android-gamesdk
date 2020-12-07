@@ -35,7 +35,7 @@ buildscript {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
-        .setAarLibrary("games-frame-pacing", "1.7.0-alpha01")
+        .setAarLibrary("games-frame-pacing", "1.7.0-beta01")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -53,7 +53,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
-        .setAarLibrary("games-performance-tuner", "1.1.0-alpha01")
+        .setAarLibrary("games-performance-tuner", "1.1.0-beta01")
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -84,10 +84,10 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice', 'GAMESDK_BUILD_MEMORY_ADVICE')
-        .setAarLibrary("games-memory-advice", "1.0.0-alpha01")
+        .setAarLibrary("games-memory-advice", "1.0.0-beta01")
 
 def oboeNativeLibrary = new NativeLibrary('oboe', 'GAMESDK_BUILD_OBOE')
-        .setAarLibrary("games-oboe", "1.0.0-alpha01")
+        .setAarLibrary("games-oboe", "1.0.0-beta01")
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
