@@ -251,7 +251,10 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
     def staticsFolder = joinPath(getOutPath(), buildKey)
     def sharedIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'include', libraryName)
     def staticIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'include', libraryName)
+    def sharedCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'include', 'common')
+    def staticCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'include', 'common')
     def headerFolder = './include/' + libraryName
+    def commonHeaderFolder = './include/common'
 
     // TODO: including the dynamic library (uncommenting these next lines)
     // errors because no proper library can be found for module swappy (the shared version),
@@ -290,6 +293,12 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
             into file(sharedIncludeBuildFolder)
             includeEmptyDirs = false
         }
+        copy {
+            from file(commonHeaderFolder)
+            include "*.h"
+            into file(sharedCommonIncludeBuildFolder)
+            includeEmptyDirs = false
+        }
     }
     // 3.2 Copy headers (static library)
     if (buildStaticLibrary) {
@@ -297,6 +306,12 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
             from file(headerFolder)
             include "*.h"
             into file(staticIncludeBuildFolder)
+            includeEmptyDirs = false
+        }
+        copy {
+            from file(commonHeaderFolder)
+            include "*.h"
+            into file(staticCommonIncludeBuildFolder)
             includeEmptyDirs = false
         }
     }
