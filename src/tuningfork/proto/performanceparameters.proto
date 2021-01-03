@@ -150,6 +150,8 @@ message TelemetryReport {
   MemoryReport memory = 6;
   // Loading events that may have been abandoned.
   PartialLoadingReport partial_loading = 7;
+  // Information on battery usage.
+  BatteryReport battery = 8;
 }
 
 // Self reported context from a device requesting telemetry logging.
@@ -312,7 +314,7 @@ message PartialLoadingReport {
 // contain events that are recorded as durations.
 message LoadingTimeEvents {
   // Times in milliseconds
-  repeated int32 times_ms = 1 [packed = true];
+  repeated int32 times_ms = 1 [packed = true, deprecated = true];
 
   // Metadata recorded with these loading events.
   LoadingTimeMetadata loading_metadata = 2;
@@ -495,4 +497,24 @@ message CrashReport {
 
   // The session during which the crash occurred (e.g. previous session).
   string session_id = 2;
+}
+
+// A report of battery usage
+message BatteryReport {
+  // A series of collected battery events.
+  repeated BatteryEvent battery_event = 1;
+}
+
+// A single battery event describing battery infromation.
+message BatteryEvent {
+  // Duration from process start to the time the event is collected.
+  google.protobuf.Duration event_time = 1;
+  // The remaining battery percentage (out of 100) at the time of collection.
+  int32 percentage = 2;
+  // The remaining battery charge (in micro-amp hour) at the time of collection.
+  int32 current_charge_microampere_hours = 3;
+  // Whether the battery is currently charging.
+  bool charging = 4;
+  // Whether the app is on foreground at the time of collection.
+  bool app_on_foreground = 5;
 }

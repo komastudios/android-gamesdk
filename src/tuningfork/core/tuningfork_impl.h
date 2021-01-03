@@ -21,6 +21,8 @@
 #include "activity_lifecycle_state.h"
 #include "annotation_map.h"
 #include "async_telemetry.h"
+#include "battery_metric.h"
+#include "battery_reporting_task.h"
 #include "crash_handler.h"
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
@@ -62,6 +64,7 @@ class TuningForkImpl : public IdProvider {
     std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
+    std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;
