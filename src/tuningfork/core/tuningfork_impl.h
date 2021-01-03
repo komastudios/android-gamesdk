@@ -21,6 +21,8 @@
 #include "activity_lifecycle_state.h"
 #include "annotation_map.h"
 #include "async_telemetry.h"
+#include "battery_metric.h"
+#include "battery_reporting_task.h"
 #include "crash_handler.h"
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
@@ -48,6 +50,7 @@ class TuningForkImpl : public IdProvider {
     MetricId current_annotation_id_;
     ITimeProvider *time_provider_;
     IMemInfoProvider *meminfo_provider_;
+    IBatteryProvider *battery_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
     TimePoint loading_start_;
@@ -62,10 +65,12 @@ class TuningForkImpl : public IdProvider {
     std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
+    std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;
     std::unique_ptr<IMemInfoProvider> default_meminfo_provider_;
+    std::unique_ptr<IBatteryProvider> default_battery_provider_;
 
     TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
@@ -75,6 +80,7 @@ class TuningForkImpl : public IdProvider {
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider *memory_provider,
+                   IBatteryProvider *battery_provider,
                    bool first_run /* whether we have just installed the app*/);
 
     ~TuningForkImpl();

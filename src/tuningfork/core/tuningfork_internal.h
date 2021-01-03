@@ -17,6 +17,7 @@
 #pragma once
 
 #include "core/backend.h"
+#include "core/battery_provider.h"
 #include "core/common.h"
 #include "core/id_provider.h"
 #include "core/meminfo_provider.h"
@@ -43,6 +44,7 @@ TuningFork_ErrorCode Init(const Settings& settings,
                           IBackend* backend = nullptr,
                           ITimeProvider* time_provider = nullptr,
                           IMemInfoProvider* meminfo_provider = nullptr,
+                          IBatteryProvider* battery_provider = nullptr,
                           bool first_run = false);
 
 // Blocking call to get fidelity parameters from the server.

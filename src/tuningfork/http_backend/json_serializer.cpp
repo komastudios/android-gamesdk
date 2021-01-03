@@ -176,6 +176,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
                                                  Duration& duration) {
     std::vector<Json::object> render_histograms;
     std::vector<Json::object> loading_events;
+    std::vector<Json::object> battery_events;
     duration = Duration::zero();
     for (const auto& th :
          session_.GetNonEmptyHistograms<FrameTimeMetricData>()) {
@@ -221,6 +222,21 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             }
         }
     }
+    for (const auto& th : session_.GetNonEmptyHistograms<BatteryMetricData>()) {
+        auto ft = th->metric_id_.detail;
+        if (ft.annotation != annotation) continue;
+        for (auto& report : th->data_) {
+            Json::object o({});
+            o["event_time"] =
+                DurationToSecondsString(report.time_since_process_start_);
+            o["percentage"] = report.percentage_;
+            o["current_charge_microampere_hours"] = report.current_charge_;
+            o["charging"] = report.is_charging_;
+            o["app_on_foreground"] = report.app_on_foreground_;
+            battery_events.push_back(o);
+        }
+    }
+
     int total_size = render_histograms.size() + loading_events.size();
     empty = (total_size == 0);
     Json::object ret;
@@ -231,6 +247,10 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     // Loading events
     if (loading_events.size() > 0) {
         ret["loading"] = Json::object{{"loading_events", loading_events}};
+    }
+    // Battery events
+    if (battery_events.size() > 0) {
+        ret["battery"] = Json::object{{"battery_event", battery_events}};
     }
     return ret;
 }

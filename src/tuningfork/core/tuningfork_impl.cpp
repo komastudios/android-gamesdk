@@ -26,6 +26,7 @@
 #include "Log.h"
 #include "activity_lifecycle_state.h"
 #include "annotation_util.h"
+#include "battery_reporting_task.h"
 #include "histogram.h"
 #include "http_backend/http_backend.h"
 #include "lifecycle_upload_event.h"
@@ -38,6 +39,7 @@ namespace tuningfork {
 TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                                ITimeProvider *time_provider,
                                IMemInfoProvider *meminfo_provider,
+                               IBatteryProvider *battery_provider,
                                bool first_run)
     : settings_(settings),
       trace_(gamesdk::Trace::create()),
@@ -46,6 +48,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       current_annotation_id_(MetricId::FrameTime(0, 0)),
       time_provider_(time_provider),
       meminfo_provider_(meminfo_provider),
+      battery_provider_(battery_provider),
       ikeys_(settings.aggregation_strategy.max_instrumentation_keys),
       next_ikey_(0),
       before_first_tick_(true),
@@ -73,6 +76,11 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
         meminfo_provider_ = default_meminfo_provider_.get();
         meminfo_provider_->SetDeviceMemoryBytes(
             RequestInfo::CachedValue().total_memory_bytes);
+    }
+
+    if (battery_provider_ == nullptr) {
+        default_battery_provider_ = std::make_unique<DefaultBatteryProvider>();
+        battery_provider_ = default_battery_provider_.get();
     }
 
     auto start_time = time_provider_->TimeSinceProcessStart();
@@ -177,6 +185,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
     for (int i = num_loading_created; i < limits.loading_time; ++i) {
         session.CreateLoadingTimeSeries(MetricId::LoadingTime(0, 0));
     }
+
+    for (int i = 0; i < limits.battery; ++i) {
+        session.CreateBatteryTimeSeries(MetricId::Battery(0));
+    }
 }
 
 // Return the set annotation id or -1 if it could not be set
@@ -192,6 +204,7 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
     } else {
         ALOGV("Set annotation id to %" PRIu32, id);
         current_annotation_id_ = MetricId::FrameTime(id, 0);
+        battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
         return current_annotation_id_;
     }
 }
@@ -545,6 +558,10 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
 void TuningForkImpl::InitAsyncTelemetry() {
     async_telemetry_ = std::make_unique<AsyncTelemetry>(time_provider_);
     MemoryTelemetry::SetUpAsyncWork(*async_telemetry_, meminfo_provider_);
+    battery_reporting_task_ = std::make_shared<BatteryReportingTask>(
+        &activity_lifecycle_state_, time_provider_, battery_provider_,
+        MetricId::Battery(0));
+    async_telemetry_->AddTask(battery_reporting_task_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
 }

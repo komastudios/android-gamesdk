@@ -16,6 +16,7 @@
 
 #include "common.h"
 #include "test_backend.h"
+#include "test_battery_provider.h"
 #include "test_download_backend.h"
 #include "test_meminfo_provider.h"
 #include "test_time_provider.h"
@@ -30,20 +31,23 @@ class TuningForkTest {
     TestBackend test_backend_;
     TestTimeProvider time_provider_;
     TestMemInfoProvider meminfo_provider_;
+    TestBatteryProvider battery_provider_;
     TuningFork_ErrorCode init_return_value_;
 
     TuningForkTest(
         const tf::Settings& settings, tf::Duration tick_size = milliseconds(20),
         const std::shared_ptr<TestDownloadBackend>& download_backend =
             std::make_shared<TestDownloadBackend>(),
-        bool enable_meminfo = false)
+        bool enable_meminfo = false, bool enable_battery_reporting = false)
         : test_backend_(cv_, rmutex_, download_backend),
           time_provider_(tick_size),
-          meminfo_provider_(enable_meminfo) {
+          meminfo_provider_(enable_meminfo),
+          battery_provider_(enable_battery_reporting) {
         tf::RequestInfo info = {};
         info.tuningfork_version = ANDROID_GAMESDK_PACKED_VERSION(1, 0, 0);
-        init_return_value_ = tf::Init(settings, &info, &test_backend_,
-                                      &time_provider_, &meminfo_provider_);
+        init_return_value_ =
+            tf::Init(settings, &info, &test_backend_, &time_provider_,
+                     &meminfo_provider_, &battery_provider_);
         EXPECT_EQ(init_return_value_, TUNINGFORK_ERROR_OK) << "Bad Init";
     }
 
