@@ -41,7 +41,8 @@ TuningFork_ErrorCode TuningFork_init_internal(
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
     if (err != TUNINGFORK_ERROR_OK) return err;
     settings.Check();
-    err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, first_run);
+    err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, nullptr,
+                   first_run);
     if (err != TUNINGFORK_ERROR_OK) return err;
     if (!(settings.default_fidelity_parameters_filename.empty() &&
           settings.c_settings.training_fidelity_params == nullptr)) {

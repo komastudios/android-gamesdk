@@ -49,6 +49,8 @@ set( TUNINGFORK_SRCS
   core/annotation_map.cpp
   core/annotation_util.cpp
   core/async_telemetry.cpp
+  core/battery_reporting_task.cpp
+  core/battery_provider.cpp
   core/chrono_time_provider.cpp
   core/crash_handler.cpp
   core/file_cache.cpp
