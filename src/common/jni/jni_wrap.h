@@ -80,6 +80,12 @@ class Object {
         jobject o = obj_.CallObjectMethod(name, str.str().c_str());
         return Object(o);
     }
+    Object CallIOMethod(const char* name, int a, const char* returnClass) {
+        std::stringstream str;
+        str << "(I)L" << returnClass << ";";
+        jobject o = obj_.CallObjectMethod(name, str.str().c_str(), a);
+        return Object(o);
+    }
     void CallOVMethod(const char* name, const char* parameterClassA,
                       const Object& a) {
         std::stringstream str;
@@ -109,6 +115,14 @@ class Object {
         str << "(Ljava/lang/String;I)I";
         return obj_.CallIntMethod(name, "(Ljava/lang/String;I)I", String(a).J(),
                                   b);
+    }
+    Object CallSIIOMethod(const char* name, const char* a, int b, int c,
+                          const char* returnClass) {
+        std::stringstream str;
+        str << "(Ljava/lang/String;II)L" << returnClass << ";";
+        jobject o =
+            obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b, c);
+        return Object(o);
     }
     Object CallSOMethod(const char* name, const char* a,
                         const char* returnClass) {
@@ -202,6 +216,16 @@ class UUID : public Object {
         obj.SetObj(o);
         return obj;
     }
+    jni::String toString() { return CallVSMethod("toString"); }
+};
+
+class List : public java::Object {
+   public:
+    List(Object&& o) : Object(std::move(o)) {}
+    java::Object get(int index) {
+        return CallIOMethod("get", index, "java/lang/Object");
+    }
+    bool isEmpty() { return CallVZMethod("isEmpty"); }
     jni::String toString() { return CallVSMethod("toString"); }
 };
 
@@ -547,7 +571,7 @@ class MemoryInfo : public java::Object {
     int64_t totalMem() const { return obj_.GetLongField("totalMem"); }
 };
 
-class ActivityManager : java::Object {
+class ActivityManager : public java::Object {
    public:
     ActivityManager(java::Object&& o) : java::Object(std::move(o)) {}
     void getMemoryInfo(MemoryInfo& memoryInfo) {
@@ -559,6 +583,19 @@ class ActivityManager : java::Object {
         return CallVIMethod("getLargeMemoryClass");
     }
     bool isLowRamDevice() { return CallVZMethod("isLowRamDevice"); }
+    java::util::List getHistoricalProcessExitReasons(std::string& packageName,
+                                                     int pid, int maxNum) {
+        return CallSIIOMethod("getHistoricalProcessExitReasons",
+                              packageName.c_str(), pid, maxNum,
+                              "java/util/List");
+    }
+};
+
+class ApplicationExitInfo : java::Object {
+   public:
+    static constexpr int REASON_LOW_MEMORY = 3;
+    ApplicationExitInfo(java::Object&& o) : java::Object(std::move(o)) {}
+    int getReason() { return CallVIMethod("getReason"); }
 };
 
 }  // namespace app
