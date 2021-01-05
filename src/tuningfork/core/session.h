@@ -35,6 +35,7 @@ struct TimeInterval {
 
 typedef enum CrashReason {
     CRASH_REASON_UNSPECIFIED = 0,
+    LOW_MEMORY = 1,
 
 } CrashReason;
 
