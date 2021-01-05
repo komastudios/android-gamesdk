@@ -5,13 +5,14 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety -D _
 # ============== Games SDK
 
 # This builds and uses swappy as a static library from a gamesdk package
-include("../../gamesdk.cmake")
-add_gamesdk_target(
-    DO_LOCAL_BUILD
-    LIBRARIES "swappy"
-    ROOT_DIR "../../.."
-    PACKAGE_DIR "../../../../package/local"
-)
+#include("../../gamesdk.cmake")
+#add_gamesdk_target(
+#    DO_LOCAL_BUILD
+#    LIBRARIES "swappy"
+#    ROOT_DIR "../../.."
+#    PACKAGE_DIR "../../../../package/local"
+#)
+find_package(games-frame-pacing REQUIRED CONFIG)
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
 # (with auto completions) and debug Swappy from Android Studio using this sample.
@@ -39,5 +40,7 @@ target_link_libraries( native-lib
                        EGL
                        GLESv2
                        log
-                       swappy
-                       )
+#                       swappy
+        games-frame-pacing::swappy_static
+
+        )

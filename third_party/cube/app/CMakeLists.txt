@@ -5,17 +5,18 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99  -Werror -DVK_USE_PLATFORM_ANDROID_
 # ============== Games SDK
 
 # This will use swappy from a packaged version
-include("../../../samples/gamesdk.cmake")
-add_gamesdk_target(
-    DO_LOCAL_BUILD
-    ROOT_DIR "../../.."
-    PACKAGE_DIR "../../../../package/local"
-    LIBRARIES "swappy"
-)
+#include("../../../samples/gamesdk.cmake")
+#add_gamesdk_target(
+#    DO_LOCAL_BUILD
+#    ROOT_DIR "../../.."
+#    PACKAGE_DIR "../../../../package/local"
+#    LIBRARIES "swappy"
+#)
 
 # Uncomment to add the Game SDK sources as part of the project sources, allowing to develop
 # (with auto completions) and debug Swappy from Android Studio using this sample.
 #add_gamesdk_sources()
+find_package(games-frame-pacing REQUIRED CONFIG)
 
 # ============== cube
 
@@ -71,7 +72,8 @@ target_include_directories(native-lib
 
 target_link_libraries( native-lib
 
-                       swappy
+#                       swappy
+        games-frame-pacing::swappy_static
                        android
                        log
                        )
