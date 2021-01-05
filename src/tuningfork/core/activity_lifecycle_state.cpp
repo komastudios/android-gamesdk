@@ -16,11 +16,14 @@
 
 #include "activity_lifecycle_state.h"
 
-#define LOG_TAG "TuningFork_ActivityLifecycleState"
+#include <android/api-level.h>
+#include <stdlib.h>
+
 #include <fstream>
 #include <sstream>
 
 #include "Log.h"
+#include "jni/jni_wrap.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
@@ -109,4 +112,36 @@ TuningFork_LifecycleState ActivityLifecycleState::GetCurrentState() {
 
 bool ActivityLifecycleState::IsAppOnForeground() { return app_on_foreground_; }
 
+CrashReason ActivityLifecycleState::GetLatestCrashReason() {
+    if (strtoll(GetSystemProp("ro.build.version.sdk").c_str(), nullptr, 10) >=
+        30) {
+        using namespace gamesdk::jni;
+        auto app_context = AppContext();
+        auto pm = app_context.getPackageManager();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+        std::string package_name = app_context.getPackageName().C();
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+
+        java::Object obj = app_context.getSystemService(
+            android::content::Context::ACTIVITY_SERVICE);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+        if (!obj.IsNull()) {
+            android::app::ActivityManager activity_manager(std::move(obj));
+            java::util::List reasons =
+                activity_manager.getHistoricalProcessExitReasons(package_name,
+                                                                 0, 0);
+            CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+            if (!reasons.isEmpty()) {
+                android::app::ApplicationExitInfo exit_info(
+                    std::move(reasons.get(0)));
+                int reason = exit_info.getReason();
+                if (reason ==
+                    android::app::ApplicationExitInfo::REASON_LOW_MEMORY) {
+                    return LOW_MEMORY;
+                }
+            }
+        }
+    }
+    return CRASH_REASON_UNSPECIFIED;
+}
 }  // namespace tuningfork

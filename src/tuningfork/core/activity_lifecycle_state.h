@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "session.h"
 #include "tuningfork_internal.h"
 
 namespace tuningfork {
@@ -29,6 +30,7 @@ class ActivityLifecycleState {
     TuningFork_LifecycleState GetCurrentState();
     bool IsAppOnForeground();
     virtual ~ActivityLifecycleState();
+    CrashReason GetLatestCrashReason();
 
    private:
     bool app_on_foreground_ = false;

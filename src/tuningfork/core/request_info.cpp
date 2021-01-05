@@ -16,9 +16,6 @@
 
 #include "request_info.h"
 
-#include <android/api-level.h>
-#include <sys/system_properties.h>
-
 #include <cmath>
 #include <fstream>
 #include <memory>
@@ -45,42 +42,6 @@ std::string slurpFile(const char* fname) {
 const char* skipSpace(const char* q) {
     while (*q && (*q == ' ' || *q == '\t')) ++q;
     return q;
-}
-
-#if __ANDROID_API__ >= 26
-std::string getSystemPropViaCallback(const char* key) {
-    const prop_info* prop = __system_property_find(key);
-    if (!prop) {
-        return "";
-    }
-    std::string return_value;
-    auto thunk = [](void* cookie, const char* /*name*/, const char* value,
-                    uint32_t /*serial*/) {
-        if (value != nullptr) {
-            std::string* r = static_cast<std::string*>(cookie);
-            *r = value;
-        }
-    };
-    __system_property_read_callback(prop, thunk, &return_value);
-    return return_value;
-}
-#else
-std::string getSystemPropViaGet(const char* key) {
-    char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
-    int bufferLen = __system_property_get(key, buffer);
-    if (bufferLen > 0)
-        return buffer;
-    else
-        return "";
-}
-#endif
-
-std::string getSystemProp(const char* key) {
-#if __ANDROID_API__ >= 26
-    return getSystemPropViaCallback(key);
-#else
-    return getSystemPropViaGet(key);
-#endif
 }
 
 }  // anonymous namespace
@@ -113,8 +74,8 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
             info.total_memory_bytes = x * mult;
         }
     }
-    info.build_version_sdk = getSystemProp("ro.build.version.sdk");
-    info.build_fingerprint = getSystemProp("ro.build.fingerprint");
+    info.build_version_sdk = GetSystemProp("ro.build.version.sdk");
+    info.build_fingerprint = GetSystemProp("ro.build.fingerprint");
 
     if (gamesdk::jni::IsValid()) {
         std::stringstream session_id_path;
