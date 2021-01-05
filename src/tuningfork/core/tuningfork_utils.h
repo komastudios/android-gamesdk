@@ -95,4 +95,7 @@ Duration GetProcessStartTimeSinceBoot();
 // Returns a duration with 0 count on error.
 Duration GetTimeSinceProcessStart();
 
+// Get the value of the given system property
+std::string getSystemProp(const char* key);
+
 }  // namespace tuningfork

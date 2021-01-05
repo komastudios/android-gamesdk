@@ -663,7 +663,8 @@ TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
     TuningFork_LifecycleState state) {
     if (!activity_lifecycle_state_.SetNewState(state)) {
         ALOGV("Discrepancy in lifecycle states, reporting as a crash");
-        current_session_->RecordCrash(CRASH_REASON_UNSPECIFIED);
+        current_session_->RecordCrash(
+            activity_lifecycle_state_.GetLatestCrashReason());
     }
     // Send a message on stop if we have loading events outstanding.
     if (state == TUNINGFORK_STATE_ONSTOP && Loading()) {
