@@ -16,7 +16,8 @@ class OboeDownloader(val project: Project) {
     fun fetchAndInstall() {
         download()
         unzip()
-        patch()
+        patchCmakeLists()
+        patchQuirksManager()
     }
 
     private fun download() {
@@ -58,7 +59,7 @@ class OboeDownloader(val project: Project) {
         project.delete(temporaryDirectory.absolutePath)
     }
 
-    private fun patch() {
+    private fun patchCmakeLists() {
         val cmakeListFile = project.file("./src/oboe/CMakeLists.txt")
         var cmakeListsContent = cmakeListFile.readText()
 
@@ -91,5 +92,27 @@ class OboeDownloader(val project: Project) {
         )
 
         cmakeListFile.writeText(cmakeListsContent)
+    }
+
+    /**
+     * Apply a patch to fix compilation with some SDK/NDK. See
+     * https://github.com/google/oboe/issues/1148
+     *
+     * Can be removed once a new release of Oboe is published.
+     */
+    private fun patchQuirksManager() {
+        val quirksManagerH = project.file("./src/oboe/common/QuirksManager.h")
+        var quirksManagerHContent = quirksManagerH.readText()
+
+        quirksManagerHContent = quirksManagerHContent.replace(
+                "namespace oboe {",
+                "#ifndef __ANDROID_API_R__\n" +
+                "#define __ANDROID_API_R__ 30\n" +
+                "#endif\n" +
+                "\n" +
+                "namespace oboe {"
+        );
+
+        quirksManagerH.writeText(quirksManagerHContent);
     }
 }

@@ -2,11 +2,11 @@
 # Gamesdk build driver script
 # Usage:
 # ./build.sh
-#   Builds the gamesdk with Swappy and Tuning Fork (no samples)
+#   Builds the gamesdk with Swappy, Tuning Fork and Oboe (no samples)
 # ./build.sh samples
 #   Builds the gamesdk with Swappy and the Swappy samples
 # ./build.sh full
-#   Builds the gamesdk with Swappy, Tuning Fork and all samples
+#   Builds the gamesdk with Swappy, Tuning Fork, Oboe and all samples
 
 set -e # Exit on error
 
@@ -27,11 +27,11 @@ fi
 # Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
-    # Don't distribute Oboe in the full Game SDK zip distribution.
     package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
@@ -39,9 +39,10 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
 # Calculate hash of the zip file
