@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80452ad3_10add934",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-06T10:49:32Z",
+      "side": 1,
+      "message": "Should return bool?",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e02bf60e_2352cfa4",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-06T10:49:32Z",
+      "side": 1,
+      "message": "Are we sure there are no Java exceptions possible to be thrown in any of the JNI calls here? If not, you need to add CHECK_FOR_JNI_EXCEPTION_AND_RETURN after JNI calls.",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b37645a_0714c19f",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-06T10:49:32Z",
+      "side": 1,
+      "message": "if (prop \u003d\u003d nullptr)",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58aeec06_58b3a584",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-06T10:49:32Z",
+      "side": 1,
+      "message": "We should move all this system property handling into src/common: it duplicates code in Swappy. This can be a follow-on CL though.",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "246575f8_2de75d30",
+        "filename": "src/tuningfork/core/tuningfork_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-06T10:49:32Z",
+      "side": 1,
+      "message": "Should start with a capital.",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
