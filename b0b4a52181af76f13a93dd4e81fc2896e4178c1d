@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f6c029f_5be35096",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-01-07T14:06:02Z",
+      "side": 1,
+      "message": "Great idea! Much easier to see what the tests are covering :) \nCould not spot any obvious issue.",
+      "revId": "b0b4a52181af76f13a93dd4e81fc2896e4178c1d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
