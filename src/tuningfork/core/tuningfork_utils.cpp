@@ -278,8 +278,12 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
 }  // namespace json_utils
 
 std::string UniqueId() {
-    using namespace gamesdk::jni;
-    return java::util::UUID::randomUUID().toString().C();
+    namespace jni = gamesdk::jni;
+    using namespace jni;
+    if (jni::IsValid())
+        return java::util::UUID::randomUUID().toString().C();
+    else
+        return "**NONUNIQUEID**";
 }
 
 static const uint64_t kNanosecondsPerMillisecond = 1000 * 1000;

@@ -47,7 +47,7 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     return test.Result();
 }
 
-TEST(TuningForkTest, EndToEndWithMemory) {
+TEST(EndToEndTest, WithMemory) {
     auto result = TestEndToEndWithMemory();
     TuningForkLogEvent expected = R"TF(
 {

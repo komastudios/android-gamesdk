@@ -109,6 +109,16 @@ TuningFork_ErrorCode StartRecordingLoadingTime(
 // Record a loading time event
 TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
+// Start a loading group.
+// metadata, annotation and handle are optional and should be null if missing.
+TuningFork_ErrorCode StartLoadingGroup(const LoadingTimeMetadata* metadata,
+                                       const ProtobufSerialization* annotation,
+                                       LoadingHandle* handle);
+
+// Stop a loading group.
+// handle should be null in current implementation.
+TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle);
+
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
 // Check if we have recorded a file in the app's cache dir yet.

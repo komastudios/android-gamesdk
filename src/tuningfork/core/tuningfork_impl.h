@@ -57,7 +57,7 @@ class TuningForkImpl : public IdProvider {
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
     std::mutex loading_time_metadata_map_mutex_;
-    std::unordered_map<LoadingTimeMetadata, LoadingTimeMetadataId>
+    std::unordered_map<LoadingTimeMetadataWithGroup, LoadingTimeMetadataId>
         loading_time_metadata_map_;
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
@@ -75,6 +75,10 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
     bool lifecycle_stop_event_sent_ = false;
+
+    std::string current_loading_group_;
+    MetricId current_loading_group_metric_;
+    Duration current_loading_group_start_time_;
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -133,6 +137,12 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
+    TuningFork_ErrorCode StartLoadingGroup(
+        const LoadingTimeMetadata *metadata,
+        const ProtobufSerialization *annotation, LoadingHandle *handle);
+
+    TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle);
+
     TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
     TuningFork_ErrorCode InitializationErrorCode() {
@@ -172,10 +182,11 @@ class TuningForkImpl : public IdProvider {
                                                 MemoryMetric &m) override;
 
     TuningFork_ErrorCode LoadingTimeMetadataToId(
-        const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id);
+        const LoadingTimeMetadataWithGroup &metadata,
+        LoadingTimeMetadataId &id);
 
     TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
-        MetricId id, LoadingTimeMetadata &md) override;
+        MetricId id, LoadingTimeMetadataWithGroup &md) override;
 
     bool keyIsValid(InstrumentationKey key) const;
 
@@ -196,6 +207,9 @@ class TuningForkImpl : public IdProvider {
         const TuningFork_MetricLimits &limits);
 
     std::vector<LifecycleLoadingEvent> GetLiveLoadingEvents();
+
+    TuningFork_ErrorCode RecordLoadingTime(LoadingHandle handle,
+                                           ProcessTimeInterval interval);
 };
 
 }  // namespace tuningfork

@@ -55,7 +55,7 @@ TuningForkLogEvent TestEndToEndWithLimits() {
 
 extern TuningForkLogEvent ExpectedForAnnotationTest();
 
-TEST(TuningForkTest, TestEndToEndWithLimits) {
+TEST(EndToEndTest, WithLimits) {
     auto result = TestEndToEndWithLimits();
     // This should be the same as the annotation test since we try to record 2
     // annotations but limit to 1.

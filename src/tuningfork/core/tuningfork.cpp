@@ -225,6 +225,21 @@ TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle) {
     else
         return s_impl->StopRecordingLoadingTime(handle);
 }
+TuningFork_ErrorCode StartLoadingGroup(const LoadingTimeMetadata *d,
+                                       const ProtobufSerialization *annotation,
+                                       LoadingHandle *handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StartLoadingGroup(d, annotation, handle);
+}
+
+TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StopLoadingGroup(handle);
+}
 
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state) {
     if (!s_impl)

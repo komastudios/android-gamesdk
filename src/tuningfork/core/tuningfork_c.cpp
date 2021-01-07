@@ -175,6 +175,35 @@ TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
     return tf::ReportLifecycleEvent(state);
 }
 
+TuningFork_ErrorCode TuningFork_startLoadingGroup(
+    const TuningFork_LoadingTimeMetadata *eventMetadata_in,
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization *annotation_in,
+    TuningFork_LoadingGroupHandle *handle) {
+    tf::LoadingTimeMetadata eventMetadata;
+    tf::LoadingTimeMetadata *eventMetadataPtr = nullptr;
+    if (eventMetadata_in != nullptr) {
+        auto err = CheckLoadingMetaData(eventMetadata_in, eventMetadataSize,
+                                        eventMetadata);
+        if (err != TUNINGFORK_ERROR_OK) {
+            return err;
+        }
+        eventMetadataPtr = &eventMetadata;
+    }
+    tf::ProtobufSerialization annotation;
+    tf::ProtobufSerialization *annotationPtr = nullptr;
+    if (annotation_in != nullptr) {
+        annotation = tf::ToProtobufSerialization(*annotation_in);
+        annotationPtr = &annotation;
+    }
+    return tf::StartLoadingGroup(eventMetadataPtr, annotationPtr, handle);
+}
+
+TuningFork_ErrorCode TuningFork_stopLoadingGroup(
+    TuningFork_LoadingGroupHandle handle) {
+    return tf::StopLoadingGroup(handle);
+}
+
 void TUNINGFORK_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.

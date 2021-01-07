@@ -139,7 +139,8 @@ static std::string DurationJsonFromNanos(uint64_t ns) {
 }
 
 Json::object JsonSerializer::LoadingTimeMetadataJson(
-    const LoadingTimeMetadata& md) {
+    const LoadingTimeMetadataWithGroup& mdg) {
+    const LoadingTimeMetadata& md = mdg.metadata;
     Json::object ret;
     SET_METADATA_FIELD(ret, state);
     SET_METADATA_FIELD(ret, source);
@@ -157,6 +158,7 @@ Json::object JsonSerializer::LoadingTimeMetadataJson(
                 DurationJsonFromNanos(md.network_latency_ns);
         ret["network_info"] = network_info;
     }
+    if (!mdg.group_id.empty()) ret["group_id"] = mdg.group_id;
     return ret;
 }
 
@@ -207,7 +209,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
         }
         if (loading_events_times.size() > 0 ||
             loading_events_intervals.size() > 0) {
-            LoadingTimeMetadata md;
+            LoadingTimeMetadataWithGroup md;
             if (id_provider_->MetricIdToLoadingTimeMetadata(
                     th->metric_id_, md) == TUNINGFORK_ERROR_OK) {
                 Json::object o({});
@@ -272,7 +274,7 @@ Json::object JsonSerializer::PartialLoadingTelemetryReportJson(
     std::vector<Json::object> loading_events;
     for (const auto& e : lifecycle_event.loading_events) {
         if (e.id.detail.annotation != annotation) continue;
-        LoadingTimeMetadata md;
+        LoadingTimeMetadataWithGroup md;
         if (id_provider_->MetricIdToLoadingTimeMetadata(e.id, md) ==
             TUNINGFORK_ERROR_OK) {
             Json::object o({});
