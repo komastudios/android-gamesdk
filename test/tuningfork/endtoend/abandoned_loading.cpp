@@ -231,7 +231,7 @@ static TuningForkLogEvent ExpectedResultWithLoading() {
 
 extern TuningForkLogEvent ExpectedResultWithLoading();
 
-TEST(TuningForkTest, TestEndToEndWithAbandonedLoadingTimes) {
+TEST(EndToEndTest, WithAbandonedLoadingTimes) {
     auto result = TestEndToEndWithAbandonedLoadingTimes();
     CheckStrings("LoadingTimes", result, ExpectedResultWithLoading());
 }

@@ -39,7 +39,7 @@ TuningForkLogEvent TestEndToEnd() {
     return test.Result();
 }
 
-TEST(TuningForkTest, EndToEnd) {
+TEST(EndToEndTest, Base) {
     auto result = TestEndToEnd();
     TuningForkLogEvent expected = R"TF(
 {
