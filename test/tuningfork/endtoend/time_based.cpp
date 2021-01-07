@@ -39,7 +39,7 @@ TuningForkLogEvent TestEndToEndTimeBased() {
     return test.Result();
 }
 
-TEST(TuningForkTest, TestEndToEndTimeBased) {
+TEST(EndToEndTest, TimeBased) {
     auto result = TestEndToEndTimeBased();
     TuningForkLogEvent expected = R"TF(
 {

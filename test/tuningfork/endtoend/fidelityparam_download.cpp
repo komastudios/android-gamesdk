@@ -80,7 +80,7 @@ void TestFidelityParamDownloadThread(bool insights) {
     TuningFork_CProtobufSerialization_free(&c_default_fps);
 }
 
-TEST(TuningForkTest, TestFidelityParamDownloadThread) {
+TEST(EndToEndTest, FidelityParamDownloadThread) {
     TestFidelityParamDownloadThread(/*insights*/ true);
     TestFidelityParamDownloadThread(/*insights*/ false);
 }
@@ -132,7 +132,7 @@ static const std::string empty_tuning_parameters_request = R"({
   "name": "applications//apks/0"
 })";
 
-TEST(TuningForkTest, TestFidelityParamDownloadRequest) {
+TEST(EndToEndTest, FidelityParamDownloadRequest) {
     tf::HttpBackend backend;
     tf::HttpRequest inner_request("https://test.google.com", "dummy_api_key",
                                   milliseconds(1000));

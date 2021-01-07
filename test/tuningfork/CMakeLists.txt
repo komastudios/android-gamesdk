@@ -69,6 +69,7 @@ set(TEST_SRCS
   endtoend/fidelityparam_download.cpp
   endtoend/limits.cpp
   endtoend/loading.cpp
+  endtoend/loading_groups.cpp
   endtoend/memory.cpp
   endtoend/time_based.cpp
   file_cache_test.cpp

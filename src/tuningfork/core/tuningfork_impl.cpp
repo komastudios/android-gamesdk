@@ -567,7 +567,7 @@ TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
 }
 
 TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
-    const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id) {
+    const LoadingTimeMetadataWithGroup &metadata, LoadingTimeMetadataId &id) {
     std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
     static LoadingTimeMetadataId loading_time_metadata_next_id =
         1;  // 0 is implicitly an empty LoadingTimeMetadata struct
@@ -582,7 +582,7 @@ TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
 }
 
 TuningFork_ErrorCode TuningForkImpl::MetricIdToLoadingTimeMetadata(
-    MetricId id, LoadingTimeMetadata &md) {
+    MetricId id, LoadingTimeMetadataWithGroup &md) {
     std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
     auto metadata_id = id.detail.loading_time.metadata;
     for (auto &m : loading_time_metadata_map_) {
@@ -598,7 +598,9 @@ TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     Duration duration, const LoadingTimeMetadata &metadata,
     const ProtobufSerialization &annotation, bool relativeToStart) {
     LoadingTimeMetadataId metadata_id;
-    LoadingTimeMetadataToId(metadata, metadata_id);
+    LoadingTimeMetadataWithGroup metadata_with_group_id{
+        metadata, relativeToStart ? "" : current_loading_group_};
+    LoadingTimeMetadataToId(metadata_with_group_id, metadata_id);
     AnnotationId ann_id = 0;
     auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -617,7 +619,9 @@ TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
     const LoadingTimeMetadata &metadata,
     const ProtobufSerialization &annotation, LoadingHandle &handle) {
     LoadingTimeMetadataId metadata_id;
-    LoadingTimeMetadataToId(metadata, metadata_id);
+    LoadingTimeMetadataWithGroup metadata_with_group_id{metadata,
+                                                        current_loading_group_};
+    LoadingTimeMetadataToId(metadata_with_group_id, metadata_id);
     AnnotationId ann_id = 0;
     auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -627,6 +631,17 @@ TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
     if (live_loading_events_.find(handle) != live_loading_events_.end())
         return TUNINGFORK_ERROR_DUPLICATE_START_LOADING_EVENT;
     live_loading_events_[handle] = time_provider_->TimeSinceProcessStart();
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
+    LoadingHandle handle, ProcessTimeInterval interval) {
+    MetricId metric_id;
+    metric_id.base = handle;
+    auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
+    if (data == nullptr)
+        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
+    data->Record(interval);
     return TUNINGFORK_ERROR_OK;
 }
 
@@ -641,13 +656,47 @@ TuningFork_ErrorCode TuningForkImpl::StopRecordingLoadingTime(
         interval = {it->second, time_provider_->TimeSinceProcessStart()};
         live_loading_events_.erase(it);
     }
-    MetricId metric_id;
-    metric_id.base = handle;
-    auto data = current_session_->GetData<LoadingTimeMetricData>(metric_id);
-    if (data == nullptr)
-        return TUNINGFORK_ERROR_NO_MORE_SPACE_FOR_LOADING_TIME_DATA;
-    data->Record(interval);
+    return RecordLoadingTime(handle, interval);
+}
+
+TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
+    const LoadingTimeMetadata *pMetadata,
+    const ProtobufSerialization *pAnnotation, LoadingHandle *pHandle) {
+    using LoadingSource = TuningFork_LoadingTimeMetadata::LoadingSource;
+    LoadingTimeMetadataId metadata_id = 0;
+    AnnotationId ann_id = 0;
+    LoadingTimeMetadataWithGroup metadata_in{};
+    if (pMetadata != nullptr) {
+        metadata_in.metadata = *pMetadata;
+    }
+    metadata_in.metadata.source = LoadingSource::TOTAL_USER_WAIT_FOR_GROUP;
+    LoadingTimeMetadataToId(metadata_in, metadata_id);
+    if (pAnnotation != nullptr) {
+        auto err = SerializedAnnotationToAnnotationId(*pAnnotation, ann_id);
+        if (err != TUNINGFORK_ERROR_OK) return err;
+    }
+    auto metric_id = MetricId::LoadingTime(ann_id, metadata_id);
+    LoadingHandle handle = metric_id.base;
+    if (pHandle != nullptr) {
+        *pHandle = handle;
+    }
+    current_loading_group_ = UniqueId();
+    current_loading_group_metric_ = metric_id;
+    current_loading_group_start_time_ = time_provider_->TimeSinceProcessStart();
     return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::StopLoadingGroup(LoadingHandle handle) {
+    if (handle == 0) handle = current_loading_group_metric_.base;
+    if (current_loading_group_metric_.base != handle) {
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
+    }
+    ProcessTimeInterval interval = {current_loading_group_start_time_,
+                                    time_provider_->TimeSinceProcessStart()};
+    current_loading_group_metric_.base = 0;
+    current_loading_group_.clear();
+    current_loading_group_start_time_ = {};
+    return RecordLoadingTime(handle, interval);
 }
 
 std::vector<LifecycleLoadingEvent> TuningForkImpl::GetLiveLoadingEvents() {

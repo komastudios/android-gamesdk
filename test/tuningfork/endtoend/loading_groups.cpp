@@ -19,16 +19,20 @@
 
 namespace tuningfork_test {
 
-TuningForkLogEvent TestEndToEndWithLoadingTimes() {
+TuningForkLogEvent TestEndToEndWithLoadingGroups(
+    bool use_stop, const tf::ProtobufSerialization* group_annotation) {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
     const uint64_t kOneGigaBitPerSecond = 1000000000L;
     auto settings =
         TestSettings(tf::Settings::AggregationStrategy::Submission::TICK_BASED,
-                     NTICKS - 1, 2, {}, {}, 0 /* use default */, 3);
+                     NTICKS - 1, 2, {}, {}, 0 /* use default */, 4);
     TuningForkTest test(settings, milliseconds(10));
     tf::SerializedAnnotation loading_annotation = {1, 2, 3};
     Annotation ann;
+    tf::LoadingHandle group_handle = 0;
+    tf::StartLoadingGroup(nullptr, group_annotation,
+                          use_stop ? &group_handle : nullptr);
     tf::LoadingHandle loading_handle;
     tf::StartRecordingLoadingTime(
         {tf::LoadingTimeMetadata::LoadingState::WARM_START,
@@ -38,6 +42,7 @@ TuningForkLogEvent TestEndToEndWithLoadingTimes() {
         loading_annotation, loading_handle);
     test.IncrementTime(10);
     tf::StopRecordingLoadingTime(loading_handle);
+    if (use_stop) tf::StopLoadingGroup(group_handle);
     std::unique_lock<std::mutex> lock(*test.rmutex_);
     for (int i = 0; i < NTICKS; ++i) {
         test.IncrementTime();
@@ -53,7 +58,43 @@ TuningForkLogEvent TestEndToEndWithLoadingTimes() {
     return test.Result();
 }
 
-TuningForkLogEvent ExpectedResultWithLoading() {
+TuningForkLogEvent ExpectedResultWithLoadingGroups(bool use_stop,
+                                                   bool with_annotation) {
+    std::string any_string = "\"!REGEX([^\"]*)\"";
+    std::string first_duration =
+        (use_stop && !with_annotation) ? "0.41s" : "0.31s";
+    // An event generated because of the StopRecordingGroup call.
+    std::string extra_event = use_stop ? R"TF(
+            {
+              "intervals":[{"end":"0.2s", "start":"0.1s"}],
+              "loading_metadata":{
+                "source":9
+              }
+            })TF"
+                                       : "";
+    // An event in the first batch of events because of the StopRecordingGroup
+    // call without an annotation.
+    std::string first_extra_event =
+        (with_annotation || !use_stop) ? "" : (extra_event + ",");
+    // A report generated because we used an annotation with the group.
+    std::string extra_report = with_annotation ? R"TF(
+    {
+      "context":{
+        "annotations": "AQIDBA==",
+        "duration": "0.1s",
+        "tuning_parameters":{
+          "experiment_id": "",
+          "serialized_fidelity_parameters": ""
+        }
+      },
+      "report":{
+        "loading":{
+          "loading_events": [)TF" + extra_event + R"TF(]
+        }
+      }
+    },
+)TF"
+                                               : "";
     return R"TF(
 {
   "name": "applications//apks/0",
@@ -63,7 +104,8 @@ TuningForkLogEvent ExpectedResultWithLoading() {
     {
       "context":{
         "annotations":"",
-        "duration":"0.31s",
+        "duration":")TF" +
+           first_duration + R"TF(",
         "tuning_parameters":{
           "experiment_id":"",
           "serialized_fidelity_parameters":""
@@ -79,6 +121,8 @@ TuningForkLogEvent ExpectedResultWithLoading() {
                 "state":2
               }
             },
+)TF" + first_extra_event +
+           R"TF(
             {
               "intervals":[{"end":"0.1s", "start":"0s"}],
               "loading_metadata":{
@@ -105,6 +149,8 @@ TuningForkLogEvent ExpectedResultWithLoading() {
             "intervals":[{"end":"0.2s", "start":"0.1s"}],
             "loading_metadata": {
               "compression_level": 100,
+              "group_id":)TF" +
+           any_string + R"TF(,
               "network_info": {
                 "bandwidth_bps": "1000000000",
                 "connectivity": 1
@@ -116,6 +162,8 @@ TuningForkLogEvent ExpectedResultWithLoading() {
         }
       }
     },
+)TF" + extra_report +
+           R"TF(
     {
       "context":{
         "annotations":"CAE=",
@@ -141,9 +189,32 @@ TuningForkLogEvent ExpectedResultWithLoading() {
 )TF";
 }
 
-TEST(EndToEndTest, WithLoadingTimes) {
-    auto result = TestEndToEndWithLoadingTimes();
-    CheckStrings("LoadingTimes", result, ExpectedResultWithLoading());
+TEST(EndToEndTest, WithLoadingGroups) {
+    bool use_stop_call = false;
+    bool with_annotation = false;
+    auto result = TestEndToEndWithLoadingGroups(use_stop_call, nullptr);
+    CheckStrings(
+        "LoadingTimes", result,
+        ExpectedResultWithLoadingGroups(use_stop_call, with_annotation));
+}
+
+TEST(EndToEndTest, WithLoadingGroupsIncStop) {
+    bool use_stop_call = true;
+    bool with_annotation = false;
+    auto result = TestEndToEndWithLoadingGroups(use_stop_call, nullptr);
+    CheckStrings(
+        "LoadingTimes", result,
+        ExpectedResultWithLoadingGroups(use_stop_call, with_annotation));
+}
+
+TEST(EndToEndTest, WithLoadingGroupsWithAnnotation) {
+    bool use_stop_call = true;
+    bool with_annotation = true;
+    tf::ProtobufSerialization annotation = {1, 2, 3, 4};
+    auto result = TestEndToEndWithLoadingGroups(use_stop_call, &annotation);
+    CheckStrings(
+        "LoadingTimes", result,
+        ExpectedResultWithLoadingGroups(use_stop_call, with_annotation));
 }
 
 }  // namespace tuningfork_test

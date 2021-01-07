@@ -80,7 +80,7 @@ TuningForkLogEvent ExpectedForAnnotationTest() {
 )TF";
 }
 
-TEST(TuningForkTest, TestEndToEndWithAnnotation) {
+TEST(EndToEndTest, WithAnnotation) {
     auto result = TestEndToEndWithAnnotation();
     CheckStrings("Annotation", result, ExpectedForAnnotationTest());
 }
