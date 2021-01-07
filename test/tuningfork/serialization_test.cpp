@@ -26,8 +26,8 @@
 namespace serialization_test {
 
 using namespace tuningfork;
+using namespace tuningfork_test;
 using namespace json11;
-using namespace test;
 using namespace std::chrono;
 
 RequestInfo test_device_info{

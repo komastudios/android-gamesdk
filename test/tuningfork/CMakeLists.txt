@@ -61,13 +61,21 @@ include_directories(
 )
 
 set(TEST_SRCS
+  annotation_test.cpp
+  endtoend/abandoned_loading.cpp
+  endtoend/annotation.cpp
+  endtoend/common.cpp
+  endtoend/endtoend.cpp
+  endtoend/fidelityparam_download.cpp
+  endtoend/limits.cpp
+  endtoend/loading.cpp
+  endtoend/memory.cpp
+  endtoend/time_based.cpp
   file_cache_test.cpp
   histogram_test.cpp
-  tuningfork_test.cpp
-  annotation_test.cpp
+  jni_test.cpp
   serialization_test.cpp
   tf_test_utils.cpp
-  jni_test.cpp
   ${PGENS_DIR}/nano/dev_tuningfork.pb.c
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
   ${PGENS_DIR}/full/tuningfork.pb.cc

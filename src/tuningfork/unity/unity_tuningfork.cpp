@@ -128,7 +128,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_VERSION_1_6;
 }
 
-TuningFork_ErrorCode Unity_TuningFork_init_with_settings(TuningFork_Settings* settings) {
+TuningFork_ErrorCode Unity_TuningFork_init_with_settings(
+    TuningFork_Settings* settings) {
     s_swappy_enabled = findSwappy();
     if (s_swappy_enabled) {
         settings->swappy_tracer_fn = s_swappy_tracer_fn;

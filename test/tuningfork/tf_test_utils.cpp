@@ -19,7 +19,7 @@
 #include <regex>
 #include <sstream>
 
-namespace test {
+namespace tuningfork_test {
 
 // Wind forward over any arrays ... [...] ...
 template <typename Iterator>
@@ -127,4 +127,4 @@ bool CompareIgnoringWhitespace(std::string s0, std::string s1,
     }
 }
 
-}  // namespace test
+}  // namespace tuningfork_test

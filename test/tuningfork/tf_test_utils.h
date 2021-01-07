@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include <string>
 
-namespace test {
+namespace tuningfork_test {
 
 const std::string kArrayWildcard = "[**]";
 const std::string kRegexPattern = "!REGEX";
@@ -28,4 +30,4 @@ const std::string kRegexPattern = "!REGEX";
 bool CompareIgnoringWhitespace(std::string s0, std::string s1,
                                std::string* error_msg = nullptr);
 
-}  // namespace test
+}  // namespace tuningfork_test

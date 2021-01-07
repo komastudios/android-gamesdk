@@ -31,7 +31,8 @@ extern "C" {
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
-TuningFork_ErrorCode Unity_TuningFork_init_with_settings(TuningFork_Settings* settings);
+TuningFork_ErrorCode Unity_TuningFork_init_with_settings(
+    TuningFork_Settings* settings);
 
 TuningFork_ErrorCode Unity_TuningFork_init(
     TuningFork_FidelityParamsCallback fidelity_params_callback,
