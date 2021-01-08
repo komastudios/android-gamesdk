@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1095b215_1400d2f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-01-08T14:20:25Z",
+      "side": 1,
+      "message": "I\u0027ll take a second look but overall looks good to me!",
+      "revId": "1212952e70de20d1b75f6b58c6b3f2890defc1ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99d48721_edce992d",
+        "filename": "src/tuningfork/proto/performanceparameters.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-01-08T14:20:25Z",
+      "side": 1,
+      "message": "Question about loading groups: if their ID are randomly generated, how useful are they on the backend?",
+      "revId": "1212952e70de20d1b75f6b58c6b3f2890defc1ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
