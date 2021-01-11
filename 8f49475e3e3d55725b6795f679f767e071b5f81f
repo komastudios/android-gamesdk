@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "972d5c78_c216d235",
+        "filename": "src/common/jni/jni_wrap.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-01-11T18:19:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80452ad3_10add934",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e02bf60e_2352cfa4",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-01-06T10:49:32Z",
       "side": 1,
       "message": "Are we sure there are no Java exceptions possible to be thrown in any of the JNI calls here? If not, you need to add CHECK_FOR_JNI_EXCEPTION_AND_RETURN after JNI calls.",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0936568_8e4129ff",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-01-11T18:19:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e02bf60e_2352cfa4",
       "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf183561_69a52598",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-01-11T18:19:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b37645a_0714c19f",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "58aeec06_58b3a584",
@@ -69,6 +123,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ee78f7e_b1185fbe",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-01-11T18:19:39Z",
+      "side": 1,
+      "message": "I\u0027ll handle it in a different cl.",
+      "parentUuid": "58aeec06_58b3a584",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "246575f8_2de75d30",
@@ -82,6 +154,24 @@
       "writtenOn": "2021-01-06T10:49:32Z",
       "side": 1,
       "message": "Should start with a capital.",
+      "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f2865f9_77af49b3",
+        "filename": "src/tuningfork/core/tuningfork_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-01-11T18:19:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "246575f8_2de75d30",
       "revId": "8f49475e3e3d55725b6795f679f767e071b5f81f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
