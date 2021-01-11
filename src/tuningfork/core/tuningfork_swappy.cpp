@@ -155,11 +155,7 @@ void SwappyTraceWrapper::PreWaitCallbackPre1_3(void* userPtr) {
 void SwappyTraceWrapper::PostWaitCallbackPre1_3(void* userPtr) {
     SwappyTraceWrapper* _this = (SwappyTraceWrapper*)userPtr;
     // This is not real GPU time
-    auto err = TuningFork_frameTick(TFTICK_GPU_TIME);
-    if (err != TUNINGFORK_ERROR_OK &&
-        err != TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED) {
-        ALOGE("Error ticking %d : %d", TFTICK_GPU_TIME, err);
-    }
+    // Not tracked anymore with tuningfork version > 1.2.0
 }
 
 }  // namespace tuningfork
