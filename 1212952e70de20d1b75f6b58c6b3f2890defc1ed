@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "dc58826b_400e0494",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-01-11T13:55:19Z",
+      "side": 1,
+      "message": "It\u0027s not null but 0 I think?\n\"currently should be 0, since there can only be one loading group active\"",
+      "revId": "1212952e70de20d1b75f6b58c6b3f2890defc1ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "99d48721_edce992d",
         "filename": "src/tuningfork/proto/performanceparameters.proto",
         "patchSetId": 1
