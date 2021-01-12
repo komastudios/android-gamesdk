@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f205a72_9e2dfac0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-12T14:15:53Z",
+      "side": 1,
+      "message": "Can you update the bugfix version number in tuningfork.h, too, please?",
+      "revId": "34351e3add2823f39858332b686081d032f288a0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
