@@ -24,6 +24,7 @@
 
 #include "Log.h"
 #include "jni/jni_wrap.h"
+#include "system_utils.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
@@ -113,8 +114,7 @@ TuningFork_LifecycleState ActivityLifecycleState::GetCurrentState() {
 bool ActivityLifecycleState::IsAppOnForeground() { return app_on_foreground_; }
 
 CrashReason ActivityLifecycleState::GetLatestCrashReason() {
-    if (strtoll(GetSystemProp("ro.build.version.sdk").c_str(), nullptr, 10) >=
-        30) {
+    if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 30) {
         using namespace gamesdk::jni;
         auto app_context = AppContext();
         auto pm = app_context.getPackageManager();
