@@ -57,13 +57,13 @@ extern "C" {
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
-#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) \
-    PREFIX##_##MAJOR##_##MINOR
-#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR) \
-    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
+#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
+    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
+#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
+    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
 #define TUNINGFORK_VERSION_SYMBOL                                           \
     TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, \
-                              TUNINGFORK_MINOR_VERSION)
+                              TUNINGFORK_MINOR_VERSION, TUNINGFORK_BUGFIX_VERSION)
 
 /** @endcond */
 
