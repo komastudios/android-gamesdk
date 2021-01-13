@@ -496,6 +496,8 @@ message CrashReport {
   enum CrashReason {
     // Unspecified.
     CRASH_REASON_UNSPECIFIED = 0;
+    // Process was killed by the system low memory killer.
+    LOW_MEMORY = 1;
   }
 
   // The reason for why the crash occurred.
@@ -511,7 +513,7 @@ message BatteryReport {
   repeated BatteryEvent battery_event = 1;
 }
 
-// A single battery event describing battery infromation.
+// A single battery event describing battery information.
 message BatteryEvent {
   // Duration from process start to the time the event is collected.
   google.protobuf.Duration event_time = 1;
