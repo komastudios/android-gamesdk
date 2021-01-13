@@ -1,0 +1,9 @@
+Code-Review+2: Will Osborn <willosborn@google.com>
+Presubmit-Verified+2: Treehugger Robot <treehugger-gerrit@google.com>
+Lint+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Submitted-by: Kseniia Taraimovich <kseniia@google.com>
+Submitted-at: Wed, 13 Jan 2021 13:01:39 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1546044
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
