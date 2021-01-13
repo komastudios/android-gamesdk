@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "jni/jni_wrap.h"
+#include "system_utils.h"
 #include "tuningfork_utils.h"
 
 #define LOG_TAG "TuningFork"
@@ -74,8 +75,8 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
             info.total_memory_bytes = x * mult;
         }
     }
-    info.build_version_sdk = GetSystemProp("ro.build.version.sdk");
-    info.build_fingerprint = GetSystemProp("ro.build.fingerprint");
+    info.build_version_sdk = gamesdk::GetSystemProp("ro.build.version.sdk");
+    info.build_fingerprint = gamesdk::GetSystemProp("ro.build.fingerprint");
 
     if (gamesdk::jni::IsValid()) {
         std::stringstream session_id_path;

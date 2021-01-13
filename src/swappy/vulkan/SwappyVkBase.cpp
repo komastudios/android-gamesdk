@@ -16,7 +16,7 @@
 
 #include "SwappyVkBase.h"
 
-#include "SystemProperties.h"
+#include "system_utils.h"
 
 #define LOG_TAG "SwappyVkBase"
 
@@ -102,7 +102,7 @@ SwappyVkBase::SwappyVkBase(JNIEnv* env, jobject jactivity,
     initGoogExtension();
 
     mEnabled =
-        !getSystemPropViaGetAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
+        !gamesdk::GetSystemPropAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
 }
 
 void SwappyVkBase::initGoogExtension() {
