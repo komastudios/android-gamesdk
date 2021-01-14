@@ -75,6 +75,7 @@ set( TUNINGFORK_SRCS
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
+  ../common/system_utils.cpp
   proto/protobuf_util.cpp
   unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp

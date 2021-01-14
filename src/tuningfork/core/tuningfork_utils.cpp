@@ -340,40 +340,4 @@ Duration GetTimeSinceProcessStart() {
         return etime - ptime;
 }
 
-#if __ANDROID_API__ >= 26
-std::string getSystemPropViaCallback(const char* key) {
-    const prop_info* prop = __system_property_find(key);
-    if (prop == nullptr) {
-        return "";
-    }
-    std::string return_value;
-    auto thunk = [](void* cookie, const char* /*name*/, const char* value,
-                    uint32_t /*serial*/) {
-        if (value != nullptr) {
-            std::string* r = static_cast<std::string*>(cookie);
-            *r = value;
-        }
-    };
-    __system_property_read_callback(prop, thunk, &return_value);
-    return return_value;
-}
-#else
-std::string getSystemPropViaGet(const char* key) {
-    char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
-    int bufferLen = __system_property_get(key, buffer);
-    if (bufferLen > 0)
-        return buffer;
-    else
-        return "";
-}
-#endif
-
-std::string GetSystemProp(const char* key) {
-#if __ANDROID_API__ >= 26
-    return getSystemPropViaCallback(key);
-#else
-    return getSystemPropViaGet(key);
-#endif
-}
-
 }  // namespace tuningfork

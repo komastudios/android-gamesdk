@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 #pragma once
 
-#include <string>
+#include "string"
 
-//
-// To set system properties:
-// adb shell setprop swappy.property value
-//
+namespace gamesdk {
 
-std::string getSystemPropViaGet(const char* key,
-                                std::string default_value = "");
+// Get the value of the given system property
+std::string GetSystemProp(const char* key, const char* default_value = "");
 
-int getSystemPropViaGetAsInt(const char* key, int default_value = 0);
+// Get the value of the given system property as an integer
+int GetSystemPropAsInt(const char* key, int default_value = 0);
 
-int getSystemPropViaGetAsBool(const char* key, bool default_value = false);
+// Get the value of the given system property as a bool
+bool GetSystemPropAsBool(const char* key, bool default_value = false);
+
+}  // namespace gamesdk
