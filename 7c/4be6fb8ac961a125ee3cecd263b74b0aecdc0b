@@ -1,0 +1,10 @@
+Presubmit-Ready+1: Kseniia Taraimovich <kseniia@google.com>
+Bypass-Presubmit+1: Kseniia Taraimovich <kseniia@google.com>
+Lint+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Open-Source-Licensing+1: Lint 🤖 <ayeaye-gerrit@google.com>
+Code-Review+2: Barış Kaya <bkaya@google.com>
+Submitted-by: Kseniia Taraimovich <kseniia@google.com>
+Submitted-at: Thu, 21 Jan 2021 19:44:00 +0000
+Reviewed-on: https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1550055
+Project: platform/frameworks/opt/gamesdk
+Branch: refs/heads/master
