@@ -49,7 +49,7 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 3
-#define TUNINGFORK_BUGFIX_VERSION 1
+#define TUNINGFORK_BUGFIX_VERSION 2
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
                                    TUNINGFORK_MINOR_VERSION, \
@@ -63,7 +63,8 @@ extern "C" {
     TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
 #define TUNINGFORK_VERSION_SYMBOL                                           \
     TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, \
-                              TUNINGFORK_MINOR_VERSION, TUNINGFORK_BUGFIX_VERSION)
+                              TUNINGFORK_MINOR_VERSION,                     \
+                              TUNINGFORK_BUGFIX_VERSION)
 
 /** @endcond */
 

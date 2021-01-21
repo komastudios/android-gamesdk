@@ -20,7 +20,9 @@
 namespace tuningfork_test {
 
 static std::string AbandonedLoadingEvent(int type, const std::string& duration,
-                                         const std::string& interval) {
+                                         const std::string& interval,
+                                         bool add_group = false) {
+    std::string any_string = "\"!REGEX([^\"]*)\"";
     std::stringstream str;
     str << R"TF(
 { "name": "applications//apks/0",
@@ -40,7 +42,44 @@ static std::string AbandonedLoadingEvent(int type, const std::string& duration,
     "time_period": {"end_time": "1970-01-01T00:00:00.000000Z",
                     "start_time": "1970-01-01T00:00:00.000000Z"}
   },
-  "telemetry": [{
+  "telemetry": [
+)TF";
+    if (add_group) {
+        str << R"TF({
+    "context": {
+      "annotations": "",
+      "duration": ")TF";
+        str << duration;
+        str << R"TF(",
+      "tuning_parameters": {
+        "experiment_id": "",
+        "serialized_fidelity_parameters": ""
+      }
+    },
+    "report": {
+      "partial_loading": {
+        "event_type":
+)TF";
+        str << type;
+        str << R"TF(,
+        "report": {
+          "loading_events": [{
+            "intervals": [
+)TF";
+        str << interval;
+        str << R"TF(],
+            "loading_metadata": {
+              "group_id": )TF"
+            << any_string << R"TF(,
+              "source": 9
+            }
+          }]
+        }
+      }
+    }
+  },)TF";
+    }
+    str << R"TF({
     "context": {
       "annotations": "AQID",
       "duration": ")TF";
@@ -64,7 +103,11 @@ static std::string AbandonedLoadingEvent(int type, const std::string& duration,
     str << interval;
     str << R"TF(],
             "loading_metadata": {
-              "compression_level": 100,
+              "compression_level": 100,)TF";
+    if (add_group) {
+        str << "\"group_id\":" << any_string << ",";
+    }
+    str << R"TF(
               "network_info": {
                 "bandwidth_bps": "1000000000",
                 "connectivity": 1
@@ -82,7 +125,7 @@ static std::string AbandonedLoadingEvent(int type, const std::string& duration,
     return str.str();
 }
 
-TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
+TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes(bool add_group) {
     const int NTICKS =
         101;  // note the first tick doesn't add anything to the histogram
     const uint64_t kOneGigaBitPerSecond = 1000000000L;
@@ -92,6 +135,7 @@ TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
     TuningForkTest test(settings, milliseconds(10));
     tf::SerializedAnnotation loading_annotation = {1, 2, 3};
     Annotation ann;
+    if (add_group) tf::StartLoadingGroup(nullptr, nullptr, nullptr);
     tf::LoadingHandle loading_handle;
     tf::StartRecordingLoadingTime(
         {tf::LoadingTimeMetadata::LoadingState::WARM_START,
@@ -108,7 +152,7 @@ TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
                     std::cv_status::no_timeout)
             << "Timeout";
         auto expected_result = AbandonedLoadingEvent(
-            2, "0.05s", "{\"end\": \"0.15s\",\"start\": \"0.1s\"}");
+            2, "0.05s", "{\"end\": \"0.15s\",\"start\": \"0.1s\"}", add_group);
         CheckStrings("Lifecycle event", test.Result(), expected_result);
         test.ClearResult();
     }
@@ -121,7 +165,7 @@ TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
                     std::cv_status::no_timeout)
             << "Timeout";
         auto expected_result = AbandonedLoadingEvent(
-            1, "0.1s", "{\"end\": \"0.2s\",\"start\": \"0.1s\"}");
+            1, "0.1s", "{\"end\": \"0.2s\",\"start\": \"0.1s\"}", add_group);
         CheckStrings("Lifecycle event", test.Result(), expected_result);
         test.ClearResult();
     }
@@ -141,99 +185,19 @@ TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes() {
     return test.Result();
 }
 
-static TuningForkLogEvent ExpectedResultWithLoading() {
-    return R"TF(
-{
-  "name": "applications//apks/0",
-  "session_context":)TF" +
-           session_context_loading + R"TF(,
-  "telemetry":[
-    {
-      "context":{
-        "annotations":"",
-        "duration":"0.31s",
-        "tuning_parameters":{
-          "experiment_id":"",
-          "serialized_fidelity_parameters":""
-        }
-      },
-      "report":{
-        "loading":{
-          "loading_events":[
-            {
-              "intervals":[{"end":"0.21s", "start":"0s"}],
-              "loading_metadata":{
-                "source":8,
-                "state":2
-              }
-            },
-            {
-              "intervals":[{"end":"0.1s", "start":"0s"}],
-              "loading_metadata":{
-                "source":7,
-                "state":2
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "context":{
-        "annotations": "AQID",
-        "duration": "0.1s",
-        "tuning_parameters":{
-          "experiment_id": "",
-          "serialized_fidelity_parameters": ""
-        }
-      },
-      "report":{
-        "loading":{
-          "loading_events": [{
-            "intervals":[{"end":"0.2s", "start":"0.1s"}],
-            "loading_metadata": {
-              "compression_level": 100,
-              "network_info": {
-                "bandwidth_bps": "1000000000",
-                "connectivity": 1
-              },
-              "source": 5,
-              "state": 3
-            }
-          }]
-        }
-      }
-    },
-    {
-      "context":{
-        "annotations":"CAE=",
-        "duration":"1s",
-        "tuning_parameters":{
-          "experiment_id":"",
-          "serialized_fidelity_parameters":""
-        }
-      },
-      "report":{
-        "rendering":{
-          "render_time_histogram":[
-            {
-              "counts":[**],
-              "instrument_id":64001
-            }
-          ]
-        }
-      }
-    }
-  ]
-}
-)TF";
-}
-
 extern TuningForkLogEvent ExpectedResultWithLoading();
 
 TEST(EndToEndTest, WithAbandonedLoadingTimes) {
-    auto result = TestEndToEndWithAbandonedLoadingTimes();
+    auto result = TestEndToEndWithAbandonedLoadingTimes(false /* add_group */);
     CheckStrings("LoadingTimes", result, ExpectedResultWithLoading());
+}
+
+extern TuningForkLogEvent ExpectedResultWithLoadingGroups(bool use_stop,
+                                                          bool with_annotation);
+TEST(EndToEndTest, WithAbandonedLoadingTimesAndGroup) {
+    auto result = TestEndToEndWithAbandonedLoadingTimes(true /* add_group */);
+    CheckStrings("LoadingTimes", result,
+                 ExpectedResultWithLoadingGroups(false, false));
 }
 
 }  // namespace tuningfork_test

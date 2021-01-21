@@ -64,14 +64,17 @@ TuningForkLogEvent ExpectedResultWithLoadingGroups(bool use_stop,
     std::string first_duration =
         (use_stop && !with_annotation) ? "0.41s" : "0.31s";
     // An event generated because of the StopRecordingGroup call.
-    std::string extra_event = use_stop ? R"TF(
+    std::string extra_event;
+    if (use_stop)
+        extra_event += R"TF(
             {
               "intervals":[{"end":"0.2s", "start":"0.1s"}],
               "loading_metadata":{
+                "group_id": )TF" +
+                       any_string + R"TF(,
                 "source":9
               }
-            })TF"
-                                       : "";
+            })TF";
     // An event in the first batch of events because of the StopRecordingGroup
     // call without an annotation.
     std::string first_extra_event =

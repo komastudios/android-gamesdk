@@ -686,7 +686,9 @@ TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
     if (pMetadata != nullptr) {
         metadata_in.metadata = *pMetadata;
     }
+    auto new_loading_group = UniqueId();
     metadata_in.metadata.source = LoadingSource::TOTAL_USER_WAIT_FOR_GROUP;
+    metadata_in.group_id = new_loading_group;
     LoadingTimeMetadataToId(metadata_in, metadata_id);
     if (pAnnotation != nullptr) {
         auto err = SerializedAnnotationToAnnotationId(*pAnnotation, ann_id);
@@ -697,7 +699,7 @@ TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
     if (pHandle != nullptr) {
         *pHandle = handle;
     }
-    current_loading_group_ = UniqueId();
+    current_loading_group_ = new_loading_group;
     current_loading_group_metric_ = metric_id;
     current_loading_group_start_time_ = time_provider_->TimeSinceProcessStart();
     return TUNINGFORK_ERROR_OK;
@@ -721,6 +723,11 @@ std::vector<LifecycleLoadingEvent> TuningForkImpl::GetLiveLoadingEvents() {
     auto current_time = time_provider_->TimeSinceProcessStart();
     for (auto &a : live_loading_events_) {
         ret.push_back({a.first, {a.second, current_time}});
+    }
+    // Add the event group event too
+    if (current_loading_group_metric_.base != 0) {
+        ret.push_back({current_loading_group_metric_.base,
+                       {current_loading_group_start_time_, current_time}});
     }
     return ret;
 }
