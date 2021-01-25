@@ -16,6 +16,24 @@
       "message": "Should we specify that only one group at a time is supported for now (I think that\u0027s the case?)",
       "revId": "f42c922e2e418feeeb6e04ffaea327f87905f2f4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25002fa7_eb26ab71",
+        "filename": "RELEASE_NOTES",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-01-25T19:44:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d12917a4_2137fcf3",
+      "revId": "f42c922e2e418feeeb6e04ffaea327f87905f2f4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
