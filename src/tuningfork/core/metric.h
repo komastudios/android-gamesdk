@@ -28,6 +28,7 @@ struct Metric {
         FRAME_TIME = 0,
         LOADING_TIME = 1,
         MEMORY = 2,
+        BATTERY = 3,
         ERROR = 0xff
     };
 };
@@ -76,6 +77,12 @@ struct MetricId {
         MetricId id{0};
         id.detail.type = Metric::MEMORY;
         id.detail.memory.record_type = record_type;
+        return id;
+    }
+    static MetricId Battery(AnnotationId aid) {
+        MetricId id{0};
+        id.detail.type = Metric::BATTERY;
+        id.detail.annotation = aid;
         return id;
     }
 };

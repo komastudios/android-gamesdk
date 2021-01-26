@@ -16,6 +16,8 @@
 
 #include "runnable.h"
 
+#include "jni/jni_helper.h"
+
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 
@@ -48,6 +50,7 @@ void Runnable::Run() {
         }
 #endif
     }
+    if (gamesdk::jni::IsValid()) gamesdk::jni::DetachThread();
 }
 void Runnable::Stop() {
     if (!thread_->joinable()) {

@@ -41,7 +41,8 @@ TuningFork_ErrorCode TuningFork_init_internal(
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
     if (err != TUNINGFORK_ERROR_OK) return err;
     settings.Check();
-    err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, first_run);
+    err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, nullptr,
+                   first_run);
     if (err != TUNINGFORK_ERROR_OK) return err;
     if (!(settings.default_fidelity_parameters_filename.empty() &&
           settings.c_settings.training_fidelity_params == nullptr)) {
@@ -172,6 +173,35 @@ TuningFork_ErrorCode TuningFork_stopRecordingLoadingTime(
 TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
     TuningFork_LifecycleState state) {
     return tf::ReportLifecycleEvent(state);
+}
+
+TuningFork_ErrorCode TuningFork_startLoadingGroup(
+    const TuningFork_LoadingTimeMetadata *eventMetadata_in,
+    uint32_t eventMetadataSize,
+    const TuningFork_CProtobufSerialization *annotation_in,
+    TuningFork_LoadingGroupHandle *handle) {
+    tf::LoadingTimeMetadata eventMetadata;
+    tf::LoadingTimeMetadata *eventMetadataPtr = nullptr;
+    if (eventMetadata_in != nullptr) {
+        auto err = CheckLoadingMetaData(eventMetadata_in, eventMetadataSize,
+                                        eventMetadata);
+        if (err != TUNINGFORK_ERROR_OK) {
+            return err;
+        }
+        eventMetadataPtr = &eventMetadata;
+    }
+    tf::ProtobufSerialization annotation;
+    tf::ProtobufSerialization *annotationPtr = nullptr;
+    if (annotation_in != nullptr) {
+        annotation = tf::ToProtobufSerialization(*annotation_in);
+        annotationPtr = &annotation;
+    }
+    return tf::StartLoadingGroup(eventMetadataPtr, annotationPtr, handle);
+}
+
+TuningFork_ErrorCode TuningFork_stopLoadingGroup(
+    TuningFork_LoadingGroupHandle handle) {
+    return tf::StopLoadingGroup(handle);
 }
 
 void TUNINGFORK_VERSION_SYMBOL() {

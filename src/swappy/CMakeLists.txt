@@ -48,7 +48,6 @@ add_library( swappy_static
              ${SOURCE_LOCATION_COMMON}/ChoreographerThread.cpp
              ${SOURCE_LOCATION_COMMON}/FrameStatistics.cpp
              ${SOURCE_LOCATION_COMMON}/CpuInfo.cpp
-             ${SOURCE_LOCATION_COMMON}/SystemProperties.cpp
              ${SOURCE_LOCATION_COMMON}/Settings.cpp
              ${SOURCE_LOCATION_COMMON}/Thread.cpp
              ${SOURCE_LOCATION_COMMON}/SwappyCommon.cpp
@@ -63,6 +62,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkFallback.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
+             ${SOURCE_LOCATION}/../common/system_utils.cpp
              ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o
              # Add new source files here
              )

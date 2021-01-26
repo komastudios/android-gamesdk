@@ -19,7 +19,7 @@
 #include <sstream>
 #include <string>
 
-#include "tuningfork_test.h"
+#include "tuningfork_test_c.h"
 #define LOG_TAG "TestApp"
 #include "Log.h"
 

@@ -66,7 +66,7 @@ This release includes several bug fixes for Swappy and new features for APT.
    SwappyGL_setWindow or SwappyVk_setWindow should be called.**
  - Auto-mode bug fixes.
  - Vulkan bug fixes.
--Android Performance Tuner (Tuning Fork) v 1.1
+- Android Performance Tuner (Tuning Fork) v 1.1
  - Loading time 
    - New functions: TuningFork_recordLoadingTime, TuningFork_startRecordingLoadingTime,
      TuningFork_stopRecordingLoadingTime should be called to record annotated loading time events.
@@ -84,9 +84,23 @@ This release includes several bug fixes for Swappy and new features for APT.
 
 Version 1.2.1
 =============
-This release is an internal feature release for APT.
+This release is an internal feature release for APT (v 1.1.7)
 When a player backgrounds a game during loading, an event is sent for later analysis of loading
 abandonment.
 There are no new features to Swappy.
  
 For more information, see https://developer.android.com/games/sdk/.
+
+Version 1.2.2
+=============
+This release adds new features to APT. There are no new features to Swappy.
+- Android Performance Tuner (Tuning Fork) v 1.3.3
+ - Battery reporting. APT now uploads battery level information as part of its telemetry.
+ - Low memory event reporting. APT records if a previous crash was caused by a low memory (LMK) event.
+ - Loading time groups
+  - New functions TuningFork_startLoadingGroup and TuningFork_stopLoadingGroup enable bracketing
+    of several loading events into a group, e.g. those associated with game initialization or with
+    a certain level loading. Only one group can be active at a time.
+ - Abandoned loading. Loading that is occuring when a player backgrounds the game is logged for
+   special treatment by the backend.
+ 

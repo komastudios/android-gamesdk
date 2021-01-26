@@ -26,8 +26,8 @@
 namespace serialization_test {
 
 using namespace tuningfork;
+using namespace tuningfork_test;
 using namespace json11;
-using namespace test;
 using namespace std::chrono;
 
 RequestInfo test_device_info{
@@ -116,6 +116,7 @@ std::string single_tick_with_loading = R"TF({
     "loading": {
       "loading_events": [{
         "loading_metadata": {
+          "group_id": "ABC",
           "network_info": {
             "bandwidth_bps": "1000000000",
             "connectivity": 1,
@@ -173,13 +174,15 @@ class IdMap : public IdProvider {
         return TUNINGFORK_ERROR_OK;
     }
     TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
-        MetricId id, LoadingTimeMetadata& m) override {
+        MetricId id, LoadingTimeMetadataWithGroup& mg) override {
+        LoadingTimeMetadata& m = mg.metadata;
         m = {};
         m.state = LoadingTimeMetadata::FIRST_RUN;
         m.source = LoadingTimeMetadata::NETWORK;
         m.network_latency_ns = 50000000;  // 50ms
         m.network_connectivity = LoadingTimeMetadata::NetworkConnectivity::WIFI;
         m.network_transfer_speed_bps = 1000000000;  // 1Gb/s
+        mg.group_id = "ABC";
         return TUNINGFORK_ERROR_OK;
     }
 };
