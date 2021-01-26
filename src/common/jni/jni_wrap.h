@@ -52,6 +52,9 @@ class Object {
     int CallVIMethod(const char* name) {
         return obj_.CallIntMethod(name, "()I");
     }
+    int CallIIMethod(const char* name, const int a) {
+        return obj_.CallIntMethod(name, "(I)I", a);
+    }
     void CallZVMethod(const char* name, bool a) {
         obj_.CallVoidMethod(name, "(Z)V", a);
     }
@@ -77,8 +80,14 @@ class Object {
         jobject o = obj_.CallObjectMethod(name, str.str().c_str());
         return Object(o);
     }
+    Object CallIOMethod(const char* name, int a, const char* returnClass) {
+        std::stringstream str;
+        str << "(I)L" << returnClass << ";";
+        jobject o = obj_.CallObjectMethod(name, str.str().c_str(), a);
+        return Object(o);
+    }
     void CallOVMethod(const char* name, const char* parameterClassA,
-                      Object& a) {
+                      const Object& a) {
         std::stringstream str;
         str << "(L" << parameterClassA << ";)V";
         obj_.CallVoidMethod(name, str.str().c_str(), (jobject)a.obj_);
@@ -89,6 +98,30 @@ class Object {
         str << "(Ljava/lang/String;I)L" << returnClass << ";";
         jobject o =
             obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b);
+        return Object(o);
+    }
+    Object CallOOOMethod(const char* name, const char* parameterClassA,
+                         const Object& a, const char* parameterClassB,
+                         const Object& b, const char* returnClass) {
+        std::stringstream str;
+        str << "(L" << parameterClassA << ";L" << parameterClassB << ";)L"
+            << returnClass << ";";
+        jobject o = obj_.CallObjectMethod(name, str.str().c_str(),
+                                          (jobject)a.obj_, (jobject)b.obj_);
+        return Object(o);
+    }
+    int CallSIIMethod(const char* name, const char* a, const int b) {
+        std::stringstream str;
+        str << "(Ljava/lang/String;I)I";
+        return obj_.CallIntMethod(name, "(Ljava/lang/String;I)I", String(a).J(),
+                                  b);
+    }
+    Object CallSIIOMethod(const char* name, const char* a, int b, int c,
+                          const char* returnClass) {
+        std::stringstream str;
+        str << "(Ljava/lang/String;II)L" << returnClass << ";";
+        jobject o =
+            obj_.CallObjectMethod(name, str.str().c_str(), String(a).J(), b, c);
         return Object(o);
     }
     Object CallSOMethod(const char* name, const char* a,
@@ -183,6 +216,16 @@ class UUID : public Object {
         obj.SetObj(o);
         return obj;
     }
+    jni::String toString() { return CallVSMethod("toString"); }
+};
+
+class List : public java::Object {
+   public:
+    List(Object&& o) : Object(std::move(o)) {}
+    java::Object get(int index) {
+        return CallIOMethod("get", index, "java/lang/Object");
+    }
+    bool isEmpty() { return CallVZMethod("isEmpty"); }
     jni::String toString() { return CallVSMethod("toString"); }
 };
 
@@ -366,9 +409,33 @@ class AssetManager : public java::Object {
 
 }  // namespace res
 
+class Intent : java::Object {
+   public:
+    static constexpr const char* ACTION_BATTERY_CHANGED =
+        "android.intent.action.BATTERY_CHANGED";
+    Intent(java::Object&& o) : java::Object(std::move(o)) {}
+    int getIntExtra(const char* name, int defaultValue) {
+        return CallSIIMethod("getIntExtra", name, defaultValue);
+    }
+};
+
+class IntentFilter : public java::Object {
+   public:
+    IntentFilter(jobject o) : java::Object(o) {}
+    IntentFilter(const char* action)
+        : Object("android/content/IntentFilter", "(Ljava/lang/String;)V",
+                 String(action).J()) {}
+};
+
+class BroadcastReceiver : public java::Object {
+   public:
+    BroadcastReceiver(java::Object&& o) : java::Object(std::move(o)) {}
+};
+
 class Context : public java::Object {
    public:
     static constexpr const char* CONNECTIVITY_SERVICE = "connectivity";
+    static constexpr const char* BATTERY_SERVICE = "batterymanager";
     static constexpr const char* ACTIVITY_SERVICE = "activity";
     Context(jobject o) : java::Object(o) {}
     pm::PackageManager getPackageManager() {
@@ -384,6 +451,13 @@ class Context : public java::Object {
     }
     java::Object getSystemService(const char* name) {
         return CallSOMethod("getSystemService", name, "java/lang/Object");
+    }
+    java::Object registerReceiver(BroadcastReceiver& broadcastReceiver,
+                                  IntentFilter& intentFilter) {
+        return CallOOOMethod("registerReceiver",
+                             "android/content/BroadcastReceiver",
+                             broadcastReceiver, "android/content/IntentFilter",
+                             intentFilter, "android/content/Intent");
     }
 };
 
@@ -459,6 +533,16 @@ class Build {
     }
 };  // Class Build
 
+class BatteryManager : java::Object {
+   public:
+    static constexpr const char* EXTRA_LEVEL = "level";
+    static constexpr const char* EXTRA_SCALE = "scale";
+    static constexpr const char* EXTRA_PLUGGED = "plugged";
+    static constexpr const int BATTERY_PROPERTY_CHARGE_COUNTER = 1;
+    BatteryManager(java::Object&& o) : java::Object(std::move(o)) {}
+    int getIntProperty(int id) { return CallIIMethod("getIntProperty", id); }
+};
+
 }  // namespace os
 
 namespace net {
@@ -487,7 +571,7 @@ class MemoryInfo : public java::Object {
     int64_t totalMem() const { return obj_.GetLongField("totalMem"); }
 };
 
-class ActivityManager : java::Object {
+class ActivityManager : public java::Object {
    public:
     ActivityManager(java::Object&& o) : java::Object(std::move(o)) {}
     void getMemoryInfo(MemoryInfo& memoryInfo) {
@@ -499,6 +583,19 @@ class ActivityManager : java::Object {
         return CallVIMethod("getLargeMemoryClass");
     }
     bool isLowRamDevice() { return CallVZMethod("isLowRamDevice"); }
+    java::util::List getHistoricalProcessExitReasons(std::string& packageName,
+                                                     int pid, int maxNum) {
+        return CallSIIOMethod("getHistoricalProcessExitReasons",
+                              packageName.c_str(), pid, maxNum,
+                              "java/util/List");
+    }
+};
+
+class ApplicationExitInfo : java::Object {
+   public:
+    static constexpr int REASON_LOW_MEMORY = 3;
+    ApplicationExitInfo(java::Object&& o) : java::Object(std::move(o)) {}
+    int getReason() { return CallVIMethod("getReason"); }
 };
 
 }  // namespace app

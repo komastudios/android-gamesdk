@@ -46,6 +46,21 @@ struct LoadingTimeMetricData : public MetricData {
     static Metric::Type MetricType() { return Metric::Type::LOADING_TIME; }
 };
 
+struct LoadingTimeMetadataWithGroup {
+    LoadingTimeMetadata metadata;
+    std::string group_id;
+    bool operator==(const tuningfork::LoadingTimeMetadataWithGroup& rhs) const {
+        const tuningfork::LoadingTimeMetadata& x = metadata;
+        const tuningfork::LoadingTimeMetadata& y = rhs.metadata;
+        return x.state == y.state && x.source == y.source &&
+               x.compression_level == y.compression_level &&
+               x.network_connectivity == y.network_connectivity &&
+               x.network_transfer_speed_bps == y.network_transfer_speed_bps &&
+               x.network_latency_ns == y.network_latency_ns &&
+               group_id == rhs.group_id;
+    }
+};
+
 }  // namespace tuningfork
 
 namespace std {
@@ -57,9 +72,11 @@ inline void hash_combine(std::size_t& s, const T& v) {
     s ^= h(v) + 0x9e3779b9 + (s << 6) + (s >> 2);
 }
 template <>
-class hash<tuningfork::LoadingTimeMetadata> {
+class hash<tuningfork::LoadingTimeMetadataWithGroup> {
    public:
-    size_t operator()(const tuningfork::LoadingTimeMetadata& x) const {
+    size_t operator()(
+        const tuningfork::LoadingTimeMetadataWithGroup& md) const {
+        const tuningfork::LoadingTimeMetadata& x = md.metadata;
         size_t result = 0;
         hash_combine(result, (uint64_t)x.state);
         hash_combine(result, (uint64_t)x.source);
@@ -67,17 +84,8 @@ class hash<tuningfork::LoadingTimeMetadata> {
         hash_combine(result, (uint64_t)x.network_connectivity);
         hash_combine(result, x.network_transfer_speed_bps);
         hash_combine(result, x.network_latency_ns);
+        hash_combine(result, md.group_id);
         return result;
     }
 };
 }  // namespace std
-
-// Operator== for custom LoadingTimeMetadata struct
-inline bool operator==(const tuningfork::LoadingTimeMetadata& x,
-                       const tuningfork::LoadingTimeMetadata& y) {
-    return x.state == y.state && x.source == y.source &&
-           x.compression_level == y.compression_level &&
-           x.network_connectivity == y.network_connectivity &&
-           x.network_transfer_speed_bps == y.network_transfer_speed_bps &&
-           x.network_latency_ns == y.network_latency_ns;
-}

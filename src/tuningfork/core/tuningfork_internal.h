@@ -17,6 +17,7 @@
 #pragma once
 
 #include "core/backend.h"
+#include "core/battery_provider.h"
 #include "core/common.h"
 #include "core/id_provider.h"
 #include "core/meminfo_provider.h"
@@ -43,6 +44,7 @@ TuningFork_ErrorCode Init(const Settings& settings,
                           IBackend* backend = nullptr,
                           ITimeProvider* time_provider = nullptr,
                           IMemInfoProvider* meminfo_provider = nullptr,
+                          IBatteryProvider* battery_provider = nullptr,
                           bool first_run = false);
 
 // Blocking call to get fidelity parameters from the server.
@@ -106,6 +108,16 @@ TuningFork_ErrorCode StartRecordingLoadingTime(
 
 // Record a loading time event
 TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
+
+// Start a loading group.
+// metadata, annotation and handle are optional and should be null if missing.
+TuningFork_ErrorCode StartLoadingGroup(const LoadingTimeMetadata* metadata,
+                                       const ProtobufSerialization* annotation,
+                                       LoadingHandle* handle);
+
+// Stop a loading group.
+// handle should be null in current implementation.
+TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle);
 
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 

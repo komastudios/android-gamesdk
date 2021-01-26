@@ -29,7 +29,6 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
             ${SWAPPY_LOCATION_COMMON}/ChoreographerThread.cpp
             ${SWAPPY_LOCATION_COMMON}/FrameStatistics.cpp
             ${SWAPPY_LOCATION_COMMON}/CpuInfo.cpp
-            ${SWAPPY_LOCATION_COMMON}/SystemProperties.cpp
             ${SWAPPY_LOCATION_COMMON}/Settings.cpp
             ${SWAPPY_LOCATION_COMMON}/Thread.cpp
             ${SWAPPY_LOCATION_COMMON}/SwappyCommon.cpp
@@ -44,7 +43,8 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
             ${SWAPPY_LOCATION_VULKAN}/SwappyVk.cpp
             ${SWAPPY_LOCATION_VULKAN}/SwappyVkBase.cpp
             ${SWAPPY_LOCATION_VULKAN}/SwappyVkFallback.cpp
-            ${SWAPPY_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp)
+            ${SWAPPY_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
+            ${SOURCE_LOCATION}/../common/system_utils.cpp)
 
     set_target_properties(swappy_static PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build)

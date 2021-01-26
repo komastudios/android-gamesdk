@@ -21,9 +21,9 @@
 #include <cstdlib>
 
 #include "Log.h"
-#include "SystemProperties.h"
 #include "Thread.h"
 #include "Trace.h"
+#include "system_utils.h"
 
 #define LOG_TAG "Swappy"
 
@@ -275,7 +275,7 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     }
 
     mEnableSwappy =
-        !getSystemPropViaGetAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
+        !gamesdk::GetSystemPropAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
     if (!enabled()) {
         ALOGI("Swappy is disabled");
         return;

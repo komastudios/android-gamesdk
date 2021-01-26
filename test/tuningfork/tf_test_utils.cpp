@@ -19,7 +19,7 @@
 #include <regex>
 #include <sstream>
 
-namespace test {
+namespace tuningfork_test {
 
 // Wind forward over any arrays ... [...] ...
 template <typename Iterator>
@@ -66,7 +66,8 @@ bool WindForwardOverRegex(const std::string& regex_str, Iterator& i,
 bool CompareIgnoringWhitespace(std::string s0, std::string s1,
                                std::string* error_msg) {
     // Ignore all whitespace, except when in strings.
-    // '[**]' is a wildcard for any array if ignoring_starred_arrays is true.
+    // '[**]' is a wildcard for any array.
+    // '!REGEX(<regex>) is a regex.
     bool in_string = false;
     bool in_wildcard = false;
     auto a = s0.begin();
@@ -127,4 +128,4 @@ bool CompareIgnoringWhitespace(std::string s0, std::string s1,
     }
 }
 
-}  // namespace test
+}  // namespace tuningfork_test

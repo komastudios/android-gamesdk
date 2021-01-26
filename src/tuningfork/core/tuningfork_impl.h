@@ -21,6 +21,8 @@
 #include "activity_lifecycle_state.h"
 #include "annotation_map.h"
 #include "async_telemetry.h"
+#include "battery_metric.h"
+#include "battery_reporting_task.h"
 #include "crash_handler.h"
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
@@ -48,13 +50,14 @@ class TuningForkImpl : public IdProvider {
     MetricId current_annotation_id_;
     ITimeProvider *time_provider_;
     IMemInfoProvider *meminfo_provider_;
+    IBatteryProvider *battery_provider_;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
     TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
     std::mutex loading_time_metadata_map_mutex_;
-    std::unordered_map<LoadingTimeMetadata, LoadingTimeMetadataId>
+    std::unordered_map<LoadingTimeMetadataWithGroup, LoadingTimeMetadataId>
         loading_time_metadata_map_;
     ActivityLifecycleState activity_lifecycle_state_;
     bool before_first_tick_;
@@ -62,19 +65,26 @@ class TuningForkImpl : public IdProvider {
     std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
+    std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;
     std::unique_ptr<IMemInfoProvider> default_meminfo_provider_;
+    std::unique_ptr<IBatteryProvider> default_battery_provider_;
 
     TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
     bool lifecycle_stop_event_sent_ = false;
 
+    std::string current_loading_group_;
+    MetricId current_loading_group_metric_;
+    Duration current_loading_group_start_time_;
+
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider *memory_provider,
+                   IBatteryProvider *battery_provider,
                    bool first_run /* whether we have just installed the app*/);
 
     ~TuningForkImpl();
@@ -127,6 +137,12 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle);
 
+    TuningFork_ErrorCode StartLoadingGroup(
+        const LoadingTimeMetadata *metadata,
+        const ProtobufSerialization *annotation, LoadingHandle *handle);
+
+    TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle);
+
     TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state);
 
     TuningFork_ErrorCode InitializationErrorCode() {
@@ -166,10 +182,11 @@ class TuningForkImpl : public IdProvider {
                                                 MemoryMetric &m) override;
 
     TuningFork_ErrorCode LoadingTimeMetadataToId(
-        const LoadingTimeMetadata &metadata, LoadingTimeMetadataId &id);
+        const LoadingTimeMetadataWithGroup &metadata,
+        LoadingTimeMetadataId &id);
 
     TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
-        MetricId id, LoadingTimeMetadata &md) override;
+        MetricId id, LoadingTimeMetadataWithGroup &md) override;
 
     bool keyIsValid(InstrumentationKey key) const;
 
@@ -190,6 +207,9 @@ class TuningForkImpl : public IdProvider {
         const TuningFork_MetricLimits &limits);
 
     std::vector<LifecycleLoadingEvent> GetLiveLoadingEvents();
+
+    TuningFork_ErrorCode RecordLoadingTime(LoadingHandle handle,
+                                           ProcessTimeInterval interval);
 };
 
 }  // namespace tuningfork

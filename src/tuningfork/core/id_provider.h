@@ -27,6 +27,7 @@ class AAsset;
 namespace tuningfork {
 
 class MemoryMetric;
+struct LoadingTimeMetadataWithGroup;
 
 // Interface to an object that can map between serializations and ids and create
 // compound ids.
@@ -51,7 +52,7 @@ class IdProvider {
                                                         MemoryMetric& m) = 0;
 
     virtual TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
-        MetricId id, LoadingTimeMetadata& md) = 0;
+        MetricId id, LoadingTimeMetadataWithGroup& md) = 0;
 };
 
 }  // namespace tuningfork

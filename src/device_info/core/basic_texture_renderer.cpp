@@ -19,6 +19,7 @@
 #include <GLES2/gl2ext.h>
 // clang-format on
 #include "basic_texture_renderer.h"
+
 #include "device_info/device_info.h"
 
 namespace androidgamesdk_deviceinfo {

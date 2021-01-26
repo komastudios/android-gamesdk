@@ -68,7 +68,8 @@ static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
                           ITimeProvider *time_provider,
-                          IMemInfoProvider *meminfo_provider, bool first_run) {
+                          IMemInfoProvider *meminfo_provider,
+                          IBatteryProvider *battery_provider, bool first_run) {
     if (s_impl.get() != nullptr) return TUNINGFORK_ERROR_ALREADY_INITIALIZED;
 
     if (request_info != nullptr) {
@@ -79,7 +80,8 @@ TuningFork_ErrorCode Init(const Settings &settings,
     }
 
     s_impl = std::make_unique<TuningForkImpl>(settings, backend, time_provider,
-                                              meminfo_provider, first_run);
+                                              meminfo_provider,
+                                              battery_provider, first_run);
 
     if (s_impl->InitializationErrorCode() != TUNINGFORK_ERROR_OK) {
         auto err = s_impl->InitializationErrorCode();
@@ -222,6 +224,21 @@ TuningFork_ErrorCode StopRecordingLoadingTime(LoadingHandle handle) {
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else
         return s_impl->StopRecordingLoadingTime(handle);
+}
+TuningFork_ErrorCode StartLoadingGroup(const LoadingTimeMetadata *d,
+                                       const ProtobufSerialization *annotation,
+                                       LoadingHandle *handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StartLoadingGroup(d, annotation, handle);
+}
+
+TuningFork_ErrorCode StopLoadingGroup(LoadingHandle handle) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->StopLoadingGroup(handle);
 }
 
 TuningFork_ErrorCode ReportLifecycleEvent(TuningFork_LifecycleState state) {
