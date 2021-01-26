@@ -32,6 +32,7 @@ class OnDeviceStressTester {
   public static final int OCCUPY_MEMORY_OK = 4;
   public static final int OCCUPY_MEMORY_FAILED = 5;
   public static final int SERVICE_CHECK_FREQUENCY = 250;
+  public static final int NO_PID_TIMEOUT = 1000 * 2;
   private static final String TAG = OnDeviceStressTester.class.getSimpleName();
   private final ServiceConnection serviceConnection;
 
@@ -78,12 +79,19 @@ class OnDeviceStressTester {
                 int servicePid = msg.arg1;
                 serviceWatcherTimer = new Timer();
                 serviceWatcherTimer.scheduleAtFixedRate(new TimerTask() {
+                  private long lastSawPid;
                   @Override
                   public void run() {
                     int oomScore = Utils.getOomScore(servicePid);
                     if (oomScore == -1) {
-                      // The lack of OOM score is almost certainly because the process was killed.
-                      stopService();
+                      if (lastSawPid > 0
+                          && System.currentTimeMillis() - lastSawPid > NO_PID_TIMEOUT) {
+                        // The prolonged lack of OOM score is almost certainly because the process
+                        // was killed.
+                        stopService();
+                      }
+                    } else {
+                      lastSawPid = System.currentTimeMillis();
                     }
                   }
                 }, 0, SERVICE_CHECK_FREQUENCY);
