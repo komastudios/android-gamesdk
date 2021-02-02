@@ -36,8 +36,10 @@ class UploadThread : public Runnable {
     const Session* lifecycle_event_session_;
 
    public:
-    UploadThread(IBackend* backend, IdProvider* id_provider);
+    UploadThread(IdProvider* id_provider);
     ~UploadThread();
+
+    void SetBackend(IBackend* backend);
 
     void InitialChecks(Session& session, IdProvider& id_provider,
                        const TuningFork_Cache* persister);
