@@ -52,7 +52,7 @@ class HttpBackend : public IBackend {
 
    private:
     std::shared_ptr<UltimateUploader> ultimate_uploader_;
-    const TuningFork_Cache* persister_;
+    const TuningFork_Cache* persister_ = nullptr;
 };
 
 }  // namespace tuningfork

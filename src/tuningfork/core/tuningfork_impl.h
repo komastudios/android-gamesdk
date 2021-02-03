@@ -39,8 +39,8 @@ class TuningForkImpl : public IdProvider {
     CrashHandler crash_handler_;
     Settings settings_;
     std::unique_ptr<Session> sessions_[2];
-    Session *current_session_;
-    TimePoint last_submit_time_;
+    Session *current_session_ = nullptr;
+    TimePoint last_submit_time_ = TimePoint::min();
     std::unique_ptr<gamesdk::Trace> trace_;
     std::vector<TimePoint> live_traces_;
     IBackend *backend_;
@@ -48,20 +48,19 @@ class TuningForkImpl : public IdProvider {
     SerializedAnnotation current_annotation_;
     std::vector<uint32_t> annotation_radix_mult_;
     MetricId current_annotation_id_;
-    ITimeProvider *time_provider_;
-    IMemInfoProvider *meminfo_provider_;
-    IBatteryProvider *battery_provider_;
+    ITimeProvider *time_provider_ = nullptr;
+    IMemInfoProvider *meminfo_provider_ = nullptr;
+    IBatteryProvider *battery_provider_ = nullptr;
     std::vector<InstrumentationKey> ikeys_;
     std::atomic<int> next_ikey_;
-    TimePoint loading_start_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
     std::mutex loading_time_metadata_map_mutex_;
     std::unordered_map<LoadingTimeMetadataWithGroup, LoadingTimeMetadataId>
         loading_time_metadata_map_;
     ActivityLifecycleState activity_lifecycle_state_;
-    bool before_first_tick_;
-    bool app_first_run_;
+    bool before_first_tick_ = true;
+    bool app_first_run_ = true;
     std::unordered_map<LoadingHandle, ProcessTime> live_loading_events_;
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
@@ -78,7 +77,7 @@ class TuningForkImpl : public IdProvider {
 
     std::string current_loading_group_;
     MetricId current_loading_group_metric_;
-    Duration current_loading_group_start_time_;
+    Duration current_loading_group_start_time_ = Duration::zero();
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
@@ -86,6 +85,9 @@ class TuningForkImpl : public IdProvider {
                    IMemInfoProvider *memory_provider,
                    IBatteryProvider *battery_provider,
                    bool first_run /* whether we have just installed the app*/);
+
+    TuningForkImpl(const TuningForkImpl &) = delete;
+    TuningForkImpl &operator=(const TuningForkImpl &) = delete;
 
     ~TuningForkImpl();
 

@@ -40,7 +40,7 @@ typedef enum CrashReason {
 } CrashReason;
 
 // A recording session which stores histograms and time-series.
-// These are double-buffered inside tuning fork.
+// These are double-buffered inside TuningForkImpl.
 class Session {
    public:
     // Get functions return nullptr if there is no availability of this type
@@ -169,7 +169,7 @@ class Session {
         return p;
     }
 
-    TimeInterval time_;
+    TimeInterval time_ = {};
     std::vector<std::unique_ptr<FrameTimeMetricData>> frame_time_data_;
     std::vector<std::unique_ptr<LoadingTimeMetricData>> loading_time_data_;
     std::vector<std::unique_ptr<MemoryMetricData>> memory_data_;

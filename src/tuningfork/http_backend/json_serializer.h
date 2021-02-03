@@ -30,6 +30,7 @@ class JsonSerializer {
    public:
     JsonSerializer(const Session& session, IdProvider* id_provider)
         : session_(session), id_provider_(id_provider) {}
+
     void SerializeEvent(const RequestInfo& device_info,
                         std::string& evt_json_ser);
 
