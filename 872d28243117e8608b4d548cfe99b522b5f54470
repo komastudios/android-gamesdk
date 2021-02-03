@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d69d6252_ea9eab50",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2021-02-03T11:44:56Z",
+      "side": 1,
+      "message": "Should this be outside \"if\" in case if backened is not nullptr?",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 44
+      },
+      "revId": "872d28243117e8608b4d548cfe99b522b5f54470",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
