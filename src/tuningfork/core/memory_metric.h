@@ -30,8 +30,9 @@ static const Duration kSlowMemoryMetricInterval =
     std::chrono::milliseconds(1000);
 
 struct MemoryMetric {
-    MemoryMetric() = default;
-    MemoryMetric(MemoryRecordType memory_record_type, Duration period)
+    MemoryMetric(
+        MemoryRecordType memory_record_type = MemoryRecordType::INVALID,
+        Duration period = Duration::zero())
         : memory_record_type_(memory_record_type),
           period_ms_(
               std::chrono::duration_cast<std::chrono::milliseconds>(period)

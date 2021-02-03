@@ -64,14 +64,20 @@ class DebugBackend : public IBackend {
 static std::unique_ptr<DebugBackend> s_debug_backend =
     std::make_unique<DebugBackend>();
 
-UploadThread::UploadThread(IBackend* backend, IdProvider* id_provider)
+UploadThread::UploadThread(IdProvider* id_provider)
     : Runnable(nullptr),
-      backend_(backend),
+      backend_(s_debug_backend.get()),
       upload_callback_(nullptr),
       persister_(nullptr),
       id_provider_(id_provider) {
-    if (backend_ == nullptr) backend_ = s_debug_backend.get();
     Start();
+}
+
+void UploadThread::SetBackend(IBackend* backend) {
+    if (backend == nullptr)
+        backend_ = s_debug_backend.get();
+    else
+        backend_ = backend;
 }
 
 UploadThread::~UploadThread() { Stop(); }

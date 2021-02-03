@@ -44,7 +44,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     : settings_(settings),
       trace_(gamesdk::Trace::create()),
       backend_(backend),
-      upload_thread_(backend, this),
+      upload_thread_(this),
       current_annotation_id_(MetricId::FrameTime(0, 0)),
       time_provider_(time_provider),
       meminfo_provider_(meminfo_provider),
@@ -65,6 +65,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
             return;
         }
     }
+    upload_thread_.SetBackend(backend_);
 
     if (time_provider_ == nullptr) {
         default_time_provider_ = std::make_unique<ChronoTimeProvider>();

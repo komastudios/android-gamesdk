@@ -25,19 +25,24 @@ namespace tuningfork {
 
 class UploadThread : public Runnable {
    private:
-    const Session* ready_;
-    bool upload_;
-    IBackend* backend_;
-    TuningFork_UploadCallback upload_callback_;
-    const TuningFork_Cache* persister_;
-    IdProvider* id_provider_;
+    const Session* ready_ = nullptr;
+    bool upload_ = false;
+    IBackend* backend_ = nullptr;
+    TuningFork_UploadCallback upload_callback_ = nullptr;
+    const TuningFork_Cache* persister_ = nullptr;
+    IdProvider* id_provider_ = nullptr;
     // Optional isn't available until C++17 so use vector instead.
     std::vector<LifecycleUploadEvent> lifecycle_event_;
-    const Session* lifecycle_event_session_;
+    const Session* lifecycle_event_session_ = nullptr;
 
    public:
-    UploadThread(IBackend* backend, IdProvider* id_provider);
+    UploadThread(IdProvider* id_provider);
     ~UploadThread();
+
+    UploadThread(const UploadThread&) = delete;
+    UploadThread& operator=(const UploadThread&) = delete;
+
+    void SetBackend(IBackend* backend);
 
     void InitialChecks(Session& session, IdProvider& id_provider,
                        const TuningFork_Cache* persister);

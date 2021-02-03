@@ -57,30 +57,31 @@ struct MetricId {
             Metric::Type type;
         } detail;
     };
+    MetricId(uint64_t base_in = 0) : base(base_in) {}
     bool operator==(const MetricId& x) const { return base == x.base; }
 
     static MetricId FrameTime(AnnotationId aid, uint16_t ikey) {
-        MetricId id{0};
+        MetricId id;
         id.detail.type = Metric::FRAME_TIME;
         id.detail.frame_time.ikey = ikey;
         id.detail.annotation = aid;
         return id;
     }
     static MetricId LoadingTime(AnnotationId aid, LoadingTimeMetadataId mid) {
-        MetricId id{0};
+        MetricId id;
         id.detail.type = Metric::LOADING_TIME;
         id.detail.annotation = aid;
         id.detail.loading_time.metadata = mid;
         return id;
     }
     static MetricId Memory(MemoryRecordType record_type) {
-        MetricId id{0};
+        MetricId id;
         id.detail.type = Metric::MEMORY;
         id.detail.memory.record_type = record_type;
         return id;
     }
     static MetricId Battery(AnnotationId aid) {
-        MetricId id{0};
+        MetricId id;
         id.detail.type = Metric::BATTERY;
         id.detail.annotation = aid;
         return id;

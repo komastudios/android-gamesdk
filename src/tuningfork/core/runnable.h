@@ -33,7 +33,7 @@ class Runnable {
     std::unique_ptr<std::thread> thread_;
     std::mutex mutex_;
     std::condition_variable cv_;
-    bool do_quit_;
+    bool do_quit_ = false;
 
    public:
     // If a time provider is supplied, waiting is done by polling the time
