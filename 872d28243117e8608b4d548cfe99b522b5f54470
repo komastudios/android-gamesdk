@@ -22,6 +22,30 @@
       },
       "revId": "872d28243117e8608b4d548cfe99b522b5f54470",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cc39146_8649d7ed",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-02-03T12:49:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d69d6252_ea9eab50",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 44
+      },
+      "revId": "872d28243117e8608b4d548cfe99b522b5f54470",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
