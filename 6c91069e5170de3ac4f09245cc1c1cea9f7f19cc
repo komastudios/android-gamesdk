@@ -16,6 +16,24 @@
       "message": "Looks good. Would be good to quickly audit the rest of the codebase for such uninitialized structs. Or should we give them a default constructor to avoid this problem at all?",
       "revId": "6c91069e5170de3ac4f09245cc1c1cea9f7f19cc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a00d10e6_8cbde8f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-02-03T14:11:35Z",
+      "side": 1,
+      "message": "Yes, good point.",
+      "parentUuid": "3cca2ee0_2fc41595",
+      "revId": "6c91069e5170de3ac4f09245cc1c1cea9f7f19cc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
