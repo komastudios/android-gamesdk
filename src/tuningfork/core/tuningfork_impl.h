@@ -77,8 +77,8 @@ class TuningForkImpl : public IdProvider {
     bool lifecycle_stop_event_sent_ = false;
 
     std::string current_loading_group_;
-    MetricId current_loading_group_metric_;
-    Duration current_loading_group_start_time_;
+    MetricId current_loading_group_metric_ = {};
+    Duration current_loading_group_start_time_ = {};
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
