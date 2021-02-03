@@ -36,9 +36,9 @@ class RepeatingTask {
 
    private:
     // When to wake to call this next.
-    TimePoint next_time;
+    TimePoint next_time = TimePoint::min();
     // The minimum time between calling DoWork.
-    Duration min_work_interval;
+    Duration min_work_interval = Duration::zero();
 
     friend class AsyncTelemetry;
     friend class RepeatingTaskPtrComparator;
@@ -48,7 +48,7 @@ class RepeatingTask {
 class AsyncTelemetry : public Runnable {
     // This is maintained as a heap, ordered by next_time.
     std::deque<std::shared_ptr<RepeatingTask>> metrics_;
-    Session* session_;
+    Session* session_ = 0;
 
    public:
     AsyncTelemetry(ITimeProvider* time_provider);

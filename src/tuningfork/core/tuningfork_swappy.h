@@ -28,13 +28,13 @@ typedef void (*SwappyStartFrameCallbackPre1_5)(
 typedef void (*SwappyPostWaitCallbackPre1_5)(void*, long cpu_time_ns,
                                              long gpu_time_ns);
 struct SwappyTracerPre1_5 {
-    SwappyPreWaitCallback preWait;
-    SwappyPostWaitCallbackPre1_5 postWait;
-    SwappyPreSwapBuffersCallback preSwapBuffers;
-    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers;
-    SwappyStartFrameCallbackPre1_5 startFrame;
-    void* userData;
-    SwappySwapIntervalChangedCallback swapIntervalChanged;
+    SwappyPreWaitCallback preWait = nullptr;
+    SwappyPostWaitCallbackPre1_5 postWait = nullptr;
+    SwappyPreSwapBuffersCallback preSwapBuffers = nullptr;
+    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers = nullptr;
+    SwappyStartFrameCallbackPre1_5 startFrame = nullptr;
+    void* userData = nullptr;
+    SwappySwapIntervalChangedCallback swapIntervalChanged = nullptr;
 };
 constexpr int SWAPPY_VERSION_1_5 = ((1 << 16) | 5);
 
@@ -42,13 +42,13 @@ constexpr int SWAPPY_VERSION_1_5 = ((1 << 16) | 5);
 // and types of times were longs.
 typedef SwappyPreWaitCallback SwappyWaitCallback;
 struct SwappyTracerPre1_3 {
-    SwappyWaitCallback preWait;
-    SwappyWaitCallback postWait;
-    SwappyPreSwapBuffersCallback preSwapBuffers;
-    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers;
-    SwappyStartFrameCallbackPre1_5 startFrame;
-    void* userData;
-    SwappySwapIntervalChangedCallback swapIntervalChanged;
+    SwappyWaitCallback preWait = nullptr;
+    SwappyWaitCallback postWait = nullptr;
+    SwappyPreSwapBuffersCallback preSwapBuffers = nullptr;
+    SwappyPostSwapBuffersCallbackPre1_5 postSwapBuffers = nullptr;
+    SwappyStartFrameCallbackPre1_5 startFrame = nullptr;
+    void* userData = nullptr;
+    SwappySwapIntervalChangedCallback swapIntervalChanged = nullptr;
 };
 constexpr int SWAPPY_VERSION_1_3 = ((1 << 16) | 3);
 
@@ -58,8 +58,8 @@ namespace tuningfork {
 // if it is
 //  enabled + available.
 class SwappyTraceWrapper {
-    SwappyTracerFn swappyTracerFn_;
-    SwappyTracer trace_;
+    SwappyTracerFn swappyTracerFn_ = nullptr;
+    SwappyTracer trace_ = {};
     TuningFork_TraceHandle logicTraceHandle_ = 0;
 
    public:

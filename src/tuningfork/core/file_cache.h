@@ -31,7 +31,10 @@ class FileCache {
     std::mutex mutex_;
 
    public:
-    FileCache(const std::string& path = "");
+    explicit FileCache(const std::string& path = "");
+
+    FileCache(const FileCache&) = delete;
+    FileCache& operator=(const FileCache&) = delete;
 
     void SetDir(const std::string& path = "") { path_ = path; }
 

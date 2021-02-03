@@ -29,7 +29,7 @@ class ProcessTimeInterval {
     ProcessTime end_;
 
    public:
-    ProcessTimeInterval() {}
+    ProcessTimeInterval() : start_(0), end_(0) {}
     // Initialize as a duration.
     ProcessTimeInterval(Duration duration) : start_(duration), end_(0) {}
     // Initialize as an interval.
