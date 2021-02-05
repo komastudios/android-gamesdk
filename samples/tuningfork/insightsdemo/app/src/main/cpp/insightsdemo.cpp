@@ -212,6 +212,7 @@ Java_com_tuningfork_insightsdemo_TFTestActivity_onChoreographer(JNIEnv */*env*/,
                 auto ser = tf::TuningFork_CProtobufSerialization_Alloc(a);
                 inter_level_loading_metadata.state =
                     TuningFork_LoadingTimeMetadata::LoadingState::INTER_LEVEL;
+                inter_level_loading_metadata.network_latency_ns = 1234567;
                 TuningFork_startRecordingLoadingTime(&inter_level_loading_metadata,
                                                      sizeof(TuningFork_LoadingTimeMetadata),
                                                      &ser,
