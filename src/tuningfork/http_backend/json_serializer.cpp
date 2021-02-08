@@ -76,7 +76,9 @@ system_clock::time_point RFC3339ToTime(const std::string& s) {
 
 std::string DurationToSecondsString(Duration d) {
     std::stringstream str;
-    str << (duration_cast<nanoseconds>(d).count() / 1000000000.0) << 's';
+    str.precision(9);
+    str << std::fixed << (duration_cast<nanoseconds>(d).count() / 1000000000.0)
+        << 's';
     return str.str();
 }
 Duration StringToDuration(const std::string& s) {
@@ -134,7 +136,8 @@ static std::string DurationJsonFromNanos(uint64_t ns) {
     double dns = ns;
     dns /= 1000000000.0;
     std::stringstream str;
-    str << dns << "s";
+    str.precision(9);
+    str << std::fixed << dns << "s";
     return str.str();
 }
 
