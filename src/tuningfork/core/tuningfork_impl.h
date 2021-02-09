@@ -118,7 +118,7 @@ class TuningForkImpl : public IdProvider {
 
     void SetUploadCallback(TuningFork_UploadCallback cbk);
 
-    TuningFork_ErrorCode Flush();
+    TuningFork_ErrorCode Flush(bool upload);
 
     TuningFork_ErrorCode Flush(TimePoint t, bool upload);
 

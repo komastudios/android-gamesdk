@@ -22,7 +22,7 @@
 
 namespace tuningfork {
 
-constexpr Duration kUploadCheckInterval = std::chrono::seconds(10);
+constexpr Duration kUploadCheckInterval = std::chrono::seconds(1);
 
 const char kUploadRpcName[] = ":uploadTelemetry";
 
@@ -33,13 +33,14 @@ Duration UltimateUploader::DoWork() {
     CheckUploadPending();
     return kUploadCheckInterval;
 }
+
 void UltimateUploader::Run() { Runnable::Run(); }
+
 bool UltimateUploader::CheckUploadPending() {
     TuningFork_CProtobufSerialization uploading_hists_ser;
     if (persister_->get(HISTOGRAMS_UPLOADING, &uploading_hists_ser,
                         persister_->user_data) == TUNINGFORK_ERROR_OK) {
         std::string request_json = ToString(uploading_hists_ser);
-        TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
         int response_code = -1;
         std::string body;
         ALOGV("Got UPLOADING histograms: %s", request_json.c_str());
@@ -49,11 +50,17 @@ bool UltimateUploader::CheckUploadPending() {
             ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
             if (response_code == 200) {
                 persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
+                TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
                 return true;
             }
-        } else
+        } else {
             ALOGW("Error %d when sending UPLOAD request\n%s", ret,
                   request_json.c_str());
+            persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
+            persister_->set(HISTOGRAMS_PAUSED, &uploading_hists_ser,
+                            persister_->user_data);
+        }
+        TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
     } else {
         ALOGV("No upload pending");
         return true;
