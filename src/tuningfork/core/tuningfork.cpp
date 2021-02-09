@@ -161,11 +161,11 @@ TuningFork_ErrorCode SetUploadCallback(TuningFork_UploadCallback cbk) {
     }
 }
 
-TuningFork_ErrorCode Flush() {
+TuningFork_ErrorCode Flush(bool upload) {
     if (!s_impl) {
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     } else {
-        return s_impl->Flush();
+        return s_impl->Flush(upload);
     }
 }
 
