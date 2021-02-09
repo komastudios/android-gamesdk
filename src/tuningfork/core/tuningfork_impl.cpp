@@ -36,6 +36,8 @@
 
 namespace tuningfork {
 
+static constexpr Duration kMinAllowedFlushInterval = std::chrono::seconds(60);
+
 TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                                ITimeProvider *time_provider,
                                IMemInfoProvider *meminfo_provider,
@@ -131,7 +133,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     auto crash_callback = [this]() -> bool {
         std::stringstream ss;
         ss << std::this_thread::get_id();
-        TuningFork_ErrorCode ret = this->Flush();
+        TuningFork_ErrorCode ret = this->Flush(true);
         ALOGI("Crash flush result : %d", ret);
         return true;
     };
@@ -487,9 +489,11 @@ void TuningForkImpl::InitAnnotationRadixes() {
         settings_.aggregation_strategy.annotation_enum_size);
 }
 
-TuningFork_ErrorCode TuningForkImpl::Flush() {
+TuningFork_ErrorCode TuningForkImpl::Flush(bool upload) {
     auto t = std::chrono::steady_clock::now();
-    return Flush(t, false);
+    if (t - last_submit_time_ < kMinAllowedFlushInterval)
+        return TUNINGFORK_ERROR_UPLOAD_TOO_FREQUENT;
+    return Flush(t, upload);
 }
 
 void TuningForkImpl::SwapSessions() {
@@ -525,7 +529,7 @@ void TuningForkImpl::InitTrainingModeParams() {
 
 TuningFork_ErrorCode TuningForkImpl::SetFidelityParameters(
     const ProtobufSerialization &params) {
-    auto flush_result = Flush();
+    auto flush_result = Flush(true);
     if (flush_result != TUNINGFORK_ERROR_OK) {
         ALOGW("Warning, previous data could not be flushed.");
         SwapSessions();

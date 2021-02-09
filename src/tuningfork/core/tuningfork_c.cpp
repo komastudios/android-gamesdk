@@ -103,7 +103,7 @@ TuningFork_ErrorCode TuningFork_endTrace(TuningFork_TraceHandle h) {
     return tf::EndTrace(h);
 }
 
-TuningFork_ErrorCode TuningFork_flush() { return tf::Flush(); }
+TuningFork_ErrorCode TuningFork_flush() { return tf::Flush(true); }
 
 TuningFork_ErrorCode TuningFork_destroy() {
     tf::KillDownloadThreads();

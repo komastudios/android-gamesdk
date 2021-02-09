@@ -36,6 +36,23 @@ using namespace json11;
 using namespace std::chrono;
 using namespace date;
 
+// Unfortunately, C++ conversion/rounding of numbers requires this.
+static std::string FixedAndTruncated(double d) {
+    std::stringstream s;
+    s.precision(9);
+    s << std::fixed << d;
+    auto str = s.str();
+    if (str.find('.') != std::string::npos) {
+        // Remove trailing zeroes
+        str = str.substr(0, str.find_last_not_of('0') + 1);
+        // If the decimal point is now the last character, remove that as well
+        if (str.find('.') == str.size() - 1) {
+            str = str.substr(0, str.size() - 1);
+        }
+    }
+    return str;
+}
+
 static std::string GetVersionString(uint32_t ver) {
     std::stringstream version_str;
     version_str << ANDROID_GAMESDK_MAJOR_VERSION(ver) << "."
@@ -76,8 +93,8 @@ system_clock::time_point RFC3339ToTime(const std::string& s) {
 
 std::string DurationToSecondsString(Duration d) {
     std::stringstream str;
-    str.precision(9);
-    str << std::fixed << (duration_cast<nanoseconds>(d).count() / 1000000000.0)
+    str << FixedAndTruncated(duration_cast<nanoseconds>(d).count() /
+                             1000000000.0)
         << 's';
     return str.str();
 }
@@ -136,8 +153,7 @@ static std::string DurationJsonFromNanos(uint64_t ns) {
     double dns = ns;
     dns /= 1000000000.0;
     std::stringstream str;
-    str.precision(9);
-    str << std::fixed << dns << "s";
+    str << FixedAndTruncated(dns) << "s";
     return str.str();
 }
 

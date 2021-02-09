@@ -80,8 +80,8 @@ TuningFork_ErrorCode EndTrace(TraceHandle h);
 // performs an upload.
 TuningFork_ErrorCode SetUploadCallback(TuningFork_UploadCallback cbk);
 
-// Force upload of the current histograms.
-TuningFork_ErrorCode Flush();
+// Force upload or saving of the current histograms.
+TuningFork_ErrorCode Flush(bool upload);
 
 // Clean up all memory owned by Tuning Fork and kill any threads.
 TuningFork_ErrorCode Destroy();
