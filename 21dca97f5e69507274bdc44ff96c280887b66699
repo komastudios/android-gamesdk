@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd9c4f8b_5a0f6755",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-03-02T14:25:53Z",
+      "side": 1,
+      "message": "Open-Source-Licensing flagged license text to be shown to the user, not a license for the code.",
+      "revId": "21dca97f5e69507274bdc44ff96c280887b66699",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
