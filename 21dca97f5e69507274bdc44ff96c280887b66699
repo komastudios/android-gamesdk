@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000008571450",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1610792?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2393130d_eb6ae3df",
+        "filename": "src/tuningfork/tools/plugin/src/main/resources/strings_en.properties",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-03-02T14:22:19Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nRedistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:...n Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and or other materials provided with the distribution....may be used to endorse or promote products derived from this software without specific prior written permission.\n",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 136,
+        "endChar": 57
+      },
+      "revId": "21dca97f5e69507274bdc44ff96c280887b66699",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
