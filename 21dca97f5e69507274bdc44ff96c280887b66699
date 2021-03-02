@@ -16,6 +16,23 @@
       "message": "Open-Source-Licensing flagged license text to be shown to the user, not a license for the code.",
       "revId": "21dca97f5e69507274bdc44ff96c280887b66699",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "484a8993_abd0d2c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-03-02T15:59:52Z",
+      "side": 1,
+      "message": "Build error in gamesdk-istresser looks like an infra error, retrying presubmit",
+      "revId": "21dca97f5e69507274bdc44ff96c280887b66699",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
