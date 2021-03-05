@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0dae5a3c_8c9b59a5",
+        "filename": "RELEASE_NOTES",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-05T17:32:22Z",
+      "side": 1,
+      "message": "Android Frame Pacing and Android Performance Tuner libraries",
+      "range": {
+        "startLine": 109,
+        "startChar": 68,
+        "endLine": 110,
+        "endChar": 36
+      },
+      "revId": "a7d4674d76640deed2b4f25950a79e159b34e6fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13727cb4_a1baecce",
+        "filename": "RELEASE_NOTES",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-05T17:32:22Z",
+      "side": 1,
+      "message": "-\u003e \u0027for high-performance audio\u0027? Otherwise it sounds like it\u0027s only for audio / music apps? I know this is what the official docs say though...",
+      "range": {
+        "startLine": 111,
+        "startChar": 37,
+        "endLine": 111,
+        "endChar": 87
+      },
+      "revId": "a7d4674d76640deed2b4f25950a79e159b34e6fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
