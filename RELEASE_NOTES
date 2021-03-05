@@ -103,4 +103,12 @@ This release adds new features to APT. There are no new features to Swappy.
     a certain level loading. Only one group can be active at a time.
  - Abandoned loading. Loading that is occuring when a player backgrounds the game is logged for
    special treatment by the backend.
- 
+
+Version 1.2.3
+=============
+This release adds Oboe to the Game SDK. There are no changes to the Android Frame Pacing library
+and to the Android Performance Tuner.
+- Oboe is an open-source C++ library designed to help build high-performance audio apps on
+  Android. Oboe provides a single native API that works in Android 4.1 (API level 16) and higher.
+
+For more information, see https://developer.android.com/games/sdk/oboe/.
