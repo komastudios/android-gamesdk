@@ -54,10 +54,10 @@ public class UIUtils {
   public static void visitAllPaths(TreeNode node, Consumer<TreePath> consumer) {
     consumer.accept(TreeUtil.getPathFromRoot(node));
     if (node.getChildCount() >= 0) {
-      for (Enumeration<TreeNode> e = node.children(); e.hasMoreElements(); ) {
-        TreeNode newNode = e.nextElement();
-        visitAllPaths(newNode, consumer);
-      }
+        for (Enumeration<? extends TreeNode> e = node.children(); e.hasMoreElements();) {
+            TreeNode newNode = e.nextElement();
+            visitAllPaths(newNode, consumer);
+        }
     }
   }
 }
