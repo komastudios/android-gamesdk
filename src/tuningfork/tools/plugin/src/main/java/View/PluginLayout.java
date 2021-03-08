@@ -30,6 +30,7 @@ import View.DebugInfo.debugInfoTab;
 import View.Fidelity.FidelityTab;
 import View.FidelityChanger.FidelityChanger;
 import View.InstrumentationSettings.InstrumentationSettingsTab;
+import View.License.LicenseTab;
 import View.Monitoring.MonitoringTab;
 import View.Quality.QualityTab;
 import com.google.tuningfork.Tuningfork.Settings;
@@ -79,6 +80,7 @@ public class PluginLayout extends JPanel {
   private MonitoringTab monitoringTab;
   private FidelityChanger fidelityChanger;
   private debugInfoTab debugInfoTab;
+  private LicenseTab licenseTab;
   private InstrumentationSettingsTabController instrumentationSettingsTabController;
   private JPanel menuPanel;
   private JTree menu;
@@ -140,6 +142,7 @@ public class PluginLayout extends JPanel {
     this.add(monitoringTab);
     this.add(fidelityChanger);
     this.add(debugInfoTab);
+    this.add(licenseTab);
   }
 
   private void changeLayoutVisibility(JPanel toSetVisible) {
@@ -167,7 +170,6 @@ public class PluginLayout extends JPanel {
         resourceLoader.get("fidelity_settings"));
     DefaultMutableTreeNode qualitySettingsNode = new DefaultMutableTreeNode(
         resourceLoader.get("quality_settings"));
-
     DefaultMutableTreeNode validationSettings = new DefaultMutableTreeNode(
         resourceLoader.get("instrumentation_settings"));
 
@@ -181,15 +183,19 @@ public class PluginLayout extends JPanel {
         resourceLoader.get("monitoring"));
     DefaultMutableTreeNode telemetryNode =
         new DefaultMutableTreeNode(resourceLoader.get("telemetry_report"));
-    DefaultMutableTreeNode debugInfo =
-        new DefaultMutableTreeNode(resourceLoader.get("debug_info"));
+    DefaultMutableTreeNode debugInfo = new DefaultMutableTreeNode(resourceLoader.get("debug_info"));
     DefaultMutableTreeNode experimentalNode = new DefaultMutableTreeNode(
         resourceLoader.get("fidelity_changer"));
+
     monitoringRoot.add(telemetryNode);
     monitoringRoot.add(debugInfo);
     monitoringRoot.add(experimentalNode);
+
+    DefaultMutableTreeNode licenseNode = new DefaultMutableTreeNode(resourceLoader.get("license"));
+
     root.add(settingsRoot);
     root.add(monitoringRoot);
+    root.add(licenseNode);
 
     UIManager.put("Tree.rendererFillBackground", false);
     menu = new Tree(root);
@@ -214,8 +220,10 @@ public class PluginLayout extends JPanel {
           changeLayoutVisibility(fidelityChanger);
         } else if (node.equals(debugInfo)) {
           changeLayoutVisibility(debugInfoTab);
+        } else if (node.equals(licenseNode)) {
+            changeLayoutVisibility(licenseTab);
         } else if (!node.isLeaf()) {
-          menu.setMinimumSize(menuSize);
+            menu.setMinimumSize(menuSize);
         }
       }
     });
@@ -277,6 +285,10 @@ public class PluginLayout extends JPanel {
     debugInfoTab.setVisible(false);
     menuPanel = new JPanel();
 
+    // License tab initialization
+    licenseTab = new LicenseTab();
+    licenseTab.setVisible(false);
+
     panels.add(qualityLayout);
     panels.add(annotationsLayout);
     panels.add(fidelitySettingsLayout);
@@ -284,6 +296,7 @@ public class PluginLayout extends JPanel {
     panels.add(monitoringTab);
     panels.add(fidelityChanger);
     panels.add(debugInfoTab);
+    panels.add(licenseTab);
     initMenuTree();
   }
 
