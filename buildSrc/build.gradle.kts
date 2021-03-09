@@ -1,5 +1,6 @@
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 plugins {
@@ -18,6 +19,8 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation(kotlin("test-junit"))
+
+    implementation("com.google.code.gson:gson:2.8.6")
 
     // Use ktlint for auto-formatting and linting
     ktlint("com.pinterest:ktlint:0.37.2")

@@ -32,6 +32,7 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
@@ -43,6 +44,7 @@ else
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork
 fi
 
 # Calculate hash of the zip file
