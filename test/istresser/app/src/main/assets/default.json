@@ -61,7 +61,15 @@
             }
           },
           "heuristics": {
-            "canaryProcessTester": true
+            "canaryProcessTester": true,
+            "formulas": {
+              "yellow": [
+                "VmRSS > baseline.availMem * .9"
+              ],
+              "red": [
+                "VmRSS > baseline.availMem"
+              ]
+            }
           },
           "predictions": {
             "oom_score": true
