@@ -24,6 +24,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   private final JSONObject params;
   private JSONObject onDeviceLimit;
   private JSONObject onDeviceBaseline;
+  private final Evaluator evaluator = new Evaluator();
 
   /**
    * Create an Android memory advice fetcher.
@@ -289,6 +290,41 @@ public class MemoryAdvisor extends MemoryMonitor {
             warning.put("onTrim", heuristics.get("onTrim"));
             warning.put("level", "red");
             warnings.put(warning);
+          }
+        }
+
+        if (heuristics.has("formulas")) {
+          JSONObject allFormulas = heuristics.getJSONObject("formulas");
+          Iterator<String> it = allFormulas.keys();
+          while (it.hasNext()) {
+            String level = it.next();
+            JSONArray formulas = allFormulas.getJSONArray(level);
+            for (int idx = 0; idx != formulas.length(); idx++) {
+              String formula = formulas.getString(idx);
+              try {
+                if (evaluator.evaluate(formula, key1 -> {
+                      JSONObject dictionary;
+                      if (key1.startsWith("baseline.")) {
+                        key1 = key1.substring("baseline.".length());
+                        dictionary = baseline;
+                      } else {
+                        dictionary = metrics;
+                      }
+                      Number value = getValue(dictionary, key1);
+                      if (value == null) {
+                        throw new LookupException(key1 + " not defined");
+                      }
+                      return value.doubleValue();
+                    })) {
+                  JSONObject warning = new JSONObject();
+                  warning.put("formula", formula);
+                  warning.put("level", level);
+                  warnings.put(warning);
+                }
+              } catch (LookupException ex) {
+                Log.w(TAG, ex);
+              }
+            }
           }
         }
 

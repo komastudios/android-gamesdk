@@ -26,6 +26,24 @@
     "onTrim": {
       "description": "A heuristic that fires when `Activity.onTrimMemory` events are received.",
       "type": "boolean"
+    },
+    "formulas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "red": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "yellow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "additionalProperties": {
