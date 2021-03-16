@@ -186,7 +186,7 @@ class MemoryMonitor {
       }
 
       if (canaryProcessTester != null && canaryProcessTester.warning()) {
-        report.put("canaryProcessTester", true);
+        report.put("canaryProcessTester", "red");
         canaryProcessTester.reset();
       }
 
