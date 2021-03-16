@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
 
     memoryAdvisor = new MemoryAdvisor(this, new ReadyHandler() {
       @Override
-      public void onComplete() {
+      public void onComplete(boolean timedOut) {
         // The budget for overhead introduced by the advisor and watcher.
         int maxMillisecondsPerSecond = 10;
 

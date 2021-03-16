@@ -286,8 +286,8 @@ public class MainActivity extends Activity {
       }
 
       resultsStream.println(report);
-      memoryAdvisor = new MemoryAdvisor(
-          this, params.getJSONObject("advisorParameters"), () -> runOnUiThread(this::startTest));
+      memoryAdvisor = new MemoryAdvisor(this, params.getJSONObject("advisorParameters"),
+          (timedOut) -> runOnUiThread(this::startTest));
     } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
       throw new IllegalStateException(e);
     }

@@ -71,11 +71,11 @@ public class MemoryAdvisor extends MemoryMonitor {
                 readyHandler.stressTestProgress(metrics);
               }
 
-              public void accept(JSONObject baseline, JSONObject limit) {
+              public void accept(JSONObject baseline, JSONObject limit, boolean timedOut) {
                 onDeviceBaseline = baseline;
                 onDeviceLimit = limit;
                 scheduledExecutorService.schedule(
-                    readyHandler::onComplete, 1, TimeUnit.MILLISECONDS);
+                    () -> readyHandler.onComplete(timedOut), 1, TimeUnit.MILLISECONDS);
               }
             });
       } catch (JSONException ex) {
@@ -84,7 +84,8 @@ public class MemoryAdvisor extends MemoryMonitor {
     } else {
       deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
       if (readyHandler != null) {
-        scheduledExecutorService.schedule(readyHandler::onComplete, 1, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.schedule(
+            () -> readyHandler.onComplete(false), 1, TimeUnit.MILLISECONDS);
       }
     }
   }

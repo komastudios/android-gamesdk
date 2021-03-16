@@ -17,6 +17,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,9 +34,10 @@ class OnDeviceStressTester {
   public static final int OCCUPY_MEMORY_FAILED = 5;
   public static final int SERVICE_CHECK_FREQUENCY = 250;
   public static final int NO_PID_TIMEOUT = 1000 * 2;
+  private static final long NO_RESPONSE_TIMEOUT = 5000;
   private static final String TAG = OnDeviceStressTester.class.getSimpleName();
-  private final ServiceConnection serviceConnection;
-
+  private final AtomicReference<ServiceConnection> serviceConnection = new AtomicReference<>();
+  private final AtomicReference<Timer> timeoutTimer = new AtomicReference<>();
   /**
    * Construct an on-device stress tester.
    *
@@ -46,7 +48,7 @@ class OnDeviceStressTester {
   OnDeviceStressTester(Context context, JSONObject params, Consumer consumer) {
     Intent launchIntent = new Intent(context, StressService.class);
     launchIntent.putExtra("params", params.toString());
-    serviceConnection = new ServiceConnection() {
+    serviceConnection.set(new ServiceConnection() {
       private Messenger messenger;
       private JSONObject baseline;
       private JSONObject limit;
@@ -57,7 +59,7 @@ class OnDeviceStressTester {
         if (connectionCount > 0) {
           // If the service connects after the first time it is because the service was killed
           // on the first occasion.
-          stopService();
+          stopService(false);
           return;
         }
         connectionCount++;
@@ -88,7 +90,7 @@ class OnDeviceStressTester {
                           && System.currentTimeMillis() - lastSawPid > NO_PID_TIMEOUT) {
                         // The prolonged lack of OOM score is almost certainly because the process
                         // was killed.
-                        stopService();
+                        stopService(false);
                       }
                     } else {
                       lastSawPid = System.currentTimeMillis();
@@ -103,6 +105,10 @@ class OnDeviceStressTester {
           }));
           sendMessage(message);
         }
+        allocateMemory();
+      }
+
+      private void allocateMemory() {
         try {
           int toAllocate = (int) getMemoryQuantity(
               getOrDefault(params.getJSONObject("onDeviceStressTest"), "segmentSize", "4M"));
@@ -110,6 +116,11 @@ class OnDeviceStressTester {
           message.replyTo = new Messenger(new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+              ServiceConnection connection = serviceConnection.get();
+              if (connection == null) {
+                Log.e(TAG, "Message received although service had been stopped");
+                return true;
+              }
               // The service's return message includes metrics.
               Bundle bundle = (Bundle) msg.obj;
               try {
@@ -125,8 +136,10 @@ class OnDeviceStressTester {
                 throw new MemoryAdvisorException(e);
               }
               if (msg.what == OCCUPY_MEMORY_FAILED) {
-                stopService();
-              } else if (msg.what != OCCUPY_MEMORY_OK) {
+                stopService(false);
+              } else if (msg.what == OCCUPY_MEMORY_OK) {
+                allocateMemory();
+              } else {
                 throw new MemoryAdvisorException("Unexpected return code " + msg.what);
               }
               return true;
@@ -143,31 +156,54 @@ class OnDeviceStressTester {
       }
 
       private void sendMessage(Message message) {
+        Timer oldTimer = timeoutTimer.getAndSet(new Timer());
+        if (oldTimer != null) {
+          oldTimer.cancel();
+        }
+        timeoutTimer.get().schedule(new TimerTask() {
+          @Override
+          public void run() {
+            Log.w(TAG, "Timed out: stopping service");
+            stopService(true);
+          }
+        }, NO_RESPONSE_TIMEOUT);
         try {
           messenger.send(message);
         } catch (DeadObjectException e) {
           // Complete the test because the messenger could not find the service - probably because
           // it was terminated by the system.
-          stopService();
+          stopService(false);
         } catch (RemoteException e) {
           Log.e(TAG, "Error sending message", e);
         }
       }
 
-      private void stopService() {
-        serviceWatcherTimer.cancel();
-        context.stopService(launchIntent);
-        context.unbindService(serviceConnection);
-        consumer.accept(baseline, limit);
+      private void stopService(boolean timedOut) {
+        Timer oldTimer = timeoutTimer.getAndSet(null);
+        if (oldTimer != null) {
+          oldTimer.cancel();
+        }
+        ServiceConnection connection = serviceConnection.getAndSet(null);
+        if (connection != null) {
+          Log.i(TAG, "Unbinding service");
+          serviceWatcherTimer.cancel();
+          context.unbindService(connection);
+          if (context.stopService(launchIntent)) {
+            Log.i(TAG, "Service reported stopped");
+          } else {
+            Log.i(TAG, "Service could not be stopped");
+          }
+          consumer.accept(baseline, limit, timedOut);
+        }
       }
-    };
+    });
 
     context.startService(launchIntent);
-    context.bindService(launchIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    context.bindService(launchIntent, serviceConnection.get(), Context.BIND_AUTO_CREATE);
   }
 
   interface Consumer {
     void progress(JSONObject metrics);
-    void accept(JSONObject baseline, JSONObject limit);
+    void accept(JSONObject baseline, JSONObject limit, boolean timedOut);
   }
 }
