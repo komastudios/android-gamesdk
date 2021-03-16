@@ -114,12 +114,12 @@ class ToolchainEnumeratorTest {
 
     @Test
     fun canFilterLibraries() {
-        val alwaysLibrary = NativeLibrary("alwayslib", "MY_LIB")
-        val apiMin24Library = NativeLibrary("apiMin24Lib", "MY_LIB")
+        val alwaysLibrary = NativeLibrary("alwayslib")
+        val apiMin24Library = NativeLibrary("apiMin24Lib")
             .setMinimumAndroidApiLevel(24)
-        val ndkMin18Library = NativeLibrary("ndkMin28Lib", "MY_LIB")
+        val ndkMin18Library = NativeLibrary("ndkMin28Lib")
             .setMinimumNdkVersion(18)
-        val someStlOnlyLibrary = NativeLibrary("someStlOnlyLib", "MY_LIB")
+        val someStlOnlyLibrary = NativeLibrary("someStlOnlyLib")
             .setSupportedStlVersions(listOf("c++_static"))
 
         val allLibraries = listOf(
