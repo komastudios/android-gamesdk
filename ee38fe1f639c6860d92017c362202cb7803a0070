@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000009034349",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1640199?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fafa45ea_f05906ab",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryAdvisor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-03-16T13:19:03Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027they\u0027, \u0027them\u0027, or \u0027person\u0027; see https://developers.google.com/style/word-list#gender for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 201,
+        "startChar": 25,
+        "endLine": 201,
+        "endChar": 29
+      },
+      "revId": "ee38fe1f639c6860d92017c362202cb7803a0070",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
