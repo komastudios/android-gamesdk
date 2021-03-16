@@ -194,22 +194,22 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
-   * Find a Long in a JSON object, even when it is nested in sub-dictionaries in the object.
+   * Find a Number in a JSON object, even when it is nested in sub-dictionaries in the object.
    *
    * @param object The object to search.
-   * @param key    The key of the Long to find.
-   * @return The value of he Long.
+   * @param key    The key of the Number to find.
+   * @return The value of the Number.
    */
-  private static Long getValue(JSONObject object, String key) {
+  private static Number getValue(JSONObject object, String key) {
     try {
       if (object.has(key)) {
-        return object.getLong(key);
+        return (Number) object.get(key);
       }
       Iterator<String> it = object.keys();
       while (it.hasNext()) {
         Object value = object.get(it.next());
         if (value instanceof JSONObject) {
-          Long value1 = getValue((JSONObject) value, key);
+          Number value1 = getValue((JSONObject) value, key);
           if (value1 != null) {
             return value1;
           }
@@ -234,7 +234,6 @@ public class MemoryAdvisor extends MemoryMonitor {
       JSONObject metricsParams = params.getJSONObject("metrics");
       JSONObject metrics = getMemoryMetrics(metricsParams.getJSONObject("variable"));
       results.put("metrics", metrics);
-      JSONObject baseline = this.baseline;
       JSONObject deviceBaseline;
       JSONObject deviceLimit;
       if (deviceProfile != null) {
@@ -340,25 +339,29 @@ public class MemoryAdvisor extends MemoryMonitor {
             break;
           }
 
-          Long metricValue = getValue(metrics, key);
-          if (metricValue == null) {
+          Number _metricValue = getValue(metrics, key);
+          if (_metricValue == null) {
             continue;
           }
+          long metricValue = _metricValue.longValue();
 
-          Long deviceLimitValue = getValue(deviceLimit, key);
-          if (deviceLimitValue == null) {
+          Number _deviceLimitValue = getValue(deviceLimit, key);
+          if (_deviceLimitValue == null) {
             continue;
           }
+          long deviceLimitValue = _deviceLimitValue.longValue();
 
-          Long deviceBaselineValue = getValue(deviceBaseline, key);
-          if (deviceBaselineValue == null) {
+          Number _deviceBaselineValue = getValue(deviceBaseline, key);
+          if (_deviceBaselineValue == null) {
             continue;
           }
+          long deviceBaselineValue = _deviceBaselineValue.longValue();
 
-          Long baselineValue = getValue(baseline, key);
-          if (baselineValue == null) {
+          Number _baselineValue = getValue(baseline, key);
+          if (_baselineValue == null) {
             continue;
           }
+          long baselineValue = _baselineValue.longValue();
 
           boolean increasing = deviceLimitValue > deviceBaselineValue;
 
@@ -473,28 +476,28 @@ public class MemoryAdvisor extends MemoryMonitor {
           while (it.hasNext()) {
             String key = it.next();
 
-            Long metricValue = getValue(metrics, key);
+            Number metricValue = getValue(metrics, key);
             if (metricValue == null) {
               continue;
             }
 
-            Long deviceLimitValue = getValue(deviceLimit, key);
+            Number deviceLimitValue = getValue(deviceLimit, key);
             if (deviceLimitValue == null) {
               continue;
             }
 
-            Long deviceBaselineValue = getValue(deviceBaseline, key);
+            Number deviceBaselineValue = getValue(deviceBaseline, key);
             if (deviceBaselineValue == null) {
               continue;
             }
 
-            Long baselineValue = getValue(baseline, key);
+            Number baselineValue = getValue(baseline, key);
             if (baselineValue == null) {
               continue;
             }
 
-            long delta = metricValue - baselineValue;
-            long deviceDelta = deviceLimitValue - deviceBaselineValue;
+            long delta = metricValue.longValue() - baselineValue.longValue();
+            long deviceDelta = deviceLimitValue.longValue() - deviceBaselineValue.longValue();
             if (deviceDelta == 0) {
               continue;
             }
