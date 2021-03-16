@@ -564,7 +564,9 @@ def filterLibraries(allLibraries) {
         return []
     }
 
-    def requestedLibraryNames = project.libraries.split(',');
+    // Both a comma or semicolon can be used to separate libraries in the project parameters,
+    // to be compatible with CMake "lists" that are strings separated by semicolons.
+    def requestedLibraryNames = project.libraries.split(',|;');
     return requestedLibraryNames.collect { requestedLibraryName ->
         def library = allLibraries.find {
             library -> library.nativeLibraryName == requestedLibraryName
