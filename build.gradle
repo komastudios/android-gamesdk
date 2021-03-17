@@ -34,7 +34,7 @@ buildscript {
     }
 }
 
-def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
+def swappyNativeLibrary = new NativeLibrary('swappy')
         .setAarLibrary("games-frame-pacing", "1.7.0-beta02")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
@@ -52,7 +52,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy', 'GAMESDK_BUILD_SWAPPY')
                 new ExternalAndroidProject("test/swappy/testapp")
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
-def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUNINGFORK')
+def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
         .setAarLibrary("games-performance-tuner", "1.1.0-beta02")
         .setUsesProtobuf()
         .addSampleAndroidProject(
@@ -83,10 +83,10 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork', 'GAMESDK_BUILD_TUN
         .addSampleExtraFolder(
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
-def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice', 'GAMESDK_BUILD_MEMORY_ADVICE')
+def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice')
         .setAarLibrary("games-memory-advice", "1.0.0-beta01")
 
-def oboeNativeLibrary = new NativeLibrary('oboe', 'GAMESDK_BUILD_OBOE')
+def oboeNativeLibrary = new NativeLibrary('oboe')
         .setAarLibrary("games-oboe", "1.0.0-beta01")
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
@@ -564,7 +564,9 @@ def filterLibraries(allLibraries) {
         return []
     }
 
-    def requestedLibraryNames = project.libraries.split(',');
+    // Both a comma or semicolon can be used to separate libraries in the project parameters,
+    // to be compatible with CMake "lists" that are strings separated by semicolons.
+    def requestedLibraryNames = project.libraries.split(',|;');
     return requestedLibraryNames.collect { requestedLibraryName ->
         def library = allLibraries.find {
             library -> library.nativeLibraryName == requestedLibraryName

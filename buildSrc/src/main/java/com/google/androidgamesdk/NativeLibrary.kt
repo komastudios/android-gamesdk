@@ -7,8 +7,7 @@ package com.google.androidgamesdk
  * @see ExternalAndroidProject
  */
 data class NativeLibrary(
-    val nativeLibraryName: String,
-    val cmakeOption: String
+    val nativeLibraryName: String
 ) {
     var aarLibraryName: String = ""
         private set

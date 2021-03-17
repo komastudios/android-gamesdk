@@ -60,10 +60,9 @@ class CMakeWrapper {
                 "-GNinja"
             )
 
-            libraries.forEach { nativeLibrary ->
-                val nativeLibraryCMakeOption = nativeLibrary.cmakeOption
-                cmdLine.add("-D$nativeLibraryCMakeOption=ON")
-            }
+            cmdLine.add("-DGAMESDK_LIBRARIES=" + libraries.joinToString(";") {
+                nativeLibrary -> nativeLibrary.nativeLibraryName
+            })
 
             try {
                 project.exec {
