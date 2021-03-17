@@ -168,14 +168,18 @@ class MemoryMonitor {
       }
 
       if (fields.has("ActivityManager")) {
-        JSONObject activityManagerFields = fields.getJSONObject("ActivityManager");
-        if (activityManagerFields.has("MemoryClass")) {
+        Object activityManagerValue = fields.get("ActivityManager");
+        JSONObject activityManagerFields =
+            activityManagerValue instanceof JSONObject ? (JSONObject) activityManagerValue : null;
+        boolean allFields =
+            activityManagerValue instanceof Boolean && (Boolean) activityManagerValue;
+        if (allFields || activityManagerFields.has("MemoryClass")) {
           report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
         }
-        if (activityManagerFields.has("LargeMemoryClass")) {
+        if (allFields || activityManagerFields.has("LargeMemoryClass")) {
           report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
         }
-        if (activityManagerFields.has("LowRamDevice")) {
+        if (allFields || activityManagerFields.has("LowRamDevice")) {
           report.put("LowRamDevice", activityManager.isLowRamDevice());
         }
       }
