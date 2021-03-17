@@ -260,7 +260,8 @@ public class MemoryAdvisor extends MemoryMonitor {
         }
 
         if (heuristics.has("lowMemory")) {
-          if (metrics.optBoolean("lowMemory")) {
+          JSONObject memoryInfo = metrics.optJSONObject("MemoryInfo");
+          if (memoryInfo != null && memoryInfo.optBoolean("lowMemory")) {
             JSONObject warning = new JSONObject();
             warning.put("lowMemory", heuristics.get("lowMemory"));
             warning.put("level", "red");
