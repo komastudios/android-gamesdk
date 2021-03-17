@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba6e8bdf_c701c9a1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-03-17T10:10:16Z",
+      "side": 1,
+      "message": "Bypassing presubmits as they are all passing apart from broken Windows buildbots.",
+      "revId": "014c032d9490b8331eaabf1a762d740215d72d69",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
