@@ -58,6 +58,12 @@
     },
     "canaryProcessTester": {
       "$ref": "canaryProcessTesterSpec.schema.json"
+    },
+    "predictRealtime": {
+      "type": "boolean"
+    },
+    "availableRealtime": {
+      "type": "boolean"
     }
   },
   "examples": [

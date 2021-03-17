@@ -27,11 +27,15 @@ class MemoryMonitor {
 
   private static final long BYTES_IN_KILOBYTE = 1024;
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
+  private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
   protected final JSONObject baseline;
   private final MapTester mapTester;
   private final ActivityManager activityManager;
   private final JSONObject metrics;
   private final CanaryProcessTester canaryProcessTester;
+  protected final JSONObject build;
+  private Predictor realtimePredictor;
+  private Predictor availablePredictor;
   private boolean appBackgrounded;
   private int latestOnTrimLevel;
   private final int pid = Process.myPid();
@@ -44,7 +48,7 @@ class MemoryMonitor {
    */
   MemoryMonitor(Context context, JSONObject metrics) {
     mapTester = new MapTester(context.getCacheDir());
-
+    build = BuildInfo.getBuild(context);
     JSONObject variable = metrics.optJSONObject("variable");
     JSONObject canaryProcessParams =
         variable == null ? null : variable.optJSONObject("canaryProcessTester");
@@ -58,7 +62,7 @@ class MemoryMonitor {
 
     this.metrics = metrics;
     try {
-      baseline = getMemoryMetrics();
+      baseline = getMemoryMetrics(metrics.getJSONObject("baseline"));
       JSONObject constant = metrics.optJSONObject("constant");
       if (constant != null) {
         baseline.put("constant", getMemoryMetrics(constant));
@@ -296,6 +300,46 @@ class MemoryMonitor {
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting memory metrics", ex);
     }
+
+    if (fields.optBoolean("predictRealtime")) {
+      if (realtimePredictor == null) {
+        realtimePredictor = new Predictor("/realtime.tflite", "/realtime_features.json");
+      }
+      try {
+        long time = System.nanoTime();
+        JSONObject data = new JSONObject();
+        data.put("baseline", baseline);
+        data.put("build", build);
+        data.put("sample", report);
+        report.put("predictedUsage", realtimePredictor.predict(data));
+        JSONObject meta = new JSONObject();
+        meta.put("duration", System.nanoTime() - time);
+        report.put("_predictedUsageMeta", meta);
+      } catch (JSONException ex) {
+        Log.w(TAG, "Problem writing data", ex);
+      }
+    }
+
+    if (fields.optBoolean("availableRealtime")) {
+      if (availablePredictor == null) {
+        availablePredictor = new Predictor("/available.tflite", "/available_features.json");
+      }
+      try {
+        long time = System.nanoTime();
+        JSONObject data = new JSONObject();
+        data.put("baseline", baseline);
+        data.put("build", build);
+        data.put("sample", report);
+        long available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
+        report.put("predictedAvailable", available);
+        JSONObject meta = new JSONObject();
+        meta.put("duration", System.nanoTime() - time);
+        report.put("_predictedAvailableMeta", meta);
+      } catch (JSONException ex) {
+        Log.w(TAG, "Problem writing data", ex);
+      }
+    }
+
     return report;
   }
 

@@ -22,6 +22,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
   private final JSONObject deviceProfile;
   private final JSONObject params;
+  private final float predictedOomLimit;
   private JSONObject onDeviceLimit;
   private JSONObject onDeviceBaseline;
   private final Evaluator evaluator = new Evaluator();
@@ -59,7 +60,15 @@ public class MemoryAdvisor extends MemoryMonitor {
     this.params = params;
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
-    if (params.has("onDeviceStressTest")) {
+
+    if (params.optBoolean("predictOomLimit")) {
+      Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
+      predictedOomLimit = predictor.predict(getDeviceInfo(context));
+    } else {
+      predictedOomLimit = -1;
+    }
+
+    if (params.optBoolean("onDeviceStressTest")) {
       deviceProfile = null;
       if (readyHandler == null) {
         throw new MemoryAdvisorException("Ready handler required for on device stress test");
@@ -304,6 +313,9 @@ public class MemoryAdvisor extends MemoryMonitor {
               String formula = formulas.getString(idx);
               try {
                 if (evaluator.evaluate(formula, key1 -> {
+                      if ("predictedOomLimit".equals(key1)) {
+                        return (double) predictedOomLimit;
+                      }
                       JSONObject dictionary;
                       if (key1.startsWith("baseline.")) {
                         key1 = key1.substring("baseline.".length());
@@ -528,7 +540,7 @@ public class MemoryAdvisor extends MemoryMonitor {
   public JSONObject getDeviceInfo(Context context) {
     JSONObject deviceInfo = new JSONObject();
     try {
-      deviceInfo.put("build", BuildInfo.getBuild(context));
+      deviceInfo.put("build", build);
       deviceInfo.put("baseline", baseline);
       if (deviceProfile != null) {
         deviceInfo.put("deviceProfile", deviceProfile);
@@ -540,6 +552,9 @@ public class MemoryAdvisor extends MemoryMonitor {
         deviceInfo.put("deviceLimit", onDeviceLimit);
       }
       deviceInfo.put("params", params);
+      if (predictedOomLimit != -1) {
+        deviceInfo.put("predictedOomLimit", predictedOomLimit);
+      }
     } catch (JSONException ex) {
       Log.w(TAG, "Problem getting device info", ex);
     }
