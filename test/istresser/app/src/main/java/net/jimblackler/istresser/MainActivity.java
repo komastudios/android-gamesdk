@@ -331,8 +331,9 @@ public class MainActivity extends Activity {
       JSONObject report = standardInfo();
       report.put("onDestroy", true);
       report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(
-              params.getJSONObject("metrics").getJSONObject("variable")));
+          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
+                                             .getJSONObject("metrics")
+                                             .getJSONObject("variable")));
       resultsStream.println(report);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
