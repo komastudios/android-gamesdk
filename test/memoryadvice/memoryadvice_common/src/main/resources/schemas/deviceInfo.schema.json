@@ -4,6 +4,12 @@
   "description": "Information specific to the device collected at the beginning of the sample.",
   "additionalProperties": false,
   "properties": {
+    "deviceBaseline": {
+      "$ref": "metricsResults.schema.json"
+    },
+    "deviceLimit": {
+      "$ref": "metricsResults.schema.json"
+    },
     "baseline": {
       "$ref": "metricsResults.schema.json"
     },

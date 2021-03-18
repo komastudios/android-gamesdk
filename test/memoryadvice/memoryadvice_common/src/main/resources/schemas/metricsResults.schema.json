@@ -39,6 +39,9 @@
     "MemoryInfo": {
       "$ref": "metricsResultsGroup.schema.json"
     },
+    "DebugMemoryInfo": {
+      "$ref": "metricsResultsGroup.schema.json"
+    },
     "meta": {
       "additionalProperties": false,
       "properties": {

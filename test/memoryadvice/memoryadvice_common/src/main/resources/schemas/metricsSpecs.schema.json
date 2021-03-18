@@ -6,7 +6,12 @@
   "type": "object",
   "properties": {
     "ActivityManager": {
-      "$ref": "metricsSpecGroup.schema.json"
+      "description": "Metrics obtained from `android.app.ActivityManager`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
     },
     "debug": {
       "description": "Metrics obtained from android.os.debug.",
@@ -26,6 +31,14 @@
     },
     "MemoryInfo": {
       "description": "Metrics obtained from `android.app.ActivityManager.MemoryInfo`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
+    },
+    "DebugMemoryInfo": {
+      "description": "Metrics obtained from `android.os.Debug.MemoryInfo`.",
       "allOf": [
         {
           "$ref": "metricsSpecGroup.schema.json"
