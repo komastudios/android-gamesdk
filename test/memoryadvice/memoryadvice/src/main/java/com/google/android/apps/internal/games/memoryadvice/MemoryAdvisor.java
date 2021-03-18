@@ -51,7 +51,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * Create an Android memory advice fetcher.
    *
    * @param context      The Android context to employ.
-   * @param params       The active configuration; described by advisorParameters.schema.json.
+   * @param params       The active configuration; described by params.schema.json.
    * @param readyHandler A callback used when on device stress test is required.
    * @throws MemoryAdvisorException
    */
@@ -73,23 +73,18 @@ public class MemoryAdvisor extends MemoryMonitor {
       if (readyHandler == null) {
         throw new MemoryAdvisorException("Ready handler required for on device stress test");
       }
-      try {
-        new OnDeviceStressTester(context, params.getJSONObject("onDeviceStressTest"),
-            new OnDeviceStressTester.Consumer() {
-              public void progress(JSONObject metrics) {
-                readyHandler.stressTestProgress(metrics);
-              }
+      new OnDeviceStressTester(context, params, new OnDeviceStressTester.Consumer() {
+        public void progress(JSONObject metrics) {
+          readyHandler.stressTestProgress(metrics);
+        }
 
-              public void accept(JSONObject baseline, JSONObject limit, boolean timedOut) {
-                onDeviceBaseline = baseline;
-                onDeviceLimit = limit;
-                scheduledExecutorService.schedule(
-                    () -> readyHandler.onComplete(timedOut), 1, TimeUnit.MILLISECONDS);
-              }
-            });
-      } catch (JSONException ex) {
-        throw new MemoryAdvisorException(ex);
-      }
+        public void accept(JSONObject baseline, JSONObject limit, boolean timedOut) {
+          onDeviceBaseline = baseline;
+          onDeviceLimit = limit;
+          scheduledExecutorService.schedule(
+              () -> readyHandler.onComplete(timedOut), 1, TimeUnit.MILLISECONDS);
+        }
+      });
     } else {
       deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
       if (readyHandler != null) {
