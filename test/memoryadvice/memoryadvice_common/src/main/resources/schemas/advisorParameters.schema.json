@@ -74,6 +74,9 @@
               "MemTotal": true
             }
           },
+          "baseline": {
+            "debug": true
+          },
           "variable": {
             "debug": true,
             "meminfo": true,
@@ -94,6 +97,9 @@
     {
       "matchStrategy": "fingerprint",
       "metrics": {
+        "baseline": {
+          "debug": true
+        },
         "variable": {
           "canaryProcessTester": {
             "memory": "256M"
