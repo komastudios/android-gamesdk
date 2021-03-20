@@ -59,6 +59,7 @@
         }
       },
       "required": [
+        "baseline",
         "variable"
       ],
       "type": "object",

@@ -58,6 +58,8 @@
               "canaryProcessTester": {
                 "memory": "1M"
               }
+            },
+            "baseline": {
             }
           },
           "heuristics": {
