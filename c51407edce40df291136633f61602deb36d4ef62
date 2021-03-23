@@ -34,6 +34,24 @@
       "parentUuid": "2b7fa270_f70ec56c",
       "revId": "c51407edce40df291136633f61602deb36d4ef62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3734bee3_670d77c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-23T12:18:05Z",
+      "side": 1,
+      "message": "OK, cool. Can you add a Test: line to the CL saying this?",
+      "parentUuid": "fa76d348_c64e41b1",
+      "revId": "c51407edce40df291136633f61602deb36d4ef62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
