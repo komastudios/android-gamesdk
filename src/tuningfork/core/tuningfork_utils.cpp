@@ -19,9 +19,11 @@
 #include <android/api-level.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/sysinfo.h>
 #include <sys/system_properties.h>
 #include <unistd.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <fstream>
 #include <sstream>
@@ -30,7 +32,7 @@
 // Unfortunately we can't use std::filesystem until we move to C++17
 #include <dirent.h>
 
-#define LOG_TAG "TuningFork"
+#define LOG_TAG "TuningForkUtils"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
@@ -286,58 +288,107 @@ std::string UniqueId() {
         return "**NONUNIQUEID**";
 }
 
-static const uint64_t kNanosecondsPerMillisecond = 1000 * 1000;
 static const uint64_t kMillisecondsPerSecond = 1000;
 
-Duration GetElapsedTimeSinceBoot() {
+static Duration GetTime(clockid_t clock_id) {
     struct timespec ts;
-    int err = clock_gettime(CLOCK_BOOTTIME, &ts);
+    int err = clock_gettime(clock_id, &ts);
     if (err != 0) {
         // This should never happen, but just in case ...
-        ALOGE("clock_gettime(CLOCK_BOOTTIME) failed: %s", strerror(errno));
+        ALOGE("clock_gettime(%d) failed: %s", clock_id, strerror(errno));
         return std::chrono::milliseconds(0);
     }
-    return std::chrono::milliseconds(
-        uint64_t(ts.tv_sec) * kMillisecondsPerSecond +
-        uint64_t(ts.tv_nsec) / kNanosecondsPerMillisecond);
+    return std::chrono::seconds(ts.tv_sec) +
+           std::chrono::nanoseconds(ts.tv_nsec);
 }
+
+Duration GetElapsedTimeSinceBoot() { return GetTime(CLOCK_BOOTTIME); }
+
+Duration GetElapsedTimeSinceEpoch() { return GetTime(CLOCK_REALTIME); }
+
+// Note that this is not consistent with GetElapsedTimeSinceBoot, above.
+// On some devices, the clocks are out of sync after several days uptime.
 Duration GetProcessStartTimeSinceBoot() {
     const int kProcStartTimeIndex =
         21;  // index in space-separated list from proc/*/stat
     std::stringstream filename;
-    int procid = getpid();
-    long ClockHz = sysconf(_SC_CLK_TCK);  // Clock tick freq in Hz
-    filename << "/proc/" << procid << "/stat";
+    filename << "/proc/self/stat";
     std::ifstream f(filename.str().c_str());
     long dtime_ms = 0;
     if (f.good()) {
         std::stringstream str;
         str << f.rdbuf();
         std::string item;
-        std::vector<std::string> items;
         f.seekg(0);
+        int i = 0;
         while (std::getline(f, item, ' ')) {
-            items.push_back(item);
-        }
-        if (items.size() > kProcStartTimeIndex) {
-            auto stime = items[kProcStartTimeIndex];
-            std::stringstream pstr(stime);
-            uint64_t stime_ticks;
-            pstr >> stime_ticks;
-            return std::chrono::milliseconds(
-                (stime_ticks * kMillisecondsPerSecond) / ClockHz);
+            ALOGV("/proc/self/stat: %d: %s", i, item.c_str());
+            if (i == kProcStartTimeIndex) {
+                auto stime = item;
+                std::stringstream pstr(stime);
+                uint64_t stime_ticks;
+                pstr >> stime_ticks;
+                long ClockHz = sysconf(_SC_CLK_TCK);  // Clock tick freq in Hz
+                return std::chrono::milliseconds(
+                    (stime_ticks * kMillisecondsPerSecond) / ClockHz);
+            }
+            ++i;
         }
     }
     return std::chrono::milliseconds(0);
 }
+Duration GetProcessStartTimeSinceEpoch() {
+    struct stat sb;
+    stat("/proc/self", &sb);
+    return std::chrono::seconds(sb.st_ctime) +
+           std::chrono::nanoseconds(sb.st_ctime_nsec);
+}
 
-Duration GetTimeSinceProcessStart() {
-    auto etime = GetElapsedTimeSinceBoot();
+#ifndef NDEBUG
+void LogTimeDebuggingInfo() {
+    auto etime0 = GetTime(CLOCK_REALTIME);
+    ALOGI(
+        "GetElapsedTimeSinceBoot REALTIME returned %lldms",
+        std::chrono::duration_cast<std::chrono::milliseconds>(etime0).count());
+    auto etime1 = GetTime(CLOCK_MONOTONIC);
+    ALOGI(
+        "GetElapsedTimeSinceBoot MONOTONIC returned %lldms",
+        std::chrono::duration_cast<std::chrono::milliseconds>(etime1).count());
+    auto etime2 = GetTime(CLOCK_BOOTTIME);
+    ALOGI(
+        "GetElapsedTimeSinceBoot BOOTTIME returned %lldms",
+        std::chrono::duration_cast<std::chrono::milliseconds>(etime2).count());
+    auto etime3 = GetTime(CLOCK_PROCESS_CPUTIME_ID);
+    ALOGI(
+        "GetElapsedTimeSinceBoot PROCESS_CPUTIME_ID returned %lldms",
+        std::chrono::duration_cast<std::chrono::milliseconds>(etime3).count());
     auto ptime = GetProcessStartTimeSinceBoot();
-    if (etime.count() == 0 || ptime.count() == 0)
+    ALOGI("GetProcessTimeSinceBoot returned %lldms",
+          std::chrono::duration_cast<std::chrono::milliseconds>(ptime).count());
+    auto atime = GetProcessStartTimeSinceEpoch();
+    ALOGI("GetProcessAbsoluteTime returned %lldms",
+          std::chrono::duration_cast<std::chrono::milliseconds>(atime).count());
+    struct sysinfo ss;
+    sysinfo(&ss);
+    ALOGI("sysinfo.uptime: %lds", ss.uptime);
+    ALOGI("TimeSinceProcessStart(Boot) = %lldms",
+          std::chrono::duration_cast<std::chrono::milliseconds>(etime2 - ptime)
+              .count());
+    ALOGI("TimeSinceProcessStart(Epoch) = %lldms",
+          std::chrono::duration_cast<std::chrono::milliseconds>(etime0 - atime)
+              .count());
+}
+#endif
+
+// Use the realtime clock and process stat ctime information to get the time
+// since a process started.
+Duration GetTimeSinceProcessStart() {
+    auto etime = GetElapsedTimeSinceEpoch();
+    auto atime = GetProcessStartTimeSinceEpoch();
+    if (etime.count() == 0 || atime.count() == 0)
         return std::chrono::milliseconds(0);
     else
-        return etime - ptime;
+        return etime - atime;
 }
 
 }  // namespace tuningfork
