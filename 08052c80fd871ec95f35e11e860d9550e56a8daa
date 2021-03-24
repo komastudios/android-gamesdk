@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a8af509_4746e276",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-03-24T17:51:40Z",
+      "side": 1,
+      "message": "The SinceBoot version seems dead code, do you still want to keep it?",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e28dddd_c1734f62",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-03-24T17:51:40Z",
+      "side": 1,
+      "message": "nit: `std::ifstream f(\"/proc/self/stat\")`?",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7640760d_c8ed5eb9",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-03-24T17:51:40Z",
+      "side": 1,
+      "message": "What is this doing exactly? Not sure to understand how this is useful.",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
