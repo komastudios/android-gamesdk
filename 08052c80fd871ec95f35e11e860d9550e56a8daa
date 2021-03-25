@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5bee0959_1eccf83f",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-25T12:49:31Z",
+      "side": 1,
+      "message": "Removed",
+      "parentUuid": "1a8af509_4746e276",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e28dddd_c1734f62",
@@ -35,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "82b64c91_d134365c",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-25T12:49:31Z",
+      "side": 1,
+      "message": "Dead code removed",
+      "parentUuid": "6e28dddd_c1734f62",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7640760d_c8ed5eb9",
@@ -48,6 +84,24 @@
       "writtenOn": "2021-03-24T17:51:40Z",
       "side": 1,
       "message": "What is this doing exactly? Not sure to understand how this is useful.",
+      "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23b2c897_d3cb77b5",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-25T12:49:31Z",
+      "side": 1,
+      "message": "It was an efficient way to get the contents of the file. I\u0027ve removed the code now though.",
+      "parentUuid": "7640760d_c8ed5eb9",
       "revId": "08052c80fd871ec95f35e11e860d9550e56a8daa",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
