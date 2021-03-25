@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75e242bd_1c41f9bf",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-03-25T13:46:59Z",
+      "side": 1,
+      "message": "Seems like this is failing for ndk r14: \n    /buildbot/src/android/android-games-sdk/gamesdk/src/tuningfork/core/tuningfork_utils.cpp:311:40: error: no member named \u0027st_ctime_nsec\u0027 in \u0027stat\u0027\n\n(https://android-build.googleplex.com/builds/pending/P21143783/gamesdk/latest/view/logs/build.log)",
+      "revId": "677a288ecae24f041bd46968375b8f7dbc789b8a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
