@@ -4,20 +4,19 @@ import static com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor.
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
+import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Process;
-import android.util.Log;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * A class to provide metrics of current memory usage to an application in JSON format.
@@ -28,12 +27,12 @@ class MemoryMonitor {
   private static final long BYTES_IN_KILOBYTE = 1024;
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
   private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
-  protected final JSONObject baseline;
+  protected final Map<String, Object> baseline;
   private final MapTester mapTester;
   private final ActivityManager activityManager;
-  private final JSONObject metrics;
+  private final Map<String, Object> metrics;
   private final CanaryProcessTester canaryProcessTester;
-  protected final JSONObject build;
+  protected final Map<String, Object> build;
   private Predictor realtimePredictor;
   private Predictor availablePredictor;
   private boolean appBackgrounded;
@@ -46,12 +45,12 @@ class MemoryMonitor {
    * @param context The Android context to employ.
    * @param metrics The constant metrics to fetch - constant and variable.
    */
-  MemoryMonitor(Context context, JSONObject metrics) {
+  MemoryMonitor(Context context, Map<String, Object> metrics) {
     mapTester = new MapTester(context.getCacheDir());
     build = BuildInfo.getBuild(context);
-    JSONObject variable = metrics.optJSONObject("variable");
-    JSONObject canaryProcessParams =
-        variable == null ? null : variable.optJSONObject("canaryProcessTester");
+    Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
+    Map<String, Object> canaryProcessParams =
+        variable == null ? null : (Map<String, Object>) variable.get("canaryProcessTester");
     if (canaryProcessParams == null) {
       canaryProcessTester = null;
     } else {
@@ -61,14 +60,10 @@ class MemoryMonitor {
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
 
     this.metrics = metrics;
-    try {
-      baseline = getMemoryMetrics(metrics.getJSONObject("baseline"));
-      JSONObject constant = metrics.optJSONObject("constant");
-      if (constant != null) {
-        baseline.put("constant", getMemoryMetrics(constant));
-      }
-    } catch (JSONException e) {
-      throw new MemoryAdvisorException(e);
+    baseline = getMemoryMetrics((Map<String, Object>) metrics.get("baseline"));
+    Map<String, Object> constant = (Map<String, Object>) metrics.get("constant");
+    if (constant != null) {
+      baseline.put("constant", getMemoryMetrics(constant));
     }
 
     ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
@@ -90,254 +85,241 @@ class MemoryMonitor {
    * @param context The Android context to employ.
    */
   public MemoryMonitor(Context context) {
-    this(context, getDefaultParams(context.getAssets()).optJSONObject("metrics"));
+    this(context, (Map<String, Object>) getDefaultParams(context.getAssets()).get("metrics"));
   }
 
   /**
    * Gets Android memory metrics using the default fields.
    *
-   * @return A JSONObject containing current memory metrics.
+   * @return A map containing current memory metrics.
    */
-  public JSONObject getMemoryMetrics() {
-    try {
-      return getMemoryMetrics(metrics.getJSONObject("variable"));
-    } catch (JSONException e) {
-      throw new MemoryAdvisorException(e);
-    }
+  public Map<String, Object> getMemoryMetrics() {
+    return getMemoryMetrics((Map<String, Object>) metrics.get("variable"));
   }
 
   /**
    * Gets Android memory metrics.
    *
    * @param fields The fields to fetch in a JSON dictionary.
-   * @return A JSONObject containing current memory metrics.
+   * @return A map containing current memory metrics.
    */
-  public JSONObject getMemoryMetrics(JSONObject fields) {
-    JSONObject report = new JSONObject();
-    try {
-      if (fields.has("debug")) {
-        long time = System.nanoTime();
-        JSONObject metricsOut = new JSONObject();
-        Object debugFieldsValue = fields.get("debug");
-        JSONObject debug =
-            debugFieldsValue instanceof JSONObject ? (JSONObject) debugFieldsValue : null;
-        boolean allFields = debugFieldsValue instanceof Boolean && (Boolean) debugFieldsValue;
-        if (allFields || (debug != null && debug.optBoolean("nativeHeapAllocatedSize"))) {
-          metricsOut.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
-        }
-        if (allFields || (debug != null && debug.optBoolean("NativeHeapFreeSize"))) {
-          metricsOut.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
-        }
-        if (allFields || (debug != null && debug.optBoolean("NativeHeapSize"))) {
-          metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
-        }
-        if (allFields || (debug != null && debug.optBoolean("Pss"))) {
-          metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
-        }
+  public Map<String, Object> getMemoryMetrics(Map<String, Object> fields) {
+    Map<String, Object> report = new LinkedHashMap<>();
 
-        JSONObject meta = new JSONObject();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
-        report.put("debug", metricsOut);
+    if (fields.containsKey("debug")) {
+      long time = System.nanoTime();
+      Map<String, Object> metricsOut = new LinkedHashMap<>();
+      Object debugFieldsValue = fields.get("debug");
+      Map<String, Object> debug =
+          debugFieldsValue instanceof Map ? (Map<String, Object>) debugFieldsValue : null;
+      boolean allFields = debugFieldsValue instanceof Boolean && (Boolean) debugFieldsValue;
+      if (allFields || (debug != null && getOrDefault(debug, "nativeHeapAllocatedSize", false))) {
+        metricsOut.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
+      }
+      if (allFields || (debug != null && getOrDefault(debug, "NativeHeapFreeSize", false))) {
+        metricsOut.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
+      }
+      if (allFields || (debug != null && getOrDefault(debug, "NativeHeapSize", false))) {
+        metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
+      }
+      if (allFields || (debug != null && getOrDefault(debug, "Pss", false))) {
+        metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
       }
 
-      if (fields.has("MemoryInfo")) {
-        long time = System.nanoTime();
-        Object memoryInfoValue = fields.get("MemoryInfo");
-        JSONObject memoryInfoFields =
-            memoryInfoValue instanceof JSONObject ? (JSONObject) memoryInfoValue : null;
-        boolean allFields = memoryInfoValue instanceof Boolean && (Boolean) memoryInfoValue;
-        if (allFields || (memoryInfoFields != null && memoryInfoFields.length() > 0)) {
-          JSONObject metricsOut = new JSONObject();
-          ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-          activityManager.getMemoryInfo(memoryInfo);
-          if (allFields || memoryInfoFields.has("availMem")) {
-            metricsOut.put("availMem", memoryInfo.availMem);
-          }
-          if ((allFields || memoryInfoFields.has("lowMemory")) && memoryInfo.lowMemory) {
-            metricsOut.put("lowMemory", true);
-          }
-          if (allFields || memoryInfoFields.has("totalMem")) {
-            metricsOut.put("totalMem", memoryInfo.totalMem);
-          }
-          if (allFields || memoryInfoFields.has("threshold")) {
-            metricsOut.put("threshold", memoryInfo.threshold);
-          }
-
-          JSONObject meta = new JSONObject();
-          meta.put("duration", System.nanoTime() - time);
-          metricsOut.put("_meta", meta);
-          report.put("MemoryInfo", metricsOut);
-        }
-      }
-
-      if (fields.has("ActivityManager")) {
-        Object activityManagerValue = fields.get("ActivityManager");
-        JSONObject activityManagerFields =
-            activityManagerValue instanceof JSONObject ? (JSONObject) activityManagerValue : null;
-        boolean allFields =
-            activityManagerValue instanceof Boolean && (Boolean) activityManagerValue;
-        if (allFields || activityManagerFields.has("MemoryClass")) {
-          report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
-        }
-        if (allFields || activityManagerFields.has("LargeMemoryClass")) {
-          report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
-        }
-        if (allFields || activityManagerFields.has("LowRamDevice")) {
-          report.put("LowRamDevice", activityManager.isLowRamDevice());
-        }
-      }
-
-      if (mapTester.warning()) {
-        report.put("mapTester", true);
-        mapTester.reset();
-      }
-
-      if (canaryProcessTester != null && canaryProcessTester.warning()) {
-        report.put("canaryProcessTester", "red");
-        canaryProcessTester.reset();
-      }
-
-      if (appBackgrounded) {
-        report.put("backgrounded", true);
-      }
-
-      if (latestOnTrimLevel > 0) {
-        report.put("onTrim", latestOnTrimLevel);
-        latestOnTrimLevel = 0;
-      }
-
-      if (fields.has("proc")) {
-        long time = System.nanoTime();
-        Object procFieldsValue = fields.get("proc");
-        JSONObject procFields =
-            procFieldsValue instanceof JSONObject ? (JSONObject) procFieldsValue : null;
-        boolean allFields = procFieldsValue instanceof Boolean && (Boolean) procFieldsValue;
-        JSONObject metricsOut = new JSONObject();
-        if (allFields || procFields.optBoolean("oom_score")) {
-          metricsOut.put("oom_score", getOomScore(pid));
-        }
-
-        JSONObject meta = new JSONObject();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
-        report.put("proc", metricsOut);
-      }
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fields.has("summary")) {
-        long time = System.nanoTime();
-        Object summaryValue = fields.get("summary");
-        JSONObject summary = summaryValue instanceof JSONObject ? (JSONObject) summaryValue : null;
-        boolean allFields = summaryValue instanceof Boolean && (Boolean) summaryValue;
-        if (allFields || (summary != null && summary.length() > 0)) {
-          Debug.MemoryInfo[] debugMemoryInfos =
-              activityManager.getProcessMemoryInfo(new int[] {pid});
-          JSONObject metricsOut = new JSONObject();
-          for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
-            for (Map.Entry<String, String> entry : debugMemoryInfo.getMemoryStats().entrySet()) {
-              String key = entry.getKey();
-              if (allFields || summary.has(key)) {
-                long value = Long.parseLong(entry.getValue()) * BYTES_IN_KILOBYTE;
-                metricsOut.put(key, metricsOut.optLong(key) + value);
-              }
-            }
-          }
-
-          JSONObject meta = new JSONObject();
-          meta.put("duration", System.nanoTime() - time);
-          metricsOut.put("_meta", meta);
-          report.put("summary", metricsOut);
-        }
-      }
-
-      if (fields.has("meminfo")) {
-        long time = System.nanoTime();
-        Object meminfoFieldsValue = fields.get("meminfo");
-        JSONObject meminfoFields =
-            meminfoFieldsValue instanceof JSONObject ? (JSONObject) meminfoFieldsValue : null;
-        boolean allFields = meminfoFieldsValue instanceof Boolean && (Boolean) meminfoFieldsValue;
-        if (allFields || (meminfoFields != null && meminfoFields.length() > 0)) {
-          JSONObject metricsOut = new JSONObject();
-          Map<String, Long> memInfo = processMeminfo();
-          for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
-            String key = pair.getKey();
-            if (allFields || meminfoFields.optBoolean(key)) {
-              metricsOut.put(key, pair.getValue());
-            }
-          }
-
-          JSONObject meta = new JSONObject();
-          meta.put("duration", System.nanoTime() - time);
-          metricsOut.put("_meta", meta);
-          report.put("meminfo", metricsOut);
-        }
-      }
-
-      if (fields.has("status")) {
-        long time = System.nanoTime();
-        Object statusValue = fields.get("status");
-        JSONObject status = statusValue instanceof JSONObject ? (JSONObject) statusValue : null;
-        boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
-        if (allFields || (status != null && status.length() > 0)) {
-          JSONObject metricsOut = new JSONObject();
-          for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
-            String key = pair.getKey();
-            if (allFields || status.optBoolean(key)) {
-              metricsOut.put(key, pair.getValue());
-            }
-          }
-
-          JSONObject meta = new JSONObject();
-          meta.put("duration", System.nanoTime() - time);
-          metricsOut.put("_meta", meta);
-          report.put("status", metricsOut);
-        }
-      }
-
-      JSONObject meta = new JSONObject();
-      meta.put("time", System.currentTimeMillis());
-      report.put("meta", meta);
-    } catch (JSONException ex) {
-      Log.w(TAG, "Problem getting memory metrics", ex);
+      Map<String, Object> meta = new LinkedHashMap<>();
+      meta.put("duration", System.nanoTime() - time);
+      metricsOut.put("_meta", meta);
+      report.put("debug", metricsOut);
     }
 
-    if (fields.optBoolean("predictRealtime")) {
+    if (fields.containsKey("MemoryInfo")) {
+      long time = System.nanoTime();
+      Object memoryInfoValue = fields.get("MemoryInfo");
+      Map<String, Object> memoryInfoFields =
+          memoryInfoValue instanceof Map ? (Map<String, Object>) memoryInfoValue : null;
+      boolean allFields = memoryInfoValue instanceof Boolean && (Boolean) memoryInfoValue;
+      if (allFields || (memoryInfoFields != null && !memoryInfoFields.isEmpty())) {
+        Map<String, Object> metricsOut = new LinkedHashMap<>();
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        if (allFields || memoryInfoFields.containsKey("availMem")) {
+          metricsOut.put("availMem", memoryInfo.availMem);
+        }
+        if ((allFields || memoryInfoFields.containsKey("lowMemory")) && memoryInfo.lowMemory) {
+          metricsOut.put("lowMemory", true);
+        }
+        if (allFields || memoryInfoFields.containsKey("totalMem")) {
+          metricsOut.put("totalMem", memoryInfo.totalMem);
+        }
+        if (allFields || memoryInfoFields.containsKey("threshold")) {
+          metricsOut.put("threshold", memoryInfo.threshold);
+        }
+
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("MemoryInfo", metricsOut);
+      }
+    }
+
+    if (fields.containsKey("ActivityManager")) {
+      Object activityManagerValue = fields.get("ActivityManager");
+      Map<String, Object> activityManagerFields =
+          activityManagerValue instanceof Map ? (Map<String, Object>) activityManagerValue : null;
+      boolean allFields = activityManagerValue instanceof Boolean && (Boolean) activityManagerValue;
+      if (allFields || activityManagerFields.containsKey("MemoryClass")) {
+        report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
+      }
+      if (allFields || activityManagerFields.containsKey("LargeMemoryClass")) {
+        report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
+      }
+      if (allFields || activityManagerFields.containsKey("LowRamDevice")) {
+        report.put("LowRamDevice", activityManager.isLowRamDevice());
+      }
+    }
+
+    if (mapTester.warning()) {
+      report.put("mapTester", true);
+      mapTester.reset();
+    }
+
+    if (canaryProcessTester != null && canaryProcessTester.warning()) {
+      report.put("canaryProcessTester", "red");
+      canaryProcessTester.reset();
+    }
+
+    if (appBackgrounded) {
+      report.put("backgrounded", true);
+    }
+
+    if (latestOnTrimLevel > 0) {
+      report.put("onTrim", latestOnTrimLevel);
+      latestOnTrimLevel = 0;
+    }
+
+    if (fields.containsKey("proc")) {
+      long time = System.nanoTime();
+      Object procFieldsValue = fields.get("proc");
+      Map<String, Object> procFields =
+          procFieldsValue instanceof Map ? (Map<String, Object>) procFieldsValue : null;
+      boolean allFields = procFieldsValue instanceof Boolean && (Boolean) procFieldsValue;
+      Map<String, Object> metricsOut = new LinkedHashMap<>();
+      if (allFields || getOrDefault(procFields, "oom_score", false)) {
+        metricsOut.put("oom_score", getOomScore(pid));
+      }
+
+      Map<String, Object> meta = new LinkedHashMap<>();
+      meta.put("duration", System.nanoTime() - time);
+      metricsOut.put("_meta", meta);
+      report.put("proc", metricsOut);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fields.containsKey("summary")) {
+      long time = System.nanoTime();
+      Object summaryValue = fields.get("summary");
+      Map<String, Object> summary =
+          summaryValue instanceof Map ? (Map<String, Object>) summaryValue : null;
+      boolean allFields = summaryValue instanceof Boolean && (Boolean) summaryValue;
+      if (allFields || (summary != null && !summary.isEmpty())) {
+        Debug.MemoryInfo[] debugMemoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
+        Map<String, Object> metricsOut = new LinkedHashMap<>();
+        for (Debug.MemoryInfo debugMemoryInfo : debugMemoryInfos) {
+          for (Map.Entry<String, String> entry : debugMemoryInfo.getMemoryStats().entrySet()) {
+            String key = entry.getKey();
+            if (allFields || summary.containsKey(key)) {
+              long value = Long.parseLong(entry.getValue()) * BYTES_IN_KILOBYTE;
+              metricsOut.put(key, getOrDefault(metricsOut, key, 0L) + value);
+            }
+          }
+        }
+
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("summary", metricsOut);
+      }
+    }
+
+    if (fields.containsKey("meminfo")) {
+      long time = System.nanoTime();
+      Object meminfoFieldsValue = fields.get("meminfo");
+      Map<String, Object> meminfoFields =
+          meminfoFieldsValue instanceof Map ? (Map<String, Object>) meminfoFieldsValue : null;
+      boolean allFields = meminfoFieldsValue instanceof Boolean && (Boolean) meminfoFieldsValue;
+      if (allFields || (meminfoFields != null && !meminfoFields.isEmpty())) {
+        Map<String, Object> metricsOut = new LinkedHashMap<>();
+        Map<String, Long> memInfo = processMeminfo();
+        for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
+          String key = pair.getKey();
+          if (allFields || getOrDefault(meminfoFields, key, false)) {
+            metricsOut.put(key, pair.getValue());
+          }
+        }
+
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("meminfo", metricsOut);
+      }
+    }
+
+    if (fields.containsKey("status")) {
+      long time = System.nanoTime();
+      Object statusValue = fields.get("status");
+      Map<String, Object> status =
+          statusValue instanceof Map ? (Map<String, Object>) statusValue : null;
+      boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
+      if (allFields || (status != null && !status.isEmpty())) {
+        Map<String, Object> metricsOut = new LinkedHashMap<>();
+        for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
+          String key = pair.getKey();
+          if (allFields || getOrDefault(status, key, false)) {
+            metricsOut.put(key, pair.getValue());
+          }
+        }
+
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+        report.put("status", metricsOut);
+      }
+    }
+
+    Map<String, Object> _meta = new LinkedHashMap<>();
+    _meta.put("time", System.currentTimeMillis());
+    report.put("meta", _meta);
+
+    if (getOrDefault(fields, "predictRealtime", false)) {
       if (realtimePredictor == null) {
         realtimePredictor = new Predictor("/realtime.tflite", "/realtime_features.json");
       }
-      try {
-        long time = System.nanoTime();
-        JSONObject data = new JSONObject();
-        data.put("baseline", baseline);
-        data.put("build", build);
-        data.put("sample", report);
-        report.put("predictedUsage", realtimePredictor.predict(data));
-        JSONObject meta = new JSONObject();
-        meta.put("duration", System.nanoTime() - time);
-        report.put("_predictedUsageMeta", meta);
-      } catch (JSONException ex) {
-        Log.w(TAG, "Problem writing data", ex);
-      }
+
+      long time = System.nanoTime();
+      Map<String, Object> data = new LinkedHashMap<>();
+      data.put("baseline", baseline);
+      data.put("build", build);
+      data.put("sample", report);
+      report.put("predictedUsage", realtimePredictor.predict(data));
+      Map<String, Object> meta = new LinkedHashMap<>();
+      meta.put("duration", System.nanoTime() - time);
+      report.put("_predictedUsageMeta", meta);
     }
 
-    if (fields.optBoolean("availableRealtime")) {
+    if (getOrDefault(fields, "availableRealtime", false)) {
       if (availablePredictor == null) {
         availablePredictor = new Predictor("/available.tflite", "/available_features.json");
       }
-      try {
-        long time = System.nanoTime();
-        JSONObject data = new JSONObject();
-        data.put("baseline", baseline);
-        data.put("build", build);
-        data.put("sample", report);
-        long available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
-        report.put("predictedAvailable", available);
-        JSONObject meta = new JSONObject();
-        meta.put("duration", System.nanoTime() - time);
-        report.put("_predictedAvailableMeta", meta);
-      } catch (JSONException ex) {
-        Log.w(TAG, "Problem writing data", ex);
-      }
+
+      long time = System.nanoTime();
+      Map<String, Object> data = new LinkedHashMap<>();
+      data.put("baseline", baseline);
+      data.put("build", build);
+      data.put("sample", report);
+      long available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
+      report.put("predictedAvailable", available);
+      Map<String, Object> meta = new LinkedHashMap<>();
+      meta.put("duration", System.nanoTime() - time);
+      report.put("_predictedAvailableMeta", meta);
     }
 
     return report;

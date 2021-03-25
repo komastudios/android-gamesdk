@@ -15,11 +15,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import com.google.gson.Gson;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * A system to discover the limits of the device using a service running in a different process.
@@ -38,6 +38,8 @@ class OnDeviceStressTester {
   private static final String TAG = OnDeviceStressTester.class.getSimpleName();
   private final AtomicReference<ServiceConnection> serviceConnection = new AtomicReference<>();
   private final AtomicReference<Timer> timeoutTimer = new AtomicReference<>();
+  private final Gson gson = new Gson();
+
   /**
    * Construct an on-device stress tester.
    *
@@ -45,13 +47,13 @@ class OnDeviceStressTester {
    * @param params   The configuration parameters for the tester.
    * @param consumer The handler to call back when the test is complete.
    */
-  OnDeviceStressTester(Context context, JSONObject params, Consumer consumer) {
+  OnDeviceStressTester(Context context, Map<String, Object> params, Consumer consumer) {
     Intent launchIntent = new Intent(context, StressService.class);
     launchIntent.putExtra("params", params.toString());
     serviceConnection.set(new ServiceConnection() {
       private Messenger messenger;
-      private JSONObject baseline;
-      private JSONObject limit;
+      private Map<String, Object> baseline;
+      private Map<String, Object> limit;
       private Timer serviceWatcherTimer;
       private int connectionCount;
 
@@ -73,11 +75,7 @@ class OnDeviceStressTester {
             public boolean handleMessage(Message msg) {
               if (msg.what == GET_BASELINE_METRICS_RETURN) {
                 Bundle bundle = (Bundle) msg.obj;
-                try {
-                  baseline = new JSONObject(bundle.getString("metrics"));
-                } catch (JSONException e) {
-                  throw new MemoryAdvisorException(e);
-                }
+                baseline = gson.fromJson(bundle.getString("metrics"), Map.class);
                 int servicePid = msg.arg1;
                 serviceWatcherTimer = new Timer();
                 serviceWatcherTimer.scheduleAtFixedRate(new TimerTask() {
@@ -109,46 +107,41 @@ class OnDeviceStressTester {
       }
 
       private void allocateMemory() {
-        try {
-          int toAllocate = (int) getMemoryQuantity(
-              getOrDefault(params.getJSONObject("onDeviceStressTest"), "segmentSize", "4M"));
-          Message message = Message.obtain(null, OCCUPY_MEMORY, toAllocate, 0);
-          message.replyTo = new Messenger(new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-              ServiceConnection connection = serviceConnection.get();
-              if (connection == null) {
-                Log.e(TAG, "Message received although service had been stopped");
-                return true;
-              }
-              // The service's return message includes metrics.
-              Bundle bundle = (Bundle) msg.obj;
-              try {
-                JSONObject received = new JSONObject(bundle.getString("metrics"));
-                if (limit == null
-                    || limit.getJSONObject("meta").getLong("time")
-                        < received.getJSONObject("meta").getLong("time")) {
-                  consumer.progress(received);
-                  // Metrics can be received out of order. The latest only is recorded as the limit.
-                  limit = received;
-                }
-              } catch (JSONException e) {
-                throw new MemoryAdvisorException(e);
-              }
-              if (msg.what == OCCUPY_MEMORY_FAILED) {
-                stopService(false);
-              } else if (msg.what == OCCUPY_MEMORY_OK) {
-                allocateMemory();
-              } else {
-                throw new MemoryAdvisorException("Unexpected return code " + msg.what);
-              }
+        int toAllocate = (int) getMemoryQuantity(getOrDefault(
+            (Map<String, Object>) params.get("onDeviceStressTest"), "segmentSize", "4M"));
+        Message message = Message.obtain(null, OCCUPY_MEMORY, toAllocate, 0);
+        message.replyTo = new Messenger(new Handler(new Handler.Callback() {
+          @Override
+          public boolean handleMessage(Message msg) {
+            ServiceConnection connection = serviceConnection.get();
+            if (connection == null) {
+              Log.e(TAG, "Message received although service had been stopped");
               return true;
             }
-          }));
-          sendMessage(message);
-        } catch (JSONException e) {
-          throw new IllegalStateException(e);
-        }
+            // The service's return message includes metrics.
+            Bundle bundle = (Bundle) msg.obj;
+
+            Map<String, Object> received = gson.fromJson(bundle.getString("metrics"), Map.class);
+            long limitTime =
+                ((Number) ((Map<String, Object>) limit.get("meta")).get("time")).longValue();
+            long metaTime =
+                ((Number) ((Map<String, Object>) received.get("meta")).get("time")).longValue();
+            if (limit == null || limitTime < metaTime) {
+              consumer.progress(received);
+              // Metrics can be received out of order. The latest only is recorded as the limit.
+              limit = received;
+            }
+            if (msg.what == OCCUPY_MEMORY_FAILED) {
+              stopService(false);
+            } else if (msg.what == OCCUPY_MEMORY_OK) {
+              allocateMemory();
+            } else {
+              throw new MemoryAdvisorException("Unexpected return code " + msg.what);
+            }
+            return true;
+          }
+        }));
+        sendMessage(message);
       }
 
       public void onServiceDisconnected(ComponentName name) {
@@ -203,7 +196,7 @@ class OnDeviceStressTester {
   }
 
   interface Consumer {
-    void progress(JSONObject metrics);
-    void accept(JSONObject baseline, JSONObject limit, boolean timedOut);
+    void progress(Map<String, Object> metrics);
+    void accept(Map<String, Object> baseline, Map<String, Object> limit, boolean timedOut);
   }
 }

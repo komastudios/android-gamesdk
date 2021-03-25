@@ -9,8 +9,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The service component of the on device stress test.
@@ -26,12 +27,10 @@ public class StressService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     // Create a local memory monitor, to obtain the metrics.
-    try {
-      JSONObject metrics = new JSONObject(intent.getStringExtra("params")).getJSONObject("metrics");
-      memoryMonitor = new MemoryMonitor(this, metrics);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
+
+    Map<String, Object> params = new Gson().fromJson(intent.getStringExtra("params"), Map.class);
+    Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
+    memoryMonitor = new MemoryMonitor(this, metrics);
 
     return START_NOT_STICKY;
   }
@@ -50,7 +49,7 @@ public class StressService extends Service {
                   messageHandler, OnDeviceStressTester.GET_BASELINE_METRICS_RETURN, pid, 0);
               Bundle bundle = new Bundle();
               // Metrics before any allocations are are the baseline.
-              JSONObject metrics = memoryMonitor.getMemoryMetrics();
+              Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
               bundle.putString("metrics", metrics.toString());
               message.obj = bundle;
               msg.replyTo.send(message);
@@ -74,16 +73,12 @@ public class StressService extends Service {
             }
 
             // Memory metrics are calculated and returned to the main process.
-            JSONObject metrics = memoryMonitor.getMemoryMetrics();
+            Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
 
             // This format matches the format used by the lab stress tester.
-            JSONObject stressed = new JSONObject();
-            try {
-              stressed.put("applicationAllocated", applicationAllocated);
-              metrics.put("stressed", stressed);
-            } catch (JSONException e) {
-              throw new MemoryAdvisorException(e);
-            }
+            Map<String, Object> stressed = new LinkedHashMap<>();
+            stressed.put("applicationAllocated", applicationAllocated);
+            metrics.put("stressed", stressed);
 
             Bundle bundle = new Bundle();
             bundle.putString("metrics", metrics.toString());

@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice_common;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 
 public class ConfigUtils {
   /**
@@ -39,18 +38,18 @@ public class ConfigUtils {
   }
 
   /**
-   * Return the value associated with the key in the given object. If the object does not define
+   * Return the value associated with the key in the given map. If the map does not define
    * the key, return the specified default value.
-   * @param object The object to extract the value from.
+   * @param object The map to extract the value from.
    * @param key The key associated with the value.
-   * @param defaultValue The value to return if the object does not specify the key.
+   * @param defaultValue The value to return if the map does not specify the key.
+   * @param <T> The parameter type.
    * @return The associated value, or the defaultValue if the object does not define the key.
    */
-  public static Object getOrDefault(JSONObject object, String key, Object defaultValue) {
-    try {
-      return object.get(key);
-    } catch (JSONException e) {
-      return defaultValue;
+  public static <T> T getOrDefault(Map<String, Object> object, String key, T defaultValue) {
+    if (object.containsKey(key)) {
+      return (T) object.get(key);
     }
+    return defaultValue;
   }
 }

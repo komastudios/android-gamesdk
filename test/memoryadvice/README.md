@@ -97,7 +97,8 @@ performed by the app (higher rate allows a more timely reaction to warnings ).
 The API does not cache or rate limit, nor does it use a timer or other thread
 mechanism.
 
-All this information is dispensed as a JSON object, for a few reasons:
+All this information is dispensed as a Java map that can be converted to a JSON
+object, for a few reasons:
 
 *   To allow easy integration across language barriers, C++, Java, and in the
     case of Unity projects, C#.
@@ -109,16 +110,15 @@ All this information is dispensed as a JSON object, for a few reasons:
     captured and synthesized are both not available on all devices, and liable
     to change.
 
-There is no strict requirement for apps to read the JSON returned. Instead, the
-library provides methods that can be called to get simple recommendations.
-However, as long as the library is experimental, this interface is not
-guaranteed to be stable.
+The library provides methods that can be called to get simple recommendations
+from the map returned. However, as long as the library is experimental, this
+interface is not guaranteed to be stable.
 
 # Limitations of estimates
 
-Estimates are currently the most experimental part of the libarary, and
-estimates may be inaccurate for combinations of devices that we have not seen in
-lab testing.
+Estimates are currently the most experimental part of the library, and estimates
+may be inaccurate for combinations of devices that we have not seen in lab
+testing.
 
 They may suggest a lower limit than can be allocated by an application in
 practice, because:
@@ -169,7 +169,7 @@ resolution. These can be restored when no more memory warnings (including
 ## Adding the library to an Android project
 
 The library is published on
-[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.20).
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.21).
 
 In the application root `build.gradle` file, ensure `google()` is specified as a
 repository for the project, as well as `jitpack.io` for some of its
@@ -193,7 +193,7 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.games:memory-advice:0.20'
+    implementation 'com.google.android.games:memory-advice:0.21'
 
 }
 ```
@@ -243,13 +243,12 @@ frequency should reflect the cost of calling `getAdvice()`; approximately 5 to
 ```java
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
-import org.json.JSONObject;
 
 class MyActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     // ...
   }
 }
@@ -261,13 +260,12 @@ recommendations.
 ```java
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
-import org.json.JSONObject;
 
 class MyActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
     switch (memoryState) {
       case OK:
@@ -302,34 +300,34 @@ duration between iterations of three seconds.
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
-import org.json.JSONObject;
+import java.util.Map;
 
 class MyActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
         new MemoryWatcher(memoryAdvisor, 10, 100, 2000, new MemoryWatcher.DefaultClient() {
-      @Override
-      public void newState(MemoryAdvisor.MemoryState memoryState) {
-        switch (memoryState) {
-          case OK:
-            // The application can safely allocate significant memory.
-            break;
-          case APPROACHING_LIMIT:
-            // The application should not allocate significant memory.
-            break;
-          case CRITICAL:
-            // The application should free memory as soon as possible, until the memory state
-            // changes.
-            break;
-          case BACKGROUNDED:
-            // The application has been put into the background.
-            break;
-        }
-      }
-    });
+          @Override
+          public void newState(MemoryAdvisor.MemoryState memoryState) {
+            switch (memoryState) {
+              case OK:
+                // The application can safely allocate significant memory.
+                break;
+              case APPROACHING_LIMIT:
+                // The application should not allocate significant memory.
+                break;
+              case CRITICAL:
+                // The application should free memory as soon as possible, until the memory state
+                // changes.
+                break;
+              case BACKGROUNDED:
+                // The application has been put into the background.
+                break;
+            }
+          }
+        });
   }
 }
 ```
@@ -340,13 +338,12 @@ that can safely be allocated by the application.
 ```java
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
-import org.json.JSONObject;
 
-class MyActivity extends Activity {
+class MainActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     long availabilityEstimate = MemoryAdvisor.availabilityEstimate(advice);
     // ...
   }
@@ -369,7 +366,7 @@ class MyActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     // ...
     memoryAdvisor = new MemoryAdvisor(this);
-    JSONObject deviceInfo = memoryAdvisor.getDeviceInfo();
+    Map<String, Object> deviceInfo = memoryAdvisor.getDeviceInfo(MainActivity.this);
     // Now convert the deviceInfo to a string and log it.
   }
 }
@@ -380,13 +377,12 @@ The data returned by `getAdvice()`:
 ```java
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
-import org.json.JSONObject;
 
 class MyActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     // Now convert the advice object to a string and log it.
   }
 }

@@ -1,10 +1,10 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
+import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONObject;
 
 /**
  * A MemoryWatcher automatically polls the memory advisor and calls back a client a soon as possible
@@ -47,7 +47,7 @@ public class MemoryWatcher {
       @Override
       public void run() {
         long start = System.currentTimeMillis();
-        JSONObject advice = memoryAdvisor.getAdvice();
+        Map<String, Object> advice = memoryAdvisor.getAdvice();
         client.receiveAdvice(advice);
         MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
         long late = start - expectedTime;
@@ -94,7 +94,7 @@ public class MemoryWatcher {
    */
   public interface Client {
     void newState(MemoryAdvisor.MemoryState state);
-    void receiveAdvice(JSONObject advice);
+    void receiveAdvice(Map<String, Object> advice);
   }
 
   /**
@@ -105,6 +105,6 @@ public class MemoryWatcher {
     public void newState(MemoryAdvisor.MemoryState state) {}
 
     @Override
-    public void receiveAdvice(JSONObject advice) {}
+    public void receiveAdvice(Map<String, Object> advice) {}
   }
 }

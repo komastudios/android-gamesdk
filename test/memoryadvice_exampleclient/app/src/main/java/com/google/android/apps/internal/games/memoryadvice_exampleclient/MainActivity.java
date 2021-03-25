@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import com.google.android.apps.internal.games.memoryadvice.ReadyHandler;
-import org.json.JSONObject;
+import java.util.Map;
 
 public class MainActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
@@ -33,11 +33,11 @@ public class MainActivity extends Activity {
               public void newState(MemoryAdvisor.MemoryState state) {}
             });
 
-        JSONObject deviceInfo = memoryAdvisor.getDeviceInfo(MainActivity.this);
+        Map<String, Object> deviceInfo = memoryAdvisor.getDeviceInfo(MainActivity.this);
 
         System.out.println(deviceInfo);
 
-        JSONObject advice = memoryAdvisor.getAdvice();
+        Map<String, Object> advice = memoryAdvisor.getAdvice();
 
         MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
 
