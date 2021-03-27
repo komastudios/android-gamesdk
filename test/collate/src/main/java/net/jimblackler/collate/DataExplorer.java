@@ -1,8 +1,8 @@
 package net.jimblackler.collate;
 
-import java.util.Iterator;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -10,31 +10,29 @@ import org.w3c.dom.Text;
 
 public class DataExplorer {
   static Node getDataExplorer(Document document, Object obj) {
-    if (obj instanceof JSONArray) {
+    Gson gson = new Gson();
+    if (obj instanceof List) {
       Element ol = document.createElement("ol");
-      JSONArray array = (JSONArray) obj;
+      List<Object> array = (List<Object>) obj;
       ol.setAttribute("start", "0");
-      for (int idx = 0; idx != array.length(); idx++) {
+      for (int idx = 0; idx != array.size(); idx++) {
         Element li = document.createElement("li");
         li.appendChild(getDataExplorer(document, array.get(idx)));
         ol.appendChild(li);
       }
       return ol;
-    } else if (obj instanceof JSONObject) {
+    } else if (obj instanceof Map) {
       Element table = document.createElement("table");
-      JSONObject object = (JSONObject) obj;
-      Iterator<String> it = object.keys();
-      while (it.hasNext()) {
-        String key = it.next();
-        Object value = object.get(key);
-
+      Map<String, Object> object = (Map<String, Object>) obj;
+      for (Map.Entry<String, Object> entry : object.entrySet()) {
+        Object value = entry.getValue();
         Element tr = document.createElement("tr");
         Element td0 = document.createElement("td");
-        td0.appendChild(document.createTextNode(key));
+        td0.appendChild(document.createTextNode(entry.getKey()));
         td0.setAttribute("class", "key");
         tr.appendChild(td0);
         Element td1 = document.createElement("td");
-        if (value instanceof JSONObject || value instanceof JSONArray) {
+        if (value instanceof Map || value instanceof List) {
           Element details = document.createElement("details");
           Element summary = document.createElement("summary");
           Element span = document.createElement("span");
@@ -52,7 +50,7 @@ public class DataExplorer {
       }
       return table;
     } else {
-      String string = obj.toString();
+      String string = gson.toJson(obj);
       Text textNode = document.createTextNode(string);
       if (string.contains(System.lineSeparator())) {
         Element pre = document.createElement("pre");

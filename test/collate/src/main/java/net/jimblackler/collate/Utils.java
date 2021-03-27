@@ -1,23 +1,22 @@
 package net.jimblackler.collate;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Class containing various utility methods used by tools in the package.
@@ -114,52 +113,69 @@ class Utils {
    * @param spec The test specification file.
    * @return The selected parameters.
    */
-  static JSONObject flattenParams(JSONObject spec) {
-    JSONObject params = new JSONObject();
-    try {
-      JSONArray coordinates = spec.getJSONArray("coordinates");
-      JSONArray tests = spec.getJSONArray("tests");
+  static Map<String, Object> flattenParams(Map<String, Object> spec) {
+    Map<String, Object> params = new HashMap<>();
 
-      for (int coordinateNumber = 0; coordinateNumber != coordinates.length(); coordinateNumber++) {
-        JSONArray jsonArray = tests.getJSONArray(coordinateNumber);
-        JSONObject jsonObject = jsonArray.getJSONObject(coordinates.getInt(coordinateNumber));
-        merge(jsonObject, params);
-      }
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
+    List<Object> coordinates = (List<Object>) spec.get("coordinates");
+    List<Object> tests = (List<Object>) spec.get("tests");
+
+    for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
+      List<Object> jsonArray = (List<Object>) tests.get(coordinateNumber);
+      Map<String, Object> jsonObject = (Map<String, Object>) jsonArray.get(
+          ((Number) coordinates.get(coordinateNumber)).intValue());
+      merge(jsonObject, params);
     }
     return params;
   }
 
   /**
-   * Creates a deep union of two JSON objects. Arrays are concatenated and dictionaries are merged.
-   * @param in The first JSON object; read only.
-   * @param out The second JSON object and the object into which changes are written.
-   * @throws JSONException In the case of a JSON handling error.
+   * Creates a deep union of two maps. Arrays are concatenated and dictionaries are merged.
+   * @param in The first map; read only.
+   * @param out The second map and the object into which changes are written.
    */
-  private static void merge(JSONObject in, JSONObject out) throws JSONException {
-    in = new JSONObject(in.toString());  // Clone to allow original (freely mutable) copies.
-    Iterator<String> keys = in.keys();
-    while (keys.hasNext()) {
-      String key = keys.next();
-      Object inObject = in.get(key);
-      if (out.has(key)) {
+  private static void merge(Map<String, Object> in, Map<String, Object> out) {
+    in = clone(in);
+    for (Map.Entry<String, Object> entry : in.entrySet()) {
+      String key = entry.getKey();
+      Object inObject = entry.getValue();
+      if (out.containsKey(key)) {
         Object outObject = out.get(key);
-        if (inObject instanceof JSONArray && outObject instanceof JSONArray) {
-          JSONArray inArray = (JSONArray) inObject;
-          JSONArray outArray = (JSONArray) outObject;
-          for (int idx = 0; idx != inArray.length(); idx++) {
-            outArray.put(inArray.get(idx));
-          }
+        if (inObject instanceof List && outObject instanceof List) {
+          ((Collection<Object>) outObject).addAll((Collection<?>) inObject);
           continue;
         }
-        if (inObject instanceof JSONObject && outObject instanceof JSONObject) {
-          merge((JSONObject) inObject, (JSONObject) outObject);
+        if (inObject instanceof Map && outObject instanceof Map) {
+          merge((Map<String, Object>) inObject, ((Map<String, Object>) outObject));
           continue;
         }
       }
       out.put(key, inObject);
     }
+  }
+
+  /**
+   * Return a deep-clone of a JSON-compatible object tree.
+   *
+   * @param in  The tree to clone.
+   * @param <T> The cloned tree.
+   */
+  public static <T> T clone(T in) {
+    if (in instanceof Map) {
+      Map<String, Object> map = new LinkedHashMap<>();
+      for (Map.Entry<String, Object> entry : ((Map<String, Object>) in).entrySet()) {
+        map.put(entry.getKey(), clone(entry.getValue()));
+      }
+      return (T) map;
+    }
+
+    if (in instanceof List) {
+      Collection<Object> list = new ArrayList<>();
+      for (Object obj : (Iterable<Object>) in) {
+        list.add(clone(obj));
+      }
+      return (T) list;
+    }
+    return in;
   }
 
   static String getProjectId() throws IOException {
@@ -201,18 +217,18 @@ class Utils {
   }
 
   /**
-   * Return the value associated with the key in the given object. If the object does not define
+   * Return the value associated with the key in the given map. If the map does not define
    * the key, return the specified default value.
-   * @param object The object to extract the value from.
+   * @param object The map to extract the value from.
    * @param key The key associated with the value.
-   * @param defaultValue The value to return if the object does not specify the key.
+   * @param defaultValue The value to return if the map does not specify the key.
+   * @param <T> The parameter type.
    * @return The associated value, or the defaultValue if the object does not define the key.
    */
-  static Object getOrDefault(JSONObject object, String key, Object defaultValue) {
-    try {
-      return object.get(key);
-    } catch (JSONException e) {
-      return defaultValue;
+  public static <T> T getOrDefault(Map<String, Object> object, String key, T defaultValue) {
+    if (object.containsKey(key)) {
+      return (T) object.get(key);
     }
+    return defaultValue;
   }
 }
