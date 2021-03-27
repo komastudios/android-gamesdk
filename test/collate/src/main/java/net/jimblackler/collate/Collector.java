@@ -2,6 +2,8 @@ package net.jimblackler.collate;
 
 import static net.jimblackler.collate.JsonUtils.getSchema;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -26,9 +28,11 @@ import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -37,13 +41,11 @@ import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
 
-  static void deviceCollect(String appName, Consumer<? super JSONArray> emitter)
-      throws IOException {
+  static void deviceCollect(String appName, Consumer<List<Object>> emitter) throws IOException {
     Schema resultsRowSchema = getSchema("resultsRow.schema.json");
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
@@ -56,16 +58,15 @@ class Collector {
     }
   }
 
-  static void cloudCollect(String historyId, Consumer<? super JSONArray> emitter)
-      throws IOException {
+  static void cloudCollect(String historyId, Consumer<List<Object>> emitter) throws IOException {
     int sleepFor = 0;
     int ioSleepFor = 0;
 
     String projectId = Utils.getProjectId();
 
     Schema resultsRowSchema = getSchema("resultsRow.schema.json");
-    Map<String, JSONObject> launcherDevices = new HashMap<>();
-    DeviceFetcher.fetch(device -> { launcherDevices.put(device.getString("id"), device); });
+    Map<String, Map<String, Object>> launcherDevices = new HashMap<>();
+    DeviceFetcher.fetch(device -> launcherDevices.put((String) device.get("id"), device));
 
     int inProgress = 0;
     Collection<String> reported = new HashSet<>();
@@ -134,9 +135,9 @@ class Collector {
                     continue;
                   }
                   fetched++;
-                  JSONObject extra = new JSONObject();
+                  Map<String, Object> extra = new LinkedHashMap<>();
                   extra.put("historyId", historyId);
-                  extra.put("step", new JSONObject(step.toString()));
+                  extra.put("step", step);
                   // noinspection HardcodedFileSeparator
                   extra.put("resultsPage",
                       "https://console.firebase.google.com/project/" + projectId
@@ -215,25 +216,29 @@ class Collector {
     } while (inProgress != 0 || reported.isEmpty());
   }
 
-  private static void collectResult(
-      Consumer<? super JSONArray> emitter, String text, JSONObject extra, Schema resultsRowSchema) {
-    JSONArray data = new JSONArray();
+  private static void collectResult(Consumer<List<Object>> emitter, String text,
+      Map<String, Object> extra, Schema resultsRowSchema) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    boolean validate = false;
+    List<Object> data = new ArrayList<>();
     text.lines().forEach(line -> {
       line = line.trim();
       try {
-        JSONObject value = new JSONObject(line);
-        resultsRowSchema.validate(value);
-        data.put(value);
-      } catch (JSONException e) {
+        Map<String, Object> lineData = objectMapper.readValue(line, Map.class);
+        if (validate) {
+          resultsRowSchema.validate(new JSONArray(line));
+        }
+        data.add(lineData);
+      } catch (JSONException | JsonProcessingException e) {
         System.out.println("Not JSON: " + line);
       } catch (ValidationException e) {
         System.out.println("Did not validate: " + e.getMessage());
       }
     });
     if (data.isEmpty()) {
-      data.put(new JSONObject());
+      data.add(new LinkedHashMap<String, Object>());
     }
-    data.getJSONObject(0).put("extra", extra);
+    ((Map<String, Object>) data.get(0)).put("extra", extra);
     emitter.accept(data);
   }
 

@@ -1,35 +1,34 @@
 package net.jimblackler.collate;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Map;
 
 public class ReportUtils {
-  static JSONObject rowMetrics(JSONObject row) {
-    if (row.has("advice")) {
-      return row.getJSONObject("advice").getJSONObject("metrics");
-    } else if (row.has("deviceInfo")) {
-      return row.getJSONObject("deviceInfo").getJSONObject("baseline");
-    } else if (row.has("metrics")) {
-      return row.getJSONObject("metrics");
+  static Map<String, Object> rowMetrics(Map<String, Object> row) {
+    if (row.containsKey("advice")) {
+      return (Map<String, Object>) ((Map<String, Object>) row.get("advice")).get("metrics");
+    } else if (row.containsKey("deviceInfo")) {
+      return (Map<String, Object>) ((Map<String, Object>) row.get("deviceInfo")).get("baseline");
+    } else if (row.containsKey("metrics")) {
+      return (Map<String, Object>) row.get("metrics");
     } else {
       return null;
     }
   }
 
-  static long rowTime(JSONObject row) {
-    JSONObject metrics = rowMetrics(row);
+  static long rowTime(Map<String, Object> row) {
+    Map<String, Object> metrics = rowMetrics(row);
     if (metrics == null) {
       return 0;
     }
-    return metrics.getJSONObject("meta").getLong("time");
+    return ((Number) ((Map<String, Object>) metrics.get("meta")).get("time")).longValue();
   }
 
-  static JSONObject getDeviceInfo(JSONArray result) {
-    JSONObject deviceInfo = null;
-    for (int idx = 0; idx != result.length(); idx++) {
-      JSONObject jsonObject = result.getJSONObject(idx);
-      if (jsonObject.has("deviceInfo")) {
-        deviceInfo = jsonObject.getJSONObject("deviceInfo");
+  static Map<String, Object> getDeviceInfo(Iterable<Object> result) {
+    Map<String, Object> deviceInfo = null;
+    for (Object data : result) {
+      Map<String, Object> line = (Map<String, Object>) data;
+      if (line.containsKey("deviceInfo")) {
+        deviceInfo = (Map<String, Object>) line.get("deviceInfo");
         break;
       }
     }
