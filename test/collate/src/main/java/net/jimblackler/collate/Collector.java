@@ -108,11 +108,8 @@ class Collector {
             for (Execution execution : response.getExecutions()) {
               String executionId = execution.getExecutionId();
               ToolResults.Projects.Histories.Executions.Steps.List list1 =
-                  toolResults.projects()
-                      .histories()
-                      .executions()
-                      .steps()
-                      .list(projectId, historyId, executionId);
+                  toolResults.projects().histories().executions().steps().list(
+                      projectId, historyId, executionId);
               while (true) {
                 ListStepsResponse response1 = list1.execute();
                 if (response1.isEmpty()) {

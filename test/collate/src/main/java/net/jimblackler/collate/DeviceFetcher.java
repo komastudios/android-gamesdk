@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 public class DeviceFetcher {
   /**
    * Fetch information about Firebase Test lab devices.
+   *
    * @param consumer The consumer for the device information.
    * @throws IOException There was an error fetching the information.
    */

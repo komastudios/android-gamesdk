@@ -110,6 +110,7 @@ public class Launcher {
 
   /**
    * Get the PID of a running Android app.
+   *
    * @param pack The package name of the app.
    * @return The PID.
    */
@@ -119,6 +120,7 @@ public class Launcher {
 
   /**
    * Encode a JSON string for shell command line use.
+   *
    * @param json JSON string to encode.
    * @return The encoded string.
    */

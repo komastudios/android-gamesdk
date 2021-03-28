@@ -101,6 +101,7 @@ class Utils {
   /**
    * Selects the parameters for a run based on the 'tests' and 'coordinates' of the test
    * specification file.
+   *
    * @param spec The test specification file.
    * @return The selected parameters.
    */
@@ -121,7 +122,8 @@ class Utils {
 
   /**
    * Creates a deep union of two maps. Arrays are concatenated and dictionaries are merged.
-   * @param in The first map; read only.
+   *
+   * @param in  The first map; read only.
    * @param out The second map and the object into which changes are written.
    */
   private static void merge(Map<String, Object> in, Map<String, Object> out) {
@@ -210,10 +212,11 @@ class Utils {
   /**
    * Return the value associated with the key in the given map. If the map does not define
    * the key, return the specified default value.
-   * @param object The map to extract the value from.
-   * @param key The key associated with the value.
+   *
+   * @param object       The map to extract the value from.
+   * @param key          The key associated with the value.
    * @param defaultValue The value to return if the map does not specify the key.
-   * @param <T> The parameter type.
+   * @param <T>          The parameter type.
    * @return The associated value, or the defaultValue if the object does not define the key.
    */
   public static <T> T getOrDefault(Map<String, Object> object, String key, T defaultValue) {

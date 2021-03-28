@@ -14,6 +14,7 @@ public class JsonUtils {
   /**
    * Convert a schema from text form in the Memory Advice common library into a org.everit schema
    * for validation.
+   *
    * @param name The name of the Schema to fectch.
    * @return The built org.everit Schema object.
    */

@@ -227,8 +227,9 @@ public class Score {
    * Determines if a vertical group order will have an effective duplicate or not.
    * In short, there is no point repositioning the dimensions of length 1, since
    * that will only result in duplicates of the actual groupings.
+   *
    * @param verticalOrder The vertical group order under consideration.
-   * @param objects The array of dimension arrays.
+   * @param objects       The array of dimension arrays.
    * @return true if the permutation is the definitive version.
    */
   private static boolean worthRendering(Iterable<Integer> verticalOrder, List<Object> objects) {
@@ -248,6 +249,7 @@ public class Score {
   /**
    * Get a list of all possible orderings of a given permutation.
    * For example: '2' would return 1,2; 2,1
+   *
    * @param size
    * @return The list of possible orderings.
    */
@@ -407,7 +409,8 @@ public class Score {
   /**
    * Use the vertical order to determine the dimension selections for every test in the table,
    * arranged from left to right.
-   * @param tests The test dimensions to reorder.
+   *
+   * @param tests         The test dimensions to reorder.
    * @param verticalOrder The new order to use.
    * @return The selections for the tests in an array, ordered left to right.
    */
