@@ -1,12 +1,10 @@
 package net.jimblackler.collate;
 
-import java.io.BufferedReader;
+import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,24 +43,6 @@ class Utils {
           throw new IllegalStateException(e);
         }
       });
-    }
-  }
-
-  private static String readStream(InputStream inputStream, PrintStream out) throws IOException {
-    StringBuilder stringBuilder = new StringBuilder();
-    try (BufferedReader bufferedReader =
-             new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-      String separator = "";
-      while (true) {
-        String line = bufferedReader.readLine();
-        if (line == null) {
-          return stringBuilder.toString();
-        }
-        out.println(line);
-        stringBuilder.append(separator);
-        separator = System.lineSeparator();
-        stringBuilder.append(line);
-      }
     }
   }
 
