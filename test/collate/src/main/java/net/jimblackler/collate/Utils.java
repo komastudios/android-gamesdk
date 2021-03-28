@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,46 +66,56 @@ class Utils {
     }
   }
 
-  static String executeSilent(String... args) throws IOException {
+  static String executeSilent(String... args) throws ExecutionError {
     return execute(NULL_PRINT_STREAM, args);
   }
 
-  static String execute(String... args) throws IOException {
+  static String execute(String... args) throws ExecutionError {
     return execute(System.out, args);
   }
 
-  static String execute(PrintStream out, String... args) throws IOException {
+  static String execute(PrintStream out, String... args) throws ExecutionError {
     out.println(String.join(" ", args));
     int sleepFor = 0;
     for (int attempt = 0; attempt != 10; attempt++) {
-      Process process = new ProcessBuilder(args).start();
-
-      String input = readStream(process.getInputStream(), out);
-      String error = readStream(process.getErrorStream(), out);
+      Process process = null;
       try {
-        process.waitFor();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+        process = new ProcessBuilder(args).start();
+      } catch (IOException e) {
+        throw new ExecutionError("Error executing: " + Arrays.toString(args), e);
       }
-      int exit = process.exitValue();
-      if (exit != 0) {
-        if (error.contains("Broken pipe") || error.contains("Can't find service")) {
-          sleepFor += 10;
-          out.println(error);
-          out.print("Retrying in " + sleepFor + " seconds... ");
-          try {
-            Thread.sleep(sleepFor * 1000L);
-          } catch (InterruptedException e) {
-            // Intentionally ignored.
-          }
-          out.println("done");
-          continue;
+
+      try {
+        String input = readStream(process.getInputStream(), out);
+        String error = readStream(process.getErrorStream(), out);
+
+        try {
+          process.waitFor();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
         }
-        throw new IOException(error);
+        int exit = process.exitValue();
+        if (exit != 0) {
+          if (error.contains("Broken pipe") || error.contains("Can't find service")) {
+            sleepFor += 10;
+            out.println(error);
+            out.print("Retrying in " + sleepFor + " seconds... ");
+            try {
+              Thread.sleep(sleepFor * 1000L);
+            } catch (InterruptedException e) {
+              // Intentionally ignored.
+            }
+            out.println("done");
+            continue;
+          }
+          throw new ExecutionError(error);
+        }
+        return input;
+      } catch (IOException ex) {
+        throw new ExecutionError("Error fetching results for: " + Arrays.toString(args), ex);
       }
-      return input;
     }
-    throw new IOException("Maximum attempts reached");
+    throw new ExecutionError("Maximum attempts reached");
   }
 
   /**
@@ -178,7 +189,7 @@ class Utils {
     return in;
   }
 
-  static String getProjectId() throws IOException {
+  static String getProjectId() throws ExecutionError {
     return execute(Config.GCLOUD_EXECUTABLE.toString(), "config", "get-value", "project");
   }
 
