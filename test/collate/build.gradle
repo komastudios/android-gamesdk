@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.android.games:memory-advice-common:0.20'
+    implementation 'com.google.android.games:memory-advice-common:0.21'
     implementation 'com.google.cloud:google-cloud-storage:1.113.14'
     implementation 'com.google.api-client:google-api-client:1.31.3'
     implementation 'org.json:json:20210307'
