@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
     implementation 'com.google.android.games:memory-advice-common:0.21'
     implementation 'com.google.cloud:google-cloud-storage:1.113.14'
     implementation 'com.google.api-client:google-api-client:1.31.3'
