@@ -19,35 +19,6 @@
 
 namespace tuningfork {
 
-void FrameTimeMetricData::Tick(TimePoint t) {
-    if (last_time_ != TimePoint::min()) Record(t - last_time_);
-    last_time_ = t;
-}
-
-void FrameTimeMetricData::Record(Duration dt) {
-    // The histogram stores millisecond values as doubles
-    histogram_.Add(
-        double(
-            std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count()) /
-        1000000);
-    duration_ += dt;
-}
-
-void FrameTimeMetricData::Clear() {
-    last_time_ = TimePoint::min();
-    histogram_.Clear();
-}
-
-void LoadingTimeMetricData::Record(Duration dt) {
-    data_.Add(dt);
-    duration_ += dt;
-}
-
-void LoadingTimeMetricData::Record(ProcessTimeInterval dt) {
-    data_.Add(dt);
-    duration_ += dt.Duration();
-}
-
 FrameTimeMetricData* Session::CreateFrameTimeHistogram(
     MetricId id, const Settings::Histogram& settings) {
     frame_time_data_.push_back(

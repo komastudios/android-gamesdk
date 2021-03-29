@@ -93,16 +93,15 @@ system_clock::time_point RFC3339ToTime(const std::string& s) {
 
 std::string DurationToSecondsString(Duration d) {
     std::stringstream str;
-    str << FixedAndTruncated(duration_cast<nanoseconds>(d).count() /
-                             1000000000.0)
-        << 's';
+    double duration_s = duration_cast<nanoseconds>(d).count() / 1000000000.0;
+    str << FixedAndTruncated(duration_s) << 's';
     return str.str();
 }
 Duration StringToDuration(const std::string& s) {
     double d;
     std::stringstream str(s);
     str >> d;
-    return nanoseconds(static_cast<uint64_t>(d * 1000000000));
+    return nanoseconds(static_cast<int64_t>(d * 1000000000));
 }
 
 std::string B64Encode(const std::vector<uint8_t>& bytes) {
@@ -147,7 +146,7 @@ Json::object JsonSerializer::TelemetryContextJson(
 #define SET_METADATA_FIELD(OBJ, KEY) \
     if (md.KEY != 0) OBJ[#KEY] = md.KEY;
 
-static std::string DurationJsonFromNanos(uint64_t ns) {
+static std::string DurationJsonFromNanos(int64_t ns) {
     // For JSON, we should return a string with the number of seconds.
     // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/duration.proto
     double dns = ns;
@@ -209,7 +208,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
         Json::object o{{"counts", counts}};
         o["instrument_id"] = session_.GetInstrumentationKey(ft.frame_time.ikey);
         render_histograms.push_back(o);
-        duration += th->duration_;
+        duration = std::max(th->duration_, duration);
     }
     for (const auto& th :
          session_.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
@@ -239,7 +238,6 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
                         SerializeIntervalVector(loading_events_intervals);
                 o["loading_metadata"] = LoadingTimeMetadataJson(md);
                 loading_events.push_back(o);
-                duration += th->duration_;
             }
         }
     }
@@ -362,7 +360,7 @@ Json::object JsonSerializer::TelemetryJson(const AnnotationId& annotation,
 Json::object JsonSerializer::PartialLoadingTelemetryJson(
     const AnnotationId& annotation, const LifecycleUploadEvent& event,
     const RequestInfo& request_info) {
-    Duration duration{};
+    Duration duration = Duration::zero();
     auto report =
         PartialLoadingTelemetryReportJson(annotation, event, duration);
     return Json::object{
@@ -411,12 +409,12 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
          session_.GetNonEmptyHistograms<LoadingTimeMetricData>()) {
         annotations.insert(p->metric_id_.detail.annotation);
     }
-    Duration sum_duration = Duration::zero();
+    Duration max_duration = Duration::zero();
     for (auto& a : annotations) {
         bool empty;
-        Duration duration;
+        Duration duration = Duration::zero();
         auto tel = TelemetryJson(a, request_info, duration, empty);
-        sum_duration += duration;
+        max_duration = std::max(max_duration, duration);
         if (!empty) telemetry.push_back(tel);
     }
     if (!annotations.empty()) {
@@ -426,7 +424,7 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
         // with a context, including an annotation. We use the first one and
         // expect it to be ignored  on the Play side.
         auto& a = *annotations.begin();
-        auto tel = MemoryTelemetryJson(a, request_info, sum_duration, empty);
+        auto tel = MemoryTelemetryJson(a, request_info, max_duration, empty);
         if (!empty) telemetry.push_back(tel);
     }
     SerializeTelemetryRequest(request_info, telemetry, evt_json_ser);
@@ -484,6 +482,7 @@ struct Hist {
     Session& session) {
     std::string err;
     Json in = Json::parse(evt_json_ser, err);
+    ALOGI("Deserializing saved session");
     if (!err.empty()) {
         ALOGE("Failed to deserialize %s\n%s", evt_json_ser.c_str(),
               err.c_str());
