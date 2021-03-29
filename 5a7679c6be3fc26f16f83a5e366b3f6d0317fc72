@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d368b1e4_6863cf66",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-29T16:37:56Z",
+      "side": 1,
+      "message": "Most of these fixes are precautionary, except where we weren\u0027t clearing the duration in the metric data. There are still a few cases, given in the bug, where we see large durations on some phones, that we\u0027ve not got to the bottom of.",
+      "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e83bf5f9_b7df0017",
@@ -31,6 +48,24 @@
       "writtenOn": "2021-03-29T16:06:03Z",
       "side": 1,
       "message": "In which case could this happen?",
+      "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b654d1ad_287ffddf",
+        "filename": "src/tuningfork/core/process_time.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-29T16:37:56Z",
+      "side": 1,
+      "message": "I\u0027m not sure exactly, but I wanted to rule it out!",
+      "parentUuid": "e83bf5f9_b7df0017",
       "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +87,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b88a397_9576ac17",
+        "filename": "src/tuningfork/http_backend/json_serializer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-29T16:37:56Z",
+      "side": 1,
+      "message": "I thought we might have, given the very large values that were seen for some durations.",
+      "parentUuid": "e069228d_a99cbf17",
+      "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7fa813ba_1397c6c9",
@@ -65,6 +118,24 @@
       "writtenOn": "2021-03-29T16:06:03Z",
       "side": 1,
       "message": "Is this fixing something or just a clearer way of initializing?",
+      "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae030630_bcd4694c",
+        "filename": "src/tuningfork/http_backend/json_serializer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-03-29T16:37:56Z",
+      "side": 1,
+      "message": "It results in the same thing, just clearer.",
+      "parentUuid": "7fa813ba_1397c6c9",
       "revId": "5a7679c6be3fc26f16f83a5e366b3f6d0317fc72",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
