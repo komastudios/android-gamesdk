@@ -54,6 +54,8 @@ set( TUNINGFORK_SRCS
   core/chrono_time_provider.cpp
   core/crash_handler.cpp
   core/file_cache.cpp
+  core/frametime_metric.cpp
+  core/loadingtime_metric.cpp
   core/memory_telemetry.cpp
   core/request_info.cpp
   core/runnable.cpp

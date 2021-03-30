@@ -1,5 +1,6 @@
 package net.jimblackler.collate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
@@ -14,20 +15,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import org.json.JSONObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 class Auth {
   static String getAccessToken() throws IOException {
     while (true) {
       try {
-        JSONObject obj = new JSONObject(Files.readString(Path.of("creds.json")));
+        Map<String, Object> obj =
+            new ObjectMapper().readValue(Path.of("creds.json").toFile(), Map.class);
         GoogleClientSecrets googleClientSecrets = getGoogleClientSecrets();
         GoogleTokenResponse response =
             new GoogleRefreshTokenRequest(new NetHttpTransport(), new JacksonFactory(),
-                obj.getString("refreshToken"), googleClientSecrets.getInstalled().getClientId(),
+                (String) obj.get("refreshToken"), googleClientSecrets.getInstalled().getClientId(),
                 googleClientSecrets.getInstalled().getClientSecret())
                 .execute();
         return response.getAccessToken();
@@ -71,10 +73,10 @@ class Auth {
     }
 
     try (FileWriter file = new FileWriter("creds.json", StandardCharsets.UTF_8)) {
-      JSONObject obj = new JSONObject();
+      Map<String, Object> obj = new LinkedHashMap<>();
       obj.put("accessToken", response.getAccessToken());
       obj.put("refreshToken", response.getRefreshToken());
-      file.write(obj.toString(2));
+      file.write(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(obj));
     }
   }
 

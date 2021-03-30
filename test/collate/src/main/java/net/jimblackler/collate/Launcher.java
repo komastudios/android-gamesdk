@@ -3,6 +3,8 @@ package net.jimblackler.collate;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSet;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -15,10 +17,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class Launcher {
   private static final boolean USE_DEVICE = false;
@@ -48,8 +50,8 @@ public class Launcher {
     AtomicReference<String> pack = new AtomicReference<>();  // 'package' is a Java keyword.
     AtomicReference<Path> installed = new AtomicReference<>();
     doLaunch((id, apkPath, paramsIn) -> {
-      JSONObject flattened = Utils.flattenParams(paramsIn);
-      pack.set(flattened.getString("package"));
+      Map<String, Object> flattened = Utils.flattenParams(paramsIn);
+      pack.set((String) flattened.get("package"));
 
       // Kill the app as a precaution against confusing an old run with the new run.
       try {
@@ -108,6 +110,7 @@ public class Launcher {
 
   /**
    * Get the PID of a running Android app.
+   *
    * @param pack The package name of the app.
    * @return The PID.
    */
@@ -117,14 +120,16 @@ public class Launcher {
 
   /**
    * Encode a JSON string for shell command line use.
+   *
    * @param json JSON string to encode.
    * @return The encoded string.
    */
-  private static String jsonToShellParameter(JSONObject json) {
+  private static String jsonToShellParameter(Map<String, Object> json) {
     return "\"" + json.toString().replace("\"", "\\\"") + "\"";
   }
 
   private static void cloudLaunch() throws IOException {
+    ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     Path grabberPath = Config.GRABBER_BASE.resolve(STANDARD_APK_PATH);
 
     List<String> baseCommands = new ArrayList<>(Arrays.asList(Config.GCLOUD_EXECUTABLE.toString(),
@@ -136,19 +141,19 @@ public class Launcher {
       if (!USE_WHITELIST && devices.size() >= MAX_DEVICES) {
         return;
       }
-      if (!device.getString("formFactor").equals("PHONE")) {
+      if (!device.get("formFactor").equals("PHONE")) {
         return;
       }
-      if (!device.getString("form").equals("PHYSICAL")) {
+      if (!device.get("form").equals("PHYSICAL")) {
         return;
       }
-      JSONArray supportedVersionIds = device.getJSONArray("supportedVersionIds");
-      for (int idx2 = 0; idx2 != supportedVersionIds.length(); idx2++) {
-        int versionId = supportedVersionIds.getInt(idx2);
+      List<Object> supportedVersionIds = (List<Object>) device.get("supportedVersionIds");
+      for (int idx2 = 0; idx2 != supportedVersionIds.size(); idx2++) {
+        int versionId = Integer.parseInt(supportedVersionIds.get(idx2).toString());
         if (versionId < MIN_VERSION) {
           continue;
         }
-        String id = device.getString("id");
+        String id = (String) device.get("id");
         if (USE_WHITELIST && !whitelist.contains(id)) {
           continue;
         }
@@ -161,7 +166,7 @@ public class Launcher {
     doLaunch((id, apkPath, paramsIn) -> {
       Path tempFile = Files.createTempFile("params", ".json");
       try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile.toFile()))) {
-        writer.write(paramsIn.toString(2));
+        writer.write(objectWriter.writeValueAsString(paramsIn));
       }
 
       List<String> commands = new ArrayList<>(baseCommands);
@@ -170,12 +175,13 @@ public class Launcher {
       commands.add("--results-history-name=" + id);
       commands.add("--app=" + apkPath);
 
-      JSONObject flattened = Utils.flattenParams(paramsIn);
+      Map<String, Object> flattened = Utils.flattenParams(paramsIn);
 
-      if (flattened.has("firebase")) {
-        JSONObject firebase = flattened.getJSONObject("firebase");
-        for (String key : firebase.keySet()) {
-          Object value = firebase.get(key);
+      if (flattened.containsKey("firebase")) {
+        Map<String, Object> firebase = (Map<String, Object>) flattened.get("firebase");
+        for (Map.Entry<String, Object> entry : firebase.entrySet()) {
+          String key = entry.getKey();
+          Object value = entry.getValue();
           if (value.equals(Boolean.TRUE)) {
             commands.add("--" + key);
           } else {
@@ -184,7 +190,7 @@ public class Launcher {
         }
       }
 
-      if (flattened.has("orientation")) {
+      if (flattened.containsKey("orientation")) {
         for (String device : devices) {
           commands.add(device + ",orientation=" + flattened.get("orientation"));
         }
@@ -192,7 +198,7 @@ public class Launcher {
         commands.addAll(devices);
       }
 
-      if (paramsIn.has("serviceBlocker")) {
+      if (paramsIn.containsKey("serviceBlocker")) {
         if (grabberCopy[0] == null) {
           grabberCopy[0] = Files.createTempFile("grabber", ".apk");
           Files.copy(grabberPath, grabberCopy[0], REPLACE_EXISTING);
@@ -207,27 +213,29 @@ public class Launcher {
   }
 
   private static void doLaunch(LaunchClient client) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
     OffsetDateTime now = OffsetDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss");
     String id = formatter.format(now);
     Date date = new Date();
 
-    JSONArray tests = new JSONArray(Utils.fileToString("tests.json"));
-    int numberDimensions = tests.length();
+    List<Object> tests = objectMapper.readValue(Utils.fileToString("tests.json"), List.class);
+    int numberDimensions = tests.size();
     List<Integer> coordinates = new ArrayList<>();
     for (int dimension = 0; dimension < numberDimensions; dimension++) {
       coordinates.add(0);
     }
     while (true) {
-      JSONObject paramsIn = new JSONObject();
+      Map<String, Object> paramsIn = new LinkedHashMap<>();
       paramsIn.put("tests", tests);
       paramsIn.put("run", id);
       paramsIn.put("started", date.getTime());
-      paramsIn.put("coordinates", new JSONArray(coordinates));
+      paramsIn.put("coordinates", coordinates);
 
-      JSONObject flattened = Utils.flattenParams(paramsIn);
+      Map<String, Object> flattened = Utils.flattenParams(paramsIn);
 
-      Path apkPath = Path.of(flattened.getString("apk_base"), flattened.getString("apk_name"));
+      Path apkPath =
+          Path.of((String) flattened.get("apk_base"), (String) flattened.get("apk_name"));
       if (!apkPath.toFile().exists()) {
         throw new IllegalStateException(apkPath + " missing");
       }
@@ -238,7 +246,7 @@ public class Launcher {
       int coordinateNumber = numberDimensions - 1;
       while (true) {
         int e = coordinates.get(coordinateNumber) + 1;
-        if (e >= tests.getJSONArray(coordinateNumber).length()) {
+        if (e >= ((Collection<Object>) tests.get(coordinateNumber)).size()) {
           coordinates.set(coordinateNumber, 0);
           coordinateNumber--;
           if (coordinateNumber < 0) {
@@ -257,6 +265,6 @@ public class Launcher {
   }
 
   private interface LaunchClient {
-    void launch(String id, Path apkPath, JSONObject flattened) throws IOException;
+    void launch(String id, Path apkPath, Map<String, Object> flattened) throws IOException;
   }
 }

@@ -25,6 +25,8 @@ import android.view.View;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import com.google.common.collect.Lists;
@@ -33,15 +35,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * The main activity of the istresser app
@@ -63,6 +64,7 @@ public class MainActivity extends Activity {
     System.loadLibrary("native-lib");
   }
 
+  private final ObjectMapper objectMapper = new ObjectMapper();
   private final Timer timer = new Timer();
   private final List<byte[]> data = Lists.newArrayList();
   private long nativeAllocatedByTest;
@@ -81,7 +83,7 @@ public class MainActivity extends Activity {
   private long mallocBytesPerMillisecond;
   private long glAllocBytesPerMillisecond;
   private long vkAllocBytesPerMillisecond;
-  private JSONObject params;
+  private Map<String, Object> params;
   private boolean yellowLightTesting;
   private long mmapAnonBytesPerMillisecond;
   private long mmapFileBytesPerMillisecond;
@@ -113,7 +115,7 @@ public class MainActivity extends Activity {
 
     Intent launchIntent = getIntent();
 
-    JSONObject params1 = null;
+    Map<String, Object> params1 = null;
     if ("com.google.intent.action.TEST_LOOP".equals(launchIntent.getAction())) {
       // Parameters for an automatic run have been set via Firebase Test Loop.
       Uri logFile = launchIntent.getData();
@@ -130,8 +132,8 @@ public class MainActivity extends Activity {
         }
       }
       try {
-        params1 = new JSONObject(readFile("/sdcard/params.json"));
-      } catch (IOException | JSONException e) {
+        params1 = objectMapper.readValue(readFile("/sdcard/params.json"), Map.class);
+      } catch (IOException e) {
         throw new IllegalStateException(e);
       }
     }
@@ -139,8 +141,9 @@ public class MainActivity extends Activity {
     if (launchIntent.hasExtra("Params")) {
       // Parameters for an automatic run have been set via Intent.
       try {
-        params1 = new JSONObject(Objects.requireNonNull(launchIntent.getStringExtra("Params")));
-      } catch (JSONException e) {
+        params1 = objectMapper.readValue(
+            Objects.requireNonNull(launchIntent.getStringExtra("Params")), Map.class);
+      } catch (JsonProcessingException e) {
         throw new IllegalStateException(e);
       }
     }
@@ -148,19 +151,18 @@ public class MainActivity extends Activity {
     if (params1 == null) {
       // Must be manually launched. Get the parameters from the local default.json.
       try {
-        params1 = new JSONObject(readStream(getAssets().open("default.json")));
-      } catch (IOException | JSONException e) {
+        params1 = objectMapper.readValue(readStream(getAssets().open("default.json")), Map.class);
+      } catch (IOException e) {
         throw new IllegalStateException(e);
       }
     }
     if (resultsStream == System.out) {
       // This run is not running on Firebase. Determine the filename.
       try {
-        JSONArray coordinates = params1.getJSONArray("coordinates");
+        List<Object> coordinates = (List<Object>) params1.get("coordinates");
         StringBuilder coordsString = new StringBuilder();
-        for (int coordinateNumber = 0; coordinateNumber != coordinates.length();
-             coordinateNumber++) {
-          coordsString.append("_").append(coordinates.getInt(coordinateNumber));
+        for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
+          coordsString.append("_").append(coordinates.get(coordinateNumber));
         }
         String fileName = getExternalFilesDir(null) + "/results" + coordsString + ".json";
         if (!new File(fileName).exists()) {
@@ -168,7 +170,7 @@ public class MainActivity extends Activity {
           // relaunches the intent following a crash.
           resultsStream = new PrintStream(fileName);
         }
-      } catch (FileNotFoundException | JSONException e) {
+      } catch (FileNotFoundException e) {
         throw new IllegalStateException(e);
       }
     }
@@ -234,7 +236,7 @@ public class MainActivity extends Activity {
       };
       registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
-      JSONObject report = new JSONObject();
+      Map<String, Object> report = new LinkedHashMap<>();
       report.put("time", testStartTime);
       report.put("params", params1);
 
@@ -246,13 +248,13 @@ public class MainActivity extends Activity {
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
 
-      yellowLightTesting = params.optBoolean("yellowLightTesting");
+      yellowLightTesting = getOrDefault(params, "yellowLightTesting", false);
 
-      if (params.optBoolean("serviceBlocker")) {
+      if (getOrDefault(params, "serviceBlocker", false)) {
         activateServiceBlocker();
       }
 
-      if (params.optBoolean("firebaseBlocker")) {
+      if (getOrDefault(params, "firebaseBlocker", false)) {
         activateFirebaseBlocker();
       }
 
@@ -280,15 +282,15 @@ public class MainActivity extends Activity {
       mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
       if (mmapFileBytesPerMillisecond > 0) {
         String mmapPath = getApplicationContext().getCacheDir().toString();
-        int mmapFileCount = params.getInt("mmapFileCount");
+        int mmapFileCount = ((Number) params.get("mmapFileCount")).intValue();
         long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       }
 
-      resultsStream.println(report);
-      memoryAdvisor = new MemoryAdvisor(
-          this, params.getJSONObject("advisorParameters"), () -> runOnUiThread(this::startTest));
-    } catch (IOException | JSONException | PackageManager.NameNotFoundException e) {
+      resultsStream.println(objectMapper.writeValueAsString(report));
+      memoryAdvisor = new MemoryAdvisor(this, (Map<String, Object>) params.get("advisorParameters"),
+          (timedOut) -> runOnUiThread(this::startTest));
+    } catch (IOException | PackageManager.NameNotFoundException e) {
       throw new IllegalStateException(e);
     }
   }
@@ -296,15 +298,13 @@ public class MainActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
+
+    Map<String, Object> report = standardInfo();
+    report.put("activityPaused", false);
+    report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
-      JSONObject report = standardInfo();
-      report.put("activityPaused", false);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                             .getJSONObject("metrics")
-                                             .getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
+      resultsStream.println(objectMapper.writeValueAsString(report));
+    } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
   }
@@ -312,29 +312,25 @@ public class MainActivity extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
+
+    Map<String, Object> report = standardInfo();
+    report.put("activityPaused", true);
+    report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
-      JSONObject report = standardInfo();
-      report.put("activityPaused", true);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                             .getJSONObject("metrics")
-                                             .getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
+      resultsStream.println(objectMapper.writeValueAsString(report));
+    } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
   }
 
   @Override
   protected void onDestroy() {
+    Map<String, Object> report = standardInfo();
+    report.put("onDestroy", true);
+    report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
-      JSONObject report = standardInfo();
-      report.put("onDestroy", true);
-      report.put("metrics",
-          memoryAdvisor.getMemoryMetrics(
-              params.getJSONObject("metrics").getJSONObject("variable")));
-      resultsStream.println(report);
-    } catch (JSONException e) {
+      resultsStream.println(objectMapper.writeValueAsString(report));
+    } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
     super.onDestroy();
@@ -352,7 +348,7 @@ public class MainActivity extends Activity {
   }
 
   void startTest() {
-    AtomicReference<JSONArray> criticalLogLines = new AtomicReference<>();
+    AtomicReference<List<Object>> criticalLogLines = new AtomicReference<>();
 
     allocationStartedTime = System.currentTimeMillis();
     appSwitchTimerStart = testStartTime;
@@ -360,17 +356,17 @@ public class MainActivity extends Activity {
     new LogMonitor(line -> {
       if (line.contains("Out of memory")) {
         if (criticalLogLines.get() == null) {
-          criticalLogLines.set(new JSONArray());
+          criticalLogLines.set(new ArrayList<>());
         }
-        criticalLogLines.get().put(line);
+        criticalLogLines.get().add(line);
       }
     });
 
+    Map<String, Object> report = new LinkedHashMap<>();
+    report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
     try {
-      JSONObject report = new JSONObject();
-      report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
-      resultsStream.println(report);
-    } catch (JSONException e) {
+      resultsStream.println(objectMapper.writeValueAsString(report));
+    } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
 
@@ -387,155 +383,146 @@ public class MainActivity extends Activity {
           }
 
           @Override
-          public void receiveAdvice(JSONObject advice) {
+          public void receiveAdvice(Map<String, Object> advice) {
+            Map<String, Object> report = standardInfo();
+            if (criticalLogLines.get() != null) {
+              report.put("criticalLogLines", criticalLogLines.get());
+              criticalLogLines.set(null);
+            }
+            if (allocationStartedTime != -1) {
+              long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
+              if (sinceAllocationStarted > 0) {
+                boolean shouldAllocate = true;
+
+                report.put("advice", advice);
+
+                if (MemoryAdvisor.anyWarnings(advice)) {
+                  if (yellowLightTesting) {
+                    shouldAllocate = false;
+                    if (MemoryAdvisor.anyRedWarnings(advice)) {
+                      freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                    }
+                  } else if (MemoryAdvisor.getMemoryState(advice)
+                      == MemoryAdvisor.MemoryState.CRITICAL) {
+                    shouldAllocate = false;
+                    // Allocating 0 MB
+                    releaseMemory();
+                  }
+                }
+                if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
+                  long owed =
+                      sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
+                  if (owed > 0) {
+                    boolean succeeded = nativeConsume(owed);
+                    if (succeeded) {
+                      nativeAllocatedByTest += owed;
+                    } else {
+                      report.put("allocFailed", true);
+                    }
+                  }
+                }
+                if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                  long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
+                  TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                  testSurface.getRenderer().setTarget(target);
+                }
+
+                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                  long owed =
+                      sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                  if (owed > 0) {
+                    long allocated = vkAlloc(owed);
+                    if (allocated >= owed) {
+                      vkAllocatedByTest += owed;
+                    } else {
+                      report.put("allocFailed", true);
+                    }
+                  }
+                }
+
+                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
+                  long owed =
+                      sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                  if (owed > 0) {
+                    long allocated = vkAlloc(owed);
+                    if (allocated >= owed) {
+                      vkAllocatedByTest += owed;
+                    } else {
+                      report.put("allocFailed", true);
+                    }
+                  }
+                }
+
+                if (mmapAnonBytesPerMillisecond > 0) {
+                  long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
+                      - mmapAnonAllocatedByTest;
+                  if (owed > MMAP_ANON_BLOCK_BYTES) {
+                    long allocated = mmapAnonConsume(owed);
+                    if (allocated != 0) {
+                      mmapAnonAllocatedByTest += allocated;
+                    } else {
+                      report.put("mmapAnonFailed", true);
+                    }
+                  }
+                }
+                if (mmapFileBytesPerMillisecond > 0) {
+                  long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
+                      - mmapFileAllocatedByTest;
+                  if (owed > MMAP_FILE_BLOCK_BYTES) {
+                    MmapFileInfo file = mmapFiles.alloc(owed);
+                    long allocated =
+                        mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                    if (allocated == 0) {
+                      report.put("mmapFileFailed", true);
+                    } else {
+                      mmapFileAllocatedByTest += allocated;
+                    }
+                  }
+                }
+              }
+            }
+            long timeRunning = System.currentTimeMillis() - testStartTime;
+            Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
+            if (switchTest != null && getOrDefault(switchTest, "enabled", false)) {
+              long launchDuration = getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
+              long returnDuration = getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
+              long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
+              if (appSwitchTimeRunning > launchDuration && lastLaunched < launchDuration) {
+                lastLaunched = appSwitchTimeRunning;
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File file = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    + File.separator + "pic.jpg");
+                String authority = getApplicationContext().getPackageName() + ".provider";
+                Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+                startActivityForResult(intent, 1);
+              }
+              if (appSwitchTimeRunning > returnDuration && lastLaunched < returnDuration) {
+                lastLaunched = appSwitchTimeRunning;
+                finishActivity(1);
+                appSwitchTimerStart = System.currentTimeMillis();
+                lastLaunched = 0;
+              }
+            }
+            if (timeRunning > timeout) {
+              report.put("exiting", true);
+            }
+
+            if (!report.containsKey("advice")) {  // 'advice' already includes metrics.
+              report.put("metrics", memoryAdvisor.getMemoryMetrics());
+            }
             try {
-              JSONObject report = standardInfo();
-              if (criticalLogLines.get() != null) {
-                report.put("criticalLogLines", criticalLogLines.get());
-                criticalLogLines.set(null);
-              }
-              if (allocationStartedTime != -1) {
-                long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
-                if (sinceAllocationStarted > 0) {
-                  boolean shouldAllocate = true;
-
-                  report.put("advice", advice);
-
-                  if (MemoryAdvisor.anyWarnings(advice)) {
-                    if (yellowLightTesting) {
-                      shouldAllocate = false;
-                      if (MemoryAdvisor.anyRedWarnings(advice)) {
-                        freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                      }
-                    } else if (MemoryAdvisor.getMemoryState(advice)
-                        == MemoryAdvisor.MemoryState.CRITICAL) {
-                      shouldAllocate = false;
-                      // Allocating 0 MB
-                      releaseMemory();
-                    }
-                  }
-                  if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                    long owed =
-                        sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
-                    if (owed > 0) {
-                      boolean succeeded = nativeConsume(owed);
-                      if (succeeded) {
-                        nativeAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-                  if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                    long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                    TestSurface testSurface = findViewById(R.id.glsurfaceView);
-                    testSurface.getRenderer().setTarget(target);
-                  }
-
-                  if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                    long owed =
-                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                    if (owed > 0) {
-                      long allocated = vkAlloc(owed);
-                      if (allocated >= owed) {
-                        vkAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-
-                  if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                    long owed =
-                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                    if (owed > 0) {
-                      long allocated = vkAlloc(owed);
-                      if (allocated >= owed) {
-                        vkAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-
-                  if (mmapAnonBytesPerMillisecond > 0) {
-                    long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
-                        - mmapAnonAllocatedByTest;
-                    if (owed > MMAP_ANON_BLOCK_BYTES) {
-                      long allocated = mmapAnonConsume(owed);
-                      if (allocated != 0) {
-                        mmapAnonAllocatedByTest += allocated;
-                      } else {
-                        report.put("mmapAnonFailed", true);
-                      }
-                    }
-                  }
-                  if (mmapFileBytesPerMillisecond > 0) {
-                    long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
-                        - mmapFileAllocatedByTest;
-                    if (owed > MMAP_FILE_BLOCK_BYTES) {
-                      MmapFileInfo file = mmapFiles.alloc(owed);
-                      long allocated =
-                          mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                      if (allocated == 0) {
-                        report.put("mmapFileFailed", true);
-                      } else {
-                        mmapFileAllocatedByTest += allocated;
-                      }
-                    }
-                  }
-                }
-              }
-              long timeRunning = System.currentTimeMillis() - testStartTime;
-              JSONObject switchTest = params.optJSONObject("switchTest");
-              if (switchTest != null && switchTest.optBoolean("enabled")) {
-                long launchDuration =
-                    getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
-                long returnDuration =
-                    getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
-                long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-                if (appSwitchTimeRunning > launchDuration && lastLaunched < launchDuration) {
-                  lastLaunched = appSwitchTimeRunning;
-                  Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                  File file = new File(
-                      Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                      + File.separator + "pic.jpg");
-                  String authority = getApplicationContext().getPackageName() + ".provider";
-                  Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
-                  intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-                  startActivityForResult(intent, 1);
-                }
-                if (appSwitchTimeRunning > returnDuration && lastLaunched < returnDuration) {
-                  lastLaunched = appSwitchTimeRunning;
-                  finishActivity(1);
-                  appSwitchTimerStart = System.currentTimeMillis();
-                  lastLaunched = 0;
-                }
-              }
-              if (timeRunning > timeout) {
-                try {
-                  report.put("exiting", true);
-                } catch (JSONException e) {
-                  throw new IllegalStateException(e);
-                }
-              }
-
-              if (!report.has("advice")) {  // 'advice' already includes metrics.
-                report.put("metrics",
-                    memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                                       .getJSONObject("metrics")
-                                                       .getJSONObject("variable")));
-              }
-              resultsStream.println(report);
-
-              if (timeRunning > timeout) {
-                resultsStream.close();
-                finish();
-              }
-              updateInfo(report);
-            } catch (JSONException e) {
+              resultsStream.println(objectMapper.writeValueAsString(report));
+            } catch (JsonProcessingException e) {
               throw new IllegalStateException(e);
             }
+
+            if (timeRunning > timeout) {
+              resultsStream.close();
+              finish();
+            }
+            updateInfo(report);
           }
         });
   }
@@ -577,13 +564,14 @@ public class MainActivity extends Activity {
     }.start();
   }
 
-  private void updateInfo(JSONObject metrics) {
+  private void updateInfo(Map<String, Object> metrics) {
     runOnUiThread(() -> {
       WebView webView = findViewById(R.id.webView);
       try {
-        webView.loadData(metrics.toString(2) + System.lineSeparator() + params.toString(2),
+        webView.loadData(objectMapper.writeValueAsString(metrics) + System.lineSeparator()
+                + objectMapper.writeValueAsString(params),
             "text/plain; charset=utf-8", "UTF-8");
-      } catch (JSONException e) {
+      } catch (JsonProcessingException e) {
         throw new IllegalStateException(e);
       }
     });
@@ -604,17 +592,16 @@ public class MainActivity extends Activity {
   private void releaseMemory() {
     allocationStartedTime = -1;
     runAfterDelay(() -> {
-      JSONObject report2;
+      Map<String, Object> report2;
+
+      report2 = standardInfo();
+      report2.put("metrics", memoryAdvisor.getMemoryMetrics());
+
       try {
-        report2 = standardInfo();
-        report2.put("metrics",
-            memoryAdvisor.getMemoryMetrics(params.getJSONObject("advisorParameters")
-                                               .getJSONObject("metrics")
-                                               .getJSONObject("variable")));
-      } catch (JSONException e) {
+        resultsStream.println(objectMapper.writeValueAsString(report2));
+      } catch (JsonProcessingException e) {
         throw new IllegalStateException(e);
       }
-      resultsStream.println(report2);
       if (nativeAllocatedByTest > 0) {
         nativeAllocatedByTest = 0;
         freeAll();
@@ -639,18 +626,18 @@ public class MainActivity extends Activity {
       runAfterDelay(new Runnable() {
         @Override
         public void run() {
+          Map<String, Object> report = standardInfo();
+          Map<String, Object> advice = memoryAdvisor.getAdvice();
+          report.put("advice", advice);
+          if (MemoryAdvisor.anyWarnings(advice)) {
+            report.put("failedToClear", true);
+            runAfterDelay(this, delayAfterRelease);
+          } else {
+            allocationStartedTime = System.currentTimeMillis();
+          }
           try {
-            JSONObject report = standardInfo();
-            JSONObject advice = memoryAdvisor.getAdvice();
-            report.put("advice", advice);
-            if (MemoryAdvisor.anyWarnings(advice)) {
-              report.put("failedToClear", true);
-              runAfterDelay(this, delayAfterRelease);
-            } else {
-              allocationStartedTime = System.currentTimeMillis();
-            }
-            resultsStream.println(report);
-          } catch (JSONException e) {
+            resultsStream.println(objectMapper.writeValueAsString(report));
+          } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
           }
         }
@@ -667,8 +654,8 @@ public class MainActivity extends Activity {
     }, delay);
   }
 
-  private JSONObject standardInfo() throws JSONException {
-    JSONObject report = new JSONObject();
+  private Map<String, Object> standardInfo() {
+    Map<String, Object> report = new LinkedHashMap<>();
     boolean paused = allocationStartedTime == -1;
     if (paused) {
       report.put("paused", true);
@@ -678,7 +665,7 @@ public class MainActivity extends Activity {
       report.put("serviceCrashed", true);
     }
 
-    JSONObject testMetrics = new JSONObject();
+    Map<String, Object> testMetrics = new LinkedHashMap<>();
     if (vkAllocatedByTest > 0) {
       testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
     }

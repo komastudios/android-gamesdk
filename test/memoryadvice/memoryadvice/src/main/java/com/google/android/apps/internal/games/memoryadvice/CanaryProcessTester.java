@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
-import org.json.JSONObject;
+import java.util.Map;
 
 /**
  * A method of predicting critical memory pressure ahead of time, by creating a service that
@@ -20,10 +20,10 @@ class CanaryProcessTester {
   private static final String TAG = CanaryProcessTester.class.getSimpleName();
 
   private final Context context;
-  private final JSONObject params;
+  private final Map<String, Object> params;
   private ServiceConnection serviceConnection;
 
-  CanaryProcessTester(Context context, JSONObject params) {
+  CanaryProcessTester(Context context, Map<String, Object> params) {
     this.context = context;
     this.params = params;
     reset();

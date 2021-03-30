@@ -3,13 +3,13 @@ package com.google.android.apps.internal.games.memoryadvice_exampleclient.docs4;
 import android.app.Activity;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
-import org.json.JSONObject;
+import java.util.Map;
 
 class MyActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   // ...
   void myMethod() {
-    JSONObject advice = memoryAdvisor.getAdvice();
+    Map<String, Object> advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
         new MemoryWatcher(memoryAdvisor, 10, 100, 2000, new MemoryWatcher.DefaultClient() {
           @Override

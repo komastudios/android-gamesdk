@@ -1,36 +1,41 @@
 package net.jimblackler.collate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 class Main {
   public static void main(String[] args) throws IOException, InterruptedException {
     Path directory = Files.createTempDirectory("report-");
-    JSONArray collect = new JSONArray();
-    Collector.deviceCollect("net.jimblackler.istresser", collect::put);
+    List<Object> collect = new ArrayList<>();
+    Collector.deviceCollect("net.jimblackler.istresser", collect::add);
     Desktop.getDesktop().browse(writeGraphs(directory, collect));
   }
 
-  static URI writeGraphs(Path directory, JSONArray results) {
+  static URI writeGraphs(Path directory, List<Object> results) {
+    ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     try {
       Path outputFile;
-      if (results.length() == 1) {
-        JSONArray result = results.getJSONArray(0);
-        JSONObject first = result.getJSONObject(0);
-        JSONObject params = first.getJSONObject("params");
-        JSONObject deviceInfo = ReportUtils.getDeviceInfo(result);
-        JSONObject build = deviceInfo.getJSONObject("build");
-        JSONObject fields = build.getJSONObject("fields");
+      if (results.size() == 1) {
+        List<Object> result = (List<Object>) results.get(0);
+        Map<String, Object> first = (Map<String, Object>) result.get(0);
+        Map<String, Object> params = (Map<String, Object>) first.get("params");
+        Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
+        Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
+        Map<String, Object> fields = (Map<String, Object>) build.get("fields");
         int count = 0;
         while (true) {
-          String coordinates = params.getJSONArray("coordinates").toString();
-          String name = fields.getString("DEVICE") + (count > 0 ? "_" + count : "")
-              + coordinates.replace("[", "_").replace(",", "-").replace("]", "") + ".html";
+          String coordinates = params.get("coordinates").toString();
+          String name = fields.get("DEVICE") + (count > 0 ? "_" + count : "")
+              + coordinates.replace("[", "_").replace(",", "-").replace("]", "").replace(" ", "")
+              + ".html";
           outputFile = directory.resolve(name);
           if (!Files.exists(outputFile)) {
             break;
@@ -42,7 +47,7 @@ class Main {
       }
       String content = Utils.fileToString("main.html");
       // noinspection HardcodedFileSeparator
-      content = content.replace("[/*data*/]", results.toString());
+      content = content.replace("[/*data*/]", objectWriter.writeValueAsString(results));
       Files.writeString(outputFile, content);
       return outputFile.toUri();
     } catch (IOException ex) {

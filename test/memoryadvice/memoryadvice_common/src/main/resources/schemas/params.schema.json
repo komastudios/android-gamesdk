@@ -80,6 +80,12 @@
     },
     "package": {
       "type": "string"
+    },
+    "delayBeforeRelease": {
+      "$ref": "duration.schema.json"
+    },
+    "delayAfterRelease": {
+      "$ref": "duration.schema.json"
     }
   },
   "type": "object"

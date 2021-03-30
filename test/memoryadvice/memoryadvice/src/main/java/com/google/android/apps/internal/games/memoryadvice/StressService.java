@@ -8,13 +8,16 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.util.Log;
+import com.google.gson.Gson;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The service component of the on device stress test.
  */
 public class StressService extends Service {
+  private static final String TAG = StressService.class.getSimpleName();
   private final int pid = android.os.Process.myPid();
 
   private Handler messageHandler;
@@ -24,12 +27,10 @@ public class StressService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     // Create a local memory monitor, to obtain the metrics.
-    try {
-      JSONObject metrics = new JSONObject(intent.getStringExtra("params")).getJSONObject("metrics");
-      memoryMonitor = new MemoryMonitor(this, metrics);
-    } catch (JSONException e) {
-      throw new IllegalStateException(e);
-    }
+
+    Map<String, Object> params = new Gson().fromJson(intent.getStringExtra("params"), Map.class);
+    Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
+    memoryMonitor = new MemoryMonitor(this, metrics);
 
     return START_NOT_STICKY;
   }
@@ -48,12 +49,13 @@ public class StressService extends Service {
                   messageHandler, OnDeviceStressTester.GET_BASELINE_METRICS_RETURN, pid, 0);
               Bundle bundle = new Bundle();
               // Metrics before any allocations are are the baseline.
-              JSONObject metrics = memoryMonitor.getMemoryMetrics();
+              Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
               bundle.putString("metrics", metrics.toString());
               message.obj = bundle;
               msg.replyTo.send(message);
             } catch (RemoteException e) {
-              throw new MemoryAdvisorException("Error sending message", e);
+              Log.w(TAG, "Error sending message", e);
+              stopSelf();
             }
             break;
           case OnDeviceStressTester.OCCUPY_MEMORY:
@@ -61,35 +63,34 @@ public class StressService extends Service {
             // system.
             int toAllocate = msg.arg1;
             int returnCode;
-            do {
-              if (TryAllocTester.occupyMemory(toAllocate)) {
-                applicationAllocated += toAllocate;
-                returnCode = OnDeviceStressTester.OCCUPY_MEMORY_OK;
-              } else {
-                returnCode = OnDeviceStressTester.OCCUPY_MEMORY_FAILED;
-              }
 
-              // Memory metrics are calculated and returned to the main process.
-              JSONObject metrics = memoryMonitor.getMemoryMetrics();
+            Log.i(TAG, "Allocating " + toAllocate);
+            if (TryAllocTester.occupyMemory(toAllocate)) {
+              applicationAllocated += toAllocate;
+              returnCode = OnDeviceStressTester.OCCUPY_MEMORY_OK;
+            } else {
+              returnCode = OnDeviceStressTester.OCCUPY_MEMORY_FAILED;
+            }
 
-              // This format matches the format used by the lab stress tester.
-              JSONObject stressed = new JSONObject();
-              try {
-                stressed.put("applicationAllocated", applicationAllocated);
-                metrics.put("stressed", stressed);
-              } catch (JSONException e) {
-                throw new MemoryAdvisorException(e);
-              }
+            // Memory metrics are calculated and returned to the main process.
+            Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
 
-              Bundle bundle = new Bundle();
-              bundle.putString("metrics", metrics.toString());
-              Message message = Message.obtain(messageHandler, returnCode, bundle);
-              try {
-                msg.replyTo.send(message);
-              } catch (RemoteException e) {
-                throw new MemoryAdvisorException("Error sending message", e);
-              }
-            } while (returnCode == OnDeviceStressTester.OCCUPY_MEMORY_OK);
+            // This format matches the format used by the lab stress tester.
+            Map<String, Object> stressed = new LinkedHashMap<>();
+            stressed.put("applicationAllocated", applicationAllocated);
+            metrics.put("stressed", stressed);
+
+            Bundle bundle = new Bundle();
+            bundle.putString("metrics", metrics.toString());
+            Message message = Message.obtain(messageHandler, returnCode, bundle);
+            try {
+              msg.replyTo.send(message);
+            } catch (RemoteException e) {
+              Log.w(TAG, "Error sending message: closing service", e);
+              stopSelf();
+              break;
+            }
+
             break;
           default:
             throw new MemoryAdvisorException("Unknown command");

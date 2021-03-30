@@ -31,6 +31,7 @@
             }
           },
           "variable": {
+            "predictRealtime" : true,
             "debug": {
               "nativeHeapAllocatedSize": true
             },
@@ -159,6 +160,21 @@
         },
         "heuristics": {
           "canaryProcessTester": true
+        }
+      }
+    },
+    {
+      "advisorParameters": {
+        "predictOomLimit" : true,
+        "heuristics": {
+          "formulas": {
+            "yellow": [
+              "oom_score > predictedUsage * 0.75"
+            ],
+            "red": [
+              "oom_score > predictedUsage * 0.85"
+            ]
+          }
         }
       }
     }
