@@ -30,60 +30,7 @@
       ]
     },
     "metrics": {
-      "description": "Two sets of metrics to collect",
-      "additionalProperties": false,
-      "properties": {
-        "baseline": {
-          "description": "Metrics to gather at the beginning of the run.",
-          "allOf": [
-            {
-              "$ref": "metricsSpecs.schema.json"
-            }
-          ]
-        },
-        "constant": {
-          "description": "Metrics that don't change while an application is running.",
-          "allOf": [
-            {
-              "$ref": "metricsSpecs.schema.json"
-            }
-          ]
-        },
-        "variable": {
-          "description": "Metrics that can change while an application is running.",
-          "allOf": [
-            {
-              "$ref": "metricsSpecs.schema.json"
-            }
-          ]
-        }
-      },
-      "required": [
-        "baseline",
-        "variable"
-      ],
-      "type": "object",
-      "examples": [
-        {
-          "constant": {
-            "MemoryInfo": {
-              "totalMem": true
-            },
-            "meminfo": {
-              "CommitLimit": true,
-              "MemTotal": true
-            }
-          },
-          "baseline": {
-            "debug": true
-          },
-          "variable": {
-            "debug": true,
-            "meminfo": true,
-            "proc": true
-          }
-        }
-      ]
+      "$ref": "monitorParameters.schema.json"
     },
     "heuristics": {
       "$ref": "heuristics.schema.json"
@@ -93,6 +40,7 @@
     }
   },
   "type": "object",
+  "required": ["metrics"],
   "examples": [
     {
       "matchStrategy": "fingerprint",
