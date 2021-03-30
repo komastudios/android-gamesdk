@@ -131,8 +131,8 @@ class Utils {
     for (Map.Entry<String, Object> entry : in.entrySet()) {
       String key = entry.getKey();
       Object inObject = entry.getValue();
-      if (out.containsKey(key)) {
-        Object outObject = out.get(key);
+      Object outObject = out.get(key);
+      if (outObject != null) {
         if (inObject instanceof List && outObject instanceof List) {
           ((Collection<Object>) outObject).addAll((Collection<?>) inObject);
           continue;
