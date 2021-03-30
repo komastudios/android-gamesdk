@@ -1,5 +1,8 @@
 package net.jimblackler.collate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.api.client.util.Lists;
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +23,6 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class Score {
@@ -33,13 +33,14 @@ public class Score {
   }
 
   static void go(boolean useDevice) throws IOException {
+    ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     Map<String, Map<String, Result>> out = new HashMap<>();
-    Map<String, JSONObject> builds = new HashMap<>();
+    Map<String, Map<String, Object>> builds = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
-    AtomicReference<JSONArray> tests = new AtomicReference<>();
+    AtomicReference<List<Object>> tests = new AtomicReference<>();
     AtomicReference<String> historyId = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
-    Consumer<JSONArray> collect = result -> {
+    Consumer<List<Object>> collect = result -> {
       if (timer.get() != null) {
         timer.get().cancel();
       }
@@ -47,7 +48,7 @@ public class Score {
       TimerTask task = new TimerTask() {
         @Override
         public void run() {
-          JSONArray _tests = tests.get();
+          List<Object> _tests = tests.get();
           if (_tests == null || _tests.isEmpty()) {
             return;
           }
@@ -61,32 +62,40 @@ public class Score {
       };
       timer.get().schedule(task, 1000 * 10);
 
-      JSONObject first = result.getJSONObject(0);
-      if (!first.has("params")) {
+      Map<String, Object> first = (Map<String, Object>) result.get(0);
+      if (!first.containsKey("params")) {
         System.out.println("No usable results. Data returned was:");
-        System.out.println(first.toString(2));
+        try {
+          System.out.println(objectWriter.writeValueAsString(first));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
         return;
       }
-      JSONObject params = first.getJSONObject("params");
-      JSONObject deviceInfo = ReportUtils.getDeviceInfo(result);
+      Map<String, Object> params = (Map<String, Object>) first.get("params");
+      Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       if (deviceInfo == null) {
         System.out.println("Could not find deviveInfo. Data returned was:");
-        System.out.println(first.toString(2));
+        try {
+          System.out.println(objectWriter.writeValueAsString(first));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
         return;
       }
-      JSONObject runParameters = deviceInfo.getJSONObject("params");
-      JSONArray coordinates = params.getJSONArray("coordinates");
-      tests.set(params.getJSONArray("tests"));
+      Map<String, Object> runParameters = (Map<String, Object>) deviceInfo.get("params");
+      List<Object> coordinates = (List<Object>) params.get("coordinates");
+      tests.set((List<Object>) params.get("tests"));
 
-      assert deviceInfo.has("build");
-      JSONObject build = deviceInfo.getJSONObject("build");
+      assert deviceInfo.containsKey("build");
+      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
       String id = build.toString();
-      if (first.has("extra")) {
-        JSONObject extra = first.getJSONObject("extra");
-        historyId.set(extra.getString("historyId"));
-        if (extra.has("step")) {
-          JSONObject step = extra.getJSONObject("step");
-          JSONArray dimensions = step.getJSONArray("dimensionValue");
+      if (first.containsKey("extra")) {
+        Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+        historyId.set((String) extra.get("historyId"));
+        if (extra.containsKey("step")) {
+          Map<String, Object> step = (Map<String, Object>) extra.get("step");
+          List<Object> dimensions = (List<Object>) step.get("dimensionValue");
           id = dimensions.toString();
         }
       }
@@ -98,30 +107,31 @@ public class Score {
       boolean allocFailed = false;
       boolean serviceCrashed = false;
 
-      List<JSONObject> results = Lists.newArrayList();
-      for (int idx2 = 0; idx2 != result.length(); idx2++) {
-        JSONObject jsonObject = result.getJSONObject(idx2);
-        if (ReportUtils.rowMetrics(jsonObject) != null) {
-          results.add(jsonObject);
+      List<Map<String, Object>> results = Lists.newArrayList();
+      for (int idx2 = 0; idx2 != result.size(); idx2++) {
+        Map<String, Object> map = (Map<String, Object>) result.get(idx2);
+        if (ReportUtils.rowMetrics(map) != null) {
+          results.add(map);
         }
       }
       results.sort(Comparator.comparingLong(ReportUtils::rowTime));
-      for (JSONObject row : results) {
-        if (row.has("exiting")) {
+      for (Map<String, Object> row : results) {
+        if (row.containsKey("exiting")) {
           exited = true;
         }
-        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")
-            || row.has("criticalLogLines") || row.has("failedToClear")) {
+        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
+            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")
+            || row.containsKey("failedToClear")) {
           allocFailed = true;
         }
-        if (row.has("serviceCrashed")) {
+        if (row.containsKey("serviceCrashed")) {
           serviceCrashed = true;
         }
         long score = 0;
-        if (row.has("testMetrics")) {
-          JSONObject testMetrics = row.getJSONObject("testMetrics");
-          for (String key : testMetrics.keySet()) {
-            score += testMetrics.getLong(key);
+        if (row.containsKey("testMetrics")) {
+          Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+          for (Object o : testMetrics.values()) {
+            score += ((Number) o).longValue();
           }
         }
 
@@ -129,7 +139,7 @@ public class Score {
           largest = score;
         }
 
-        if (row.has("trigger") && !row.optBoolean("paused", false)) {
+        if (row.containsKey("trigger") && !Boolean.TRUE.equals(row.get("paused"))) {
           long top = score;
           if (top < lowestTop) {
             lowestTop = top;
@@ -146,14 +156,14 @@ public class Score {
         results0 = new HashMap<>();
         out.put(id, results0);
       }
-      JSONArray results1 = new JSONArray();
-      results1.put(result);
-      JSONObject group = new JSONObject(runParameters.toString());
+      List<Object> results1 = new ArrayList<>();
+      results1.add(result);
+      Map<String, Object> group = Utils.clone(runParameters);
       group.remove("advisorParameters");
       if (directory.get() == null) {
         String dirName = historyId.get();
         if (dirName == null) {
-          dirName = params.getString("run");
+          dirName = (String) params.get("run");
         }
         directory.set(Path.of("reports").resolve(dirName));
         try {
@@ -189,13 +199,14 @@ public class Score {
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
-      Map<String, JSONObject> builds, Path directory, JSONArray tests) throws IOException {
+      Map<String, Map<String, Object>> builds, Path directory, List<Object> tests)
+      throws IOException {
     StringBuilder body = new StringBuilder();
     // The vertical orders are the variations of the graphs. The vertical order refers to how the
     // dimensions will be ordered in the header, which is arranged like a tree. The first group is
     // at the top of the tree. The final group will appear as multiple leaves at the base of the
     // tree.
-    List<List<Integer>> verticalOrders = getPermutations(tests.length());
+    List<List<Integer>> verticalOrders = getPermutations(tests.size());
     for (List<Integer> verticalOrder : verticalOrders) {
       if (!worthRendering(verticalOrder, tests)) {
         continue;
@@ -216,15 +227,16 @@ public class Score {
    * Determines if a vertical group order will have an effective duplicate or not.
    * In short, there is no point repositioning the dimensions of length 1, since
    * that will only result in duplicates of the actual groupings.
+   *
    * @param verticalOrder The vertical group order under consideration.
-   * @param objects The array of dimension arrays.
+   * @param objects       The array of dimension arrays.
    * @return true if the permutation is the definitive version.
    */
-  private static boolean worthRendering(Iterable<Integer> verticalOrder, JSONArray objects) {
+  private static boolean worthRendering(Iterable<Integer> verticalOrder, List<Object> objects) {
     int original = 0;
     for (int idx : verticalOrder) {
       if (idx != original) {
-        int n = objects.getJSONArray(idx).length();
+        int n = ((Collection<Object>) objects.get(idx)).size();
         if (n <= 1) {
           return false;
         }
@@ -237,6 +249,7 @@ public class Score {
   /**
    * Get a list of all possible orderings of a given permutation.
    * For example: '2' would return 1,2; 2,1
+   *
    * @param size
    * @return The list of possible orderings.
    */
@@ -269,9 +282,9 @@ public class Score {
   }
 
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, JSONObject> builds, JSONArray tests, Path directory,
+      Map<String, Map<String, Object>> builds, List<Object> tests, Path directory,
       List<Integer> verticalOrder) {
-    int rowspan = tests.length() + 1;
+    int rowspan = tests.size() + 1;
 
     int colspan = getTotalVariations(tests);
     body.append("<table>")
@@ -296,13 +309,13 @@ public class Score {
 
     int repeats = 1;
     for (int idx : verticalOrder) {
-      JSONArray test = tests.getJSONArray(idx);
-      colspan /= test.length();
+      List<Object> test = (List<Object>) tests.get(idx);
+      colspan /= test.size();
       body.append("<tr>");
 
       for (int repeat = 0; repeat != repeats; repeat++) {
-        for (int param = 0; param < test.length(); param++) {
-          JSONObject _param = test.getJSONObject(param);
+        for (int param = 0; param < test.size(); param++) {
+          Map<String, Object> _param = (Map<String, Object>) test.get(param);
           Node dataExplorer = DataExplorer.getDataExplorer(HtmlUtils.getDocument(), _param);
           body.append("<th colspan=" + colspan + " class='params'>")
               .append(HtmlUtils.toString(dataExplorer))
@@ -310,40 +323,40 @@ public class Score {
         }
       }
       body.append("</tr>");
-      repeats *= test.length();
+      repeats *= test.size();
     }
     body.append("</thead>");
 
-    List<JSONArray> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
+    List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
     for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
       String id = row.getKey();
       Map<String, Result> rows0 = row.getValue();
-      JSONObject build = builds.get(id);
+      Map<String, Object> build = builds.get(id);
 
-      JSONObject version = build.getJSONObject("version");
-      JSONObject fields = build.getJSONObject("fields");
+      Map<String, Object> version = (Map<String, Object>) build.get("version");
+      Map<String, Object> fields = (Map<String, Object>) build.get("fields");
       body.append("<td>")
-          .append(fields.getString("MANUFACTURER"))
+          .append(fields.get("MANUFACTURER"))
           .append("</td>")
           .append("<td>")
-          .append(fields.getString("MODEL"))
+          .append(fields.get("MODEL"))
           .append("</td>")
           .append("<td>")
-          .append(fields.getString("DEVICE"))
+          .append(fields.get("DEVICE"))
           .append("</td>")
           .append("<td>")
-          .append(version.getInt("SDK_INT"))
+          .append(version.get("SDK_INT"))
           .append("</td>")
           .append("<td>")
-          .append(version.getString("RELEASE"))
+          .append(version.get("RELEASE"))
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
 
       for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        JSONArray coords = horizontalOrder.get(idx);
+        List<Object> coords = horizontalOrder.get(idx);
         Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
           String group = result.getGroup();
@@ -356,7 +369,7 @@ public class Score {
       }
 
       for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        JSONArray coords = horizontalOrder.get(idx);
+        List<Object> coords = horizontalOrder.get(idx);
         Result result = rows0.get(coords.toString());
         if (result == null) {
           body.append("<td/>");
@@ -396,29 +409,31 @@ public class Score {
   /**
    * Use the vertical order to determine the dimension selections for every test in the table,
    * arranged from left to right.
-   * @param tests The test dimensions to reorder.
+   *
+   * @param tests         The test dimensions to reorder.
    * @param verticalOrder The new order to use.
    * @return The selections for the tests in an array, ordered left to right.
    */
-  private static List<JSONArray> getHorizontalOrder(JSONArray tests, List<Integer> verticalOrder) {
-    List<JSONArray> horizontalOrder = new ArrayList<>();
-    JSONArray base = new JSONArray();
-    for (int idx = 0; idx < tests.length(); idx++) {
-      base.put(0);
+  private static List<List<Object>> getHorizontalOrder(
+      List<Object> tests, List<Integer> verticalOrder) {
+    List<List<Object>> horizontalOrder = new ArrayList<>();
+    List<Object> base = new ArrayList<>();
+    for (int idx = 0; idx < tests.size(); idx++) {
+      base.add(0);
     }
 
     while (true) {
-      horizontalOrder.add(new JSONArray(base.toString()));
+      horizontalOrder.add(base);
       boolean rolledOver = true;
       ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
       while (it.hasPrevious()) {
         int idx = it.previous();
-        JSONArray test = tests.getJSONArray(idx);
-        int value = base.getInt(idx);
-        if (value == test.length() - 1) {
-          base.put(idx, 0);
+        Collection<Object> test = (Collection<Object>) tests.get(idx);
+        int value = (int) base.get(idx);
+        if (value == test.size() - 1) {
+          base.set(idx, 0);
         } else {
-          base.put(idx, value + 1);
+          base.set(idx, value + 1);
           rolledOver = false;
           break;
         }
@@ -430,11 +445,11 @@ public class Score {
     return horizontalOrder;
   }
 
-  private static int getTotalVariations(JSONArray tests) {
+  private static int getTotalVariations(List<Object> tests) {
     int total = 1;
-    for (int idx = 0; idx != tests.length(); idx++) {
-      JSONArray test = tests.getJSONArray(idx);
-      total *= test.length();
+    for (int idx = 0; idx != tests.size(); idx++) {
+      Collection<Object> test = (Collection<Object>) tests.get(idx);
+      total *= test.size();
     }
     return total;
   }

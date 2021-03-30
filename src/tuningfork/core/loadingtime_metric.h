@@ -41,7 +41,10 @@ struct LoadingTimeMetricData : public MetricData {
     Duration duration_;
     void Record(Duration dt);
     void Record(ProcessTimeInterval interval);
-    virtual void Clear() override { data_.Clear(); }
+    virtual void Clear() override {
+        data_.Clear();
+        duration_ = Duration::zero();
+    }
     virtual size_t Count() const override { return data_.Count(); }
     static Metric::Type MetricType() { return Metric::Type::LOADING_TIME; }
 };

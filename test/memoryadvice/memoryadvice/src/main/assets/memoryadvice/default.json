@@ -1,10 +1,13 @@
 {
   "heuristics": {
-    "oom_score": {
-      "deltaLimit": {
-        "red": 0.85,
-        "yellow": 0.75
-      }
+    "canaryProcessTester": true,
+    "formulas": {
+      "yellow": [
+        "predictedUsage > 0.65"
+      ],
+      "red": [
+        "predictedUsage > 0.75"
+      ]
     }
   },
   "metrics": {
@@ -26,12 +29,13 @@
       }
     },
     "variable": {
-      "proc": {
-        "oom_score": true
-      }
+      "proc": true,
+      "status": true,
+      "debug": true,
+      "canaryProcessTester": {
+        "memory": "256M"
+      },
+      "predictRealtime": true
     }
-  },
-  "predictions": {
-    "oom_score": true
   }
 }

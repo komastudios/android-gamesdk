@@ -1,8 +1,8 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import org.json.JSONObject;
+import java.util.Map;
 
 public interface ReadyHandler {
-  default void stressTestProgress(JSONObject metrics) {}
-  void onComplete();
+  default void stressTestProgress(Map<String, Object> metrics) {}
+  void onComplete(boolean timedOut);
 }

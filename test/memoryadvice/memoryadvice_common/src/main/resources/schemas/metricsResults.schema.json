@@ -39,6 +39,9 @@
     "MemoryInfo": {
       "$ref": "metricsResultsGroup.schema.json"
     },
+    "DebugMemoryInfo": {
+      "$ref": "metricsResultsGroup.schema.json"
+    },
     "meta": {
       "additionalProperties": false,
       "properties": {
@@ -66,6 +69,29 @@
     },
     "summary": {
       "$ref": "metricsResultsGroup.schema.json"
+    },
+
+    "predictedUsage": {
+      "type": "number"
+    },
+    "_predictedUsageMeta": {
+      "properties": {
+        "duration": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "predictedAvailable": {
+      "type": "integer"
+    },
+    "_predictedAvailableMeta": {
+      "properties": {
+        "duration": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "type": "object"

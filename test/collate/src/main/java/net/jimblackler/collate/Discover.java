@@ -1,10 +1,13 @@
 package net.jimblackler.collate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A tool to analyze the recent run of iStresser in order to extract the record values of certain
@@ -12,50 +15,57 @@ import org.json.JSONObject;
  */
 public class Discover {
   public static void main(String[] args) throws IOException {
-    JSONObject recordResults = new JSONObject();
+    ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
+    Map<String, Object> recordResults = new LinkedHashMap<>();
 
     Collector.cloudCollect(null, result -> {
       if (result.isEmpty()) {
         return;
       }
-      JSONObject first = result.getJSONObject(0);
+      Map<String, Object> first = (Map<String, Object>) result.get(0);
 
-      if (!first.has("params")) {
+      if (!first.containsKey("params")) {
         System.out.println("No usable results. Data returned was:");
-        System.out.println(result.toString(2));
+        try {
+          System.out.println(objectWriter.writeValueAsString(result));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
         return;
       }
-      JSONObject deviceInfo = first.getJSONObject("deviceInfo");
-      JSONObject flattened = deviceInfo.getJSONObject("params");
-      if (flattened.has("advisorParameters")) {
-        JSONObject advisorParameters = flattened.getJSONObject("advisorParameters");
-        if (advisorParameters.has("heuristics")
-            && !advisorParameters.getJSONObject("heuristics").isEmpty()) {
+      Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
+      Map<String, Object> flattened =
+          Utils.flattenParams((Map<String, Object>) first.get("params"));
+      if (flattened.containsKey("advisorParameters")) {
+        Map<String, Object> advisorParameters =
+            (Map<String, Object>) flattened.get("advisorParameters");
+        if (advisorParameters.containsKey("heuristics")
+            && !((Map<String, Object>) advisorParameters.get("heuristics")).isEmpty()) {
           // Runs with heuristics are not useful.
           return;
         }
       }
-      if (!flattened.has("malloc") && !flattened.has("glTest")) {
+      if (!flattened.containsKey("malloc") && !flattened.containsKey("glTest")) {
         // Only interested in these kinds of stress tests.
         return;
       }
-      JSONObject baseline = null;
-      JSONObject limit = null;
-      JSONObject firstFailed = null;
-      for (int idx2 = 0; idx2 != result.length(); idx2++) {
-        JSONObject row = result.getJSONObject(idx2);
-        if (row.optBoolean("activityPaused")) {
+      Map<String, Object> baseline = null;
+      Map<String, Object> limit = null;
+      Map<String, Object> firstFailed = null;
+      for (int idx2 = 0; idx2 != result.size(); idx2++) {
+        Map<String, Object> row = (Map<String, Object>) result.get(idx2);
+        if (Boolean.TRUE.equals(row.get("activityPaused"))) {
           // The run was interrupted and is unusable.
           limit = null;
           break;
         }
-        JSONObject metrics = ReportUtils.rowMetrics(row);
+        Map<String, Object> metrics = ReportUtils.rowMetrics(row);
         if (metrics == null) {
           continue;
         }
         long time = ReportUtils.rowTime(row);
-        if (row.has("allocFailed") || row.has("mmapAnonFailed") || row.has("mmapFileFailed")
-            || row.has("criticalLogLines")) {
+        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
+            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")) {
           if (firstFailed == null || time < ReportUtils.rowTime(firstFailed)) {
             firstFailed = row;
           }
@@ -63,8 +73,10 @@ public class Discover {
         if (firstFailed != null && time >= ReportUtils.rowTime(firstFailed)) {
           continue;
         }
-        if (metrics.has("constant")) {
-          if (baseline == null || time < baseline.getJSONObject("meta").getLong("time")) {
+        if (metrics.containsKey("constant")) {
+          if (baseline == null
+              || time < ((Number) ((Map<String, Object>) baseline.get("meta")).get("time"))
+                            .longValue()) {
             // Baseline is the earliest reading with 'constant'.
             baseline = row;
           }
@@ -76,67 +88,71 @@ public class Discover {
       }
       if (limit != null) {
         String fingerprint =
-            deviceInfo.getJSONObject("build").getJSONObject("fields").getString("FINGERPRINT");
-        JSONObject baselineCurrent = deviceInfo.getJSONObject("baseline");
-        JSONObject limitCurrent = ReportUtils.rowMetrics(limit);
+            (String) ((Map<String, Object>) ((Map<String, Object>) deviceInfo.get("build"))
+                          .get("fields"))
+                .get("FINGERPRINT");
+        Map<String, Object> baselineCurrent = (Map<String, Object>) deviceInfo.get("baseline");
+        Map<String, Object> limitCurrent = ReportUtils.rowMetrics(limit);
 
-        JSONObject testMetrics = limit.getJSONObject("testMetrics");
+        Map<String, Object> testMetrics = (Map<String, Object>) limit.get("testMetrics");
         long total = 0;
-        for (String key : testMetrics.keySet()) {
-          total += testMetrics.getLong(key);
+        for (Object o : testMetrics.values()) {
+          total += ((Number) o).longValue();
         }
-        JSONObject stressedGroup = new JSONObject();
+        Map<String, Object> stressedGroup = new LinkedHashMap<>();
         stressedGroup.put("applicationAllocated", total);
         limitCurrent.put("stressed", stressedGroup);
 
-        if (recordResults.has(fingerprint)) {
+        if (recordResults.containsKey(fingerprint)) {
           // Multiple results are combined.
           // We take the metric result with the smallest ('worst') delta in every case.
-          JSONObject recordResult;
-          recordResult = recordResults.getJSONObject(fingerprint);
-          JSONObject limitPrevious = recordResult.getJSONObject("limit");
-          JSONObject baselinePrevious = recordResult.getJSONObject("baseline");
-          for (String groupName : limitPrevious.keySet()) {
-            try {
-              JSONObject limitPreviousGroup = limitPrevious.optJSONObject(groupName);
-              if (limitPreviousGroup == null) {
+          Map<String, Object> recordResult = (Map<String, Object>) recordResults.get(fingerprint);
+          Map<String, Object> limitPrevious = (Map<String, Object>) recordResult.get("limit");
+          Map<String, Object> baselinePrevious = (Map<String, Object>) recordResult.get("baseline");
+          for (Map.Entry<String, Object> e : limitPrevious.entrySet()) {
+            String groupName = e.getKey();
+            Object value = e.getValue();
+            if (!(value instanceof Map)) {
+              continue;
+            }
+            Map<String, Object> limitPreviousGroup = (Map<String, Object>) value;
+            Map<String, Object> limitCurrentGroup =
+                (Map<String, Object>) limitCurrent.get(groupName);
+            Map<String, Object> baselineCurrentGroup =
+                (Map<String, Object>) baselineCurrent.get(groupName);
+            if (baselineCurrentGroup == null) {
+              continue;
+            }
+            Map<String, Object> baselinePreviousGroup =
+                (Map<String, Object>) baselinePrevious.get(groupName);
+            for (Map.Entry<String, Object> entry : limitPreviousGroup.entrySet()) {
+              String key = entry.getKey();
+              if (!(entry.getValue() instanceof Number)) {
                 continue;
               }
-              JSONObject limitCurrentGroup = limitCurrent.getJSONObject(groupName);
-              JSONObject baselineCurrentGroup = baselineCurrent.optJSONObject(groupName);
-              if (baselineCurrentGroup == null) {
+              if (!baselinePreviousGroup.containsKey(key)) {
+                if (((Number) limitCurrentGroup.get(key)).longValue()
+                    < ((Number) limitPreviousGroup.get(key)).longValue()) {
+                  limitPreviousGroup.put(key, limitCurrentGroup.get(key));
+                }
                 continue;
               }
-              JSONObject baselinePreviousGroup = baselinePrevious.getJSONObject(groupName);
-              for (String key : limitPreviousGroup.keySet()) {
-                if (!(limitPreviousGroup.get(key) instanceof Number)) {
-                  continue;
-                }
-                if (!baselinePreviousGroup.has(key)) {
-                  if (limitCurrentGroup.getLong(key) < limitPreviousGroup.getLong(key)) {
-                    limitPreviousGroup.put(key, limitCurrentGroup.getLong(key));
-                  }
-                  continue;
-                }
-                if (!(baselinePreviousGroup.get(key) instanceof Number)) {
-                  continue;
-                }
-                long previous =
-                    limitPreviousGroup.getLong(key) - baselinePreviousGroup.getLong(key);
-                long baselineCurrentValue = baselineCurrentGroup.getLong(key);
-                long limitCurrentValue = limitCurrentGroup.getLong(key);
-                long current = limitCurrentValue - baselineCurrentValue;
-                if (Math.abs(current) < Math.abs(previous)) {
-                  baselinePreviousGroup.put(key, baselineCurrentValue);
-                  limitPreviousGroup.put(key, limitCurrentValue);
-                }
+              if (!(baselinePreviousGroup.get(key) instanceof Number)) {
+                continue;
               }
-            } catch (JSONException e) {
-              throw new IllegalStateException(e);
+              long previous = ((Number) limitPreviousGroup.get(key)).longValue()
+                  - ((Number) baselinePreviousGroup.get(key)).longValue();
+              long baselineCurrentValue = ((Number) baselineCurrentGroup.get(key)).longValue();
+              long limitCurrentValue = ((Number) limitCurrentGroup.get(key)).longValue();
+              long current = limitCurrentValue - baselineCurrentValue;
+              if (Math.abs(current) < Math.abs(previous)) {
+                baselinePreviousGroup.put(key, baselineCurrentValue);
+                limitPreviousGroup.put(key, limitCurrentValue);
+              }
             }
           }
         } else {
-          JSONObject recordResult = new JSONObject();
+          Map<String, Object> recordResult = new LinkedHashMap<>();
           recordResult.put("baseline", baselineCurrent);
           recordResult.put("limit", limitCurrent);
           recordResults.put(fingerprint, recordResult);
@@ -144,6 +160,6 @@ public class Discover {
       }
     });
 
-    Files.write(Paths.get("lookup.json"), recordResults.toString(2).getBytes());
+    Files.write(Paths.get("lookup.json"), objectWriter.writeValueAsBytes(recordResults));
   }
 }

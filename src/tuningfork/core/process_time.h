@@ -34,7 +34,12 @@ class ProcessTimeInterval {
     ProcessTimeInterval(Duration duration) : start_(duration), end_(0) {}
     // Initialize as an interval.
     ProcessTimeInterval(ProcessTime start, ProcessTime end)
-        : start_(start), end_(end) {}
+        : start_(start), end_(end) {
+        // Disallow travelling backwards in time.
+        if (start_ > end_) {
+            end_ = start_;
+        }
+    }
     bool IsDuration() const { return end_.count() == 0; }
     Duration Duration() const {
         if (IsDuration())
