@@ -307,6 +307,8 @@ public class Score {
         .append("</th>")
         .append("<th rowspan=" + rowspan + " >")
         .append("Release")
+        .append("<th rowspan=" + rowspan + " >")
+        .append("totalMem")
         .append("</th>")
         .append("</tr>");
 
@@ -341,6 +343,9 @@ public class Score {
 
       Map<String, Object> version = (Map<String, Object>) build.get("version");
       Map<String, Object> fields = (Map<String, Object>) build.get("fields");
+      Map<String, Object> baseline = (Map<String, Object>) deviceInfo.get("baseline");
+      Map<String, Object> baselineMemoryInfo = (Map<String, Object>) baseline.get("MemoryInfo");
+      long totalMem = ((Number) baselineMemoryInfo.get("totalMem")).longValue();
       body.append("<td>")
           .append(fields.get("MANUFACTURER"))
           .append("</td>")
@@ -355,6 +360,9 @@ public class Score {
           .append("</td>")
           .append("<td>")
           .append(version.get("RELEASE"))
+          .append("</td>")
+          .append("<td>")
+          .append(totalMem / (1024 * 1024))
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
