@@ -448,9 +448,8 @@ public class Score {
 
   private static int getTotalVariations(List<Object> tests) {
     int total = 1;
-    for (int idx = 0; idx != tests.size(); idx++) {
-      Collection<Object> test = (Collection<Object>) tests.get(idx);
-      total *= test.size();
+    for (Object o : tests) {
+      total *= ((Collection<Object>) o).size();
     }
     return total;
   }
