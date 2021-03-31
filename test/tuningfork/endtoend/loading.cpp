@@ -63,7 +63,7 @@ TuningForkLogEvent ExpectedResultWithLoading() {
     {
       "context":{
         "annotations":"",
-        "duration":"0.31s",
+        "duration":"0.21s",
         "tuning_parameters":{
           "experiment_id":"",
           "serialized_fidelity_parameters":""

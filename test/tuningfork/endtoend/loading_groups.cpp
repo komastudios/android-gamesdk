@@ -61,8 +61,7 @@ TuningForkLogEvent TestEndToEndWithLoadingGroups(
 TuningForkLogEvent ExpectedResultWithLoadingGroups(bool use_stop,
                                                    bool with_annotation) {
     std::string any_string = "\"!REGEX([^\"]*)\"";
-    std::string first_duration =
-        (use_stop && !with_annotation) ? "0.41s" : "0.31s";
+    std::string first_duration = "0.21s";
     // An event generated because of the StopRecordingGroup call.
     std::string extra_event;
     if (use_stop)
