@@ -35,7 +35,7 @@ public class Score {
   static void go(boolean useDevice) throws IOException {
     ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     Map<String, Map<String, Result>> out = new HashMap<>();
-    Map<String, Map<String, Object>> builds = new HashMap<>();
+    Map<String, Map<String, Object>> deviceInfos = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
     AtomicReference<List<Object>> tests = new AtomicReference<>();
     AtomicReference<String> historyId = new AtomicReference<>();
@@ -53,7 +53,7 @@ public class Score {
             return;
           }
           try {
-            URI uri = writeReport(out, builds, directory.get(), tests.get());
+            URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
             System.out.println(uri);
           } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -63,7 +63,8 @@ public class Score {
       timer.get().schedule(task, 1000 * 10);
 
       Map<String, Object> first = (Map<String, Object>) result.get(0);
-      if (!first.containsKey("params")) {
+      Map<String, Object> params = (Map<String, Object>) first.get("params");
+      if (params == null) {
         System.out.println("No usable results. Data returned was:");
         try {
           System.out.println(objectWriter.writeValueAsString(first));
@@ -72,10 +73,9 @@ public class Score {
         }
         return;
       }
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
       Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       if (deviceInfo == null) {
-        System.out.println("Could not find deviveInfo. Data returned was:");
+        System.out.println("Could not find deviceInfo. Data returned was:");
         try {
           System.out.println(objectWriter.writeValueAsString(first));
         } catch (JsonProcessingException e) {
@@ -99,7 +99,7 @@ public class Score {
           id = dimensions.toString();
         }
       }
-      builds.put(id, build);
+      deviceInfos.put(id, deviceInfo);
 
       long lowestTop = Long.MAX_VALUE;
       long largest = 0;
@@ -194,12 +194,12 @@ public class Score {
     if (timer.get() != null) {
       timer.get().cancel();
     }
-    URI uri = writeReport(out, builds, directory.get(), tests.get());
+    URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
     System.out.println(uri);
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> builds, Path directory, List<Object> tests)
+      Map<String, Map<String, Object>> deviceInfos, Path directory, List<Object> tests)
       throws IOException {
     StringBuilder body = new StringBuilder();
     // The vertical orders are the variations of the graphs. The vertical order refers to how the
@@ -211,7 +211,7 @@ public class Score {
       if (!worthRendering(verticalOrder, tests)) {
         continue;
       }
-      writeTable(body, rows, builds, tests, directory, verticalOrder);
+      writeTable(body, rows, deviceInfos, tests, directory, verticalOrder);
       body.append("</br>");
     }
 
@@ -282,7 +282,7 @@ public class Score {
   }
 
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> builds, List<Object> tests, Path directory,
+      Map<String, Map<String, Object>> deviceInfos, List<Object> tests, Path directory,
       List<Integer> verticalOrder) {
     int rowspan = tests.size() + 1;
 
@@ -333,7 +333,8 @@ public class Score {
 
       String id = row.getKey();
       Map<String, Result> rows0 = row.getValue();
-      Map<String, Object> build = builds.get(id);
+      Map<String, Object> deviceInfo = deviceInfos.get(id);
+      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
 
       Map<String, Object> version = (Map<String, Object>) build.get("version");
       Map<String, Object> fields = (Map<String, Object>) build.get("fields");
@@ -359,12 +360,7 @@ public class Score {
         List<Object> coords = horizontalOrder.get(idx);
         Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
-          String group = result.getGroup();
-          if (maxScore.containsKey(group)) {
-            maxScore.put(group, Math.max(result.getScore(), maxScore.get(group)));
-          } else {
-            maxScore.put(group, result.getScore());
-          }
+          maxScore.merge(result.getGroup(), result.getScore(), Math::max);
         }
       }
 
@@ -423,7 +419,7 @@ public class Score {
     }
 
     while (true) {
-      horizontalOrder.add(base);
+      horizontalOrder.add(new ArrayList<>(base));
       boolean rolledOver = true;
       ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
       while (it.hasPrevious()) {
@@ -447,9 +443,8 @@ public class Score {
 
   private static int getTotalVariations(List<Object> tests) {
     int total = 1;
-    for (int idx = 0; idx != tests.size(); idx++) {
-      Collection<Object> test = (Collection<Object>) tests.get(idx);
-      total *= test.size();
+    for (Object o : tests) {
+      total *= ((Collection<Object>) o).size();
     }
     return total;
   }

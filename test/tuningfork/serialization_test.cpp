@@ -106,7 +106,7 @@ std::string report_end = "]}";
 std::string single_tick_with_loading = R"TF({
   "context": {
     "annotations": "AQID",
-    "duration": "1.51s",
+    "duration": "1.5s",
     "tuning_parameters": {
       "experiment_id": "expt",
       "serialized_fidelity_parameters": ""
@@ -284,6 +284,30 @@ TEST(SerializationTest, GEDeserialization) {
         TUNINGFORK_ERROR_OK)
         << "Deserialize single";
     CheckSessions(session1, session);
+}
+
+TEST(SerializationTest, DurationSerialization) {
+    std::vector<double> ds = {1e19, 1e15, 1e10, 1e5,  1e0,   1e-1,
+                              1e-3, 1e-5, 1e-8, 1e-9, 1e-10, 1e-15};
+    std::vector<std::string> results = {"10000000000000000000",
+                                        "1000000000000000",
+                                        "10000000000",
+                                        "100000",
+                                        "1",
+                                        "0.1",
+                                        "0.001",
+                                        "0.00001",
+                                        "0.00000001",
+                                        "0.000000001",
+                                        "0",
+                                        "0"};
+    EXPECT_EQ(ds.size(), results.size()) << "Test set up badly";
+    for (int i = 0; i < std::min(ds.size(), results.size()); ++i) {
+        std::stringstream str;
+        str << JsonSerializer::FixedAndTruncated(ds[i]);
+        EXPECT_EQ(str.str(), results[i])
+            << "expected " << results[i] << " got " << str.str();
+    }
 }
 
 }  // namespace serialization_test

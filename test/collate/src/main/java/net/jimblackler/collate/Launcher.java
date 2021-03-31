@@ -177,8 +177,8 @@ public class Launcher {
 
       Map<String, Object> flattened = Utils.flattenParams(paramsIn);
 
-      if (flattened.containsKey("firebase")) {
-        Map<String, Object> firebase = (Map<String, Object>) flattened.get("firebase");
+      Map<String, Object> firebase = (Map<String, Object>) flattened.get("firebase");
+      if (firebase != null) {
         for (Map.Entry<String, Object> entry : firebase.entrySet()) {
           String key = entry.getKey();
           Object value = entry.getValue();
@@ -190,15 +190,16 @@ public class Launcher {
         }
       }
 
-      if (flattened.containsKey("orientation")) {
+      Object orientation = flattened.get("orientation");
+      if (orientation != null) {
         for (String device : devices) {
-          commands.add(device + ",orientation=" + flattened.get("orientation"));
+          commands.add(device + ",orientation=" + orientation);
         }
       } else {
         commands.addAll(devices);
       }
 
-      if (paramsIn.containsKey("serviceBlocker")) {
+      if (flattened.containsKey("serviceBlocker")) {
         if (grabberCopy[0] == null) {
           grabberCopy[0] = Files.createTempFile("grabber", ".apk");
           Files.copy(grabberPath, grabberCopy[0], REPLACE_EXISTING);
