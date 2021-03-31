@@ -35,7 +35,7 @@ public class Score {
   static void go(boolean useDevice) throws IOException {
     ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     Map<String, Map<String, Result>> out = new HashMap<>();
-    Map<String, Map<String, Object>> builds = new HashMap<>();
+    Map<String, Map<String, Object>> deviceInfos = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
     AtomicReference<List<Object>> tests = new AtomicReference<>();
     AtomicReference<String> historyId = new AtomicReference<>();
@@ -53,7 +53,7 @@ public class Score {
             return;
           }
           try {
-            URI uri = writeReport(out, builds, directory.get(), tests.get());
+            URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
             System.out.println(uri);
           } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -99,7 +99,7 @@ public class Score {
           id = dimensions.toString();
         }
       }
-      builds.put(id, build);
+      deviceInfos.put(id, deviceInfo);
 
       long lowestTop = Long.MAX_VALUE;
       long largest = 0;
@@ -194,12 +194,12 @@ public class Score {
     if (timer.get() != null) {
       timer.get().cancel();
     }
-    URI uri = writeReport(out, builds, directory.get(), tests.get());
+    URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
     System.out.println(uri);
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> builds, Path directory, List<Object> tests)
+      Map<String, Map<String, Object>> deviceInfos, Path directory, List<Object> tests)
       throws IOException {
     StringBuilder body = new StringBuilder();
     // The vertical orders are the variations of the graphs. The vertical order refers to how the
@@ -211,7 +211,7 @@ public class Score {
       if (!worthRendering(verticalOrder, tests)) {
         continue;
       }
-      writeTable(body, rows, builds, tests, directory, verticalOrder);
+      writeTable(body, rows, deviceInfos, tests, directory, verticalOrder);
       body.append("</br>");
     }
 
@@ -282,7 +282,7 @@ public class Score {
   }
 
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> builds, List<Object> tests, Path directory,
+      Map<String, Map<String, Object>> deviceInfos, List<Object> tests, Path directory,
       List<Integer> verticalOrder) {
     int rowspan = tests.size() + 1;
 
@@ -333,7 +333,8 @@ public class Score {
 
       String id = row.getKey();
       Map<String, Result> rows0 = row.getValue();
-      Map<String, Object> build = builds.get(id);
+      Map<String, Object> deviceInfo = deviceInfos.get(id);
+      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
 
       Map<String, Object> version = (Map<String, Object>) build.get("version");
       Map<String, Object> fields = (Map<String, Object>) build.get("fields");
