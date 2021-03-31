@@ -139,10 +139,21 @@ public class Score {
           largest = score;
         }
 
-        if (row.containsKey("trigger") && !Boolean.TRUE.equals(row.get("paused"))) {
-          long top = score;
-          if (top < lowestTop) {
-            lowestTop = top;
+        Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+        if (advice != null) {
+          Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
+          if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
+            for (Object o2 : warnings) {
+              Map<String, Object> warning = (Map<String, Object>) o2;
+              if (!"red".equals(warning.get("level"))) {
+                continue;
+              }
+              long top = score;
+              if (top < lowestTop) {
+                lowestTop = top;
+              }
+              break;
+            }
           }
         }
       }
