@@ -4,15 +4,15 @@ import java.util.Map;
 
 public class ReportUtils {
   static Map<String, Object> rowMetrics(Map<String, Object> row) {
-    if (row.containsKey("advice")) {
-      return (Map<String, Object>) ((Map<String, Object>) row.get("advice")).get("metrics");
-    } else if (row.containsKey("deviceInfo")) {
-      return (Map<String, Object>) ((Map<String, Object>) row.get("deviceInfo")).get("baseline");
-    } else if (row.containsKey("metrics")) {
-      return (Map<String, Object>) row.get("metrics");
-    } else {
-      return null;
+    Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+    if (advice != null) {
+      return (Map<String, Object>) advice.get("metrics");
     }
+    Map<String, Object> deviceInfo = (Map<String, Object>) row.get("deviceInfo");
+    if (deviceInfo != null) {
+      return (Map<String, Object>) deviceInfo.get("baseline");
+    }
+    return (Map<String, Object>) row.get("metrics");
   }
 
   static long rowTime(Map<String, Object> row) {
@@ -24,14 +24,13 @@ public class ReportUtils {
   }
 
   static Map<String, Object> getDeviceInfo(Iterable<Object> result) {
-    Map<String, Object> deviceInfo = null;
     for (Object data : result) {
       Map<String, Object> line = (Map<String, Object>) data;
-      if (line.containsKey("deviceInfo")) {
-        deviceInfo = (Map<String, Object>) line.get("deviceInfo");
-        break;
+      Map<String, Object> deviceInfo = (Map<String, Object>) line.get("deviceInfo");
+      if (deviceInfo != null) {
+        return deviceInfo;
       }
     }
-    return deviceInfo;
+    return null;
   }
 }

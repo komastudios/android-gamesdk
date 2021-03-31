@@ -19,6 +19,7 @@ import com.google.api.services.toolresults.model.ToolExecution;
 import com.google.api.services.toolresults.model.ToolOutputReference;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -246,7 +247,13 @@ class Collector {
     if (!Files.exists(file)) {
       System.out.println("Fetching " + path);
       file.toFile().getParentFile().mkdirs();
-      storage.get(BlobId.of(bucketName, path)).downloadTo(file);
+      BlobId blobId = BlobId.of(bucketName, path);
+      Blob blob = storage.get(blobId);
+      if (blob == null) {
+        throw new IOException("Could not get blob " + blobId);
+      } else {
+        blob.downloadTo(file);
+      }
     }
     try {
       String s = Files.readString(file);

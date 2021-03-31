@@ -42,6 +42,10 @@ class JsonSerializer {
         const std::string& evt_json_ser, IdProvider& id_provider,
         Session& session);
 
+    // Utility function: string representation of a double using fixed-point
+    // notation to 9 decimal point precision.
+    static std::string FixedAndTruncated(double d);
+
    private:
     json11::Json::object TelemetryContextJson(const AnnotationId& annotation,
                                               const RequestInfo& request_info,

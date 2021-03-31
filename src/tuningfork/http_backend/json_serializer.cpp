@@ -37,7 +37,7 @@ using namespace std::chrono;
 using namespace date;
 
 // Unfortunately, C++ conversion/rounding of numbers requires this.
-static std::string FixedAndTruncated(double d) {
+std::string JsonSerializer::FixedAndTruncated(double d) {
     std::stringstream s;
     s.precision(9);
     s << std::fixed << d;
@@ -94,7 +94,7 @@ system_clock::time_point RFC3339ToTime(const std::string& s) {
 std::string DurationToSecondsString(Duration d) {
     std::stringstream str;
     double duration_s = duration_cast<nanoseconds>(d).count() / 1000000000.0;
-    str << FixedAndTruncated(duration_s) << 's';
+    str << JsonSerializer::FixedAndTruncated(duration_s) << 's';
     return str.str();
 }
 Duration StringToDuration(const std::string& s) {
@@ -152,7 +152,7 @@ static std::string DurationJsonFromNanos(int64_t ns) {
     double dns = ns;
     dns /= 1000000000.0;
     std::stringstream str;
-    str << FixedAndTruncated(dns) << "s";
+    str << JsonSerializer::FixedAndTruncated(dns) << "s";
     return str.str();
 }
 
@@ -224,6 +224,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             } else {
                 loading_events_intervals.push_back(c);
             }
+            duration = std::max(th->duration_, duration);
         }
         if (loading_events_times.size() > 0 ||
             loading_events_intervals.size() > 0) {

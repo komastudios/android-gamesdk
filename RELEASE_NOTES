@@ -112,3 +112,8 @@ Android Performance Tuner libraries.
   a single native API that works in Android 4.1 (API level 16) and higher.
 
 For more information, see https://developer.android.com/games/sdk/oboe/.
+
+Version 1.2.4
+=============
+This release is a bugfix release for APT.
+- Fix loading time and duration recording on devices with inconsistent CLOCK_BOOTTIME.

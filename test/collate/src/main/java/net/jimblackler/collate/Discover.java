@@ -25,7 +25,7 @@ public class Discover {
       Map<String, Object> first = (Map<String, Object>) result.get(0);
 
       if (!first.containsKey("params")) {
-        System.out.println("No usable results. Data returned was:");
+        System.out.println("No usable result. Data returned was:");
         try {
           System.out.println(objectWriter.writeValueAsString(result));
         } catch (JsonProcessingException e) {
@@ -36,11 +36,11 @@ public class Discover {
       Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       Map<String, Object> flattened =
           Utils.flattenParams((Map<String, Object>) first.get("params"));
-      if (flattened.containsKey("advisorParameters")) {
-        Map<String, Object> advisorParameters =
-            (Map<String, Object>) flattened.get("advisorParameters");
-        if (advisorParameters.containsKey("heuristics")
-            && !((Map<String, Object>) advisorParameters.get("heuristics")).isEmpty()) {
+      Map<String, Object> advisorParameters =
+          (Map<String, Object>) flattened.get("advisorParameters");
+      if (advisorParameters != null) {
+        Map<String, Object> heuristics = (Map<String, Object>) advisorParameters.get("heuristics");
+        if (heuristics != null && !heuristics.isEmpty()) {
           // Runs with heuristics are not useful.
           return;
         }
@@ -52,8 +52,8 @@ public class Discover {
       Map<String, Object> baseline = null;
       Map<String, Object> limit = null;
       Map<String, Object> firstFailed = null;
-      for (int idx2 = 0; idx2 != result.size(); idx2++) {
-        Map<String, Object> row = (Map<String, Object>) result.get(idx2);
+      for (Object o : result) {
+        Map<String, Object> row = (Map<String, Object>) o;
         if (Boolean.TRUE.equals(row.get("activityPaused"))) {
           // The run was interrupted and is unusable.
           limit = null;
@@ -64,8 +64,10 @@ public class Discover {
           continue;
         }
         long time = ReportUtils.rowTime(row);
-        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
-            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")) {
+        if (Boolean.TRUE.equals(row.get("allocFailed"))
+            || Boolean.TRUE.equals(row.get("mmapAnonFailed"))
+            || Boolean.TRUE.equals(row.get("mmapFileFailed"))
+            || row.containsKey("criticalLogLines")) {
           if (firstFailed == null || time < ReportUtils.rowTime(firstFailed)) {
             firstFailed = row;
           }
@@ -74,9 +76,7 @@ public class Discover {
           continue;
         }
         if (metrics.containsKey("constant")) {
-          if (baseline == null
-              || time < ((Number) ((Map<String, Object>) baseline.get("meta")).get("time"))
-                            .longValue()) {
+          if (baseline == null || time < ReportUtils.rowTime(baseline)) {
             // Baseline is the earliest reading with 'constant'.
             baseline = row;
           }
@@ -103,10 +103,10 @@ public class Discover {
         stressedGroup.put("applicationAllocated", total);
         limitCurrent.put("stressed", stressedGroup);
 
-        if (recordResults.containsKey(fingerprint)) {
+        Map<String, Object> recordResult = (Map<String, Object>) recordResults.get(fingerprint);
+        if (recordResult != null) {
           // Multiple results are combined.
           // We take the metric result with the smallest ('worst') delta in every case.
-          Map<String, Object> recordResult = (Map<String, Object>) recordResults.get(fingerprint);
           Map<String, Object> limitPrevious = (Map<String, Object>) recordResult.get("limit");
           Map<String, Object> baselinePrevious = (Map<String, Object>) recordResult.get("baseline");
           for (Map.Entry<String, Object> e : limitPrevious.entrySet()) {
@@ -152,7 +152,7 @@ public class Discover {
             }
           }
         } else {
-          Map<String, Object> recordResult = new LinkedHashMap<>();
+          recordResult = new LinkedHashMap<>();
           recordResult.put("baseline", baselineCurrent);
           recordResult.put("limit", limitCurrent);
           recordResults.put(fingerprint, recordResult);
