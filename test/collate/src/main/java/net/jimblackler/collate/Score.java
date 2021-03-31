@@ -90,13 +90,13 @@ public class Score {
       assert deviceInfo.containsKey("build");
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
       String id = build.toString();
-      if (first.containsKey("extra")) {
-        Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+
+      Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+      if (extra != null) {
         historyId.set((String) extra.get("historyId"));
-        if (extra.containsKey("step")) {
-          Map<String, Object> step = (Map<String, Object>) extra.get("step");
-          List<Object> dimensions = (List<Object>) step.get("dimensionValue");
-          id = dimensions.toString();
+        Map<String, Object> step = (Map<String, Object>) extra.get("step");
+        if (step != null) {
+          id = step.get("dimensionValue").toString();
         }
       }
       deviceInfos.put(id, deviceInfo);
