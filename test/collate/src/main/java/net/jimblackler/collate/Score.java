@@ -178,13 +178,14 @@ public class Score {
         }
         directory.set(Path.of("reports").resolve(dirName));
         try {
-          if (directory.get().toFile().exists()) {
+          File outDir = directory.get().toFile();
+          if (outDir.exists()) {
             // Empty the directory if it already exists.
             try (Stream<Path> files = Files.walk(directory.get())) {
               files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
           }
-          Files.createDirectory(directory.get());
+          outDir.mkdirs();
           Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
         } catch (IOException e) {
           throw new IllegalStateException(e);
