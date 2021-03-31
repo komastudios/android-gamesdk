@@ -199,7 +199,7 @@ public class Launcher {
         commands.addAll(devices);
       }
 
-      if (paramsIn.containsKey("serviceBlocker")) {
+      if (flattened.containsKey("serviceBlocker")) {
         if (grabberCopy[0] == null) {
           grabberCopy[0] = Files.createTempFile("grabber", ".apk");
           Files.copy(grabberPath, grabberCopy[0], REPLACE_EXISTING);
