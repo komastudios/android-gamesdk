@@ -107,31 +107,22 @@ public class Score {
       boolean allocFailed = false;
       boolean serviceCrashed = false;
 
-      List<Map<String, Object>> results = Lists.newArrayList();
-      for (int idx2 = 0; idx2 != result.size(); idx2++) {
-        Map<String, Object> map = (Map<String, Object>) result.get(idx2);
-        if (ReportUtils.rowMetrics(map) != null) {
-          results.add(map);
-        }
-      }
-      results.sort(Comparator.comparingLong(ReportUtils::rowTime));
-      for (Map<String, Object> row : results) {
-        if (row.containsKey("exiting")) {
-          exited = true;
-        }
-        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
-            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")
-            || row.containsKey("failedToClear")) {
-          allocFailed = true;
-        }
-        if (row.containsKey("serviceCrashed")) {
-          serviceCrashed = true;
-        }
+      for (Object o : result) {
+        Map<String, Object> row = (Map<String, Object>) o;
+        exited |= Boolean.TRUE.equals(row.get("exiting"));
+
+        allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
+        allocFailed |= row.containsKey("criticalLogLines");
+
+        serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
         long score = 0;
-        if (row.containsKey("testMetrics")) {
-          Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
-          for (Object o : testMetrics.values()) {
-            score += ((Number) o).longValue();
+        Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+        if (testMetrics != null) {
+          for (Object o2 : testMetrics.values()) {
+            score += ((Number) o2).longValue();
           }
         }
 
