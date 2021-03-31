@@ -90,13 +90,13 @@ public class Score {
       assert deviceInfo.containsKey("build");
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
       String id = build.toString();
-      if (first.containsKey("extra")) {
-        Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+
+      Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+      if (extra != null) {
         historyId.set((String) extra.get("historyId"));
-        if (extra.containsKey("step")) {
-          Map<String, Object> step = (Map<String, Object>) extra.get("step");
-          List<Object> dimensions = (List<Object>) step.get("dimensionValue");
-          id = dimensions.toString();
+        Map<String, Object> step = (Map<String, Object>) extra.get("step");
+        if (step != null) {
+          id = step.get("dimensionValue").toString();
         }
       }
       deviceInfos.put(id, deviceInfo);
@@ -107,31 +107,22 @@ public class Score {
       boolean allocFailed = false;
       boolean serviceCrashed = false;
 
-      List<Map<String, Object>> results = Lists.newArrayList();
-      for (int idx2 = 0; idx2 != result.size(); idx2++) {
-        Map<String, Object> map = (Map<String, Object>) result.get(idx2);
-        if (ReportUtils.rowMetrics(map) != null) {
-          results.add(map);
-        }
-      }
-      results.sort(Comparator.comparingLong(ReportUtils::rowTime));
-      for (Map<String, Object> row : results) {
-        if (row.containsKey("exiting")) {
-          exited = true;
-        }
-        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
-            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")
-            || row.containsKey("failedToClear")) {
-          allocFailed = true;
-        }
-        if (row.containsKey("serviceCrashed")) {
-          serviceCrashed = true;
-        }
+      for (Object o : result) {
+        Map<String, Object> row = (Map<String, Object>) o;
+        exited |= Boolean.TRUE.equals(row.get("exiting"));
+
+        allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
+        allocFailed |= row.containsKey("criticalLogLines");
+
+        serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
         long score = 0;
-        if (row.containsKey("testMetrics")) {
-          Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
-          for (Object o : testMetrics.values()) {
-            score += ((Number) o).longValue();
+        Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+        if (testMetrics != null) {
+          for (Object o2 : testMetrics.values()) {
+            score += ((Number) o2).longValue();
           }
         }
 
@@ -139,10 +130,21 @@ public class Score {
           largest = score;
         }
 
-        if (row.containsKey("trigger") && !Boolean.TRUE.equals(row.get("paused"))) {
-          long top = score;
-          if (top < lowestTop) {
-            lowestTop = top;
+        Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+        if (advice != null) {
+          Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
+          if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
+            for (Object o2 : warnings) {
+              Map<String, Object> warning = (Map<String, Object>) o2;
+              if (!"red".equals(warning.get("level"))) {
+                continue;
+              }
+              long top = score;
+              if (top < lowestTop) {
+                lowestTop = top;
+              }
+              break;
+            }
           }
         }
       }
@@ -167,13 +169,14 @@ public class Score {
         }
         directory.set(Path.of("reports").resolve(dirName));
         try {
-          if (directory.get().toFile().exists()) {
+          File outDir = directory.get().toFile();
+          if (outDir.exists()) {
             // Empty the directory if it already exists.
             try (Stream<Path> files = Files.walk(directory.get())) {
               files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
           }
-          Files.createDirectory(directory.get());
+          outDir.mkdirs();
           Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
         } catch (IOException e) {
           throw new IllegalStateException(e);
