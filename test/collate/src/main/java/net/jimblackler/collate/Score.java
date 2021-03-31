@@ -151,13 +151,7 @@ public class Score {
 
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
-      Map<String, Result> results0;
-      if (out.containsKey(id)) {
-        results0 = out.get(id);
-      } else {
-        results0 = new HashMap<>();
-        out.put(id, results0);
-      }
+      Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
       List<Object> results1 = new ArrayList<>();
       results1.add(result);
       Map<String, Object> group = Utils.clone(runParameters);
