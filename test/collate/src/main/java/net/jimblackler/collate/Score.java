@@ -75,7 +75,7 @@ public class Score {
       }
       Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       if (deviceInfo == null) {
-        System.out.println("Could not find deviveInfo. Data returned was:");
+        System.out.println("Could not find deviceInfo. Data returned was:");
         try {
           System.out.println(objectWriter.writeValueAsString(first));
         } catch (JsonProcessingException e) {
