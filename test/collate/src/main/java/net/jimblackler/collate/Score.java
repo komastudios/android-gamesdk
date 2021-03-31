@@ -424,7 +424,7 @@ public class Score {
     }
 
     while (true) {
-      horizontalOrder.add(base);
+      horizontalOrder.add(new ArrayList<>(base));
       boolean rolledOver = true;
       ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
       while (it.hasPrevious()) {
