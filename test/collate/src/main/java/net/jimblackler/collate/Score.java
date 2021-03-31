@@ -360,12 +360,7 @@ public class Score {
         List<Object> coords = horizontalOrder.get(idx);
         Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
-          String group = result.getGroup();
-          if (maxScore.containsKey(group)) {
-            maxScore.put(group, Math.max(result.getScore(), maxScore.get(group)));
-          } else {
-            maxScore.put(group, result.getScore());
-          }
+          maxScore.merge(result.getGroup(), result.getScore(), Math::max);
         }
       }
 
