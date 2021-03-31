@@ -330,9 +330,39 @@ public class Score {
       body.append("</tr>");
       repeats *= test.size();
     }
-    body.append("</thead>");
 
     List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
+    body.append("<tr>");
+    body.append("<td colspan=6/>");
+    for (int idx = 0; idx != horizontalOrder.size(); idx++) {
+      List<Object> coords = horizontalOrder.get(idx);
+      int total = 0;
+      int acceptable = 0;
+      float validScore = 0;
+      for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
+        Map<String, Result> rows0 = row.getValue();
+        Result result = rows0.get(coords.toString());
+        if (result == null) {
+          continue;
+        }
+        total++;
+        if (result.isAcceptable()) {
+          acceptable++;
+          validScore += result.getScore();
+        }
+      }
+      body.append("<td>");
+      if (total > 0) {
+        body.append(acceptable * 100 / total).append("%").append(" ");
+      }
+
+      if (acceptable > 0) {
+        body.append((int) validScore / acceptable).append("</td>");
+      }
+    }
+    body.append("</tr>");
+    body.append("</thead>");
+
     for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
