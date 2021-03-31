@@ -63,7 +63,8 @@ public class Score {
       timer.get().schedule(task, 1000 * 10);
 
       Map<String, Object> first = (Map<String, Object>) result.get(0);
-      if (!first.containsKey("params")) {
+      Map<String, Object> params = (Map<String, Object>) first.get("params");
+      if (params == null) {
         System.out.println("No usable results. Data returned was:");
         try {
           System.out.println(objectWriter.writeValueAsString(first));
@@ -72,7 +73,6 @@ public class Score {
         }
         return;
       }
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
       Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       if (deviceInfo == null) {
         System.out.println("Could not find deviveInfo. Data returned was:");
