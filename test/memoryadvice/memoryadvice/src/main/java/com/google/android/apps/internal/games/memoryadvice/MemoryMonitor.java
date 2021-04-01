@@ -4,7 +4,6 @@ import static com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor.
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
-import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -121,52 +120,54 @@ class MemoryMonitor {
   public Map<String, Object> getMemoryMetrics(Map<String, Object> fields) {
     Map<String, Object> report = new LinkedHashMap<>();
 
-    if (fields.containsKey("debug")) {
+    Object debugFieldsValue = fields.get("debug");
+    if (debugFieldsValue != null) {
       long time = System.nanoTime();
       Map<String, Object> metricsOut = new LinkedHashMap<>();
-      Object debugFieldsValue = fields.get("debug");
       Map<String, Object> debug =
           debugFieldsValue instanceof Map ? (Map<String, Object>) debugFieldsValue : null;
-      boolean allFields = debugFieldsValue instanceof Boolean && (Boolean) debugFieldsValue;
-      if (allFields || (debug != null && getOrDefault(debug, "nativeHeapAllocatedSize", false))) {
-        metricsOut.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
+      boolean allFields = Boolean.TRUE.equals(debugFieldsValue);
+      if (allFields || debug != null) {
+        if (allFields || Boolean.TRUE.equals(debug.get("nativeHeapAllocatedSize"))) {
+          metricsOut.put("NativeHeapAllocatedSize", Debug.getNativeHeapAllocatedSize());
+        }
+        if (allFields || Boolean.TRUE.equals(debug.get("NativeHeapFreeSize"))) {
+          metricsOut.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
+        }
+        if (allFields || Boolean.TRUE.equals(debug.get("NativeHeapSize"))) {
+          metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
+        }
+        if (allFields || Boolean.TRUE.equals(debug.get("Pss"))) {
+          metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
+        }
       }
-      if (allFields || (debug != null && getOrDefault(debug, "NativeHeapFreeSize", false))) {
-        metricsOut.put("NativeHeapFreeSize", Debug.getNativeHeapFreeSize());
-      }
-      if (allFields || (debug != null && getOrDefault(debug, "NativeHeapSize", false))) {
-        metricsOut.put("NativeHeapSize", Debug.getNativeHeapSize());
-      }
-      if (allFields || (debug != null && getOrDefault(debug, "Pss", false))) {
-        metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
-      }
-
       Map<String, Object> meta = new LinkedHashMap<>();
       meta.put("duration", System.nanoTime() - time);
       metricsOut.put("_meta", meta);
       report.put("debug", metricsOut);
     }
 
-    if (fields.containsKey("MemoryInfo")) {
+    Object memoryInfoValue = fields.get("MemoryInfo");
+    if (memoryInfoValue != null) {
       long time = System.nanoTime();
-      Object memoryInfoValue = fields.get("MemoryInfo");
       Map<String, Object> memoryInfoFields =
           memoryInfoValue instanceof Map ? (Map<String, Object>) memoryInfoValue : null;
-      boolean allFields = memoryInfoValue instanceof Boolean && (Boolean) memoryInfoValue;
+      boolean allFields = Boolean.TRUE.equals(memoryInfoValue);
       if (allFields || (memoryInfoFields != null && !memoryInfoFields.isEmpty())) {
         Map<String, Object> metricsOut = new LinkedHashMap<>();
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
-        if (allFields || memoryInfoFields.containsKey("availMem")) {
+        if (allFields || Boolean.TRUE.equals(memoryInfoFields.get("availMem"))) {
           metricsOut.put("availMem", memoryInfo.availMem);
         }
-        if ((allFields || memoryInfoFields.containsKey("lowMemory")) && memoryInfo.lowMemory) {
+        if (memoryInfo.lowMemory
+            && (allFields || Boolean.TRUE.equals(memoryInfoFields.get("lowMemory")))) {
           metricsOut.put("lowMemory", true);
         }
-        if (allFields || memoryInfoFields.containsKey("totalMem")) {
+        if (allFields || Boolean.TRUE.equals(memoryInfoFields.get("totalMem"))) {
           metricsOut.put("totalMem", memoryInfo.totalMem);
         }
-        if (allFields || memoryInfoFields.containsKey("threshold")) {
+        if (allFields || Boolean.TRUE.equals(memoryInfoFields.get("threshold"))) {
           metricsOut.put("threshold", memoryInfo.threshold);
         }
 
@@ -177,19 +178,21 @@ class MemoryMonitor {
       }
     }
 
-    if (fields.containsKey("ActivityManager")) {
-      Object activityManagerValue = fields.get("ActivityManager");
+    Object activityManagerValue = fields.get("ActivityManager");
+    if (activityManagerValue != null) {
       Map<String, Object> activityManagerFields =
           activityManagerValue instanceof Map ? (Map<String, Object>) activityManagerValue : null;
-      boolean allFields = activityManagerValue instanceof Boolean && (Boolean) activityManagerValue;
-      if (allFields || activityManagerFields.containsKey("MemoryClass")) {
-        report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
-      }
-      if (allFields || activityManagerFields.containsKey("LargeMemoryClass")) {
-        report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
-      }
-      if (allFields || activityManagerFields.containsKey("LowRamDevice")) {
-        report.put("LowRamDevice", activityManager.isLowRamDevice());
+      boolean allFields = Boolean.TRUE.equals(activityManagerValue);
+      if (allFields || activityManagerFields != null) {
+        if (allFields || Boolean.TRUE.equals(activityManagerFields.get("MemoryClass"))) {
+          report.put("MemoryClass", activityManager.getMemoryClass() * BYTES_IN_MEGABYTE);
+        }
+        if (allFields || Boolean.TRUE.equals(activityManagerFields.get("LargeMemoryClass"))) {
+          report.put("LargeMemoryClass", activityManager.getLargeMemoryClass() * BYTES_IN_MEGABYTE);
+        }
+        if (allFields || Boolean.TRUE.equals(activityManagerFields.get("LowRamDevice"))) {
+          report.put("LowRamDevice", activityManager.isLowRamDevice());
+        }
       }
     }
 
@@ -212,14 +215,14 @@ class MemoryMonitor {
       latestOnTrimLevel = 0;
     }
 
-    if (fields.containsKey("proc")) {
+    Object procFieldsValue = fields.get("proc");
+    if (procFieldsValue != null) {
       long time = System.nanoTime();
-      Object procFieldsValue = fields.get("proc");
       Map<String, Object> procFields =
           procFieldsValue instanceof Map ? (Map<String, Object>) procFieldsValue : null;
-      boolean allFields = procFieldsValue instanceof Boolean && (Boolean) procFieldsValue;
+      boolean allFields = Boolean.TRUE.equals(procFieldsValue);
       Map<String, Object> metricsOut = new LinkedHashMap<>();
-      if (allFields || getOrDefault(procFields, "oom_score", false)) {
+      if (allFields || (procFields != null && Boolean.TRUE.equals(procFields.get("oom_score")))) {
         metricsOut.put("oom_score", getOomScore(pid));
       }
 
@@ -234,7 +237,7 @@ class MemoryMonitor {
       Object summaryValue = fields.get("summary");
       Map<String, Object> summary =
           summaryValue instanceof Map ? (Map<String, Object>) summaryValue : null;
-      boolean allFields = summaryValue instanceof Boolean && (Boolean) summaryValue;
+      boolean allFields = Boolean.TRUE.equals(summaryValue);
       if (allFields || (summary != null && !summary.isEmpty())) {
         Debug.MemoryInfo[] debugMemoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
         Map<String, Object> metricsOut = new LinkedHashMap<>();
@@ -243,7 +246,8 @@ class MemoryMonitor {
             String key = entry.getKey();
             if (allFields || summary.containsKey(key)) {
               long value = Long.parseLong(entry.getValue()) * BYTES_IN_KILOBYTE;
-              metricsOut.put(key, getOrDefault(metricsOut, key, 0L) + value);
+              Number number = (Number) metricsOut.get(key);
+              metricsOut.put(key, number == null ? value : number.longValue() + value);
             }
           }
         }
@@ -260,13 +264,13 @@ class MemoryMonitor {
       Object meminfoFieldsValue = fields.get("meminfo");
       Map<String, Object> meminfoFields =
           meminfoFieldsValue instanceof Map ? (Map<String, Object>) meminfoFieldsValue : null;
-      boolean allFields = meminfoFieldsValue instanceof Boolean && (Boolean) meminfoFieldsValue;
+      boolean allFields = Boolean.TRUE.equals(meminfoFieldsValue);
       if (allFields || (meminfoFields != null && !meminfoFields.isEmpty())) {
         Map<String, Object> metricsOut = new LinkedHashMap<>();
         Map<String, Long> memInfo = processMeminfo();
         for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
           String key = pair.getKey();
-          if (allFields || getOrDefault(meminfoFields, key, false)) {
+          if (allFields || Boolean.TRUE.equals(meminfoFields.get(key))) {
             metricsOut.put(key, pair.getValue());
           }
         }
@@ -283,12 +287,12 @@ class MemoryMonitor {
       Object statusValue = fields.get("status");
       Map<String, Object> status =
           statusValue instanceof Map ? (Map<String, Object>) statusValue : null;
-      boolean allFields = statusValue instanceof Boolean && (Boolean) statusValue;
+      boolean allFields = Boolean.TRUE.equals(statusValue);
       if (allFields || (status != null && !status.isEmpty())) {
         Map<String, Object> metricsOut = new LinkedHashMap<>();
         for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
           String key = pair.getKey();
-          if (allFields || getOrDefault(status, key, false)) {
+          if (allFields || Boolean.TRUE.equals(status.get(key))) {
             metricsOut.put(key, pair.getValue());
           }
         }
@@ -304,7 +308,7 @@ class MemoryMonitor {
     _meta.put("time", System.currentTimeMillis());
     report.put("meta", _meta);
 
-    if (getOrDefault(fields, "predictRealtime", false)) {
+    if (Boolean.TRUE.equals(fields.get("predictRealtime"))) {
       if (realtimePredictor == null) {
         realtimePredictor = new Predictor("/realtime.tflite", "/realtime_features.json");
       }
@@ -320,7 +324,7 @@ class MemoryMonitor {
       report.put("_predictedUsageMeta", meta);
     }
 
-    if (getOrDefault(fields, "availableRealtime", false)) {
+    if (Boolean.TRUE.equals(fields.get("availableRealtime"))) {
       if (availablePredictor == null) {
         availablePredictor = new Predictor("/available.tflite", "/available_features.json");
       }
