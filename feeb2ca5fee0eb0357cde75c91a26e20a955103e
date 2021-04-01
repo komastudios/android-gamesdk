@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000009524821",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1660113?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "91683c9c_deeecc5a",
+        "filename": "test/memoryadvice/memoryadvice/src/main/java/com/google/android/apps/internal/games/memoryadvice/MemoryMonitor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-04-01T11:18:15Z",
+      "side": 1,
+      "message": "Prefer to use context.getSystemService(ActivityManager.class) instead to avoid the cast.",
+      "range": {
+        "startLine": 81,
+        "startChar": 22,
+        "endLine": 81,
+        "endChar": 65
+      },
+      "revId": "feeb2ca5fee0eb0357cde75c91a26e20a955103e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
