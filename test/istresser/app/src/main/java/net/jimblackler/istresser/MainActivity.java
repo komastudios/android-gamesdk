@@ -248,13 +248,13 @@ public class MainActivity extends Activity {
       PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
 
-      yellowLightTesting = getOrDefault(params, "yellowLightTesting", false);
+      yellowLightTesting = Boolean.TRUE.equals(params.get("yellowLightTesting"));
 
-      if (getOrDefault(params, "serviceBlocker", false)) {
+      if (Boolean.TRUE.equals(params.get("serviceBlocker"))) {
         activateServiceBlocker();
       }
 
-      if (getOrDefault(params, "firebaseBlocker", false)) {
+      if (Boolean.TRUE.equals(params.get("firebaseBlocker"))) {
         activateFirebaseBlocker();
       }
 
@@ -370,13 +370,15 @@ public class MainActivity extends Activity {
       throw new IllegalStateException(e);
     }
 
-    long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
-    int maxMillisecondsPerSecond = (int) getOrDefault(params, "maxMillisecondsPerSecond", 1000);
-    int minimumFrequency = (int) getOrDefault(params, "minimumFrequency", 200);
-    int maximumFrequency = (int) getOrDefault(params, "maximumFrequency", 2000);
+    long timeout = getDuration(params.containsKey("timeout") ? params.get("timeout") : "10m");
+    Number maxMillisecondsPerSecond = (Number) params.get("maxMillisecondsPerSecond");
+    Number minimumFrequency = (Number) params.get("minimumFrequency");
+    Number maximumFrequency = (Number) params.get("maximumFrequency");
 
-    new MemoryWatcher(memoryAdvisor, maxMillisecondsPerSecond, minimumFrequency, maximumFrequency,
-        new MemoryWatcher.Client() {
+    new MemoryWatcher(memoryAdvisor,
+        maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
+        minimumFrequency == null ? 200 : minimumFrequency.longValue(),
+        maximumFrequency == null ? 2000 : maximumFrequency.longValue(), new MemoryWatcher.Client() {
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {
             Log.i(TAG, "New memory state: " + state.name());
@@ -483,7 +485,7 @@ public class MainActivity extends Activity {
             }
             long timeRunning = System.currentTimeMillis() - testStartTime;
             Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
-            if (switchTest != null && getOrDefault(switchTest, "enabled", false)) {
+            if (switchTest != null && Boolean.TRUE.equals(switchTest.get("enabled"))) {
               long launchDuration = getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
               long returnDuration = getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
               long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
