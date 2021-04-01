@@ -152,8 +152,6 @@ public class Score {
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
       Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
-      List<Object> results1 = new ArrayList<>();
-      results1.add(result);
       Map<String, Object> group = Utils.clone(runParameters);
       group.remove("advisorParameters");
       if (directory.get() == null) {
@@ -176,7 +174,7 @@ public class Score {
           throw new IllegalStateException(e);
         }
       }
-      URI uri = Main.writeGraphs(directory.get(), results1);
+      URI uri = Main.writeGraphs(directory.get(), result);
       System.out.println(uri);
       results0.put(coordinates.toString(),
           new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
