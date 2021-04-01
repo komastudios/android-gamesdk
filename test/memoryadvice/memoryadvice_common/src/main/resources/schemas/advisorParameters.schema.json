@@ -40,7 +40,6 @@
     }
   },
   "type": "object",
-  "required": ["metrics"],
   "examples": [
     {
       "matchStrategy": "fingerprint",
