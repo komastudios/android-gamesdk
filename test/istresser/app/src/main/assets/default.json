@@ -60,6 +60,13 @@
               }
             },
             "baseline": {
+              "ActivityManager": true,
+              "MemoryInfo": true,
+              "debug": true,
+              "meminfo": true,
+              "proc": true,
+              "status": true,
+              "summary": true
             }
           },
           "heuristics": {
