@@ -12,42 +12,42 @@ import java.util.List;
 import java.util.Map;
 
 class Main {
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException {
     Path directory = Files.createTempDirectory("report-");
-    List<Object> collect = new ArrayList<>();
-    Collector.deviceCollect("net.jimblackler.istresser", collect::add);
-    Desktop.getDesktop().browse(writeGraphs(directory, collect));
+
+    Collector.deviceCollect("net.jimblackler.istresser", result -> {
+      try {
+        Desktop.getDesktop().browse(writeGraphs(directory, result));
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
+    });
   }
 
-  static URI writeGraphs(Path directory, List<Object> results) {
+  static URI writeGraphs(Path directory, List<Object> result) {
     ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     try {
       Path outputFile;
-      if (results.size() == 1) {
-        List<Object> result = (List<Object>) results.get(0);
-        Map<String, Object> first = (Map<String, Object>) result.get(0);
-        Map<String, Object> params = (Map<String, Object>) first.get("params");
-        Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
-        Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
-        Map<String, Object> fields = (Map<String, Object>) build.get("fields");
-        int count = 0;
-        while (true) {
-          String coordinates = params.get("coordinates").toString();
-          String name = fields.get("DEVICE") + (count > 0 ? "_" + count : "")
-              + coordinates.replace("[", "_").replace(",", "-").replace("]", "").replace(" ", "")
-              + ".html";
-          outputFile = directory.resolve(name);
-          if (!Files.exists(outputFile)) {
-            break;
-          }
-          count++;
+      Map<String, Object> first = (Map<String, Object>) result.get(0);
+      Map<String, Object> params = (Map<String, Object>) first.get("params");
+      Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
+      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
+      Map<String, Object> fields = (Map<String, Object>) build.get("fields");
+      int count = 0;
+      while (true) {
+        String coordinates = params.get("coordinates").toString();
+        String name = fields.get("DEVICE") + (count > 0 ? "_" + count : "")
+            + coordinates.replace("[", "_").replace(",", "-").replace("]", "").replace(" ", "")
+            + ".html";
+        outputFile = directory.resolve(name);
+        if (!Files.exists(outputFile)) {
+          break;
         }
-      } else {
-        outputFile = Files.createTempFile(directory, "report-", ".html");
+        count++;
       }
       String content = Utils.fileToString("main.html");
       // noinspection HardcodedFileSeparator
-      content = content.replace("[/*data*/]", objectWriter.writeValueAsString(results));
+      content = content.replace("[/*data*/]", objectWriter.writeValueAsString(result));
       Files.writeString(outputFile, content);
       return outputFile.toUri();
     } catch (IOException ex) {

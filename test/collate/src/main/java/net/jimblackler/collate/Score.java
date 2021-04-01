@@ -90,13 +90,13 @@ public class Score {
       assert deviceInfo.containsKey("build");
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
       String id = build.toString();
-      if (first.containsKey("extra")) {
-        Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+
+      Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+      if (extra != null) {
         historyId.set((String) extra.get("historyId"));
-        if (extra.containsKey("step")) {
-          Map<String, Object> step = (Map<String, Object>) extra.get("step");
-          List<Object> dimensions = (List<Object>) step.get("dimensionValue");
-          id = dimensions.toString();
+        Map<String, Object> step = (Map<String, Object>) extra.get("step");
+        if (step != null) {
+          id = step.get("dimensionValue").toString();
         }
       }
       deviceInfos.put(id, deviceInfo);
@@ -107,31 +107,22 @@ public class Score {
       boolean allocFailed = false;
       boolean serviceCrashed = false;
 
-      List<Map<String, Object>> results = Lists.newArrayList();
-      for (int idx2 = 0; idx2 != result.size(); idx2++) {
-        Map<String, Object> map = (Map<String, Object>) result.get(idx2);
-        if (ReportUtils.rowMetrics(map) != null) {
-          results.add(map);
-        }
-      }
-      results.sort(Comparator.comparingLong(ReportUtils::rowTime));
-      for (Map<String, Object> row : results) {
-        if (row.containsKey("exiting")) {
-          exited = true;
-        }
-        if (row.containsKey("allocFailed") || row.containsKey("mmapAnonFailed")
-            || row.containsKey("mmapFileFailed") || row.containsKey("criticalLogLines")
-            || row.containsKey("failedToClear")) {
-          allocFailed = true;
-        }
-        if (row.containsKey("serviceCrashed")) {
-          serviceCrashed = true;
-        }
+      for (Object o : result) {
+        Map<String, Object> row = (Map<String, Object>) o;
+        exited |= Boolean.TRUE.equals(row.get("exiting"));
+
+        allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
+        allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
+        allocFailed |= row.containsKey("criticalLogLines");
+
+        serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
         long score = 0;
-        if (row.containsKey("testMetrics")) {
-          Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
-          for (Object o : testMetrics.values()) {
-            score += ((Number) o).longValue();
+        Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+        if (testMetrics != null) {
+          for (Object o2 : testMetrics.values()) {
+            score += ((Number) o2).longValue();
           }
         }
 
@@ -139,25 +130,28 @@ public class Score {
           largest = score;
         }
 
-        if (row.containsKey("trigger") && !Boolean.TRUE.equals(row.get("paused"))) {
-          long top = score;
-          if (top < lowestTop) {
-            lowestTop = top;
+        Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+        if (advice != null) {
+          Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
+          if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
+            for (Object o2 : warnings) {
+              Map<String, Object> warning = (Map<String, Object>) o2;
+              if (!"red".equals(warning.get("level"))) {
+                continue;
+              }
+              long top = score;
+              if (top < lowestTop) {
+                lowestTop = top;
+              }
+              break;
+            }
           }
         }
       }
 
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
-      Map<String, Result> results0;
-      if (out.containsKey(id)) {
-        results0 = out.get(id);
-      } else {
-        results0 = new HashMap<>();
-        out.put(id, results0);
-      }
-      List<Object> results1 = new ArrayList<>();
-      results1.add(result);
+      Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
       Map<String, Object> group = Utils.clone(runParameters);
       group.remove("advisorParameters");
       if (directory.get() == null) {
@@ -167,19 +161,20 @@ public class Score {
         }
         directory.set(Path.of("reports").resolve(dirName));
         try {
-          if (directory.get().toFile().exists()) {
+          File outDir = directory.get().toFile();
+          if (outDir.exists()) {
             // Empty the directory if it already exists.
             try (Stream<Path> files = Files.walk(directory.get())) {
               files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
           }
-          Files.createDirectory(directory.get());
+          outDir.mkdirs();
           Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
         } catch (IOException e) {
           throw new IllegalStateException(e);
         }
       }
-      URI uri = Main.writeGraphs(directory.get(), results1);
+      URI uri = Main.writeGraphs(directory.get(), result);
       System.out.println(uri);
       results0.put(coordinates.toString(),
           new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
@@ -304,6 +299,8 @@ public class Score {
         .append("</th>")
         .append("<th rowspan=" + rowspan + " >")
         .append("Release")
+        .append("<th rowspan=" + rowspan + " >")
+        .append("totalMem")
         .append("</th>")
         .append("</tr>");
 
@@ -325,9 +322,39 @@ public class Score {
       body.append("</tr>");
       repeats *= test.size();
     }
-    body.append("</thead>");
 
     List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
+    body.append("<tr>");
+    body.append("<td colspan=6/>");
+    for (int idx = 0; idx != horizontalOrder.size(); idx++) {
+      List<Object> coords = horizontalOrder.get(idx);
+      int total = 0;
+      int acceptable = 0;
+      float validScore = 0;
+      for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
+        Map<String, Result> rows0 = row.getValue();
+        Result result = rows0.get(coords.toString());
+        if (result == null) {
+          continue;
+        }
+        total++;
+        if (result.isAcceptable()) {
+          acceptable++;
+          validScore += result.getScore();
+        }
+      }
+      body.append("<td>");
+      if (total > 0) {
+        body.append(acceptable * 100 / total).append("%").append(" ");
+      }
+
+      if (acceptable > 0) {
+        body.append((int) validScore / acceptable).append("</td>");
+      }
+    }
+    body.append("</tr>");
+    body.append("</thead>");
+
     for (Map.Entry<String, Map<String, Result>> row : rows.entrySet()) {
       body.append("<tr>");
 
@@ -338,6 +365,9 @@ public class Score {
 
       Map<String, Object> version = (Map<String, Object>) build.get("version");
       Map<String, Object> fields = (Map<String, Object>) build.get("fields");
+      Map<String, Object> baseline = (Map<String, Object>) deviceInfo.get("baseline");
+      Map<String, Object> baselineMemoryInfo = (Map<String, Object>) baseline.get("MemoryInfo");
+      long totalMem = ((Number) baselineMemoryInfo.get("totalMem")).longValue();
       body.append("<td>")
           .append(fields.get("MANUFACTURER"))
           .append("</td>")
@@ -352,6 +382,9 @@ public class Score {
           .append("</td>")
           .append("<td>")
           .append(version.get("RELEASE"))
+          .append("</td>")
+          .append("<td>")
+          .append(totalMem / (1024 * 1024))
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
