@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
-import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
 import android.content.Context;
@@ -65,14 +64,14 @@ public class MemoryAdvisor extends MemoryMonitor {
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
 
-    if (getOrDefault(params, "predictOomLimit", false)) {
+    if (Boolean.TRUE.equals(params.get("predictOomLimit"))) {
       Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
       predictedOomLimit = predictor.predict(getDeviceInfo(context));
     } else {
       predictedOomLimit = -1;
     }
 
-    if (getOrDefault(params, "onDeviceStressTest", false)) {
+    if (Boolean.TRUE.equals(params.get("onDeviceStressTest"))) {
       deviceProfile = null;
       if (readyHandler == null) {
         throw new MemoryAdvisorException("Ready handler required for on device stress test");
@@ -139,12 +138,13 @@ public class MemoryAdvisor extends MemoryMonitor {
    * in bytes. 0 if no estimate is available.
    */
   public static long availabilityEstimate(Map<String, Object> advice) {
-    if (!advice.containsKey("predictions")) {
+    Map<String, Object> predictions = (Map<String, Object>) advice.get("predictions");
+    if (predictions == null) {
       return 0;
     }
 
     long smallestEstimate = Long.MAX_VALUE;
-    Map<String, Object> predictions = (Map<String, Object>) advice.get("predictions");
+
     Iterator<String> it = predictions.keySet().iterator();
     if (!it.hasNext()) {
       return 0;
@@ -186,7 +186,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * @return The current memory state.
    */
   public static MemoryState getMemoryState(Map<String, Object> advice) {
-    if (getOrDefault(advice, "backgrounded", false)) {
+    if (Boolean.TRUE.equals(advice.get("backgrounded"))) {
       return MemoryState.BACKGROUNDED;
     }
     if (anyRedWarnings(advice)) {
@@ -199,7 +199,8 @@ public class MemoryAdvisor extends MemoryMonitor {
   }
 
   /**
-   * Find a Number in a JSON object, even when it is nested in sub-dictionaries in the object.
+   * Find a Number in a tree of Java objects, even when it is nested in sub-dictionaries in the
+   * object.
    *
    * @param object The object to search.
    * @param key    The key of the Number to find.
@@ -209,9 +210,7 @@ public class MemoryAdvisor extends MemoryMonitor {
     if (object.containsKey(key)) {
       return (Number) object.get(key);
     }
-    Iterator<String> it = object.keySet().iterator();
-    while (it.hasNext()) {
-      Object value = object.get(it.next());
+    for (Object value : object.values()) {
       if (value instanceof Map) {
         Number value1 = getValue((Map<String, Object>) value, key);
         if (value1 != null) {
@@ -232,8 +231,8 @@ public class MemoryAdvisor extends MemoryMonitor {
     Map<String, Object> results = new LinkedHashMap<>();
 
     Map<String, Object> metricsParams = (Map<String, Object>) params.get("metrics");
-    Map<String, Object> metrics =
-        getMemoryMetrics((Map<String, Object>) metricsParams.get("variable"));
+    Map<String, Object> variable = (Map<String, Object>) metricsParams.get("variable");
+    Map<String, Object> metrics = getMemoryMetrics(variable);
     results.put("metrics", metrics);
     Map<String, Object> deviceBaseline;
     Map<String, Object> deviceLimit;
@@ -248,54 +247,55 @@ public class MemoryAdvisor extends MemoryMonitor {
       throw new MemoryAdvisorException("Methods called before Advisor was ready");
     }
 
-    if (params.containsKey("heuristics")) {
-      List<Object> warnings = new ArrayList<>();
-      Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
-      if (heuristics.containsKey("try")) {
-        if (!TryAllocTester.tryAlloc((int) getMemoryQuantity(heuristics.get("try")))) {
-          Map<String, Object> warning = new LinkedHashMap<>();
-          warning.put("try", heuristics.get("try"));
-          warning.put("level", "red");
-          warnings.add(warning);
-        }
+    Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
+    if (heuristics != null) {
+      Collection<Object> warnings = new ArrayList<>();
+      Object try1 = heuristics.get("try");
+      if (try1 != null && !TryAllocTester.tryAlloc((int) getMemoryQuantity(try1))) {
+        Map<String, Object> warning = new LinkedHashMap<>();
+        warning.put("try", try1);
+        warning.put("level", "red");
+        warnings.add(warning);
       }
 
-      if (heuristics.containsKey("lowMemory")) {
+      Object lowMemory = heuristics.get("lowMemory");
+      if (lowMemory != null) {
         Map<String, Object> memoryInfo = (Map<String, Object>) metrics.get("MemoryInfo");
-        if (memoryInfo != null && getOrDefault(memoryInfo, "lowMemory", false)) {
+        if (Boolean.TRUE.equals(memoryInfo.get("lowMemory"))) {
           Map<String, Object> warning = new LinkedHashMap<>();
-          warning.put("lowMemory", heuristics.get("lowMemory"));
+          warning.put("lowMemory", lowMemory);
           warning.put("level", "red");
           warnings.add(warning);
         }
       }
 
-      if (heuristics.containsKey("mapTester")) {
-        if (getOrDefault(metrics, "mapTester", false)) {
-          Map<String, Object> warning = new LinkedHashMap<>();
-          warning.put("mapTester", heuristics.get("mapTester"));
-          warning.put("level", "red");
-          warnings.add(warning);
-        }
-      }
-
-      if (heuristics.containsKey("canaryProcessTester")
-          && metrics.containsKey("canaryProcessTester")) {
+      Object mapTester = heuristics.get("mapTester");
+      if (mapTester != null && Boolean.TRUE.equals(metrics.get("mapTester"))) {
         Map<String, Object> warning = new LinkedHashMap<>();
-        warning.put("canaryProcessTester", heuristics.get("canaryProcessTester"));
+        warning.put("mapTester", mapTester);
         warning.put("level", "red");
         warnings.add(warning);
       }
 
-      if (heuristics.containsKey("onTrim") && getOrDefault(metrics, "onTrim", 0L) > 0) {
+      Object canaryProcessTester = heuristics.get("canaryProcessTester");
+      if (canaryProcessTester != null && metrics.containsKey("canaryProcessTester")) {
         Map<String, Object> warning = new LinkedHashMap<>();
-        warning.put("onTrim", heuristics.get("onTrim"));
+        warning.put("canaryProcessTester", canaryProcessTester);
         warning.put("level", "red");
         warnings.add(warning);
       }
 
-      if (heuristics.containsKey("formulas")) {
-        Map<String, Object> allFormulas = (Map<String, Object>) heuristics.get("formulas");
+      Object onTrim = heuristics.get("onTrim");
+      Number onTrim1 = (Number) metrics.get("onTrim");
+      if (onTrim != null && onTrim1 != null && onTrim1.longValue() > 0) {
+        Map<String, Object> warning = new LinkedHashMap<>();
+        warning.put("onTrim", onTrim);
+        warning.put("level", "red");
+        warnings.add(warning);
+      }
+
+      Map<String, Object> allFormulas = (Map<String, Object>) heuristics.get("formulas");
+      if (allFormulas != null) {
         for (Map.Entry<String, Object> entry : allFormulas.entrySet()) {
           List<String> formulas = (List<String>) entry.getValue();
           for (int idx = 0; idx != formulas.size(); idx++) {
@@ -366,8 +366,8 @@ public class MemoryAdvisor extends MemoryMonitor {
 
         // Fires warnings as metrics approach absolute values.
         // Example: "Active": {"fixed": {"red": "300M", "yellow": "400M"}}
-        if (heuristic.containsKey("fixed")) {
-          Map<String, Object> fixed = (Map<String, Object>) heuristic.get("fixed");
+        Map<String, Object> fixed = (Map<String, Object>) heuristic.get("fixed");
+        if (fixed != null) {
           long red = getMemoryQuantity(fixed.get("red"));
           long yellow = getMemoryQuantity(fixed.get("yellow"));
           String level = null;
@@ -388,9 +388,8 @@ public class MemoryAdvisor extends MemoryMonitor {
 
         // Fires warnings as metrics approach ratios of the device baseline.
         // Example: "availMem": {"baselineRatio": {"red": 0.30, "yellow": 0.40}}
-        if (heuristic.containsKey("baselineRatio")) {
-          Map<String, Object> baselineRatio = (Map<String, Object>) heuristic.get("baselineRatio");
-
+        Map<String, Object> baselineRatio = (Map<String, Object>) heuristic.get("baselineRatio");
+        if (baselineRatio != null) {
           String level = null;
           double baselineRed = ((Number) baselineRatio.get("red")).doubleValue();
           if (increasing ? metricValue > baselineValue * baselineRed
@@ -416,8 +415,8 @@ public class MemoryAdvisor extends MemoryMonitor {
         // Fires warnings as baseline-relative metrics approach ratios of the device's baseline-
         // relative limit.
         // Example: "oom_score": {"deltaLimit": {"red": 0.85, "yellow": 0.75}}
-        if (heuristic.containsKey("deltaLimit")) {
-          Map<String, Object> deltaLimit = (Map<String, Object>) heuristic.get("deltaLimit");
+        Map<String, Object> deltaLimit = (Map<String, Object>) heuristic.get("deltaLimit");
+        if (deltaLimit != null) {
           long limitValue = deviceLimitValue - deviceBaselineValue;
           long relativeValue = metricValue - baselineValue;
           String level = null;
@@ -444,8 +443,8 @@ public class MemoryAdvisor extends MemoryMonitor {
 
         // Fires warnings as metrics approach ratios of the device's limit.
         // Example: "VmRSS": {"deltaLimit": {"red": 0.90, "yellow": 0.75}}
-        if (heuristic.containsKey("limit")) {
-          Map<String, Object> limit = (Map<String, Object>) heuristic.get("limit");
+        Map<String, Object> limit = (Map<String, Object>) heuristic.get("limit");
+        if (limit != null) {
           String level = null;
           double redLimit = ((Number) limit.get("red")).doubleValue();
           if (increasing ? metricValue > deviceLimitValue * redLimit
@@ -474,48 +473,49 @@ public class MemoryAdvisor extends MemoryMonitor {
       }
     }
 
-    if (deviceLimit.containsKey("stressed") && params.containsKey("predictions")) {
-      Map<String, Object> stressed = (Map<String, Object>) deviceLimit.get("stressed");
-      if (stressed.containsKey("applicationAllocated")) {
-        long applicationAllocated = ((Number) stressed.get("applicationAllocated")).longValue();
-        Map<String, Object> predictions = new LinkedHashMap<>();
-        Map<String, Object> predictionsParams = (Map<String, Object>) params.get("predictions");
+    Map<String, Object> stressed = (Map<String, Object>) deviceLimit.get("stressed");
+    if (stressed != null) {
+      Map<String, Object> predictionsParams = (Map<String, Object>) params.get("predictions");
+      if (predictionsParams != null) {
+        Number applicationAllocated = (Number) stressed.get("applicationAllocated");
+        if (applicationAllocated != null) {
+          Map<String, Object> predictions = new LinkedHashMap<>();
+          for (String key : predictionsParams.keySet()) {
+            Number metricValue = getValue(metrics, key);
+            if (metricValue == null) {
+              continue;
+            }
 
-        for (String key : predictionsParams.keySet()) {
-          Number metricValue = getValue(metrics, key);
-          if (metricValue == null) {
-            continue;
+            Number deviceLimitValue = getValue(deviceLimit, key);
+            if (deviceLimitValue == null) {
+              continue;
+            }
+
+            Number deviceBaselineValue = getValue(deviceBaseline, key);
+            if (deviceBaselineValue == null) {
+              continue;
+            }
+
+            Number baselineValue = getValue(baseline, key);
+            if (baselineValue == null) {
+              continue;
+            }
+
+            long delta = metricValue.longValue() - baselineValue.longValue();
+            long deviceDelta = deviceLimitValue.longValue() - deviceBaselineValue.longValue();
+            if (deviceDelta == 0) {
+              continue;
+            }
+
+            float percentageEstimate = (float) delta / deviceDelta;
+            predictions.put(key, applicationAllocated.longValue() * (1.0f - percentageEstimate));
           }
 
-          Number deviceLimitValue = getValue(deviceLimit, key);
-          if (deviceLimitValue == null) {
-            continue;
-          }
-
-          Number deviceBaselineValue = getValue(deviceBaseline, key);
-          if (deviceBaselineValue == null) {
-            continue;
-          }
-
-          Number baselineValue = getValue(baseline, key);
-          if (baselineValue == null) {
-            continue;
-          }
-
-          long delta = metricValue.longValue() - baselineValue.longValue();
-          long deviceDelta = deviceLimitValue.longValue() - deviceBaselineValue.longValue();
-          if (deviceDelta == 0) {
-            continue;
-          }
-
-          float percentageEstimate = (float) delta / deviceDelta;
-          predictions.put(key, (long) (applicationAllocated * (1.0f - percentageEstimate)));
+          results.put("predictions", predictions);
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.currentTimeMillis() - time);
+          results.put("meta", meta);
         }
-
-        results.put("predictions", predictions);
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.currentTimeMillis() - time);
-        results.put("meta", meta);
       }
     }
     return results;
