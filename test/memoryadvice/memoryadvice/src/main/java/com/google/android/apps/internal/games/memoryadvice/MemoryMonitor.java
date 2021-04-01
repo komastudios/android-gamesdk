@@ -48,23 +48,37 @@ class MemoryMonitor {
   MemoryMonitor(Context context, Map<String, Object> metrics) {
     mapTester = new MapTester(context.getCacheDir());
     build = BuildInfo.getBuild(context);
-    Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
-    Map<String, Object> canaryProcessParams =
-        variable == null ? null : (Map<String, Object>) variable.get("canaryProcessTester");
-    if (canaryProcessParams == null) {
-      canaryProcessTester = null;
-    } else {
-      canaryProcessTester = new CanaryProcessTester(context, canaryProcessParams);
-    }
+    if (metrics != null) {
+      Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
+      if (variable != null) {
+        Map<String, Object> canaryProcessParams =
+            (Map<String, Object>) variable.get("canaryProcessTester");
+        if (canaryProcessParams == null) {
+          canaryProcessTester = null;
+        } else {
+          canaryProcessTester = new CanaryProcessTester(context, canaryProcessParams);
+        }
+      } else {
+        canaryProcessTester = null;
+      }
 
-    activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
+      Map<String, Object> baseline = (Map<String, Object>) metrics.get("baseline");
+      if (baseline != null) {
+        this.baseline = getMemoryMetrics(baseline);
+        Map<String, Object> constant = (Map<String, Object>) metrics.get("constant");
+        if (constant != null) {
+          this.baseline.put("constant", getMemoryMetrics(constant));
+        }
+      } else {
+        this.baseline = null;
+      }
+    } else {
+      canaryProcessTester = null;
+      baseline = null;
+    }
 
     this.metrics = metrics;
-    baseline = getMemoryMetrics((Map<String, Object>) metrics.get("baseline"));
-    Map<String, Object> constant = (Map<String, Object>) metrics.get("constant");
-    if (constant != null) {
-      baseline.put("constant", getMemoryMetrics(constant));
-    }
+    activityManager = context.getSystemService(ActivityManager.class);
 
     ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
       @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
