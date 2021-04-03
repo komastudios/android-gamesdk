@@ -21,11 +21,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Wrapper class for methods related to memory advice.
  */
-public class MemoryAdvisor extends MemoryMonitor {
+public class MemoryAdvisor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
   private final Map<String, Object> deviceProfile;
   private final Map<String, Object> params;
   private final float predictedOomLimit;
+  private final MemoryMonitor memoryMonitor;
   private Map<String, Object> onDeviceLimit;
   private Map<String, Object> onDeviceBaseline;
   private final Evaluator evaluator = new Evaluator();
@@ -59,7 +60,7 @@ public class MemoryAdvisor extends MemoryMonitor {
    * @throws MemoryAdvisorException
    */
   public MemoryAdvisor(Context context, Map<String, Object> params, ReadyHandler readyHandler) {
-    super(context, (Map<String, Object>) params.get("metrics"));
+    memoryMonitor = new MemoryMonitor(context, (Map<String, Object>) params.get("metrics"));
     this.params = params;
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
@@ -90,7 +91,8 @@ public class MemoryAdvisor extends MemoryMonitor {
         }
       });
     } else {
-      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, getBaseline());
+      deviceProfile =
+          DeviceProfile.getDeviceProfile(context.getAssets(), params, memoryMonitor.getBaseline());
       if (readyHandler != null) {
         scheduledExecutorService.schedule(
             () -> readyHandler.onComplete(false), 1, TimeUnit.MILLISECONDS);
@@ -232,7 +234,7 @@ public class MemoryAdvisor extends MemoryMonitor {
 
     Map<String, Object> metricsParams = (Map<String, Object>) params.get("metrics");
     Map<String, Object> variable = (Map<String, Object>) metricsParams.get("variable");
-    Map<String, Object> metrics = getMemoryMetrics(variable);
+    Map<String, Object> metrics = memoryMonitor.getMemoryMetrics(variable);
     results.put("metrics", metrics);
     Map<String, Object> deviceBaseline;
     Map<String, Object> deviceLimit;
@@ -248,7 +250,7 @@ public class MemoryAdvisor extends MemoryMonitor {
     }
 
     Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
-    Map<String, Object> baseline = getBaseline();
+    Map<String, Object> baseline = memoryMonitor.getBaseline();
     if (heuristics != null) {
       Collection<Object> warnings = new ArrayList<>();
       Object try1 = heuristics.get("try");
@@ -522,6 +524,14 @@ public class MemoryAdvisor extends MemoryMonitor {
     return results;
   }
 
+  public void setOnTrim(int level) {
+    memoryMonitor.setOnTrim(level);
+  }
+
+  public Map<String, Object> getMemoryMetrics() {
+    return memoryMonitor.getMemoryMetrics();
+  }
+
   /**
    * Fetch information about the device.
    *
@@ -530,8 +540,8 @@ public class MemoryAdvisor extends MemoryMonitor {
    */
   public Map<String, Object> getDeviceInfo(Context context) {
     Map<String, Object> deviceInfo = new LinkedHashMap<>();
-    deviceInfo.put("build", getBuild());
-    deviceInfo.put("baseline", getBaseline());
+    deviceInfo.put("build", memoryMonitor.getBuild());
+    deviceInfo.put("baseline", memoryMonitor.getBaseline());
     if (deviceProfile != null) {
       deviceInfo.put("deviceProfile", deviceProfile);
     }
