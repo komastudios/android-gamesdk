@@ -76,21 +76,22 @@ public class Utils {
    * @param out The second map and the object into which changes are written.
    */
   private static void merge(Map<String, Object> in, Map<String, Object> out) {
-    in = clone(in);
-    for (String key : in.keySet()) {
-      Object inObject = in.get(key);
-      if (out.containsKey(key)) {
-        Object outObject = out.get(key);
-        if (inObject instanceof List && outObject instanceof List) {
-          ((Collection<Object>) outObject).addAll((Collection<?>) inObject);
-          continue;
-        }
-        if (inObject instanceof Map && outObject instanceof Map) {
-          merge((Map<String, Object>) inObject, ((Map<String, Object>) outObject));
-          continue;
-        }
+    for (Map.Entry<String, Object> entry : in.entrySet()) {
+      String key = entry.getKey();
+      Object inObject = entry.getValue();
+      Object outObject = out.get(key);
+      if (outObject == null) {
+        out.put(key, clone(inObject));
+        continue;
       }
-      out.put(key, inObject);
+      if (inObject instanceof List && outObject instanceof List) {
+        ((Collection<Object>) outObject).addAll((Collection<?>) clone(inObject));
+        continue;
+      }
+      if (inObject instanceof Map && outObject instanceof Map) {
+        merge((Map<String, Object>) inObject, ((Map<String, Object>) outObject));
+        continue;
+      }
     }
   }
 
