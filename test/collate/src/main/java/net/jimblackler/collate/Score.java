@@ -3,7 +3,6 @@ package net.jimblackler.collate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.api.client.util.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -152,7 +151,7 @@ public class Score {
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
       Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
-      Map<String, Object> group = Utils.clone(runParameters);
+      Map<String, Object> group = Utils.flattenParams((Map<String, Object>) first.get("params"));
       group.remove("advisorParameters");
       if (directory.get() == null) {
         String dirName = historyId.get();
