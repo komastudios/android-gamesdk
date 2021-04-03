@@ -90,7 +90,7 @@ public class MemoryAdvisor extends MemoryMonitor {
         }
       });
     } else {
-      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
+      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, getBaseline());
       if (readyHandler != null) {
         scheduledExecutorService.schedule(
             () -> readyHandler.onComplete(false), 1, TimeUnit.MILLISECONDS);
@@ -248,6 +248,7 @@ public class MemoryAdvisor extends MemoryMonitor {
     }
 
     Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
+    Map<String, Object> baseline = getBaseline();
     if (heuristics != null) {
       Collection<Object> warnings = new ArrayList<>();
       Object try1 = heuristics.get("try");
@@ -529,8 +530,8 @@ public class MemoryAdvisor extends MemoryMonitor {
    */
   public Map<String, Object> getDeviceInfo(Context context) {
     Map<String, Object> deviceInfo = new LinkedHashMap<>();
-    deviceInfo.put("build", build);
-    deviceInfo.put("baseline", baseline);
+    deviceInfo.put("build", getBuild());
+    deviceInfo.put("baseline", getBaseline());
     if (deviceProfile != null) {
       deviceInfo.put("deviceProfile", deviceProfile);
     }

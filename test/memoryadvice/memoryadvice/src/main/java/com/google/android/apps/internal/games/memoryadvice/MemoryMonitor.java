@@ -26,12 +26,12 @@ class MemoryMonitor {
   private static final long BYTES_IN_KILOBYTE = 1024;
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
   private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
-  protected final Map<String, Object> baseline;
+  private final Map<String, Object> baseline;
   private final MapTester mapTester;
   private final ActivityManager activityManager;
   private final Map<String, Object> metrics;
   private final CanaryProcessTester canaryProcessTester;
-  protected final Map<String, Object> build;
+  private final Map<String, Object> build;
   private Predictor realtimePredictor;
   private Predictor availablePredictor;
   private boolean appBackgrounded;
@@ -348,5 +348,13 @@ class MemoryMonitor {
     if (level > latestOnTrimLevel) {
       latestOnTrimLevel = level;
     }
+  }
+
+  public Map<String, Object> getBaseline() {
+    return baseline;
+  }
+
+  public Map<String, Object> getBuild() {
+    return build;
   }
 }
