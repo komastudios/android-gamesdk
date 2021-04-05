@@ -27,6 +27,8 @@
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
 #include "session.h"
+#include "thermal_metric.h"
+#include "thermal_reporting_task.h"
 #include "time_provider.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_swappy.h"
@@ -65,6 +67,7 @@ class TuningForkImpl : public IdProvider {
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
     std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
+    std::shared_ptr<ThermalReportingTask> thermal_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;

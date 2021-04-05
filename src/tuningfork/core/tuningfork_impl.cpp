@@ -32,6 +32,7 @@
 #include "lifecycle_upload_event.h"
 #include "memory_telemetry.h"
 #include "metric.h"
+#include "thermal_reporting_task.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
@@ -192,6 +193,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
     for (int i = 0; i < limits.battery; ++i) {
         session.CreateBatteryTimeSeries(MetricId::Battery(0));
     }
+
+    for (int i = 0; i < limits.thermal; ++i) {
+        session.CreateThermalTimeSeries(MetricId::Thermal(0));
+    }
 }
 
 // Return the set annotation id or -1 if it could not be set
@@ -208,6 +213,7 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         ALOGV("Set annotation id to %" PRIu32, id);
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
+        thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
         return current_annotation_id_;
     }
 }
@@ -567,6 +573,9 @@ void TuningForkImpl::InitAsyncTelemetry() {
         &activity_lifecycle_state_, time_provider_, battery_provider_,
         MetricId::Battery(0));
     async_telemetry_->AddTask(battery_reporting_task_);
+    thermal_reporting_task_ = std::make_shared<ThermalReportingTask>(
+        time_provider_, MetricId::Thermal(0));
+    async_telemetry_->AddTask(thermal_reporting_task_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
 }

@@ -50,6 +50,13 @@ BatteryMetricData* Session::CreateBatteryTimeSeries(MetricId id) {
     return p;
 }
 
+ThermalMetricData* Session::CreateThermalTimeSeries(MetricId id) {
+    thermal_data_.push_back(std::make_unique<ThermalMetricData>(id));
+    auto p = thermal_data_.back().get();
+    available_thermal_data_.push_back(p);
+    return p;
+}
+
 void Session::RecordCrash(CrashReason reason) {
     std::lock_guard<std::mutex> lock(crash_mutex_);
     crash_data_.push_back(reason);
@@ -67,6 +74,7 @@ void Session::ClearData() {
     available_loading_time_data_.clear();
     available_memory_data_.clear();
     available_battery_data_.clear();
+    available_thermal_data_.clear();
     for (auto& p : frame_time_data_) {
         p->Clear();
         available_frame_time_data_.push_back(p.get());
@@ -82,6 +90,10 @@ void Session::ClearData() {
     for (auto& p : battery_data_) {
         p->Clear();
         available_battery_data_.push_back(p.get());
+    }
+    for (auto& p : thermal_data_) {
+        p->Clear();
+        available_thermal_data_.push_back(p.get());
     }
     time_.start = SystemTimePoint();
     time_.end = SystemTimePoint();
