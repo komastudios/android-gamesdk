@@ -29,6 +29,7 @@ struct Metric {
         LOADING_TIME = 1,
         MEMORY = 2,
         BATTERY = 3,
+        THERMAL = 4,
         ERROR = 0xff
     };
 };
@@ -83,6 +84,12 @@ struct MetricId {
     static MetricId Battery(AnnotationId aid) {
         MetricId id;
         id.detail.type = Metric::BATTERY;
+        id.detail.annotation = aid;
+        return id;
+    }
+    static MetricId Thermal(AnnotationId aid) {
+        MetricId id;
+        id.detail.type = Metric::THERMAL;
         id.detail.annotation = aid;
         return id;
     }

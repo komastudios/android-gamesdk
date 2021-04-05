@@ -48,8 +48,8 @@ extern "C" {
 /** @cond INTERNAL */
 
 #define TUNINGFORK_MAJOR_VERSION 1
-#define TUNINGFORK_MINOR_VERSION 3
-#define TUNINGFORK_BUGFIX_VERSION 11
+#define TUNINGFORK_MINOR_VERSION 4
+#define TUNINGFORK_BUGFIX_VERSION 0
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
                                    TUNINGFORK_MINOR_VERSION, \
@@ -290,6 +290,8 @@ typedef void (*SwappyTracerFn)(const struct SwappyTracer*);
 
  * Battery: 32.
 
+ * Thermal: 32.
+
  * Memory: 15 possible memory metrics.
  */
 typedef struct TuningFork_MetricLimits {
@@ -297,6 +299,7 @@ typedef struct TuningFork_MetricLimits {
     uint32_t loading_time;
     uint32_t memory;
     uint32_t battery;
+    uint32_t thermal;
 } TuningFork_MetricLimits;
 
 /**

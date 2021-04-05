@@ -97,6 +97,8 @@ void Settings::Check(const std::string& save_dir) {
         c_settings.max_num_metrics.memory = 15;
     if (c_settings.max_num_metrics.battery == 0)
         c_settings.max_num_metrics.battery = 32;
+    if (c_settings.max_num_metrics.thermal == 0)
+        c_settings.max_num_metrics.thermal = 32;
 }
 
 uint64_t Settings::NumAnnotationCombinations() {

@@ -436,6 +436,7 @@ class Context : public java::Object {
    public:
     static constexpr const char* CONNECTIVITY_SERVICE = "connectivity";
     static constexpr const char* BATTERY_SERVICE = "batterymanager";
+    static constexpr const char* POWER_SERVICE = "power";
     static constexpr const char* ACTIVITY_SERVICE = "activity";
     Context(jobject o) : java::Object(o) {}
     pm::PackageManager getPackageManager() {
@@ -541,6 +542,14 @@ class BatteryManager : java::Object {
     static constexpr const int BATTERY_PROPERTY_CHARGE_COUNTER = 1;
     BatteryManager(java::Object&& o) : java::Object(std::move(o)) {}
     int getIntProperty(int id) { return CallIIMethod("getIntProperty", id); }
+};
+
+class PowerManager : java::Object {
+   public:
+    PowerManager(java::Object&& o) : java::Object(std::move(o)) {}
+    int getCurrentThermalStatus() {
+        return CallVIMethod("getCurrentThermalStatus");
+    }
 };
 
 }  // namespace os
