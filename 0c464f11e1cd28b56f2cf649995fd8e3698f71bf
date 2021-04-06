@@ -33,6 +33,24 @@
       "message": "Please add some comments to these values",
       "revId": "0c464f11e1cd28b56f2cf649995fd8e3698f71bf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09180118_96698030",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-04-06T11:32:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b008ecd_2f00f842",
+      "revId": "0c464f11e1cd28b56f2cf649995fd8e3698f71bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
