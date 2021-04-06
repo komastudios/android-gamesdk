@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc1deb94_674d3612",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-06T15:34:00Z",
+      "side": 1,
+      "message": "Looks great, can\u0027t spot anything wrong in the implementation :)",
+      "revId": "a56275f89828fdf1d94cad8fd622dce00c5953b9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
