@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f70cbbf_c675c5bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-04-06T08:00:38Z",
+      "side": 1,
+      "message": "Please add some comments",
+      "revId": "0c464f11e1cd28b56f2cf649995fd8e3698f71bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b008ecd_2f00f842",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-04-06T08:00:38Z",
+      "side": 1,
+      "message": "Please add some comments to these values",
+      "revId": "0c464f11e1cd28b56f2cf649995fd8e3698f71bf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
