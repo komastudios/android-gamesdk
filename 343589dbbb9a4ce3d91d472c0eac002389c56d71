@@ -16,6 +16,57 @@
       "message": "Didn\u0027t realise Will was OOO; changing the reviewer to Florian.",
       "revId": "343589dbbb9a4ce3d91d472c0eac002389c56d71",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28d3deaf_1a736eeb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-06T13:37:28Z",
+      "side": 1,
+      "message": "Looks good to me, very much in line with the existing implementation for other reported metrics.\nSeems fair to go ahead if usage of this API has not risky effects/known crashes (seems fairly recent, so hopefully not).",
+      "revId": "343589dbbb9a4ce3d91d472c0eac002389c56d71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96e4d326_9b948ba4",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-06T13:37:28Z",
+      "side": 1,
+      "message": "Is there a risk for this to throw? I\u0027ve seen in other part of the codebase that this is followed by a `CHECK_FOR_JNI_EXCEPTION_AND_RETURN(...)`, but not everywhere. Does it make sense to have it in case something goes wrong?",
+      "revId": "343589dbbb9a4ce3d91d472c0eac002389c56d71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45b97e5d_93eafdd0",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-06T13:37:28Z",
+      "side": 1,
+      "message": "Documentation does not specify any exception for this so I guess here it\u0027s fine.",
+      "revId": "343589dbbb9a4ce3d91d472c0eac002389c56d71",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
