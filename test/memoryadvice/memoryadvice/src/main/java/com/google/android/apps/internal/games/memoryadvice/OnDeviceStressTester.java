@@ -122,11 +122,12 @@ class OnDeviceStressTester {
             Bundle bundle = (Bundle) msg.obj;
 
             Map<String, Object> received = gson.fromJson(bundle.getString("metrics"), Map.class);
-            long limitTime =
-                ((Number) ((Map<String, Object>) limit.get("meta")).get("time")).longValue();
+            long limitTime = limit == null
+                ? Long.MIN_VALUE
+                : ((Number) ((Map<String, Object>) limit.get("meta")).get("time")).longValue();
             long metaTime =
                 ((Number) ((Map<String, Object>) received.get("meta")).get("time")).longValue();
-            if (limit == null || limitTime < metaTime) {
+            if (limitTime < metaTime) {
               consumer.progress(received);
               // Metrics can be received out of order. The latest only is recorded as the limit.
               limit = received;
