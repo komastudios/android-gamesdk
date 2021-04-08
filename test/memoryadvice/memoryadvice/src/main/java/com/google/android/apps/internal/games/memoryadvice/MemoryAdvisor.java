@@ -72,7 +72,7 @@ public class MemoryAdvisor {
       predictedOomLimit = -1;
     }
 
-    if (Boolean.TRUE.equals(params.get("onDeviceStressTest"))) {
+    if (params.get("onDeviceStressTest") != null) {
       deviceProfile = null;
       if (readyHandler == null) {
         throw new MemoryAdvisorException("Ready handler required for on device stress test");
