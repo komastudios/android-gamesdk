@@ -48,7 +48,6 @@ import org.apache.commons.io.FileUtils;
  * The main activity of the istresser app
  */
 public class MainActivity extends Activity {
-  public static final int MINIMUM_SAMPLE_INTERVAL = 20;
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
@@ -524,7 +523,16 @@ public class MainActivity extends Activity {
               resultsStream.close();
               finish();
             }
-            updateInfo(report);
+            runOnUiThread(() -> {
+              WebView webView = findViewById(R.id.webView);
+              try {
+                webView.loadData(objectMapper.writeValueAsString(report) + System.lineSeparator()
+                        + objectMapper.writeValueAsString(params),
+                    "text/plain; charset=utf-8", "UTF-8");
+              } catch (JsonProcessingException e) {
+                throw new IllegalStateException(e);
+              }
+            });
           }
         });
   }
@@ -564,19 +572,6 @@ public class MainActivity extends Activity {
         }
       }
     }.start();
-  }
-
-  private void updateInfo(Map<String, Object> metrics) {
-    runOnUiThread(() -> {
-      WebView webView = findViewById(R.id.webView);
-      try {
-        webView.loadData(objectMapper.writeValueAsString(metrics) + System.lineSeparator()
-                + objectMapper.writeValueAsString(params),
-            "text/plain; charset=utf-8", "UTF-8");
-      } catch (JsonProcessingException e) {
-        throw new IllegalStateException(e);
-      }
-    });
   }
 
   void jvmConsume(int bytes) {
