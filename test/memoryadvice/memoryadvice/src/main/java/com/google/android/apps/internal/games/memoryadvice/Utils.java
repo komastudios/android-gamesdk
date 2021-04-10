@@ -4,7 +4,7 @@ import android.util.Log;
 import com.google.android.apps.internal.games.memoryadvice_common.StreamUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -49,7 +49,7 @@ public class Utils {
    * @return A dictionary of values, in bytes.
    */
   static Map<String, Long> processMeminfo() {
-    Map<String, Long> output = new HashMap<>();
+    Map<String, Long> output = new LinkedHashMap<>();
 
     String filename = "/proc/meminfo";
     try {
@@ -73,7 +73,7 @@ public class Utils {
    * @return A dictionary of values, in bytes.
    */
   static Map<String, Long> processStatus(int pid) {
-    Map<String, Long> output = new HashMap<>();
+    Map<String, Long> output = new LinkedHashMap<>();
     String filename = "/proc/" + pid + "/status";
     try {
       String meminfoText = readFile(filename);
