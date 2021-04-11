@@ -157,20 +157,20 @@ public class MainActivity extends Activity {
     }
     if (resultsStream == System.out) {
       // This run is not running on Firebase. Determine the filename.
-      try {
-        List<Object> coordinates = (List<Object>) params1.get("coordinates");
-        StringBuilder coordsString = new StringBuilder();
-        for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
-          coordsString.append("_").append(coordinates.get(coordinateNumber));
-        }
-        String fileName = getExternalFilesDir(null) + "/results" + coordsString + ".json";
-        if (!new File(fileName).exists()) {
-          // We deliberately do not overwrite the result for the case where Android automatically
-          // relaunches the intent following a crash.
+      List<Object> coordinates = (List<Object>) params1.get("coordinates");
+      StringBuilder coordsString = new StringBuilder();
+      for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
+        coordsString.append("_").append(coordinates.get(coordinateNumber));
+      }
+      String fileName = getExternalFilesDir(null) + "/results" + coordsString + ".json";
+      if (!new File(fileName).exists()) {
+        // We deliberately do not overwrite the result for the case where Android automatically
+        // relaunches the intent following a crash.
+        try {
           resultsStream = new PrintStream(fileName);
+        } catch (FileNotFoundException e) {
+          throw new IllegalStateException(e);
         }
-      } catch (FileNotFoundException e) {
-        throw new IllegalStateException(e);
       }
     }
 
@@ -181,117 +181,126 @@ public class MainActivity extends Activity {
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
 
+    // Setting up broadcast receiver
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
+        serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
+        switch (serviceState) {
+          case ALLOCATING_MEMORY:
+            serviceState = ServiceState.ALLOCATED;
+
+            new Thread() {
+              @Override
+              public void run() {
+                try {
+                  Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
+                } catch (Exception e) {
+                  if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                  }
+                  throw new IllegalStateException(e);
+                }
+                serviceState = ServiceState.FREEING_MEMORY;
+                serviceCommunicationHelper.freeServerMemory();
+              }
+            }.start();
+
+            break;
+          case FREEING_MEMORY:
+            serviceState = ServiceState.DEALLOCATED;
+
+            new Thread() {
+              @Override
+              public void run() {
+                try {
+                  Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
+                } catch (Exception e) {
+                  if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                  }
+                  throw new IllegalStateException(e);
+                }
+                serviceState = ServiceState.ALLOCATING_MEMORY;
+                serviceCommunicationHelper.allocateServerMemory(BACKGROUND_MEMORY_PRESSURE_MB);
+              }
+            }.start();
+
+            break;
+          default:
+        }
+      }
+    };
+    registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
+
+    Map<String, Object> report = new LinkedHashMap<>();
+    report.put("time", testStartTime);
+    report.put("params", params1);
+
+    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+    testSurface.setVisibility(View.GONE);
+    maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
+    testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
+
+    PackageInfo packageInfo = null;
     try {
-      // Setting up broadcast receiver
-      BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-          isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
-          serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
-          switch (serviceState) {
-            case ALLOCATING_MEMORY:
-              serviceState = ServiceState.ALLOCATED;
-
-              new Thread() {
-                @Override
-                public void run() {
-                  try {
-                    Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
-                  } catch (Exception e) {
-                    if (e instanceof InterruptedException) {
-                      Thread.currentThread().interrupt();
-                    }
-                    throw new IllegalStateException(e);
-                  }
-                  serviceState = ServiceState.FREEING_MEMORY;
-                  serviceCommunicationHelper.freeServerMemory();
-                }
-              }.start();
-
-              break;
-            case FREEING_MEMORY:
-              serviceState = ServiceState.DEALLOCATED;
-
-              new Thread() {
-                @Override
-                public void run() {
-                  try {
-                    Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
-                  } catch (Exception e) {
-                    if (e instanceof InterruptedException) {
-                      Thread.currentThread().interrupt();
-                    }
-                    throw new IllegalStateException(e);
-                  }
-                  serviceState = ServiceState.ALLOCATING_MEMORY;
-                  serviceCommunicationHelper.allocateServerMemory(BACKGROUND_MEMORY_PRESSURE_MB);
-                }
-              }.start();
-
-              break;
-            default:
-          }
-        }
-      };
-      registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
-
-      Map<String, Object> report = new LinkedHashMap<>();
-      report.put("time", testStartTime);
-      report.put("params", params1);
-
-      TestSurface testSurface = findViewById(R.id.glsurfaceView);
-      testSurface.setVisibility(View.GONE);
-      maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
-      testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
-
-      PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+      packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       report.put("version", packageInfo.versionCode);
+    } catch (PackageManager.NameNotFoundException e) {
+      Log.i(TAG, "Could not get package information", e);
+    }
 
-      yellowLightTesting = Boolean.TRUE.equals(params.get("yellowLightTesting"));
+    yellowLightTesting = Boolean.TRUE.equals(params.get("yellowLightTesting"));
 
-      if (Boolean.TRUE.equals(params.get("serviceBlocker"))) {
-        activateServiceBlocker();
-      }
+    if (Boolean.TRUE.equals(params.get("serviceBlocker"))) {
+      activateServiceBlocker();
+    }
 
-      if (Boolean.TRUE.equals(params.get("firebaseBlocker"))) {
-        activateFirebaseBlocker();
-      }
+    if (Boolean.TRUE.equals(params.get("firebaseBlocker"))) {
+      activateFirebaseBlocker();
+    }
 
-      mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
+    mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
 
-      glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
-      if (mallocBytesPerMillisecond == 0) {
-        nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
-      }
+    glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
+    if (mallocBytesPerMillisecond == 0) {
+      nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
+    }
 
-      if (glAllocBytesPerMillisecond > 0) {
+    if (glAllocBytesPerMillisecond > 0) {
+      testSurface.setVisibility(View.VISIBLE);
+    } else {
+      long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
+      if (glFixed > 0) {
         testSurface.setVisibility(View.VISIBLE);
-      } else {
-        long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
-        if (glFixed > 0) {
-          testSurface.setVisibility(View.VISIBLE);
-          testSurface.getRenderer().setTarget(glFixed);
-        }
+        testSurface.getRenderer().setTarget(glFixed);
       }
+    }
 
-      vkAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "vkTest", 0));
+    vkAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "vkTest", 0));
 
-      mmapAnonBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
+    mmapAnonBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
 
-      mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
-      if (mmapFileBytesPerMillisecond > 0) {
-        String mmapPath = getApplicationContext().getCacheDir().toString();
-        int mmapFileCount = ((Number) params.get("mmapFileCount")).intValue();
-        long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
+    mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
+    if (mmapFileBytesPerMillisecond > 0) {
+      String mmapPath = getApplicationContext().getCacheDir().toString();
+      int mmapFileCount = ((Number) params.get("mmapFileCount")).intValue();
+      long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
+      try {
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
       }
+    }
 
+    try {
       resultsStream.println(objectMapper.writeValueAsString(report));
-      memoryAdvisor = new MemoryAdvisor(this, (Map<String, Object>) params.get("advisorParameters"),
-          (timedOut) -> runOnUiThread(this::startTest));
-    } catch (IOException | PackageManager.NameNotFoundException e) {
+    } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
+    memoryAdvisor = new MemoryAdvisor(this, (Map<String, Object>) params.get("advisorParameters"),
+        (timedOut) -> runOnUiThread(this::startTest));
   }
 
   @Override
