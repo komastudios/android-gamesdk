@@ -24,7 +24,26 @@
     "malloc": {
       "$ref": "memoryQuantity.schema.json"
     },
+    "mallocFixed": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "glFixed": {
+      "$ref": "memoryQuantity.schema.json"
+    },
     "vkTest": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "mmapAnon": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "mmapFile": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "mmapFileCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mmapFileSize": {
       "$ref": "memoryQuantity.schema.json"
     },
     "maxConsumer": {
