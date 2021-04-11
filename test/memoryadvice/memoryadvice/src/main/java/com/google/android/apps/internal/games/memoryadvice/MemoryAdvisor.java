@@ -264,7 +264,7 @@ public class MemoryAdvisor {
       Object lowMemory = heuristics.get("lowMemory");
       if (lowMemory != null) {
         Map<String, Object> memoryInfo = (Map<String, Object>) metrics.get("MemoryInfo");
-        if (Boolean.TRUE.equals(memoryInfo.get("lowMemory"))) {
+        if (memoryInfo != null && Boolean.TRUE.equals(memoryInfo.get("lowMemory"))) {
           Map<String, Object> warning = new LinkedHashMap<>();
           warning.put("lowMemory", lowMemory);
           warning.put("level", "red");
