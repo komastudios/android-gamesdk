@@ -285,8 +285,8 @@ public class MainActivity extends Activity {
     mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
     if (mmapFileBytesPerMillisecond > 0) {
       String mmapPath = getApplicationContext().getCacheDir().toString();
-      int mmapFileCount = ((Number) params.get("mmapFileCount")).intValue();
-      long mmapFileSize = getMemoryQuantity(params.get("mmapFileSize"));
+      int mmapFileCount = ((Number) getOrDefault(params, "mmapFileCount", 10)).intValue();
+      long mmapFileSize = getMemoryQuantity(getOrDefault(params, "mmapFileSize", "4K"));
       try {
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       } catch (IOException e) {
