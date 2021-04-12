@@ -395,6 +395,7 @@ public class MainActivity extends Activity {
           @Override
           public void receiveAdvice(Map<String, Object> advice) {
             Map<String, Object> report = standardInfo();
+            report.put("advice", advice);
             if (criticalLogLines.get() != null) {
               report.put("criticalLogLines", criticalLogLines.get());
               criticalLogLines.set(null);
@@ -403,9 +404,6 @@ public class MainActivity extends Activity {
               long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
               if (sinceAllocationStarted > 0) {
                 boolean shouldAllocate = true;
-
-                report.put("advice", advice);
-
                 if (MemoryAdvisor.anyWarnings(advice)) {
                   if (yellowLightTesting) {
                     shouldAllocate = false;
