@@ -53,16 +53,11 @@ public class Launcher {
       Map<String, Object> flattened = Utils.flattenParams(paramsIn);
       pack.set((String) flattened.get("package"));
 
-      // Kill the app as a precaution against confusing an old run with the new run.
-      try {
-        int pid = getPid(pack.get());
-        Utils.execute("adb", "shell", "kill", String.valueOf(pid));
-        while (true) {
-          getPid(pack.get());  // Wait for the process to actually go away.
-        }
-      } catch (IOException ex) {
-        // Ignored by design.
-      }
+      // To avoid Android re-serving us an existing run, dismiss any app previous run activity
+      // and then kill the app.
+      Utils.execute("adb", "shell", "am", "start", "-a android.intent.action.MAIN",
+          "-c android.intent.category.HOME");
+      Utils.execute("adb", "shell", "am", "force-stop", pack.get());
 
       if (!apkPath.equals(installed.getAndSet(apkPath))) {
         // Uninstall any previous versions of the app the first time.
@@ -80,28 +75,19 @@ public class Launcher {
           jsonToShellParameter(paramsIn));
 
       // Wait for process to end or for the run to time out.
-      int pid = 0;
+      int[] pids = new int[0];
       long started = currentTimeMillis();
       while (true) {
-        try {
-          if (currentTimeMillis() > started + timeout + EXTRA_TIMEOUT) {
-            break;
-          }
-          int newPid = getPid(pack.get());
-          if (newPid != pid) {
-            if (pid == 0) {
-              pid = newPid;
-              started = currentTimeMillis();  // Restart timeout timer.
-            } else {
-              break;  // pid has changed - something went wrong.
-            }
-          }
-
-        } catch (IOException ex) {
-          // Process doesn't exist.
-          if (pid != 0) {
-            // Process has been killed.
-            break;
+        if (currentTimeMillis() > started + timeout + EXTRA_TIMEOUT) {
+          break;
+        }
+        int[] newPids = getPids(pack.get());
+        if (!Arrays.equals(newPids, pids)) {
+          if (pids.length == 0) {
+            pids = newPids;
+            started = currentTimeMillis();  // Restart timeout timer.
+          } else {
+            break;  // pid has changed - something went wrong.
           }
         }
       }
@@ -114,8 +100,18 @@ public class Launcher {
    * @param pack The package name of the app.
    * @return The PID.
    */
-  private static int getPid(String pack) throws IOException {
-    return Integer.parseInt(Utils.executeSilent("adb", "shell", "pidof", pack));
+  private static int[] getPids(String pack) throws IOException {
+    try {
+      String output = Utils.executeSilent("adb", "shell", "pidof", pack);
+      String[] outputs = output.split(" ");
+      int[] toReturn = new int[outputs.length];
+      for (int idx = 0; idx != outputs.length; idx++) {
+        toReturn[idx] = Integer.parseInt(outputs[idx]);
+      }
+      return toReturn;
+    } catch (ExecutionError e) {
+      return new int[0];
+    }
   }
 
   /**
