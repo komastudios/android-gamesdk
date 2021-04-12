@@ -417,73 +417,75 @@ public class MainActivity extends Activity {
                     releaseMemory();
                   }
                 }
-                if (mallocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long owed =
-                      sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
-                  if (owed > 0) {
-                    boolean succeeded = nativeConsume(owed);
-                    if (succeeded) {
-                      nativeAllocatedByTest += owed;
-                    } else {
-                      report.put("allocFailed", true);
+                if (shouldAllocate) {
+                  if (mallocBytesPerMillisecond > 0) {
+                    long owed =
+                        sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
+                    if (owed > 0) {
+                      boolean succeeded = nativeConsume(owed);
+                      if (succeeded) {
+                        nativeAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
                     }
                   }
-                }
-                if (glAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                  TestSurface testSurface = findViewById(R.id.glsurfaceView);
-                  testSurface.getRenderer().setTarget(target);
-                }
+                  if (glAllocBytesPerMillisecond > 0) {
+                    long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
+                    TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                    testSurface.getRenderer().setTarget(target);
+                  }
 
-                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long owed =
-                      sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                  if (owed > 0) {
-                    long allocated = vkAlloc(owed);
-                    if (allocated >= owed) {
-                      vkAllocatedByTest += owed;
-                    } else {
-                      report.put("allocFailed", true);
+                  if (vkAllocBytesPerMillisecond > 0) {
+                    long owed =
+                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                    if (owed > 0) {
+                      long allocated = vkAlloc(owed);
+                      if (allocated >= owed) {
+                        vkAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
                     }
                   }
-                }
 
-                if (vkAllocBytesPerMillisecond > 0 && shouldAllocate) {
-                  long owed =
-                      sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                  if (owed > 0) {
-                    long allocated = vkAlloc(owed);
-                    if (allocated >= owed) {
-                      vkAllocatedByTest += owed;
-                    } else {
-                      report.put("allocFailed", true);
+                  if (vkAllocBytesPerMillisecond > 0) {
+                    long owed =
+                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
+                    if (owed > 0) {
+                      long allocated = vkAlloc(owed);
+                      if (allocated >= owed) {
+                        vkAllocatedByTest += owed;
+                      } else {
+                        report.put("allocFailed", true);
+                      }
                     }
                   }
-                }
 
-                if (mmapAnonBytesPerMillisecond > 0) {
-                  long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
-                      - mmapAnonAllocatedByTest;
-                  if (owed > MMAP_ANON_BLOCK_BYTES) {
-                    long allocated = mmapAnonConsume(owed);
-                    if (allocated != 0) {
-                      mmapAnonAllocatedByTest += allocated;
-                    } else {
-                      report.put("mmapAnonFailed", true);
+                  if (mmapAnonBytesPerMillisecond > 0) {
+                    long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
+                        - mmapAnonAllocatedByTest;
+                    if (owed > MMAP_ANON_BLOCK_BYTES) {
+                      long allocated = mmapAnonConsume(owed);
+                      if (allocated != 0) {
+                        mmapAnonAllocatedByTest += allocated;
+                      } else {
+                        report.put("mmapAnonFailed", true);
+                      }
                     }
                   }
-                }
-                if (mmapFileBytesPerMillisecond > 0) {
-                  long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
-                      - mmapFileAllocatedByTest;
-                  if (owed > MMAP_FILE_BLOCK_BYTES) {
-                    MmapFileInfo file = mmapFiles.alloc(owed);
-                    long allocated =
-                        mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                    if (allocated == 0) {
-                      report.put("mmapFileFailed", true);
-                    } else {
-                      mmapFileAllocatedByTest += allocated;
+                  if (mmapFileBytesPerMillisecond > 0) {
+                    long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
+                        - mmapFileAllocatedByTest;
+                    if (owed > MMAP_FILE_BLOCK_BYTES) {
+                      MmapFileInfo file = mmapFiles.alloc(owed);
+                      long allocated =
+                          mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
+                      if (allocated == 0) {
+                        report.put("mmapFileFailed", true);
+                      } else {
+                        mmapFileAllocatedByTest += allocated;
+                      }
                     }
                   }
                 }
