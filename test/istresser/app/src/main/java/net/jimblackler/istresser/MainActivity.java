@@ -96,6 +96,8 @@ public class MainActivity extends Activity {
 
   public static native void initGl();
 
+  public static native void initMMap();
+
   public static native int nativeDraw(int toAllocate);
 
   public static native void release();
@@ -111,6 +113,7 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     initNative();
+    initMMap();
 
     Intent launchIntent = getIntent();
 
@@ -261,9 +264,9 @@ public class MainActivity extends Activity {
       activateFirebaseBlocker();
     }
 
-    mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
-
     glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
+
+    mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
     if (mallocBytesPerMillisecond == 0) {
       nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
     }

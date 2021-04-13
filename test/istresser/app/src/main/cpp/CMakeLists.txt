@@ -17,11 +17,16 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        allocator.cc
         consumer.cc
+        gl-memory.cc
         gl-utils.cc
         memory.cc
+        mmap-allocator.cc
+        mmap.cc
         test-renderer.cc
         test-vulkan-renderer.cc
+        vk-memory.cc
         vulkan_wrapper/vulkan_wrapper.cpp
 
         native-lib.cc)
