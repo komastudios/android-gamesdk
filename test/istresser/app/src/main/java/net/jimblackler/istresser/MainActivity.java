@@ -452,19 +452,6 @@ public class MainActivity extends Activity {
                     }
                   }
 
-                  if (vkAllocBytesPerMillisecond > 0) {
-                    long owed =
-                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                    if (owed > 0) {
-                      long allocated = vkAlloc(owed);
-                      if (allocated >= owed) {
-                        vkAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-
                   if (mmapAnonBytesPerMillisecond > 0) {
                     long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
                         - mmapAnonAllocatedByTest;
