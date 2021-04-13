@@ -407,18 +407,21 @@ public class MainActivity extends Activity {
               long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
               if (sinceAllocationStarted > 0) {
                 boolean shouldAllocate = true;
-                if (MemoryAdvisor.anyWarnings(advice)) {
-                  if (yellowLightTesting) {
-                    shouldAllocate = false;
-                    if (MemoryAdvisor.anyRedWarnings(advice)) {
-                      freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                switch (MemoryAdvisor.getMemoryState(advice)) {
+                  case APPROACHING_LIMIT:
+                    if (yellowLightTesting) {
+                      shouldAllocate = false;
                     }
-                  } else if (MemoryAdvisor.getMemoryState(advice)
-                      == MemoryAdvisor.MemoryState.CRITICAL) {
+                    break;
+                  case CRITICAL:
                     shouldAllocate = false;
-                    // Allocating 0 MB
-                    releaseMemory();
-                  }
+                    if (yellowLightTesting) {
+                      freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+                    } else {
+                      // Allocating 0 MB
+                      releaseMemory();
+                    }
+                    break;
                 }
                 if (shouldAllocate) {
                   if (mallocBytesPerMillisecond > 0) {
