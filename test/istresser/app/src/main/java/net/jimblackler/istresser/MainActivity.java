@@ -64,18 +64,10 @@ public class MainActivity extends Activity {
   }
 
   private final ObjectMapper objectMapper = new ObjectMapper();
-  private final Timer timer = new Timer();
+
   private final List<byte[]> data = Lists.newArrayList();
-  private long nativeAllocatedByTest;
-  private long vkAllocatedByTest;
-  private long mmapAnonAllocatedByTest;
-  private long mmapFileAllocatedByTest;
   private PrintStream resultsStream = System.out;
   private MemoryAdvisor memoryAdvisor;
-  private long allocationStartedTime = -1;
-  private long testStartTime;
-  private long appSwitchTimerStart;
-  private long lastLaunched;
   private int serviceTotalMb;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed;
@@ -169,8 +161,6 @@ public class MainActivity extends Activity {
     }
 
     params = flattenParams(params1);
-    testStartTime = System.currentTimeMillis();
-
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
 
@@ -228,7 +218,7 @@ public class MainActivity extends Activity {
     registerReceiver(receiver, new IntentFilter("com.google.gamesdk.grabber.RETURN"));
 
     Map<String, Object> report = new LinkedHashMap<>();
-    report.put("time", testStartTime);
+    report.put("time", System.currentTimeMillis());
     report.put("params", params1);
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
@@ -339,9 +329,6 @@ public class MainActivity extends Activity {
   void startTest() {
     AtomicReference<List<Object>> criticalLogLines = new AtomicReference<>();
 
-    allocationStartedTime = System.currentTimeMillis();
-    appSwitchTimerStart = testStartTime;
-
     new LogMonitor(line -> {
       if (line.contains("Out of memory")) {
         if (criticalLogLines.get() == null) {
@@ -381,9 +368,30 @@ public class MainActivity extends Activity {
           private final long mmapAnonBytesPerMillisecond =
               getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
 
+          private final long testStartTime = System.currentTimeMillis();
+          private long allocationStartedTime = System.currentTimeMillis();
+          private long appSwitchTimerStart = System.currentTimeMillis();
+          private long lastLaunched;
+
+          private long nativeAllocatedByTest;
+          private long vkAllocatedByTest;
+          private long mmapAnonAllocatedByTest;
+          private long mmapFileAllocatedByTest;
+
+          private final Timer timer = new Timer();
+
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {
             Log.i(TAG, "New memory state: " + state.name());
+          }
+
+          private void runAfterDelay(Runnable runnable, long delay) {
+            timer.schedule(new TimerTask() {
+              @Override
+              public void run() {
+                runnable.run();
+              }
+            }, delay);
           }
 
           @Override
@@ -394,7 +402,9 @@ public class MainActivity extends Activity {
               report.put("criticalLogLines", criticalLogLines.get());
               criticalLogLines.set(null);
             }
-            if (allocationStartedTime != -1) {
+            if (allocationStartedTime == -1) {
+              report.put("paused", true);
+            } else {
               long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
               if (sinceAllocationStarted > 0) {
                 boolean shouldAllocate = true;
@@ -506,6 +516,21 @@ public class MainActivity extends Activity {
             if (!report.containsKey("advice")) {  // 'advice' already includes metrics.
               report.put("metrics", memoryAdvisor.getMemoryMetrics());
             }
+
+            Map<String, Object> testMetrics = (Map<String, Object>) report.get("testMetrics");
+            if (vkAllocatedByTest > 0) {
+              testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
+            }
+            if (nativeAllocatedByTest > 0) {
+              testMetrics.put("nativeAllocatedByTest", nativeAllocatedByTest);
+            }
+            if (mmapAnonAllocatedByTest > 0) {
+              testMetrics.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
+            }
+            if (mmapAnonAllocatedByTest > 0) {
+              testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
+            }
+
             try {
               resultsStream.println(objectMapper.writeValueAsString(report));
             } catch (JsonProcessingException e) {
@@ -532,9 +557,8 @@ public class MainActivity extends Activity {
             long delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
             long delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
             runAfterDelay(() -> {
-              Map<String, Object> report2;
-
-              report2 = standardInfo();
+              Map<String, Object> report2 = standardInfo();
+              report2.put("paused", true);
               report2.put("metrics", memoryAdvisor.getMemoryMetrics());
 
               try {
@@ -571,6 +595,7 @@ public class MainActivity extends Activity {
                   report.put("advice", advice);
                   if (MemoryAdvisor.anyWarnings(advice)) {
                     report.put("failedToClear", true);
+                    report.put("paused", true);
                     runAfterDelay(this, delayAfterRelease);
                   } else {
                     allocationStartedTime = System.currentTimeMillis();
@@ -636,39 +661,14 @@ public class MainActivity extends Activity {
     }
   }
 
-  private void runAfterDelay(Runnable runnable, long delay) {
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        runnable.run();
-      }
-    }, delay);
-  }
-
   private Map<String, Object> standardInfo() {
     Map<String, Object> report = new LinkedHashMap<>();
-    boolean paused = allocationStartedTime == -1;
-    if (paused) {
-      report.put("paused", true);
-    }
 
     if (isServiceCrashed) {
       report.put("serviceCrashed", true);
     }
 
     Map<String, Object> testMetrics = new LinkedHashMap<>();
-    if (vkAllocatedByTest > 0) {
-      testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
-    }
-    if (nativeAllocatedByTest > 0) {
-      testMetrics.put("nativeAllocatedByTest", nativeAllocatedByTest);
-    }
-    if (mmapAnonAllocatedByTest > 0) {
-      testMetrics.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
-    }
-    if (mmapAnonAllocatedByTest > 0) {
-      testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
-    }
     if (serviceTotalMb > 0) {
       testMetrics.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     }
