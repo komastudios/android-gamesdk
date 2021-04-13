@@ -79,17 +79,8 @@ public class MainActivity extends Activity {
   private int serviceTotalMb;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private boolean isServiceCrashed;
-  private long mallocBytesPerMillisecond;
-  private long glAllocBytesPerMillisecond;
-  private long vkAllocBytesPerMillisecond;
   private Map<String, Object> params;
-  private boolean yellowLightTesting;
-  private long mmapAnonBytesPerMillisecond;
-  private long mmapFileBytesPerMillisecond;
   private MmapFileGroup mmapFiles;
-  private long maxConsumer;
-  private long delayBeforeRelease;
-  private long delayAfterRelease;
   private ServiceState serviceState;
 
   public static native void initNative();
@@ -179,8 +170,7 @@ public class MainActivity extends Activity {
 
     params = flattenParams(params1);
     testStartTime = System.currentTimeMillis();
-    delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
-    delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
+
     serviceCommunicationHelper = new ServiceCommunicationHelper(this);
     serviceState = ServiceState.DEALLOCATED;
 
@@ -243,7 +233,7 @@ public class MainActivity extends Activity {
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     testSurface.setVisibility(View.GONE);
-    maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
+    long maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
     testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
 
     PackageInfo packageInfo = null;
@@ -254,8 +244,6 @@ public class MainActivity extends Activity {
       Log.i(TAG, "Could not get package information", e);
     }
 
-    yellowLightTesting = Boolean.TRUE.equals(params.get("yellowLightTesting"));
-
     if (Boolean.TRUE.equals(params.get("serviceBlocker"))) {
       activateServiceBlocker();
     }
@@ -264,14 +252,9 @@ public class MainActivity extends Activity {
       activateFirebaseBlocker();
     }
 
-    glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
+    nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
 
-    mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
-    if (mallocBytesPerMillisecond == 0) {
-      nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
-    }
-
-    if (glAllocBytesPerMillisecond > 0) {
+    if (params.containsKey("glTest")) {
       testSurface.setVisibility(View.VISIBLE);
     } else {
       long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
@@ -281,12 +264,7 @@ public class MainActivity extends Activity {
       }
     }
 
-    vkAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "vkTest", 0));
-
-    mmapAnonBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
-
-    mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
-    if (mmapFileBytesPerMillisecond > 0) {
+    if (params.containsKey("mmapFile")) {
       String mmapPath = getApplicationContext().getCacheDir().toString();
       int mmapFileCount = ((Number) getOrDefault(params, "mmapFileCount", 10)).intValue();
       long mmapFileSize = getMemoryQuantity(getOrDefault(params, "mmapFileSize", "4K"));
@@ -390,6 +368,19 @@ public class MainActivity extends Activity {
         maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
         minimumFrequency == null ? 200 : minimumFrequency.longValue(),
         maximumFrequency == null ? 2000 : maximumFrequency.longValue(), new MemoryWatcher.Client() {
+          private final boolean yellowLightTesting =
+              Boolean.TRUE.equals(params.get("yellowLightTesting"));
+          private final long mallocBytesPerMillisecond =
+              getMemoryQuantity(getOrDefault(params, "malloc", 0));
+          private final long glAllocBytesPerMillisecond =
+              getMemoryQuantity(getOrDefault(params, "glTest", 0));
+          private final long vkAllocBytesPerMillisecond =
+              getMemoryQuantity(getOrDefault(params, "vkTest", 0));
+          private final long mmapFileBytesPerMillisecond =
+              getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
+          private final long mmapAnonBytesPerMillisecond =
+              getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
+
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {
             Log.i(TAG, "New memory state: " + state.name());
@@ -536,6 +527,63 @@ public class MainActivity extends Activity {
               }
             });
           }
+          private void releaseMemory() {
+            allocationStartedTime = -1;
+            long delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
+            long delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
+            runAfterDelay(() -> {
+              Map<String, Object> report2;
+
+              report2 = standardInfo();
+              report2.put("metrics", memoryAdvisor.getMemoryMetrics());
+
+              try {
+                resultsStream.println(objectMapper.writeValueAsString(report2));
+              } catch (JsonProcessingException e) {
+                throw new IllegalStateException(e);
+              }
+              if (nativeAllocatedByTest > 0) {
+                nativeAllocatedByTest = 0;
+                freeAll();
+              }
+              mmapAnonFreeAll();
+              mmapAnonAllocatedByTest = 0;
+              data.clear();
+              if (glAllocBytesPerMillisecond > 0) {
+                TestSurface testSurface = findViewById(R.id.glsurfaceView);
+                if (testSurface != null) {
+                  testSurface.queueEvent(() -> {
+                    TestRenderer renderer = testSurface.getRenderer();
+                    renderer.release();
+                  });
+                }
+              }
+              if (vkAllocBytesPerMillisecond > 0) {
+                vkAllocatedByTest = 0;
+                vkRelease();
+              }
+
+              runAfterDelay(new Runnable() {
+                @Override
+                public void run() {
+                  Map<String, Object> report = standardInfo();
+                  Map<String, Object> advice = memoryAdvisor.getAdvice();
+                  report.put("advice", advice);
+                  if (MemoryAdvisor.anyWarnings(advice)) {
+                    report.put("failedToClear", true);
+                    runAfterDelay(this, delayAfterRelease);
+                  } else {
+                    allocationStartedTime = System.currentTimeMillis();
+                  }
+                  try {
+                    resultsStream.println(objectMapper.writeValueAsString(report));
+                  } catch (JsonProcessingException e) {
+                    throw new IllegalStateException(e);
+                  }
+                }
+              }, delayAfterRelease);
+            }, delayBeforeRelease);
+          }
         });
   }
 
@@ -586,62 +634,6 @@ public class MainActivity extends Activity {
     } catch (OutOfMemoryError e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  private void releaseMemory() {
-    allocationStartedTime = -1;
-    runAfterDelay(() -> {
-      Map<String, Object> report2;
-
-      report2 = standardInfo();
-      report2.put("metrics", memoryAdvisor.getMemoryMetrics());
-
-      try {
-        resultsStream.println(objectMapper.writeValueAsString(report2));
-      } catch (JsonProcessingException e) {
-        throw new IllegalStateException(e);
-      }
-      if (nativeAllocatedByTest > 0) {
-        nativeAllocatedByTest = 0;
-        freeAll();
-      }
-      mmapAnonFreeAll();
-      mmapAnonAllocatedByTest = 0;
-      data.clear();
-      if (glAllocBytesPerMillisecond > 0) {
-        TestSurface testSurface = findViewById(R.id.glsurfaceView);
-        if (testSurface != null) {
-          testSurface.queueEvent(() -> {
-            TestRenderer renderer = testSurface.getRenderer();
-            renderer.release();
-          });
-        }
-      }
-      if (vkAllocBytesPerMillisecond > 0) {
-        vkAllocatedByTest = 0;
-        vkRelease();
-      }
-
-      runAfterDelay(new Runnable() {
-        @Override
-        public void run() {
-          Map<String, Object> report = standardInfo();
-          Map<String, Object> advice = memoryAdvisor.getAdvice();
-          report.put("advice", advice);
-          if (MemoryAdvisor.anyWarnings(advice)) {
-            report.put("failedToClear", true);
-            runAfterDelay(this, delayAfterRelease);
-          } else {
-            allocationStartedTime = System.currentTimeMillis();
-          }
-          try {
-            resultsStream.println(objectMapper.writeValueAsString(report));
-          } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-          }
-        }
-      }, delayAfterRelease);
-    }, delayBeforeRelease);
   }
 
   private void runAfterDelay(Runnable runnable, long delay) {
