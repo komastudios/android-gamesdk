@@ -595,7 +595,6 @@ public class MainActivity extends Activity {
               mmapAnonAllocatedByTest = 0;
               data.clear();
               if (glAllocBytesPerMillisecond > 0) {
-                TestSurface testSurface = findViewById(R.id.glsurfaceView);
                 if (testSurface != null) {
                   testSurface.queueEvent(() -> {
                     TestRenderer renderer = testSurface.getRenderer();
