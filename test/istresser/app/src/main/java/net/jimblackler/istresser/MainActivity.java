@@ -379,6 +379,7 @@ public class MainActivity extends Activity {
           private long mmapFileAllocatedByTest;
 
           private final Timer timer = new Timer();
+          private final TestSurface testSurface = findViewById(R.id.glsurfaceView);
 
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {
@@ -439,7 +440,6 @@ public class MainActivity extends Activity {
                   }
                   if (glAllocBytesPerMillisecond > 0) {
                     long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                    TestSurface testSurface = findViewById(R.id.glsurfaceView);
                     testSurface.getRenderer().setTarget(target);
                   }
 
@@ -517,7 +517,7 @@ public class MainActivity extends Activity {
               report.put("metrics", memoryAdvisor.getMemoryMetrics());
             }
 
-            Map<String, Object> testMetrics = (Map<String, Object>) report.get("testMetrics");
+            Map<String, Object> testMetrics = new LinkedHashMap<>();
             if (vkAllocatedByTest > 0) {
               testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
             }
@@ -530,6 +530,16 @@ public class MainActivity extends Activity {
             if (mmapAnonAllocatedByTest > 0) {
               testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
             }
+
+            TestRenderer renderer = testSurface.getRenderer();
+            long glAllocated = renderer.getAllocated();
+            if (glAllocated > 0) {
+              testMetrics.put("gl_allocated", glAllocated);
+            }
+            if (renderer.getFailed()) {
+              report.put("allocFailed", true);
+            }
+            report.put("testMetrics", testMetrics);
 
             try {
               resultsStream.println(objectMapper.writeValueAsString(report));
@@ -673,16 +683,6 @@ public class MainActivity extends Activity {
       testMetrics.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
     }
 
-    TestSurface testSurface = findViewById(R.id.glsurfaceView);
-    TestRenderer renderer = testSurface.getRenderer();
-    long glAllocated = renderer.getAllocated();
-    if (glAllocated > 0) {
-      testMetrics.put("gl_allocated", glAllocated);
-    }
-    if (renderer.getFailed()) {
-      report.put("allocFailed", true);
-    }
-    report.put("testMetrics", testMetrics);
     return report;
   }
 
