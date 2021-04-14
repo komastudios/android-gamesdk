@@ -68,9 +68,7 @@ public class MainActivity extends Activity {
   private final List<byte[]> data = Lists.newArrayList();
   private PrintStream resultsStream = System.out;
   private MemoryAdvisor memoryAdvisor;
-  private int serviceTotalMb;
   private ServiceCommunicationHelper serviceCommunicationHelper;
-  private boolean isServiceCrashed;
   private Map<String, Object> params;
   private MmapFileGroup mmapFiles;
   private ServiceState serviceState;
@@ -168,8 +166,21 @@ public class MainActivity extends Activity {
     BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        isServiceCrashed = intent.getBooleanExtra(CRASHED_BEFORE, false);
-        serviceTotalMb = intent.getIntExtra(TOTAL_MEMORY_MB, 0);
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        if (intent.getBooleanExtra(CRASHED_BEFORE, false)) {
+          report.put("serviceCrashed", true);
+        }
+        Map<String, Object> testMetrics = new LinkedHashMap<>();
+        testMetrics.put(
+            "serviceTotalMemory", BYTES_IN_MEGABYTE * intent.getIntExtra(TOTAL_MEMORY_MB, 0));
+        report.put("testMetrics", testMetrics);
+        try {
+          resultsStream.println(objectMapper.writeValueAsString(report));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
+
         switch (serviceState) {
           case ALLOCATING_MEMORY:
             serviceState = ServiceState.ALLOCATED;
@@ -278,7 +289,7 @@ public class MainActivity extends Activity {
   protected void onResume() {
     super.onResume();
 
-    Map<String, Object> report = standardInfo();
+    Map<String, Object> report = new LinkedHashMap<>();
     report.put("activityPaused", false);
     report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
@@ -292,7 +303,7 @@ public class MainActivity extends Activity {
   protected void onPause() {
     super.onPause();
 
-    Map<String, Object> report = standardInfo();
+    Map<String, Object> report = new LinkedHashMap<>();
     report.put("activityPaused", true);
     report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
@@ -304,7 +315,7 @@ public class MainActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    Map<String, Object> report = standardInfo();
+    Map<String, Object> report = new LinkedHashMap<>();
     report.put("onDestroy", true);
     report.put("metrics", memoryAdvisor.getMemoryMetrics());
     try {
@@ -379,6 +390,7 @@ public class MainActivity extends Activity {
           private long mmapFileAllocatedByTest;
 
           private final Timer timer = new Timer();
+          private final TestSurface testSurface = findViewById(R.id.glsurfaceView);
 
           @Override
           public void newState(MemoryAdvisor.MemoryState state) {
@@ -396,7 +408,7 @@ public class MainActivity extends Activity {
 
           @Override
           public void receiveAdvice(Map<String, Object> advice) {
-            Map<String, Object> report = standardInfo();
+            Map<String, Object> report = new LinkedHashMap<>();
             report.put("advice", advice);
             if (criticalLogLines.get() != null) {
               report.put("criticalLogLines", criticalLogLines.get());
@@ -439,7 +451,6 @@ public class MainActivity extends Activity {
                   }
                   if (glAllocBytesPerMillisecond > 0) {
                     long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                    TestSurface testSurface = findViewById(R.id.glsurfaceView);
                     testSurface.getRenderer().setTarget(target);
                   }
 
@@ -517,7 +528,7 @@ public class MainActivity extends Activity {
               report.put("metrics", memoryAdvisor.getMemoryMetrics());
             }
 
-            Map<String, Object> testMetrics = (Map<String, Object>) report.get("testMetrics");
+            Map<String, Object> testMetrics = new LinkedHashMap<>();
             if (vkAllocatedByTest > 0) {
               testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
             }
@@ -530,6 +541,16 @@ public class MainActivity extends Activity {
             if (mmapAnonAllocatedByTest > 0) {
               testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
             }
+
+            TestRenderer renderer = testSurface.getRenderer();
+            long glAllocated = renderer.getAllocated();
+            if (glAllocated > 0) {
+              testMetrics.put("gl_allocated", glAllocated);
+            }
+            if (renderer.getFailed()) {
+              report.put("allocFailed", true);
+            }
+            report.put("testMetrics", testMetrics);
 
             try {
               resultsStream.println(objectMapper.writeValueAsString(report));
@@ -557,7 +578,7 @@ public class MainActivity extends Activity {
             long delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
             long delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
             runAfterDelay(() -> {
-              Map<String, Object> report2 = standardInfo();
+              Map<String, Object> report2 = new LinkedHashMap<>();
               report2.put("paused", true);
               report2.put("metrics", memoryAdvisor.getMemoryMetrics());
 
@@ -590,7 +611,7 @@ public class MainActivity extends Activity {
               runAfterDelay(new Runnable() {
                 @Override
                 public void run() {
-                  Map<String, Object> report = standardInfo();
+                  Map<String, Object> report = new LinkedHashMap<>();
                   Map<String, Object> advice = memoryAdvisor.getAdvice();
                   report.put("advice", advice);
                   if (MemoryAdvisor.anyWarnings(advice)) {
@@ -614,7 +635,6 @@ public class MainActivity extends Activity {
 
   private void activateServiceBlocker() {
     serviceState = ServiceState.ALLOCATING_MEMORY;
-    serviceTotalMb = 0;
     serviceCommunicationHelper.allocateServerMemory(BACKGROUND_MEMORY_PRESSURE_MB);
   }
 
@@ -625,7 +645,19 @@ public class MainActivity extends Activity {
         Log.v(MEMORY_BLOCKER, FREE_ACTION);
         while (true) {
           Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + BACKGROUND_MEMORY_PRESSURE_MB);
-          serviceTotalMb = BACKGROUND_MEMORY_PRESSURE_MB;
+          {
+            Map<String, Object> report = new LinkedHashMap<>();
+            report.put("metrics", memoryAdvisor.getMemoryMetrics());
+            Map<String, Object> testMetrics = new LinkedHashMap<>();
+            testMetrics.put(
+                "serviceTotalMemory", BYTES_IN_MEGABYTE * BACKGROUND_MEMORY_PRESSURE_MB);
+            report.put("testMetrics", testMetrics);
+            try {
+              resultsStream.println(objectMapper.writeValueAsString(report));
+            } catch (JsonProcessingException e) {
+              throw new IllegalStateException(e);
+            }
+          }
           try {
             Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
@@ -635,7 +667,18 @@ public class MainActivity extends Activity {
             throw new IllegalStateException(e);
           }
           Log.v(MEMORY_BLOCKER, FREE_ACTION);
-          serviceTotalMb = 0;
+          {
+            Map<String, Object> report = new LinkedHashMap<>();
+            report.put("metrics", memoryAdvisor.getMemoryMetrics());
+            Map<String, Object> testMetrics = new LinkedHashMap<>();
+            testMetrics.put("serviceTotalMemory", 0);
+            report.put("testMetrics", testMetrics);
+            try {
+              resultsStream.println(objectMapper.writeValueAsString(report));
+            } catch (JsonProcessingException e) {
+              throw new IllegalStateException(e);
+            }
+          }
           try {
             Thread.sleep(BACKGROUND_PRESSURE_PERIOD_SECONDS * 1000);
           } catch (Exception e) {
@@ -659,31 +702,6 @@ public class MainActivity extends Activity {
     } catch (OutOfMemoryError e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  private Map<String, Object> standardInfo() {
-    Map<String, Object> report = new LinkedHashMap<>();
-
-    if (isServiceCrashed) {
-      report.put("serviceCrashed", true);
-    }
-
-    Map<String, Object> testMetrics = new LinkedHashMap<>();
-    if (serviceTotalMb > 0) {
-      testMetrics.put("serviceTotalMemory", BYTES_IN_MEGABYTE * serviceTotalMb);
-    }
-
-    TestSurface testSurface = findViewById(R.id.glsurfaceView);
-    TestRenderer renderer = testSurface.getRenderer();
-    long glAllocated = renderer.getAllocated();
-    if (glAllocated > 0) {
-      testMetrics.put("gl_allocated", glAllocated);
-    }
-    if (renderer.getFailed()) {
-      report.put("allocFailed", true);
-    }
-    report.put("testMetrics", testMetrics);
-    return report;
   }
 
   public native void freeAll();
