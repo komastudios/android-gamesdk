@@ -372,6 +372,11 @@ public class MainActivity extends Activity {
       }
     }, getDuration(getOrDefault(params, "timeout", "10m")));
 
+    Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
+    if (switchTest != null) {
+      scheduleAppSwitch(switchTest);
+    }
+
     Number maxMillisecondsPerSecond = (Number) params.get("maxMillisecondsPerSecond");
     Number minimumFrequency = (Number) params.get("minimumFrequency");
     Number maximumFrequency = (Number) params.get("maximumFrequency");
@@ -399,9 +404,6 @@ public class MainActivity extends Activity {
 
           private final long testStartTime = System.currentTimeMillis();
           private long allocationStartedTime = System.currentTimeMillis();
-          private long appSwitchTimerStart = System.currentTimeMillis();
-          private long lastLaunched;
-
           private long nativeAllocatedByTest;
           private long vkAllocatedByTest;
           private long mmapAnonAllocatedByTest;
@@ -510,30 +512,7 @@ public class MainActivity extends Activity {
                 }
               }
             }
-            long timeRunning = System.currentTimeMillis() - testStartTime;
-            Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
-            if (switchTest != null && Boolean.TRUE.equals(switchTest.get("enabled"))) {
-              long launchDuration = getDuration(getOrDefault(switchTest, "launchDuration", "30S"));
-              long returnDuration = getDuration(getOrDefault(switchTest, "returnDuration", "60S"));
-              long appSwitchTimeRunning = System.currentTimeMillis() - appSwitchTimerStart;
-              if (appSwitchTimeRunning > launchDuration && lastLaunched < launchDuration) {
-                lastLaunched = appSwitchTimeRunning;
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File file = new File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                    + File.separator + "pic.jpg");
-                String authority = getApplicationContext().getPackageName() + ".provider";
-                Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-                startActivityForResult(intent, 1);
-              }
-              if (appSwitchTimeRunning > returnDuration && lastLaunched < returnDuration) {
-                lastLaunched = appSwitchTimeRunning;
-                finishActivity(1);
-                appSwitchTimerStart = System.currentTimeMillis();
-                lastLaunched = 0;
-              }
-            }
+
             if (!report.containsKey("advice")) {  // 'advice' already includes metrics.
               report.put("metrics", memoryAdvisor.getMemoryMetrics());
             }
@@ -636,6 +615,29 @@ public class MainActivity extends Activity {
             }, delayBeforeRelease);
           }
         });
+  }
+
+  private void scheduleAppSwitch(Map<String, Object> switchTest) {
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File file =
+            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + File.separator + "pic.jpg");
+        String authority = getApplicationContext().getPackageName() + ".provider";
+        Uri uriForFile = FileProvider.getUriForFile(MainActivity.this, authority, file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+        startActivityForResult(intent, 1);
+        new Timer().schedule(new TimerTask() {
+          @Override
+          public void run() {
+            finishActivity(1);
+            scheduleAppSwitch(switchTest);
+          }
+        }, getDuration(getOrDefault(switchTest, "returnDuration", "60S")));
+      }
+    }, getDuration(getOrDefault(switchTest, "launchDuration", "30S")));
   }
 
   private void activateServiceBlocker() {

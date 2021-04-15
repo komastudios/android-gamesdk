@@ -79,9 +79,6 @@
       "description": "Enables a test where the stress application is put into the background by launching another app.",
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
         "launchDuration": {
           "$ref": "duration.schema.json"
         },
@@ -89,9 +86,6 @@
           "$ref": "duration.schema.json"
         }
       },
-      "required": [
-        "enabled"
-      ],
       "type": "object"
     },
     "advisorParameters": {
