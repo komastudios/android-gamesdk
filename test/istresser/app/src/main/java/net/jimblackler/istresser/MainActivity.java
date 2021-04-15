@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -338,14 +339,19 @@ public class MainActivity extends Activity {
   }
 
   void startTest() {
-    AtomicReference<List<Object>> criticalLogLines = new AtomicReference<>();
-
     new LogMonitor(line -> {
       if (line.contains("Out of memory")) {
-        if (criticalLogLines.get() == null) {
-          criticalLogLines.set(new ArrayList<>());
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("time", System.currentTimeMillis());
+        Collection<Object> lines = new ArrayList<>();
+        lines.add(line);
+        report.put("criticalLogLines", lines);
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        try {
+          resultsStream.println(objectMapper.writeValueAsString(report));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
         }
-        criticalLogLines.get().add(line);
       }
     });
 
@@ -410,10 +416,6 @@ public class MainActivity extends Activity {
           public void receiveAdvice(Map<String, Object> advice) {
             Map<String, Object> report = new LinkedHashMap<>();
             report.put("advice", advice);
-            if (criticalLogLines.get() != null) {
-              report.put("criticalLogLines", criticalLogLines.get());
-              criticalLogLines.set(null);
-            }
             if (allocationStartedTime == -1) {
               report.put("paused", true);
             } else {
