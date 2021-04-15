@@ -61,7 +61,6 @@ public class MainActivity extends Activity {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  private final List<byte[]> data = Lists.newArrayList();
   private PrintStream resultsStream = System.out;
   private MemoryAdvisor memoryAdvisor;
   private ServiceCommunicationHelper serviceCommunicationHelper;
@@ -578,7 +577,6 @@ public class MainActivity extends Activity {
               }
               mmapAnonFreeAll();
               mmapAnonAllocatedByTest = 0;
-              data.clear();
               if (glAllocBytesPerMillisecond > 0) {
                 if (testSurface != null) {
                   testSurface.queueEvent(() -> {
@@ -697,18 +695,6 @@ public class MainActivity extends Activity {
         }
       }
     }.start();
-  }
-
-  void jvmConsume(int bytes) {
-    try {
-      byte[] array = new byte[bytes];
-      for (int count = 0; count < array.length; count++) {
-        array[count] = (byte) count;
-      }
-      data.add(array);
-    } catch (OutOfMemoryError e) {
-      throw new IllegalStateException(e);
-    }
   }
 
   public native void freeAll();
