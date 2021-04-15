@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicReference;
-import org.apache.commons.io.FileUtils;
 
 /**
  * The main activity of the istresser app
@@ -721,65 +719,5 @@ public class MainActivity extends Activity {
     ALLOCATED,
     FREEING_MEMORY,
     DEALLOCATED,
-  }
-
-  static class MmapFileInfo {
-    private final long fileSize;
-    private final String path;
-    private long allocSize;
-    private long offset;
-
-    public MmapFileInfo(String path) {
-      this.path = path;
-      fileSize = new File(path).length();
-      offset = 0;
-    }
-
-    public boolean alloc(long desiredSize) {
-      offset += allocSize;
-      long limit = fileSize - offset;
-      allocSize = Math.min(limit, desiredSize);
-      return allocSize > 0;
-    }
-
-    public void reset() {
-      offset = 0;
-      allocSize = 0;
-    }
-
-    public String getPath() {
-      return path;
-    }
-
-    public long getOffset() {
-      return offset;
-    }
-
-    public long getAllocSize() {
-      return allocSize;
-    }
-  }
-
-  static class MmapFileGroup {
-    private final ArrayList<MmapFileInfo> files = new ArrayList<>();
-    private int current;
-
-    public MmapFileGroup(String mmapPath, int mmapFileCount, long mmapFileSize) throws IOException {
-      int digits = Integer.toString(mmapFileCount - 1).length();
-      FileUtils.cleanDirectory(new File(mmapPath));
-      for (int i = 0; i < mmapFileCount; ++i) {
-        String filename = mmapPath + "/" + String.format("test%0" + digits + "d.dat", i);
-        writeRandomFile(filename, mmapFileSize);
-        files.add(new MmapFileInfo(filename));
-      }
-    }
-
-    public MmapFileInfo alloc(long desiredSize) {
-      while (!files.get(current).alloc(desiredSize)) {
-        current = (current + 1) % files.size();
-        files.get(current).reset();
-      }
-      return files.get(current);
-    }
   }
 }
