@@ -51,9 +51,6 @@ public class MainActivity extends Activity {
   private static final int BACKGROUND_MEMORY_PRESSURE_MB = 500;
   private static final int BACKGROUND_PRESSURE_PERIOD_SECONDS = 30;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-  private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-  private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
   private static final String MEMORY_BLOCKER = "MemoryBlockCommand";
   private static final String ALLOCATE_ACTION = "Allocate";
   private static final String FREE_ACTION = "Free";
@@ -369,6 +366,10 @@ public class MainActivity extends Activity {
         maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
         minimumFrequency == null ? 200 : minimumFrequency.longValue(),
         maximumFrequency == null ? 2000 : maximumFrequency.longValue(), new MemoryWatcher.Client() {
+          private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
+          private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
+          private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
+
           private final boolean yellowLightTesting =
               Boolean.TRUE.equals(params.get("yellowLightTesting"));
           private final long mallocBytesPerMillisecond =
