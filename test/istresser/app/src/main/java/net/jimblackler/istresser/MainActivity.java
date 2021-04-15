@@ -29,7 +29,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -65,7 +64,6 @@ public class MainActivity extends Activity {
   private MemoryAdvisor memoryAdvisor;
   private ServiceCommunicationHelper serviceCommunicationHelper;
   private Map<String, Object> params;
-  private MmapFileGroup mmapFiles;
   private ServiceState serviceState;
 
   public static native void initNative();
@@ -272,17 +270,6 @@ public class MainActivity extends Activity {
       }
     }
 
-    if (params.containsKey("mmapFile")) {
-      String mmapPath = getApplicationContext().getCacheDir().toString();
-      int mmapFileCount = ((Number) getOrDefault(params, "mmapFileCount", 10)).intValue();
-      long mmapFileSize = getMemoryQuantity(getOrDefault(params, "mmapFileSize", "4K"));
-      try {
-        mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
-      } catch (IOException e) {
-        throw new IllegalStateException(e);
-      }
-    }
-
     try {
       resultsStream.println(objectMapper.writeValueAsString(report));
     } catch (JsonProcessingException e) {
@@ -395,170 +382,9 @@ public class MainActivity extends Activity {
     new MemoryWatcher(memoryAdvisor,
         maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
         minimumFrequency == null ? 200 : minimumFrequency.longValue(),
-        maximumFrequency == null ? 2000 : maximumFrequency.longValue(), new MemoryWatcher.Client() {
-          private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-          private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-          private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
-
-          private final boolean yellowLightTesting =
-              Boolean.TRUE.equals(params.get("yellowLightTesting"));
-          private final long mallocBytesPerMillisecond =
-              getMemoryQuantity(getOrDefault(params, "malloc", 0));
-          private final long glAllocBytesPerMillisecond =
-              getMemoryQuantity(getOrDefault(params, "glTest", 0));
-          private final long vkAllocBytesPerMillisecond =
-              getMemoryQuantity(getOrDefault(params, "vkTest", 0));
-          private final long mmapFileBytesPerMillisecond =
-              getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
-          private final long mmapAnonBytesPerMillisecond =
-              getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
-
-          private final long testStartTime = System.currentTimeMillis();
-          private long allocationStartedTime = System.currentTimeMillis();
-          private long nativeAllocatedByTest;
-          private long vkAllocatedByTest;
-          private long mmapAnonAllocatedByTest;
-          private long mmapFileAllocatedByTest;
-
-          private final Timer timer = new Timer();
-          private final TestSurface testSurface = findViewById(R.id.glsurfaceView);
-
-          @Override
-          public void newState(MemoryAdvisor.MemoryState state) {
-            Log.i(TAG, "New memory state: " + state.name());
-          }
-
-          private void runAfterDelay(Runnable runnable, long delay) {
-            timer.schedule(new TimerTask() {
-              @Override
-              public void run() {
-                runnable.run();
-              }
-            }, delay);
-          }
-
-          @Override
-          public void receiveAdvice(Map<String, Object> advice) {
-            Map<String, Object> report = new LinkedHashMap<>();
-            report.put("advice", advice);
-            if (allocationStartedTime == -1) {
-              report.put("paused", true);
-            } else {
-              long sinceAllocationStarted = System.currentTimeMillis() - allocationStartedTime;
-              if (sinceAllocationStarted > 0) {
-                boolean shouldAllocate = true;
-                switch (MemoryAdvisor.getMemoryState(advice)) {
-                  case APPROACHING_LIMIT:
-                    if (yellowLightTesting) {
-                      shouldAllocate = false;
-                    }
-                    break;
-                  case CRITICAL:
-                    shouldAllocate = false;
-                    if (yellowLightTesting) {
-                      freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
-                    } else {
-                      // Allocating 0 MB
-                      releaseMemory();
-                    }
-                    break;
-                }
-                if (shouldAllocate) {
-                  if (mallocBytesPerMillisecond > 0) {
-                    long owed =
-                        sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
-                    if (owed > 0) {
-                      boolean succeeded = nativeConsume(owed);
-                      if (succeeded) {
-                        nativeAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-                  if (glAllocBytesPerMillisecond > 0) {
-                    long target = sinceAllocationStarted * glAllocBytesPerMillisecond;
-                    testSurface.getRenderer().setTarget(target);
-                  }
-
-                  if (vkAllocBytesPerMillisecond > 0) {
-                    long owed =
-                        sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
-                    if (owed > 0) {
-                      long allocated = vkAlloc(owed);
-                      if (allocated >= owed) {
-                        vkAllocatedByTest += owed;
-                      } else {
-                        report.put("allocFailed", true);
-                      }
-                    }
-                  }
-
-                  if (mmapAnonBytesPerMillisecond > 0) {
-                    long owed = sinceAllocationStarted * mmapAnonBytesPerMillisecond
-                        - mmapAnonAllocatedByTest;
-                    if (owed > MMAP_ANON_BLOCK_BYTES) {
-                      long allocated = mmapAnonConsume(owed);
-                      if (allocated != 0) {
-                        mmapAnonAllocatedByTest += allocated;
-                      } else {
-                        report.put("mmapAnonFailed", true);
-                      }
-                    }
-                  }
-                  if (mmapFileBytesPerMillisecond > 0) {
-                    long owed = sinceAllocationStarted * mmapFileBytesPerMillisecond
-                        - mmapFileAllocatedByTest;
-                    if (owed > MMAP_FILE_BLOCK_BYTES) {
-                      MmapFileInfo file = mmapFiles.alloc(owed);
-                      long allocated =
-                          mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
-                      if (allocated == 0) {
-                        report.put("mmapFileFailed", true);
-                      } else {
-                        mmapFileAllocatedByTest += allocated;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            if (!report.containsKey("advice")) {  // 'advice' already includes metrics.
-              report.put("metrics", memoryAdvisor.getMemoryMetrics());
-            }
-
-            Map<String, Object> testMetrics = new LinkedHashMap<>();
-            if (vkAllocatedByTest > 0) {
-              testMetrics.put("vkAllocatedByTest", vkAllocatedByTest);
-            }
-            if (nativeAllocatedByTest > 0) {
-              testMetrics.put("nativeAllocatedByTest", nativeAllocatedByTest);
-            }
-            if (mmapAnonAllocatedByTest > 0) {
-              testMetrics.put("mmapAnonAllocatedByTest", mmapAnonAllocatedByTest);
-            }
-            if (mmapAnonAllocatedByTest > 0) {
-              testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
-            }
-
-            TestRenderer renderer = testSurface.getRenderer();
-            long glAllocated = renderer.getAllocated();
-            if (glAllocated > 0) {
-              testMetrics.put("gl_allocated", glAllocated);
-            }
-            if (renderer.getFailed()) {
-              report.put("allocFailed", true);
-            }
-            report.put("testMetrics", testMetrics);
-
-            try {
-              resultsStream.println(objectMapper.writeValueAsString(report));
-            } catch (JsonProcessingException e) {
-              throw new IllegalStateException(e);
-            }
-
-            runOnUiThread(() -> {
+        maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
+        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), resultsStream, params,
+            stringObjectMap -> runOnUiThread(() -> {
               WebView webView = findViewById(R.id.webView);
               try {
                 webView.loadData(objectMapper.writeValueAsString(report) + System.lineSeparator()
@@ -567,64 +393,7 @@ public class MainActivity extends Activity {
               } catch (JsonProcessingException e) {
                 throw new IllegalStateException(e);
               }
-            });
-          }
-          private void releaseMemory() {
-            allocationStartedTime = -1;
-            long delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
-            long delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
-            runAfterDelay(() -> {
-              Map<String, Object> report2 = new LinkedHashMap<>();
-              report2.put("paused", true);
-              report2.put("metrics", memoryAdvisor.getMemoryMetrics());
-
-              try {
-                resultsStream.println(objectMapper.writeValueAsString(report2));
-              } catch (JsonProcessingException e) {
-                throw new IllegalStateException(e);
-              }
-              if (nativeAllocatedByTest > 0) {
-                nativeAllocatedByTest = 0;
-                freeAll();
-              }
-              mmapAnonFreeAll();
-              mmapAnonAllocatedByTest = 0;
-              if (glAllocBytesPerMillisecond > 0) {
-                if (testSurface != null) {
-                  testSurface.queueEvent(() -> {
-                    TestRenderer renderer = testSurface.getRenderer();
-                    renderer.release();
-                  });
-                }
-              }
-              if (vkAllocBytesPerMillisecond > 0) {
-                vkAllocatedByTest = 0;
-                vkRelease();
-              }
-
-              runAfterDelay(new Runnable() {
-                @Override
-                public void run() {
-                  Map<String, Object> report = new LinkedHashMap<>();
-                  Map<String, Object> advice = memoryAdvisor.getAdvice();
-                  report.put("advice", advice);
-                  if (MemoryAdvisor.anyWarnings(advice)) {
-                    report.put("failedToClear", true);
-                    report.put("paused", true);
-                    runAfterDelay(this, delayAfterRelease);
-                  } else {
-                    allocationStartedTime = System.currentTimeMillis();
-                  }
-                  try {
-                    resultsStream.println(objectMapper.writeValueAsString(report));
-                  } catch (JsonProcessingException e) {
-                    throw new IllegalStateException(e);
-                  }
-                }
-              }, delayAfterRelease);
-            }, delayBeforeRelease);
-          }
-        });
+            })));
   }
 
   private void scheduleAppSwitch(Map<String, Object> switchTest) {
