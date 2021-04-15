@@ -42,13 +42,13 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     }
     time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
 
-    let applicationAllocated = 0;
     if ('testMetrics' in row) {
+      let applicationAllocated = 0;
       for (const value of Object.values(row.testMetrics)) {
         applicationAllocated += value;
       }
+      combined.applicationAllocated = applicationAllocated;
     }
-    combined.applicationAllocated = applicationAllocated;
 
     rowOut[0] = time;
 
@@ -57,7 +57,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     delete combined.onTrim;
     const advice = row.advice;
 
-    if (advice && 'predictions' in advice) {
+    if (advice && 'predictions' in advice && 'applicationAllocated' in combined) {
       const predictions = advice.predictions;
       for (const [field, value] of Object.entries(predictions).sort()) {
         const totalPrediction = value + combined.applicationAllocated;
