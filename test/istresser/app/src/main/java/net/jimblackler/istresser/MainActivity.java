@@ -84,6 +84,18 @@ public class MainActivity extends Activity {
 
   public static native boolean writeRandomFile(String path, long bytes);
 
+  public static native void freeAll();
+
+  public static native void freeMemory(int bytes);
+
+  public static native boolean nativeConsume(long bytes);
+
+  public static native void mmapAnonFreeAll();
+
+  public static native long mmapAnonConsume(long bytes);
+
+  public static native long mmapFileConsume(String path, long bytes, long offset);
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -696,18 +708,6 @@ public class MainActivity extends Activity {
       }
     }.start();
   }
-
-  public native void freeAll();
-
-  public native void freeMemory(int bytes);
-
-  public native boolean nativeConsume(long bytes);
-
-  public native void mmapAnonFreeAll();
-
-  public native long mmapAnonConsume(long bytes);
-
-  public native long mmapFileConsume(String path, long bytes, long offset);
 
   enum ServiceState {
     ALLOCATING_MEMORY,

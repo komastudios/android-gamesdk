@@ -16,20 +16,20 @@ Java_net_jimblackler_istresser_MainActivity_initNative(JNIEnv *env,
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_net_jimblackler_istresser_MainActivity_nativeConsume(JNIEnv *env,
-                                                          jobject instance,
+                                                          jclass instance,
                                                           jlong bytes) {
   return allocator->Allocate(bytes);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env,
-                                                    jobject instance) {
+                                                    jclass instance) {
   return allocator->Release();
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_freeMemory(JNIEnv *env,
-                                                       jobject instance,
+                                                       jclass instance,
                                                        jint bytes) {
   return allocator->ReleasePartial(bytes);
 }

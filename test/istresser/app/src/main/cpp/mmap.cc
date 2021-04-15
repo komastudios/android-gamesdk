@@ -48,20 +48,20 @@ Java_net_jimblackler_istresser_MainActivity_initMMap(JNIEnv *env,
 
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_mmapAnonFreeAll(JNIEnv *env,
-                                                            jobject instance) {
+                                                            jclass instance) {
   mmap_allocator->AnonFreeAll();
 }
 
 extern "C" JNIEXPORT int64_t JNICALL
 Java_net_jimblackler_istresser_MainActivity_mmapAnonConsume(JNIEnv *env,
-                                                            jobject instance,
+                                                            jclass instance,
                                                             jlong bytes) {
   return mmap_allocator->Consume(bytes);
 }
 
 extern "C" JNIEXPORT int64_t JNICALL
 Java_net_jimblackler_istresser_MainActivity_mmapFileConsume(
-    JNIEnv *env, jobject instance, jstring path, jlong bytes, jlong offset) {
+    JNIEnv *env, jclass instance, jstring path, jlong bytes, jlong offset) {
   return mmap_allocator->MmapFileConsume(env->GetStringUTFChars(path, nullptr),
                                          bytes, offset);
 }
