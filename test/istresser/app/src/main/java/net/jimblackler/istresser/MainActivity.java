@@ -357,7 +357,21 @@ public class MainActivity extends Activity {
       throw new IllegalStateException(e);
     }
 
-    long timeout = getDuration(getOrDefault(params, "timeout", "10m"));
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        report.put("exiting", true);
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        try {
+          resultsStream.println(objectMapper.writeValueAsString(report));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
+        resultsStream.close();
+        finish();
+      }
+    }, getDuration(getOrDefault(params, "timeout", "10m")));
+
     Number maxMillisecondsPerSecond = (Number) params.get("maxMillisecondsPerSecond");
     Number minimumFrequency = (Number) params.get("minimumFrequency");
     Number maximumFrequency = (Number) params.get("maximumFrequency");
@@ -520,10 +534,6 @@ public class MainActivity extends Activity {
                 lastLaunched = 0;
               }
             }
-            if (timeRunning > timeout) {
-              report.put("exiting", true);
-            }
-
             if (!report.containsKey("advice")) {  // 'advice' already includes metrics.
               report.put("metrics", memoryAdvisor.getMemoryMetrics());
             }
@@ -558,10 +568,6 @@ public class MainActivity extends Activity {
               throw new IllegalStateException(e);
             }
 
-            if (timeRunning > timeout) {
-              resultsStream.close();
-              finish();
-            }
             runOnUiThread(() -> {
               WebView webView = findViewById(R.id.webView);
               try {
