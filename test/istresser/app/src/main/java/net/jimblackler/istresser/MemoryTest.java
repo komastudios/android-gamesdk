@@ -21,9 +21,6 @@ class MemoryTest implements MemoryWatcher.Client {
   private static final String TAG = MemoryTest.class.getSimpleName();
 
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-  private static final int MMAP_ANON_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-  private static final int MMAP_FILE_BLOCK_BYTES = 2 * BYTES_IN_MEGABYTE;
-  private static final int MEMORY_TO_FREE_PER_CYCLE_MB = 500;
 
   private final boolean yellowLightTesting;
   private final long mallocBytesPerMillisecond;
@@ -31,6 +28,9 @@ class MemoryTest implements MemoryWatcher.Client {
   private final long vkAllocBytesPerMillisecond;
   private final long mmapFileBytesPerMillisecond;
   private final long mmapAnonBytesPerMillisecond;
+  private final long mmapAnonBlock;
+  private final long mmapFileBlock;
+  private final long memoryToFreePerCycle;
   private final long delayBeforeRelease;
   private final long delayAfterRelease;
   private final PrintStream resultsStream;
@@ -58,22 +58,39 @@ class MemoryTest implements MemoryWatcher.Client {
     mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
     glAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "glTest", 0));
     vkAllocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "vkTest", 0));
-    mmapFileBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapFile", 0));
-    mmapAnonBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "mmapAnon", 0));
+
     delayBeforeRelease = getDuration(getOrDefault(params, "delayBeforeRelease", "1s"));
     delayAfterRelease = getDuration(getOrDefault(params, "delayAfterRelease", "1s"));
 
-    if (params.containsKey("mmapFile")) {
+    memoryToFreePerCycle = getMemoryQuantity(getOrDefault(params, "memoryToFreePerCycle", "500M"));
+
+    Map<String, Object> mmapAnon = (Map<String, Object>) params.get("mmapAnon");
+    if (mmapAnon == null) {
+      mmapAnonBlock = 0;
+      mmapAnonBytesPerMillisecond = 0;
+    } else {
+      mmapAnonBlock = getMemoryQuantity(getOrDefault(mmapAnon, "blockSize", "2M"));
+      mmapAnonBytesPerMillisecond =
+          getMemoryQuantity(getOrDefault(mmapAnon, "allocPerMillisecond", 0));
+    }
+
+    Map<String, Object> mmapFile = (Map<String, Object>) params.get("mmapFile");
+    if (mmapFile == null) {
+      mmapFiles = null;
+      mmapFileBlock = 0;
+      mmapFileBytesPerMillisecond = 0;
+    } else {
+      int mmapFileCount = ((Number) getOrDefault(mmapFile, "count", 10)).intValue();
+      long mmapFileSize = getMemoryQuantity(getOrDefault(mmapFile, "fileSize", "4K"));
       String mmapPath = context.getCacheDir().toString();
-      int mmapFileCount = ((Number) getOrDefault(params, "mmapFileCount", 10)).intValue();
-      long mmapFileSize = getMemoryQuantity(getOrDefault(params, "mmapFileSize", "4K"));
       try {
         mmapFiles = new MmapFileGroup(mmapPath, mmapFileCount, mmapFileSize);
       } catch (IOException e) {
         throw new IllegalStateException(e);
       }
-    } else {
-      mmapFiles = null;
+      mmapFileBlock = getMemoryQuantity(getOrDefault(mmapFile, "blockSize", "2M"));
+      mmapFileBytesPerMillisecond =
+          getMemoryQuantity(getOrDefault(mmapFile, "allocPerMillisecond", 0));
     }
   }
 
@@ -101,7 +118,7 @@ class MemoryTest implements MemoryWatcher.Client {
           case CRITICAL:
             shouldAllocate = false;
             if (yellowLightTesting) {
-              MainActivity.freeMemory(MEMORY_TO_FREE_PER_CYCLE_MB * BYTES_IN_MEGABYTE);
+              MainActivity.freeMemory(memoryToFreePerCycle);
             } else {
               // Allocating 0 MB
               releaseMemory();
@@ -140,7 +157,7 @@ class MemoryTest implements MemoryWatcher.Client {
           if (mmapAnonBytesPerMillisecond > 0) {
             long owed =
                 sinceAllocationStarted * mmapAnonBytesPerMillisecond - mmapAnonAllocatedByTest;
-            if (owed > MMAP_ANON_BLOCK_BYTES) {
+            if (owed > mmapAnonBlock) {
               long allocated = MainActivity.mmapAnonConsume(owed);
               if (allocated == 0) {
                 report.put("mmapAnonFailed", true);
@@ -152,7 +169,7 @@ class MemoryTest implements MemoryWatcher.Client {
           if (mmapFileBytesPerMillisecond > 0) {
             long owed =
                 sinceAllocationStarted * mmapFileBytesPerMillisecond - mmapFileAllocatedByTest;
-            if (owed > MMAP_FILE_BLOCK_BYTES) {
+            if (owed > mmapFileBlock) {
               MmapFileInfo file = mmapFiles.alloc(owed);
               long allocated = MainActivity.mmapFileConsume(
                   file.getPath(), file.getAllocSize(), file.getOffset());

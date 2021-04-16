@@ -34,17 +34,35 @@
       "$ref": "memoryQuantity.schema.json"
     },
     "mmapAnon": {
-      "$ref": "memoryQuantity.schema.json"
+      "properties": {
+        "blockSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "allocPerMillisecond": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
     },
     "mmapFile": {
-      "$ref": "memoryQuantity.schema.json"
-    },
-    "mmapFileCount": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "mmapFileSize": {
-      "$ref": "memoryQuantity.schema.json"
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fileSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "blockSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "allocPerMillisecond": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
     },
     "maxConsumer": {
       "$ref": "memoryQuantity.schema.json"
