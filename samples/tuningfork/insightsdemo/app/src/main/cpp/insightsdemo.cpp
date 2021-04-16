@@ -95,8 +95,8 @@ bool setFPs = false;
 extern "C" void FidelityParamsCallback(const TuningFork_CProtobufSerialization* params) {
     FidelityParams p;
     // Set default values
-    p.set_num_spheres(20);
-    p.set_tesselation_percent(50);
+    p.set_num_spheres(10);
+    p.set_tesselation_percent(30);
     std::vector<uint8_t> params_ser(params->bytes, params->bytes + params->size);
     tf::Deserialize(params_ser, p);
     std::string s = p.DebugString();
@@ -268,10 +268,11 @@ JNIEXPORT void JNICALL
 Java_com_tuningfork_insightsdemo_TFTestActivity_setFidelityParameters(JNIEnv * env, jclass clz) {
     // Simulate the user changing quality settings in the game
     static std::mt19937 gen;
-    static std::uniform_int_distribution<> dis(1,100);
+    static std::uniform_int_distribution<> dis(1,10);
+    static std::uniform_int_distribution<> dis2(1,30);
     FidelityParams p;
     p.set_num_spheres(dis(gen));
-    p.set_tesselation_percent(dis(gen));
+    p.set_tesselation_percent(dis2(gen));
     auto params = tf::TuningFork_CProtobufSerialization_Alloc(p);
     TuningFork_setFidelityParameters(&params);
     FidelityParamsCallback(&params);
