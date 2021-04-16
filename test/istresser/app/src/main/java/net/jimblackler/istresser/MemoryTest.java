@@ -6,12 +6,9 @@ import static net.jimblackler.istresser.Utils.getDuration;
 
 import android.content.Context;
 import android.util.Log;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -31,9 +28,6 @@ class MemoryTest implements MemoryWatcher.Client {
   private final long memoryToFreePerCycle;
   private final long delayBeforeRelease;
   private final long delayAfterRelease;
-  private final PrintStream resultsStream;
-
-  private final ObjectMapper objectMapper = new ObjectMapper();
   private final ResultsReceiver resultsReceiver;
   private final MemoryAdvisor memoryAdvisor;
   private final Timer timer = new Timer();
@@ -46,9 +40,8 @@ class MemoryTest implements MemoryWatcher.Client {
   private long mmapFileAllocatedByTest;
 
   MemoryTest(Context context, MemoryAdvisor memoryAdvisor, TestSurface testSurface,
-      PrintStream resultsStream, Map<String, Object> params, ResultsReceiver resultsReceiver) {
+      Map<String, Object> params, ResultsReceiver resultsReceiver) {
     this.testSurface = testSurface;
-    this.resultsStream = resultsStream;
     this.resultsReceiver = resultsReceiver;
     this.memoryAdvisor = memoryAdvisor;
 
@@ -206,12 +199,6 @@ class MemoryTest implements MemoryWatcher.Client {
     }
     report.put("testMetrics", testMetrics);
 
-    try {
-      resultsStream.println(objectMapper.writeValueAsString(report));
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException(e);
-    }
-
     resultsReceiver.accept(report);
   }
 
@@ -232,11 +219,8 @@ class MemoryTest implements MemoryWatcher.Client {
       report2.put("paused", true);
       report2.put("metrics", memoryAdvisor.getMemoryMetrics());
 
-      try {
-        resultsStream.println(objectMapper.writeValueAsString(report2));
-      } catch (JsonProcessingException e) {
-        throw new IllegalStateException(e);
-      }
+      resultsReceiver.accept(report2);
+
       if (nativeAllocatedByTest > 0) {
         nativeAllocatedByTest = 0;
         MainActivity.freeAll();
@@ -270,11 +254,7 @@ class MemoryTest implements MemoryWatcher.Client {
           } else {
             allocationStartedTime = System.currentTimeMillis();
           }
-          try {
-            resultsStream.println(objectMapper.writeValueAsString(report));
-          } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-          }
+          resultsReceiver.accept(report);
         }
       }, delayAfterRelease);
     }, delayBeforeRelease);

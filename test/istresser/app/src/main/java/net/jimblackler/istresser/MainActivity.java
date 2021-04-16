@@ -379,21 +379,32 @@ public class MainActivity extends Activity {
     Number minimumFrequency = (Number) params.get("minimumFrequency");
     Number maximumFrequency = (Number) params.get("maximumFrequency");
 
+    String paramsString;
+    try {
+      paramsString = objectMapper.writeValueAsString(params);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
+
+    WebView webView = findViewById(R.id.webView);
+
     new MemoryWatcher(memoryAdvisor,
         maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
         minimumFrequency == null ? 200 : minimumFrequency.longValue(),
         maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
-        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), resultsStream, params,
-            stringObjectMap -> runOnUiThread(() -> {
-              WebView webView = findViewById(R.id.webView);
-              try {
-                webView.loadData(objectMapper.writeValueAsString(report) + System.lineSeparator()
-                        + objectMapper.writeValueAsString(params),
-                    "text/plain; charset=utf-8", "UTF-8");
-              } catch (JsonProcessingException e) {
-                throw new IllegalStateException(e);
-              }
-            })));
+        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), params, report0 -> {
+          String reportString;
+          try {
+            reportString = objectMapper.writeValueAsString(report0);
+          } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+          }
+          resultsStream.println(reportString);
+          runOnUiThread(()
+                            -> webView.loadData(reportString + System.lineSeparator()
+                                    + System.lineSeparator() + paramsString,
+                                "text/plain; charset=utf-8", "UTF-8"));
+        }));
   }
 
   private void scheduleAppSwitch(Map<String, Object> switchTest) {
