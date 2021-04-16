@@ -383,17 +383,24 @@ public class MainActivity extends Activity {
         maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
         minimumFrequency == null ? 200 : minimumFrequency.longValue(),
         maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
-        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), resultsStream, params,
-            stringObjectMap -> runOnUiThread(() -> {
-              WebView webView = findViewById(R.id.webView);
+        new MemoryTest(
+            this, memoryAdvisor, findViewById(R.id.glsurfaceView), params, stringObjectMap -> {
               try {
-                webView.loadData(objectMapper.writeValueAsString(report) + System.lineSeparator()
-                        + objectMapper.writeValueAsString(params),
-                    "text/plain; charset=utf-8", "UTF-8");
+                resultsStream.println(objectMapper.writeValueAsString(report));
               } catch (JsonProcessingException e) {
                 throw new IllegalStateException(e);
               }
-            })));
+              runOnUiThread(() -> {
+                WebView webView = findViewById(R.id.webView);
+                try {
+                  webView.loadData(objectMapper.writeValueAsString(report) + System.lineSeparator()
+                          + objectMapper.writeValueAsString(params),
+                      "text/plain; charset=utf-8", "UTF-8");
+                } catch (JsonProcessingException e) {
+                  throw new IllegalStateException(e);
+                }
+              });
+            }));
   }
 
   private void scheduleAppSwitch(Map<String, Object> switchTest) {
