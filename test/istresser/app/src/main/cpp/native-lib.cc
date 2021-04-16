@@ -30,6 +30,6 @@ Java_net_jimblackler_istresser_MainActivity_freeAll(JNIEnv *env,
 extern "C" JNIEXPORT void JNICALL
 Java_net_jimblackler_istresser_MainActivity_freeMemory(JNIEnv *env,
                                                        jclass instance,
-                                                       jint bytes) {
+                                                       jlong bytes) {
   return allocator->ReleasePartial(bytes);
 }

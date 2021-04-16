@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
 
   public static native void freeAll();
 
-  public static native void freeMemory(int bytes);
+  public static native void freeMemory(long bytes);
 
   public static native boolean nativeConsume(long bytes);
 
