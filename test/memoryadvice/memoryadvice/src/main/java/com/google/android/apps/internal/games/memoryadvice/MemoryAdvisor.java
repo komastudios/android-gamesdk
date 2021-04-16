@@ -6,7 +6,7 @@ import static com.google.android.apps.internal.games.memoryadvice_common.StreamU
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -110,7 +110,8 @@ public class MemoryAdvisor {
   public static Map<String, Object> getDefaultParams(AssetManager assets) {
     Map<String, Object> params;
     try {
-      params = new Gson().fromJson(readStream(assets.open("memoryadvice/default.json")), Map.class);
+      params = new ObjectMapper().reader().readValue(
+          assets.open("memoryadvice/default.json"), Map.class);
     } catch (IOException ex) {
       Log.e(TAG, "Problem getting default params", ex);
       params = new LinkedHashMap<>();

@@ -15,7 +15,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,7 +40,7 @@ class OnDeviceStressTester {
   private static final String TAG = OnDeviceStressTester.class.getSimpleName();
   private final AtomicReference<ServiceConnection> serviceConnection = new AtomicReference<>();
   private final AtomicReference<Timer> timeoutTimer = new AtomicReference<>();
-  private final Gson gson = new Gson();
+  private final ObjectReader objectReader = new ObjectMapper().reader();
 
   /**
    * Construct an on-device stress tester.
@@ -75,7 +77,11 @@ class OnDeviceStressTester {
             public boolean handleMessage(Message msg) {
               if (msg.what == GET_BASELINE_METRICS_RETURN) {
                 Bundle bundle = (Bundle) msg.obj;
-                baseline = gson.fromJson(bundle.getString("metrics"), Map.class);
+                try {
+                  baseline = objectReader.readValue(bundle.getString("metrics"), Map.class);
+                } catch (IOException e) {
+                  throw new IllegalStateException(e);
+                }
                 int servicePid = msg.arg1;
                 serviceWatcherTimer = new Timer();
                 serviceWatcherTimer.scheduleAtFixedRate(new TimerTask() {
@@ -121,7 +127,12 @@ class OnDeviceStressTester {
             // The service's return message includes metrics.
             Bundle bundle = (Bundle) msg.obj;
 
-            Map<String, Object> received = gson.fromJson(bundle.getString("metrics"), Map.class);
+            Map<String, Object> received = null;
+            try {
+              received = objectReader.readValue(bundle.getString("metrics"), Map.class);
+            } catch (IOException e) {
+              throw new IllegalStateException(e);
+            }
             long limitTime = limit == null
                 ? Long.MIN_VALUE
                 : ((Number) ((Map<String, Object>) limit.get("meta")).get("time")).longValue();

@@ -5,7 +5,8 @@ import static com.google.android.apps.internal.games.memoryadvice_common.StreamU
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.util.Log;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,7 +50,9 @@ class DeviceProfile {
 
     Map<String, Object> lookup = null;
     try {
-      lookup = new Gson().fromJson(readStream(assets.open("memoryadvice/lookup.json")), Map.class);
+      ObjectReader objectReader = new ObjectMapper().reader();
+      lookup =
+          objectReader.readValue(readStream(assets.open("memoryadvice/lookup.json")), Map.class);
 
       String matchStrategy = (String) params.get("matchStrategy");
       String best;

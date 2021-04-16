@@ -9,7 +9,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,9 +28,15 @@ public class StressService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    // Create a local memory monitor, to obtain the metrics.
+    ObjectReader objectReader = new ObjectMapper().reader();
 
-    Map<String, Object> params = new Gson().fromJson(intent.getStringExtra("params"), Map.class);
+    // Create a local memory monitor, to obtain the metrics.
+    Map<String, Object> params = null;
+    try {
+      params = objectReader.readValue(intent.getStringExtra("params"), Map.class);
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
     Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
     memoryMonitor = new MemoryMonitor(this, metrics);
 
