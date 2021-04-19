@@ -13,3 +13,7 @@ popd
 pushd memoryadvice
 ../gradlew build publishToMavenLocal
 popd
+
+pushd memorytest
+../gradlew build publishToMavenLocal
+popd
