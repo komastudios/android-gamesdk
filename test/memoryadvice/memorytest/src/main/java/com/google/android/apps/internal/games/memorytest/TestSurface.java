@@ -1,4 +1,4 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.memorytest;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

@@ -8,14 +8,14 @@ istresser_testrenderer::TestRenderer *test_renderer;
 }  // namespace
 
 extern "C" JNIEXPORT void JNICALL
-Java_net_jimblackler_istresser_MainActivity_initGl(JNIEnv *env, jclass thiz) {
+Java_com_google_android_apps_internal_games_memorytest_MemoryTest_initGl(
+    JNIEnv *env, jclass thiz) {
   test_renderer = new istresser_testrenderer::TestRenderer();
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_net_jimblackler_istresser_MainActivity_nativeDraw(JNIEnv *env,
-                                                       jclass clazz,
-                                                       jint toAllocate) {
+Java_com_google_android_apps_internal_games_memorytest_MemoryTest_nativeDraw(
+    JNIEnv *env, jclass clazz, jint toAllocate) {
   if (test_renderer == NULL) {
     return 0;
   } else {
@@ -24,7 +24,8 @@ Java_net_jimblackler_istresser_MainActivity_nativeDraw(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_net_jimblackler_istresser_MainActivity_release(JNIEnv *env, jclass clazz) {
+Java_com_google_android_apps_internal_games_memorytest_MemoryTest_release(
+    JNIEnv *env, jclass clazz) {
   if (test_renderer != NULL) {
     test_renderer->Release();
   }

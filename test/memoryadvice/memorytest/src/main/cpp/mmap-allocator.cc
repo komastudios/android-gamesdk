@@ -11,7 +11,7 @@
 
 namespace istresser_mmap_allocator {
 
-constexpr char kAppName[] = "istresser";
+constexpr char kAppName[] = "memorytest";
 
 // Read out mmapped memory, so there's no chance some runtime optimization will
 // cause the underlying file not to be read.
