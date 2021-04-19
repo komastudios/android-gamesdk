@@ -358,6 +358,7 @@ public class MainActivity extends Activity {
     new Timer().schedule(new TimerTask() {
       @Override
       public void run() {
+        Map<String, Object> report = new LinkedHashMap<>();
         report.put("exiting", true);
         report.put("metrics", memoryAdvisor.getMemoryMetrics());
         try {
