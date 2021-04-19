@@ -1,4 +1,4 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.memorytest;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MAX_ELEMENTS_VERTICES;
 
@@ -26,7 +26,7 @@ public class TestRenderer implements GLSurfaceView.Renderer {
   @Override
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
     if (intialized.compareAndSet(false, true)) {
-      MainActivity.initGl();
+      MemoryTest.initGl();
       try {
         IntBuffer valueOut = IntBuffer.allocate(1);
         gl.glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, valueOut);
@@ -48,7 +48,7 @@ public class TestRenderer implements GLSurfaceView.Renderer {
     int toAllocate = (int) Math.min(Integer.MAX_VALUE, allocate1);
 
     if (toAllocate > 0) {
-      int result = MainActivity.nativeDraw(toAllocate);
+      int result = MemoryTest.nativeDraw(toAllocate);
       if (result >= toAllocate) {
         allocated += result;
       } else {
@@ -62,7 +62,7 @@ public class TestRenderer implements GLSurfaceView.Renderer {
     target = 0;
     allocated = 0;
     failed = false;
-    MainActivity.release();
+    MemoryTest.release();
   }
 
   public long getAllocated() {

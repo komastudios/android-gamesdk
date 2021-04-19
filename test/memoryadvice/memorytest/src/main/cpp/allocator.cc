@@ -6,7 +6,7 @@
 
 namespace istresser_allocator {
 
-constexpr char kAppName[] = "istresser";
+constexpr char kAppName[] = "memorytest";
 
 bool Allocator::Allocate(size_t bytes) {
   mtx.lock();

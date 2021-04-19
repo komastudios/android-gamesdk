@@ -1,11 +1,12 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.memorytest;
 
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
-import static net.jimblackler.istresser.Utils.getDuration;
+import static com.google.android.apps.internal.games.memorytest.DurationUtils.getDuration;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
 import java.io.IOException;
@@ -14,8 +15,12 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class MemoryTest implements MemoryWatcher.Client {
+public class MemoryTest implements MemoryWatcher.Client {
   private static final String TAG = MemoryTest.class.getSimpleName();
+
+  static {
+    System.loadLibrary("native-lib");
+  }
 
   private final boolean yellowLightTesting;
   private final long mallocBytesPerMillisecond;
@@ -39,11 +44,13 @@ class MemoryTest implements MemoryWatcher.Client {
   private long mmapAnonAllocatedByTest;
   private long mmapFileAllocatedByTest;
 
-  MemoryTest(Context context, MemoryAdvisor memoryAdvisor, TestSurface testSurface,
+  public MemoryTest(Context context, MemoryAdvisor memoryAdvisor, TestSurface testSurface,
       Map<String, Object> params, ResultsReceiver resultsReceiver) {
     this.testSurface = testSurface;
     this.resultsReceiver = resultsReceiver;
     this.memoryAdvisor = memoryAdvisor;
+
+    initNative();
 
     yellowLightTesting = Boolean.TRUE.equals(params.get("yellowLightTesting"));
     mallocBytesPerMillisecond = getMemoryQuantity(getOrDefault(params, "malloc", 0));
@@ -55,7 +62,13 @@ class MemoryTest implements MemoryWatcher.Client {
 
     memoryToFreePerCycle = getMemoryQuantity(getOrDefault(params, "memoryToFreePerCycle", "500M"));
 
+    Map<String, Object> mmapFile = (Map<String, Object>) params.get("mmapFile");
     Map<String, Object> mmapAnon = (Map<String, Object>) params.get("mmapAnon");
+
+    if (mmapAnon != null && mmapFile != null) {
+      initMMap();
+    }
+
     if (mmapAnon == null) {
       mmapAnonBlock = 0;
       mmapAnonBytesPerMillisecond = 0;
@@ -65,7 +78,6 @@ class MemoryTest implements MemoryWatcher.Client {
           getMemoryQuantity(getOrDefault(mmapAnon, "allocPerMillisecond", 0));
     }
 
-    Map<String, Object> mmapFile = (Map<String, Object>) params.get("mmapFile");
     if (mmapFile == null) {
       mmapFiles = null;
       mmapFileBlock = 0;
@@ -83,7 +95,46 @@ class MemoryTest implements MemoryWatcher.Client {
       mmapFileBytesPerMillisecond =
           getMemoryQuantity(getOrDefault(mmapFile, "allocPerMillisecond", 0));
     }
+
+    long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
+    if (glAllocBytesPerMillisecond > 0 || glFixed > 0) {
+      initGl();
+      testSurface.getRenderer().setMaxConsumerSize(
+          getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K")));
+      testSurface.setVisibility(View.VISIBLE);
+      testSurface.getRenderer().setTarget(glFixed);
+    }
+
+    nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
   }
+
+  public static native void initNative();
+
+  public static native void initGl();
+
+  public static native void initMMap();
+
+  public static native int nativeDraw(int toAllocate);
+
+  public static native void release();
+
+  public static native long vkAlloc(long size);
+
+  public static native void vkRelease();
+
+  public static native boolean writeRandomFile(String path, long bytes);
+
+  public static native void freeAll();
+
+  public static native void freeMemory(long bytes);
+
+  public static native boolean nativeConsume(long bytes);
+
+  public static native void mmapAnonFreeAll();
+
+  public static native long mmapAnonConsume(long bytes);
+
+  public static native long mmapFileConsume(String path, long bytes, long offset);
 
   @Override
   public void newState(MemoryAdvisor.MemoryState state) {
@@ -109,7 +160,7 @@ class MemoryTest implements MemoryWatcher.Client {
           case CRITICAL:
             shouldAllocate = false;
             if (yellowLightTesting) {
-              MainActivity.freeMemory(memoryToFreePerCycle);
+              freeMemory(memoryToFreePerCycle);
             } else {
               // Allocating 0 MB
               releaseMemory();
@@ -120,7 +171,7 @@ class MemoryTest implements MemoryWatcher.Client {
           if (mallocBytesPerMillisecond > 0) {
             long owed = sinceAllocationStarted * mallocBytesPerMillisecond - nativeAllocatedByTest;
             if (owed > 0) {
-              boolean succeeded = MainActivity.nativeConsume(owed);
+              boolean succeeded = nativeConsume(owed);
               if (succeeded) {
                 nativeAllocatedByTest += owed;
               } else {
@@ -136,7 +187,7 @@ class MemoryTest implements MemoryWatcher.Client {
           if (vkAllocBytesPerMillisecond > 0) {
             long owed = sinceAllocationStarted * vkAllocBytesPerMillisecond - vkAllocatedByTest;
             if (owed > 0) {
-              long allocated = MainActivity.vkAlloc(owed);
+              long allocated = vkAlloc(owed);
               if (allocated >= owed) {
                 vkAllocatedByTest += owed;
               } else {
@@ -149,7 +200,7 @@ class MemoryTest implements MemoryWatcher.Client {
             long owed =
                 sinceAllocationStarted * mmapAnonBytesPerMillisecond - mmapAnonAllocatedByTest;
             if (owed > mmapAnonBlock) {
-              long allocated = MainActivity.mmapAnonConsume(owed);
+              long allocated = mmapAnonConsume(owed);
               if (allocated == 0) {
                 report.put("mmapAnonFailed", true);
               } else {
@@ -162,8 +213,8 @@ class MemoryTest implements MemoryWatcher.Client {
                 sinceAllocationStarted * mmapFileBytesPerMillisecond - mmapFileAllocatedByTest;
             if (owed > mmapFileBlock) {
               MmapFileInfo file = mmapFiles.alloc(owed);
-              long allocated = MainActivity.mmapFileConsume(
-                  file.getPath(), file.getAllocSize(), file.getOffset());
+              long allocated =
+                  mmapFileConsume(file.getPath(), file.getAllocSize(), file.getOffset());
               if (allocated == 0) {
                 report.put("mmapFileFailed", true);
               } else {
@@ -223,10 +274,13 @@ class MemoryTest implements MemoryWatcher.Client {
 
       if (nativeAllocatedByTest > 0) {
         nativeAllocatedByTest = 0;
-        MainActivity.freeAll();
+        freeAll();
       }
-      MainActivity.mmapAnonFreeAll();
-      mmapAnonAllocatedByTest = 0;
+
+      if (mmapAnonAllocatedByTest > 0) {
+        mmapAnonFreeAll();
+        mmapAnonAllocatedByTest = 0;
+      }
 
       if (glAllocBytesPerMillisecond > 0) {
         if (testSurface != null) {
@@ -238,7 +292,7 @@ class MemoryTest implements MemoryWatcher.Client {
       }
       if (vkAllocBytesPerMillisecond > 0) {
         vkAllocatedByTest = 0;
-        MainActivity.vkRelease();
+        vkRelease();
       }
 
       runAfterDelay(new Runnable() {
@@ -260,7 +314,7 @@ class MemoryTest implements MemoryWatcher.Client {
     }, delayBeforeRelease);
   }
 
-  interface ResultsReceiver {
+  public interface ResultsReceiver {
     void accept(Map<String, Object> results);
   }
 }

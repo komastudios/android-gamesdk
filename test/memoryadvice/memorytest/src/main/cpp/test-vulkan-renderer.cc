@@ -4,7 +4,7 @@
 
 #include <vector>
 
-constexpr char kAppName[] = "istresser";
+constexpr char kAppName[] = "memorytest";
 
 #define CALL_VK(func)                                                 \
   if (VK_SUCCESS != (func)) {                                         \

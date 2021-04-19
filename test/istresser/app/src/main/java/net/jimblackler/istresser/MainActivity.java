@@ -4,10 +4,10 @@ import static com.google.android.apps.internal.games.memoryadvice.Utils.readFile
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
+import static com.google.android.apps.internal.games.memorytest.DurationUtils.getDuration;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
 import static net.jimblackler.istresser.Utils.flattenParams;
-import static net.jimblackler.istresser.Utils.getDuration;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -29,6 +29,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
 import com.google.android.apps.internal.games.memoryadvice.MemoryWatcher;
+import com.google.android.apps.internal.games.memorytest.MemoryTest;
+import com.google.android.apps.internal.games.memorytest.TestSurface;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,10 +56,6 @@ public class MainActivity extends Activity {
   private static final String ALLOCATE_ACTION = "Allocate";
   private static final String FREE_ACTION = "Free";
 
-  static {
-    System.loadLibrary("native-lib");
-  }
-
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private PrintStream resultsStream = System.out;
@@ -66,40 +64,10 @@ public class MainActivity extends Activity {
   private Map<String, Object> params;
   private ServiceState serviceState;
 
-  public static native void initNative();
-
-  public static native void initGl();
-
-  public static native void initMMap();
-
-  public static native int nativeDraw(int toAllocate);
-
-  public static native void release();
-
-  public static native long vkAlloc(long size);
-
-  public static native void vkRelease();
-
-  public static native boolean writeRandomFile(String path, long bytes);
-
-  public static native void freeAll();
-
-  public static native void freeMemory(long bytes);
-
-  public static native boolean nativeConsume(long bytes);
-
-  public static native void mmapAnonFreeAll();
-
-  public static native long mmapAnonConsume(long bytes);
-
-  public static native long mmapFileConsume(String path, long bytes, long offset);
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    initNative();
-    initMMap();
 
     Intent launchIntent = getIntent();
 
@@ -239,8 +207,6 @@ public class MainActivity extends Activity {
 
     TestSurface testSurface = findViewById(R.id.glsurfaceView);
     testSurface.setVisibility(View.GONE);
-    long maxConsumer = getMemoryQuantity(getOrDefault(params, "maxConsumer", "2048K"));
-    testSurface.getRenderer().setMaxConsumerSize(maxConsumer);
 
     PackageInfo packageInfo = null;
     try {
@@ -256,18 +222,6 @@ public class MainActivity extends Activity {
 
     if (Boolean.TRUE.equals(params.get("firebaseBlocker"))) {
       activateFirebaseBlocker();
-    }
-
-    nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
-
-    if (params.containsKey("glTest")) {
-      testSurface.setVisibility(View.VISIBLE);
-    } else {
-      long glFixed = getMemoryQuantity(getOrDefault(params, "glFixed", 0));
-      if (glFixed > 0) {
-        testSurface.setVisibility(View.VISIBLE);
-        testSurface.getRenderer().setTarget(glFixed);
-      }
     }
 
     try {

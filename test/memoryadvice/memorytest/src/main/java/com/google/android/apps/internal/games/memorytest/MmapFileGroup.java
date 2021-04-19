@@ -1,4 +1,4 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.memorytest;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ class MmapFileGroup {
     FileUtils.cleanDirectory(new File(mmapPath));
     for (int i = 0; i < mmapFileCount; ++i) {
       String filename = mmapPath + "/" + String.format("test%0" + digits + "d.dat", i);
-      MainActivity.writeRandomFile(filename, mmapFileSize);
+      MemoryTest.writeRandomFile(filename, mmapFileSize);
       files.add(new MmapFileInfo(filename));
     }
   }
