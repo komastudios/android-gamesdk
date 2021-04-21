@@ -22,6 +22,7 @@
 #define LOG_TAG "TuningFork:DebugUpload"
 #include "../../third_party/json11/json11.hpp"
 #include "Log.h"
+#include "core/protobuf_util_internal.h"
 #include "core/tuningfork_internal.h"
 #include "core/tuningfork_utils.h"
 #include "http_request.h"
@@ -64,10 +65,10 @@ static void add_params(const ProtobufSerialization& params, Json::object& obj,
 static std::string RequestJson() {
     Json::object request_obj = Json::object{};
     // Add in other info for the debug monitor
-    ProtobufSerialization descriptor_ser;
-    if (apk_utils::GetAssetAsSerialization(
-            "tuningfork/dev_tuningfork.descriptor", descriptor_ser)) {
-        add_params(descriptor_ser, request_obj, "dev_tuningfork_descriptor");
+    ProtobufSerialization* descriptor_ser =
+        file_descriptor::GetTuningForkFileDescriptorSerialization();
+    if (descriptor_ser != nullptr) {
+        add_params(*descriptor_ser, request_obj, "dev_tuningfork_descriptor");
     }
     ProtobufSerialization settings_ser;
     if (apk_utils::GetAssetAsSerialization("tuningfork/tuningfork_settings.bin",
