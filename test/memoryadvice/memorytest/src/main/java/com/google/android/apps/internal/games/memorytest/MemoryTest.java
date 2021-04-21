@@ -240,13 +240,15 @@ public class MemoryTest implements MemoryWatcher.Client {
       testMetrics.put("mmapFileAllocatedByTest", mmapFileAllocatedByTest);
     }
 
-    TestRenderer renderer = testSurface.getRenderer();
-    long glAllocated = renderer.getAllocated();
-    if (glAllocated > 0) {
-      testMetrics.put("gl_allocated", glAllocated);
-    }
-    if (renderer.getFailed()) {
-      report.put("allocFailed", true);
+    if (testSurface != null) {
+      TestRenderer renderer = testSurface.getRenderer();
+      long glAllocated = renderer.getAllocated();
+      if (glAllocated > 0) {
+        testMetrics.put("gl_allocated", glAllocated);
+      }
+      if (renderer.getFailed()) {
+        report.put("allocFailed", true);
+      }
     }
     report.put("testMetrics", testMetrics);
 
