@@ -192,13 +192,17 @@ public class MemoryAdvisor {
     if (Boolean.TRUE.equals(advice.get("backgrounded"))) {
       return MemoryState.BACKGROUNDED;
     }
-    if (anyRedWarnings(advice)) {
-      return MemoryState.CRITICAL;
+    Collection<Object> warnings = (Collection<Object>) advice.get("warnings");
+    if (warnings == null || warnings.isEmpty()) {
+      return MemoryState.OK;
     }
-    if (anyWarnings(advice)) {
-      return MemoryState.APPROACHING_LIMIT;
+    for (Object value : warnings) {
+      Map<String, Object> warning = (Map<String, Object>) value;
+      if (warning != null && "red".equals(warning.get("level"))) {
+        return MemoryState.CRITICAL;
+      }
     }
-    return MemoryState.OK;
+    return MemoryState.APPROACHING_LIMIT;
   }
 
   /**
