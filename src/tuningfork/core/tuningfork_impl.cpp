@@ -16,6 +16,8 @@
 
 #include "tuningfork_impl.h"
 
+#include <android/trace.h>
+
 #include <chrono>
 #include <cinttypes>
 #include <map>
@@ -32,6 +34,7 @@
 #include "lifecycle_upload_event.h"
 #include "memory_telemetry.h"
 #include "metric.h"
+#include "system_utils.h"
 #include "thermal_reporting_task.h"
 #include "tuningfork_utils.h"
 
@@ -211,6 +214,28 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         return MetricId{annotation_util::kAnnotationError};
     } else {
         ALOGV("Set annotation id to %" PRIu32, id);
+        bool changed = current_annotation_id_.detail.annotation != id;
+        if (!changed) return current_annotation_id_;
+#if __ANDROID_API__ >= 23
+        if (ATrace_isEnabled()) {
+            static bool started = false;
+            if (started)
+                ATrace_endSection();
+            else
+                started = true;
+            static std::map<AnnotationId, std::string> trace_marker_cache;
+            auto it = trace_marker_cache.find(id);
+            if (it == trace_marker_cache.end()) {
+                it = trace_marker_cache
+                         .insert(
+                             {id, "APTAnnotation@" +
+                                      annotation_util::HumanReadableAnnotation(
+                                          annotation, id)})
+                         .first;
+            }
+            ATrace_beginSection(it->second.c_str());
+        }
+#endif
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
         thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
