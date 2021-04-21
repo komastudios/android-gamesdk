@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace tuningfork {
@@ -45,6 +46,15 @@ void SetUpAnnotationRadixes(std::vector<uint32_t>& radix_mult,
 
 ErrorCode Value(uint64_t id, uint32_t index,
                 const std::vector<uint32_t>& radix_mult, int& value);
+
+// Parse the dev_tuningfork.descriptor file in order to find enum sizes.
+// Returns true is successful, false if not.
+bool GetEnumSizesFromDescriptors(std::vector<uint32_t>& enum_sizes);
+
+// Get a human-readable representation of an annotation.
+// The id is used to cache strings produced from the annotation serialization.
+std::string HumanReadableAnnotation(const SerializedAnnotation& annotation,
+                                    AnnotationId id);
 
 }  // namespace annotation_util
 

@@ -80,7 +80,8 @@ struct ThermalMetricData : public MetricData {
     static Metric::Type MetricType() { return Metric::Type::THERMAL; }
 
     ThermalMetric::ThermalState GetThermalState() {
-        if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 29) {
+        if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 29 &&
+            gamesdk::jni::IsValid()) {
             using namespace gamesdk::jni;
             java::Object obj = AppContext().getSystemService(
                 android::content::Context::POWER_SERVICE);
