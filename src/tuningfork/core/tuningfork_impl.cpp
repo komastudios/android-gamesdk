@@ -16,9 +16,10 @@
 
 #include "tuningfork_impl.h"
 
+#include <android/trace.h>
+
 #include <chrono>
 #include <cinttypes>
-#include <map>
 #include <sstream>
 #include <vector>
 
@@ -211,6 +212,29 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         return MetricId{annotation_util::kAnnotationError};
     } else {
         ALOGV("Set annotation id to %" PRIu32, id);
+        bool changed = current_annotation_id_.detail.annotation != id;
+        if (!changed) return current_annotation_id_;
+#if __ANDROID_API__ >= 23
+        if (ATrace_isEnabled()) {
+            // Finish the last section if there was one and start a new one.
+            if (trace_started_)
+                ATrace_endSection();
+            else
+                trace_started_ = true;
+            // Guard against concurrent access to the cache
+            std::lock_guard<std::mutex> lock(trace_marker_cache_mutex_);
+            auto it = trace_marker_cache_.find(id);
+            if (it == trace_marker_cache_.end()) {
+                it = trace_marker_cache_
+                         .insert(
+                             {id, "APTAnnotation@" +
+                                      annotation_util::HumanReadableAnnotation(
+                                          annotation)})
+                         .first;
+            }
+            ATrace_beginSection(it->second.c_str());
+        }
+#endif
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
         thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
@@ -600,13 +624,11 @@ TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
 TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
     const LoadingTimeMetadataWithGroup &metadata, LoadingTimeMetadataId &id) {
     std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
-    static LoadingTimeMetadataId loading_time_metadata_next_id =
-        1;  // 0 is implicitly an empty LoadingTimeMetadata struct
     auto it = loading_time_metadata_map_.find(metadata);
     if (it != loading_time_metadata_map_.end()) {
         id = it->second;
     } else {
-        id = loading_time_metadata_next_id++;
+        id = loading_time_metadata_next_id_++;
         loading_time_metadata_map_.insert({metadata, id});
     }
     return TUNINGFORK_ERROR_OK;

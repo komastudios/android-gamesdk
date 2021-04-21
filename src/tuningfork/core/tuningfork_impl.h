@@ -15,6 +15,7 @@
  */
 
 #include <atomic>
+#include <map>
 #include <memory>
 
 #include "Trace.h"
@@ -57,6 +58,8 @@ class TuningForkImpl : public IdProvider {
     std::atomic<int> next_ikey_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
+    LoadingTimeMetadataId loading_time_metadata_next_id_ =
+        1;  // 0 is implicitly an empty LoadingTimeMetadata struct
     std::mutex loading_time_metadata_map_mutex_;
     std::unordered_map<LoadingTimeMetadataWithGroup, LoadingTimeMetadataId>
         loading_time_metadata_map_;
@@ -81,6 +84,13 @@ class TuningForkImpl : public IdProvider {
     std::string current_loading_group_;
     MetricId current_loading_group_metric_;
     Duration current_loading_group_start_time_ = Duration::zero();
+
+    // Caching of ATrace markers
+#if __ANDROID_API__ >= 23
+    bool trace_started_ = false;
+    std::mutex trace_marker_cache_mutex_;
+    std::map<AnnotationId, std::string> trace_marker_cache_;
+#endif
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,
