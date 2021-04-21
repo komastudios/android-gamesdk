@@ -1,7 +1,8 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Map;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * A MemoryWatcher automatically polls the memory advisor and calls back a client a soon as possible
  * when the state changes.
  */
-public class MemoryWatcher {
+public class MemoryWatcher implements Closeable {
   private static final int UNRESPONSIVE_THRESHOLD = 100;
 
   private final long watcherStartTime;
@@ -20,6 +21,7 @@ public class MemoryWatcher {
   private long unresponsiveTime;
   private MemoryAdvisor.MemoryState lastReportedState = MemoryAdvisor.MemoryState.UNKNOWN;
   private long totalTimeSpent;
+  private boolean interrupt;
 
   /**
    * Create a MemoryWatcher object. This calls back the supplied client when the memory state
@@ -46,6 +48,9 @@ public class MemoryWatcher {
     runner = new Runnable() {
       @Override
       public void run() {
+        if (interrupt) {
+          return;
+        }
         long start = System.currentTimeMillis();
         Map<String, Object> advice = memoryAdvisor.getAdvice();
         client.receiveAdvice(advice);
@@ -87,6 +92,11 @@ public class MemoryWatcher {
       }
     };
     runner.run();
+  }
+
+  @Override
+  public void close() {
+    interrupt = true;
   }
 
   /**
