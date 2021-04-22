@@ -51,7 +51,7 @@ class OnDeviceStressTester {
    */
   OnDeviceStressTester(Context context, Map<String, Object> params, Consumer consumer) {
     Intent launchIntent = new Intent(context, StressService.class);
-    launchIntent.putExtra("params", params.toString());
+    launchIntent.putExtra("params", JSONObject.wrap(params).toString());
     serviceConnection.set(new ServiceConnection() {
       private Messenger messenger;
       private Map<String, Object> baseline;
