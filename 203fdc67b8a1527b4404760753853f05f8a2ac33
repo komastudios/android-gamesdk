@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9054904c_030ba0f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-22T16:51:46Z",
+      "side": 1,
+      "message": "I\u0027ll do another review pass, but looks good overall. Added a few questions",
+      "revId": "203fdc67b8a1527b4404760753853f05f8a2ac33",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a8047a6_b6b4cb11",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-04-22T16:51:46Z",
+      "side": 1,
+      "message": "Was this crashing before the fix?",
+      "revId": "203fdc67b8a1527b4404760753853f05f8a2ac33",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
