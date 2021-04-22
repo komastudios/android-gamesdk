@@ -5,9 +5,9 @@ import static com.google.android.apps.internal.games.memoryadvice_common.ConfigU
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 import static com.google.android.apps.internal.games.memorytest.DurationUtils.getDuration;
+import static com.google.android.apps.internal.games.memorytest.MapUtils.flattenParams;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.CRASHED_BEFORE;
 import static net.jimblackler.istresser.ServiceCommunicationHelper.TOTAL_MEMORY_MB;
-import static net.jimblackler.istresser.Utils.flattenParams;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;

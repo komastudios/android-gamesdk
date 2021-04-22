@@ -1,4 +1,4 @@
-package net.jimblackler.istresser;
+package com.google.android.apps.internal.games.memorytest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * A helper class with static methods to help with Heuristics and file IO
  */
-public class Utils {
-  private static final String TAG = Utils.class.getSimpleName();
+public class MapUtils {
+  private static final String TAG = MapUtils.class.getSimpleName();
 
   /**
    * Selects the parameters for a run based on the 'tests' and 'coordinates' of the test
@@ -20,7 +20,7 @@ public class Utils {
    * @param spec The test specification file.
    * @return The selected parameters.
    */
-  static Map<String, Object> flattenParams(Map<String, Object> spec) {
+  public static Map<String, Object> flattenParams(Map<String, Object> spec) {
     Map<String, Object> params = new HashMap<>();
 
     List<Object> coordinates = (List<Object>) spec.get("coordinates");
