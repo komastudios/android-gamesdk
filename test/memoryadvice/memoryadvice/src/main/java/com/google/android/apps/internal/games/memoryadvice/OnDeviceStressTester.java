@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
+import org.json.JSONObject;
 
 /**
  * A system to discover the limits of the device using a service running in a different process.
@@ -51,7 +52,7 @@ class OnDeviceStressTester {
    */
   OnDeviceStressTester(Context context, Map<String, Object> params, Consumer consumer) {
     Intent launchIntent = new Intent(context, StressService.class);
-    launchIntent.putExtra("params", params.toString());
+    launchIntent.putExtra("params", JSONObject.wrap(params).toString());
     serviceConnection.set(new ServiceConnection() {
       private Messenger messenger;
       private Map<String, Object> baseline;

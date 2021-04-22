@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * The service component of the on device stress test.
@@ -58,7 +59,7 @@ public class StressService extends Service {
               Bundle bundle = new Bundle();
               // Metrics before any allocations are are the baseline.
               Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
-              bundle.putString("metrics", metrics.toString());
+              bundle.putString("metrics", JSONObject.wrap(metrics).toString());
               message.obj = bundle;
               msg.replyTo.send(message);
             } catch (RemoteException e) {
@@ -89,7 +90,7 @@ public class StressService extends Service {
             metrics.put("stressed", stressed);
 
             Bundle bundle = new Bundle();
-            bundle.putString("metrics", metrics.toString());
+            bundle.putString("metrics", JSONObject.wrap(metrics).toString());
             Message message = Message.obtain(messageHandler, returnCode, bundle);
             try {
               msg.replyTo.send(message);
