@@ -16,6 +16,24 @@
       "message": "What\u0027s the reason for moving this? For consistency in tests?",
       "revId": "f0b4658eae32f19ed96e25815dd234d3d93aa025",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47a916ca_215d9734",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-23T08:56:17Z",
+      "side": 0,
+      "message": "This was the wrong way to do it. This state should be part of the TuningForkImpl object so it is destroyed and recreated when needed. Yes, it will make tests more consistent, although I\u0027ve not seen them failing because of it, TBH.",
+      "parentUuid": "c198c050_f2b40b45",
+      "revId": "f0b4658eae32f19ed96e25815dd234d3d93aa025",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

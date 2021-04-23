@@ -33,6 +33,24 @@
       "message": "Was this crashing before the fix?",
       "revId": "203fdc67b8a1527b4404760753853f05f8a2ac33",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09a08fbe_1d4469de",
+        "filename": "src/tuningfork/core/thermal_metric.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-23T08:56:17Z",
+      "side": 1,
+      "message": "Yes. This fixes part of b/185887323 but not all. The functional tests are still failing on unexpected thermal data.",
+      "parentUuid": "4a8047a6_b6b4cb11",
+      "revId": "203fdc67b8a1527b4404760753853f05f8a2ac33",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
