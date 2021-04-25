@@ -42,7 +42,7 @@ class Predictor {
    * @param data The map containing the input set.
    * @return The prediction.
    */
-  float predict(Map<String, Object> data) {
+  float predict(Map<String, Object> data) throws MissingPathException {
     float[] featuresArray = new float[features.size()];
     for (int idx = 0; idx != features.size(); idx++) {
       String feature = features.get(idx);

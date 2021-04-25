@@ -67,7 +67,11 @@ public class MemoryAdvisor {
 
     if (Boolean.TRUE.equals(params.get("predictOomLimit"))) {
       Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
-      predictedOomLimit = predictor.predict(getDeviceInfo(context));
+      try {
+        predictedOomLimit = predictor.predict(getDeviceInfo(context));
+      } catch (MissingPathException e) {
+        throw new MemoryAdvisorException(e);
+      }
     } else {
       predictedOomLimit = -1;
     }
