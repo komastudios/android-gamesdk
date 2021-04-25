@@ -318,7 +318,11 @@ class MemoryMonitor {
       data.put("baseline", baseline);
       data.put("build", build);
       data.put("sample", report);
-      report.put("predictedUsage", realtimePredictor.predict(data));
+      try {
+        report.put("predictedUsage", realtimePredictor.predict(data));
+      } catch (MissingPathException e) {
+        throw new IllegalStateException(e);
+      }
       Map<String, Object> meta = new LinkedHashMap<>();
       meta.put("duration", System.nanoTime() - time);
       report.put("_predictedUsageMeta", meta);
@@ -334,7 +338,12 @@ class MemoryMonitor {
       data.put("baseline", baseline);
       data.put("build", build);
       data.put("sample", report);
-      long available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
+      long available = 0;
+      try {
+        available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
+      } catch (MissingPathException e) {
+        throw new IllegalStateException(e);
+      }
       report.put("predictedAvailable", available);
       Map<String, Object> meta = new LinkedHashMap<>();
       meta.put("duration", System.nanoTime() - time);
