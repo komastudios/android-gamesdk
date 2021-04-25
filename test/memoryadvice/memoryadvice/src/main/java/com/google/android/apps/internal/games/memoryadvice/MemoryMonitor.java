@@ -120,6 +120,7 @@ class MemoryMonitor {
   public Map<String, Object> getMemoryMetrics(Map<String, Object> fields) {
     Map<String, Object> report = new LinkedHashMap<>();
 
+    boolean recordTimings = Boolean.TRUE.equals(fields.get("timings"));
     Object debugFieldsValue = fields.get("debug");
     if (debugFieldsValue != null) {
       long time = System.nanoTime();
@@ -141,9 +142,11 @@ class MemoryMonitor {
           metricsOut.put("Pss", Debug.getPss() * BYTES_IN_KILOBYTE);
         }
       }
-      Map<String, Object> meta = new LinkedHashMap<>();
-      meta.put("duration", System.nanoTime() - time);
-      metricsOut.put("_meta", meta);
+      if (recordTimings) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+      }
       report.put("debug", metricsOut);
     }
 
@@ -171,9 +174,11 @@ class MemoryMonitor {
           metricsOut.put("threshold", memoryInfo.threshold);
         }
 
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
+        if (recordTimings) {
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+        }
         report.put("MemoryInfo", metricsOut);
       }
     }
@@ -225,10 +230,11 @@ class MemoryMonitor {
       if (allFields || (procFields != null && Boolean.TRUE.equals(procFields.get("oom_score")))) {
         metricsOut.put("oom_score", getOomScore(pid));
       }
-
-      Map<String, Object> meta = new LinkedHashMap<>();
-      meta.put("duration", System.nanoTime() - time);
-      metricsOut.put("_meta", meta);
+      if (recordTimings) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        metricsOut.put("_meta", meta);
+      }
       report.put("proc", metricsOut);
     }
 
@@ -252,9 +258,11 @@ class MemoryMonitor {
           }
         }
 
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
+        if (recordTimings) {
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+        }
         report.put("summary", metricsOut);
       }
     }
@@ -275,9 +283,11 @@ class MemoryMonitor {
           }
         }
 
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
+        if (recordTimings) {
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+        }
         report.put("meminfo", metricsOut);
       }
     }
@@ -297,9 +307,11 @@ class MemoryMonitor {
           }
         }
 
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.nanoTime() - time);
-        metricsOut.put("_meta", meta);
+        if (recordTimings) {
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+        }
         report.put("status", metricsOut);
       }
     }
@@ -345,9 +357,11 @@ class MemoryMonitor {
         throw new IllegalStateException(e);
       }
       report.put("predictedAvailable", available);
-      Map<String, Object> meta = new LinkedHashMap<>();
-      meta.put("duration", System.nanoTime() - time);
-      report.put("_predictedAvailableMeta", meta);
+      if (recordTimings) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("duration", System.nanoTime() - time);
+        report.put("_predictedAvailableMeta", meta);
+      }
     }
 
     return report;
