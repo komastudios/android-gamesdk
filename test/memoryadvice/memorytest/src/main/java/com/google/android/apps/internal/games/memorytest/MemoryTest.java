@@ -4,7 +4,10 @@ import static com.google.android.apps.internal.games.memoryadvice_common.ConfigU
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memorytest.DurationUtils.getDuration;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.view.View;
 import com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor;
@@ -116,6 +119,18 @@ public class MemoryTest implements MemoryWatcher.Client {
         resultsReceiver.accept(report);
       }
     }, getDuration(getOrDefault(params, "timeout", "10m")));
+
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+    filter.addAction(Intent.ACTION_SCREEN_OFF);
+    context.registerReceiver(new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("action", intent.getAction());
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        resultsReceiver.accept(report);
+      }
+    }, filter);
   }
 
   public static native void initNative();
