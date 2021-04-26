@@ -106,6 +106,16 @@ public class MemoryTest implements MemoryWatcher.Client {
     }
 
     nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
+
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("exiting", true);
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        resultsReceiver.accept(report);
+      }
+    }, getDuration(getOrDefault(params, "timeout", "10m")));
   }
 
   public static native void initNative();

@@ -309,22 +309,6 @@ public class MainActivity extends Activity {
       throw new IllegalStateException(e);
     }
 
-    new Timer().schedule(new TimerTask() {
-      @Override
-      public void run() {
-        Map<String, Object> report = new LinkedHashMap<>();
-        report.put("exiting", true);
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
-        try {
-          resultsStream.println(objectMapper.writeValueAsString(report));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-        resultsStream.close();
-        finish();
-      }
-    }, getDuration(getOrDefault(params, "timeout", "10m")));
-
     Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
     if (switchTest != null) {
       scheduleAppSwitch(switchTest);
@@ -355,10 +339,15 @@ public class MainActivity extends Activity {
             throw new IllegalStateException(e);
           }
           resultsStream.println(reportString);
-          runOnUiThread(()
-                            -> webView.loadData(reportString + System.lineSeparator()
-                                    + System.lineSeparator() + paramsString,
-                                "text/plain; charset=utf-8", "UTF-8"));
+          if (Boolean.TRUE.equals(report0.get("exiting"))) {
+            resultsStream.close();
+            finish();
+          } else {
+            runOnUiThread(()
+                              -> webView.loadData(reportString + System.lineSeparator()
+                                      + System.lineSeparator() + paramsString,
+                                  "text/plain; charset=utf-8", "UTF-8"));
+          }
         }));
   }
 
