@@ -21,3 +21,7 @@ summary:focus {
 summary::-webkit-details-marker {
   color: lightgrey;
 }
+
+td.key {
+  font-weight: bold;
+}
