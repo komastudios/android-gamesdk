@@ -165,7 +165,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
       pausedStart = -1;
     }
 
-    let lowMemory = !!metrics.lowMemory;
+    let lowMemory = !!(metrics.MemoryInfo && metrics.MemoryInfo.lowMemory);
     if (lowMemory && lowMemoryStart === -1) {
       lowMemoryStart = time;
     } else if (!lowMemory && lowMemoryStart !== -1) {
