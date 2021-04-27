@@ -82,18 +82,51 @@ const section = document.getElementsByTagName('main')[0];
     section.appendChild(paragraph);
     paragraph.appendChild(getDataExplorer(first));
     paragraph.appendChild(getDataExplorer(deviceInfo));
-    const anchor = document.createElement('a');
-    const label = document.createTextNode('Download JSON');
-    anchor.appendChild(label);
-    anchor.setAttribute('href', '_blank');
-    anchor.addEventListener('click', ev => {
-      anchor.setAttribute(
-          'href',
-          'data:application/json,' +
-              encodeURIComponent(JSON.stringify(result, null, ' ')));
-    })
-    anchor.setAttribute('download', 'data');
-    paragraph.appendChild(anchor);
+    {
+      const span = document.createElement('span');
+      span.classList.add('link');
+      const anchor = document.createElement('a');
+      const label = document.createTextNode('Download JSON');
+      anchor.appendChild(label);
+      anchor.setAttribute('href', '_blank');
+      anchor.addEventListener('click', ev => {
+        anchor.setAttribute(
+            'href',
+            'data:application/json,' +
+                encodeURIComponent(JSON.stringify(result, null, ' ')));
+      })
+      anchor.setAttribute('download', 'data');
+      span.appendChild(anchor);
+      paragraph.appendChild(span);
+    }
+    {
+      const span = document.createElement('span');
+      span.classList.add('link');
+      const anchor = document.createElement('a');
+      const label = document.createTextNode('View JSON');
+      anchor.appendChild(label);
+      anchor.setAttribute('href', '_blank');
+      anchor.addEventListener('click', ev => {
+        ev.preventDefault();
+        const holder = document.createElement('p');
+        holder.style.height = '600px';
+        paragraph.appendChild(holder);
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js';
+        script.addEventListener('load', ev1 => {
+          const jsonResults = ace.edit(holder, {
+            mode: 'ace/mode/json',
+            theme: 'ace/theme/crimson_editor',
+            fontSize: '14px',
+            readOnly: true
+          });
+          jsonResults.setValue(JSON.stringify(result, null, '\t'), -1);
+        });
+        document.body.appendChild(script);
+      });
+      span.appendChild(anchor);
+      paragraph.appendChild(span);
+    }
   }
   const graphDiv = document.createElement('div');
   section.appendChild(graphDiv);
