@@ -31,6 +31,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
   const graphData = [];
 
   const fields = ['Time'];
+  const visibility = [];
   let time = 0;
   const series = {};
   const combined = {};
@@ -71,6 +72,13 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
         continue;
       }
       if (fields.indexOf(field) === -1) {
+        const prefixPos = field.lastIndexOf('/');
+        const prefix = prefixPos === -1 ? 'root' : field.substring(0, prefixPos);
+
+        if (prefix === '_meta' || prefix === 'meta') {
+          continue;
+        }
+
         series[field] = {color: `hsl(${hashCode(field) % 360}, 100%, 30%)`};
         if (deviceInfo.params.heuristics &&
             field in deviceInfo.params.heuristics) {
@@ -80,9 +88,10 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
         for (const existingRow of graphData) {
           existingRow.push(0);
         }
+        visibility.push(localStorage.getItem(field) !== 'false');
       }
       rowOut[fields.indexOf(field)] =
-          field === 'proc/oom_score' ? value : value / (1024 * 1024);
+          field === 'proc/oom_score' || field === 'predictedUsage' ? value : value / (1024 * 1024);
     }
 
     graphData.push(rowOut.slice(0));
@@ -212,13 +221,27 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     series.applicationAllocated.strokeWidth = 4;
     series.applicationAllocated.color = 'black';
   }
-  if ('proc/oom_score' in series) {
+  const axes = {
+    x: {drawGrid: false},
+    y: {independentTicks: true},
+
+  }
+  let y2label;
+  const useOom = localStorage.getItem("proc/oom_score") !== 'false';
+  if (useOom && 'proc/oom_score' in series) {
     series['proc/oom_score'].axis = 'y2';
+    axes.y2 = {valueRange: [0, 1000], independentTicks: true};
+    y2label = 'OOM Score';
+  } else if ('predictedUsage' in series) {
+    series['predictedUsage'].axis = 'y2';
+    axes.y2 = {valueRange: [0, 1], independentTicks: true};
+    y2label = 'Predicted usage';
   }
   let wasHighlighted = null;
   const graph = new Dygraph(graphDiv, graphData, {
     height: 725,
     labels: fields,
+    visibility,
     showLabelsOnHighlight: false,
     highlightCircleSize: 4,
     strokeWidth: 1,
@@ -226,13 +249,10 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     highlightSeriesOpts:
         {strokeWidth: 2, strokeBorderWidth: 1, highlightCircleSize: 5},
     series: series,
-    axes: {
-      x: {drawGrid: false},
-      y: {independentTicks: true},
-      y2: {valueRange: [0, 1000], independentTicks: true}
-    },
+    axes,
     ylabel: 'MB',
-    y2label: 'OOM Score',
+    y2label,
+    includeZero: true,
 
     underlayCallback: (canvas, area, g) => {
       for (const [start, end, fillStyle] of highlights) {
@@ -268,10 +288,10 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
         wasHighlighted = null;
       }
     }
-
   });
 
   const fieldsets = {};
+  const allCheckboxes = [];
   const form = document.createElement('form');
   form.classList.add('seriesForm');
   extrasDiv.appendChild(form);
@@ -303,12 +323,14 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     label.style.setProperty('color', _series.color);
     label.addEventListener('mouseover', evt => {
       graph.setSelection(0, field);
+      graph.setVisibility(idx - 1, true);
       label.style.backgroundColor = label.style.color;
       label.style.color = 'white';
       wasHighlighted = label;
     });
     label.addEventListener('mouseout', evt => {
       if (wasHighlighted !== null) {
+        graph.setVisibility(idx - 1, input.checked);
         wasHighlighted.style.color = wasHighlighted.style.backgroundColor;
         wasHighlighted.style.backgroundColor = '';
         wasHighlighted = null;
@@ -316,9 +338,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
     });
     input.setAttribute('type', 'checkbox');
     input.setAttribute('name', field);
-    if (localStorage.getItem(field) === 'false') {
-      graph.setVisibility(idx - 1, false);
-    } else {
+    if (localStorage.getItem(field) !== 'false') {
       input.checked = true;
     }
 
@@ -326,8 +346,79 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
       localStorage.setItem(field, input.checked);
       graph.setVisibility(idx - 1, input.checked);
     });
+    allCheckboxes.push(input);
     label.appendChild(document.createTextNode(suffix));
     fieldset.appendChild(label);
   }
+
+  const controls = document.createElement('section');
+  {
+    const selectAll = document.createElement('button');
+    selectAll.appendChild(document.createTextNode('Select all'));
+    selectAll.addEventListener('click', ev => {
+      allCheckboxes.forEach(input => input.checked = true);
+      const visibility = graph.visibility();
+      for (let idx = 0; idx !== visibility.length; idx++) {
+        visibility[idx] = true;
+      }
+      Object.keys(localStorage).forEach(key => {
+        if (key !== 'saved') {
+          localStorage.setItem(key, 'true');
+        }
+      });
+      graph.setVisibility(0, true);
+    });
+    controls.appendChild(selectAll);
+  }
+
+  {
+    const clearAll = document.createElement('button');
+    clearAll.appendChild(document.createTextNode('Clear all'));
+    clearAll.addEventListener('click', ev => {
+      allCheckboxes.forEach(input => input.checked = false);
+      const visibility = graph.visibility();
+      for (let idx = 0; idx !== visibility.length; idx++) {
+        visibility[idx] = false;
+      }
+      Object.keys(localStorage).forEach(key => {
+        if (key !== 'saved') {
+          localStorage.setItem(key, 'false');
+        }
+      });
+
+      fields.forEach(field => localStorage.setItem(field, 'false'));
+      graph.setVisibility(0, false);
+    });
+    controls.appendChild(clearAll);
+  }
+
+  {
+    const save = document.createElement('button');
+    save.appendChild(document.createTextNode('Save'));
+    save.addEventListener('click', ev => {
+      const saved = {};
+      Object.keys(localStorage).forEach(key => {
+        if (key !== 'saved') {
+          saved[key] = localStorage.getItem(key);
+        }
+      });
+      localStorage.setItem('saved', JSON.stringify(saved));
+    });
+    controls.appendChild(save);
+  }
+
+  {
+    const load = document.createElement('button');
+    load.appendChild(document.createTextNode('Load'));
+    load.addEventListener('click', ev => {
+      const saved = JSON.parse(localStorage.getItem('saved'));
+      Object.keys(saved).forEach(key => localStorage.setItem(key, saved[key]));
+      location.reload();
+    });
+    controls.appendChild(load);
+  }
+
+  extrasDiv.appendChild(controls);
+
   graph.ready(() => graph.setAnnotations(annotations));
 }
