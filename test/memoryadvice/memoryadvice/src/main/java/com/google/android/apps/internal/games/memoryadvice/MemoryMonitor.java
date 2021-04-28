@@ -108,7 +108,11 @@ class MemoryMonitor {
    * @return A map containing current memory metrics.
    */
   public Map<String, Object> getMemoryMetrics() {
-    return getMemoryMetrics((Map<String, Object>) metrics.get("variable"));
+    Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
+    if (variable == null) {
+      return new LinkedHashMap<>();
+    }
+    return getMemoryMetrics(variable);
   }
 
   /**
