@@ -1,10 +1,11 @@
 package net.jimblackler.collate;
 
+import static com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTrustedTransport;
 import static net.jimblackler.collate.JsonUtils.getSchema;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.toolresults.ToolResults;
@@ -17,18 +18,20 @@ import com.google.api.services.toolresults.model.StepDimensionValueEntry;
 import com.google.api.services.toolresults.model.TestExecutionStep;
 import com.google.api.services.toolresults.model.ToolExecution;
 import com.google.api.services.toolresults.model.ToolOutputReference;
-import com.google.auth.oauth2.AccessToken;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,20 +74,24 @@ class Collector {
 
     int inProgress = 0;
     Collection<String> reported = new HashSet<>();
+    NetHttpTransport httpTransport = null;
+    try {
+      httpTransport = newTrustedTransport();
+    } catch (GeneralSecurityException e) {
+      throw new IOException(e);
+    }
+    JacksonFactory jsonFactory = new JacksonFactory();
+    GoogleCredentials googleCredentials = AuthUserFlow.runAuthUserFlow(
+        Collector.class.getResourceAsStream("/clientSecrets.json"), jsonFactory, httpTransport,
+        ImmutableList.of("https://www.googleapis.com/auth/devstorage.read_only",
+            "https://www.googleapis.com/auth/cloud-platform"));
+    HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(googleCredentials);
     do {
-      String accessToken = Auth.getAccessToken();
       try {
-        GoogleCredentials credentials1 =
-            GoogleCredentials.create(new AccessToken(accessToken, null));
         Storage storage =
-            StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
-
-        GoogleCredential credentials =
-            new GoogleCredential.Builder().build().setAccessToken(accessToken);
+            StorageOptions.newBuilder().setCredentials(googleCredentials).build().getService();
         ToolResults toolResults =
-            new ToolResults
-                .Builder(new NetHttpTransport(), new JacksonFactory(),
-                    new NetHttpTransport().createRequestFactory(credentials).getInitializer())
+            new ToolResults.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
                 .setServicePath(ToolResults.DEFAULT_SERVICE_PATH)
                 .setApplicationName(projectId)
                 .build();
