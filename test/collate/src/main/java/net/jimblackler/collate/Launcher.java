@@ -3,7 +3,9 @@ package net.jimblackler.collate;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSet;
 import java.io.BufferedWriter;
@@ -216,7 +218,13 @@ public class Launcher {
     String id = formatter.format(now);
     Date date = new Date();
 
-    List<Object> tests = objectMapper.readValue(Utils.fileToString("tests.json"), List.class);
+    ObjectReader objectReader = objectMapper.readerFor(Map.class)
+                                    .with(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+                                    .with(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+                                    .with(JsonReadFeature.ALLOW_TRAILING_COMMA)
+                                    .with(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES);
+
+    List<Object> tests = objectReader.readValue(Utils.fileToString("tests.json5"), List.class);
     int numberDimensions = tests.size();
     List<Integer> coordinates = new ArrayList<>();
     for (int dimension = 0; dimension < numberDimensions; dimension++) {
