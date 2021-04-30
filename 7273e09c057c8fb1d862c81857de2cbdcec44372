@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3216e740_58c15433",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "Can you make a bug so we do this before release?",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d537a8f6_7cf56360",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "nit: should it be 2021? Lots of the other file are the same.",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e69a4053_0603fc2a",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "Can you make a bug for this, please?",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bffaf39_49943e82",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "Use of our gameinput.InputConnection should be gated behind a flag. If it\u0027s false, we should just call super.onCreateInputConnection. Add a bug to fix this if you like.",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fa86c6f_601831a8",
+        "filename": "GameInput/prefab-src/modules/game-input/include/game-input/gameinput.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "Make this TODO into a bug please.",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac0aed18_f80db379",
+        "filename": "GameInput/prefab-src/modules/game-input/include/game-input/gameinput.h",
+        "patchSetId": 5
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-04-30T16:10:31Z",
+      "side": 1,
+      "message": "Remove this TODO please",
+      "revId": "7273e09c057c8fb1d862c81857de2cbdcec44372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
