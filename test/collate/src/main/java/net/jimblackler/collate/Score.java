@@ -325,8 +325,7 @@ public class Score {
     List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
     body.append("<tr>");
     body.append("<td colspan=6/>");
-    for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-      List<Object> coords = horizontalOrder.get(idx);
+    for (List<Object> coords : horizontalOrder) {
       int total = 0;
       int acceptable = 0;
       float validScore = 0;
@@ -388,16 +387,14 @@ public class Score {
 
       Map<String, Float> maxScore = new HashMap<>();
 
-      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        List<Object> coords = horizontalOrder.get(idx);
+      for (List<Object> coords : horizontalOrder) {
         Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
           maxScore.merge(result.getGroup(), result.getScore(), Math::max);
         }
       }
 
-      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        List<Object> coords = horizontalOrder.get(idx);
+      for (List<Object> coords : horizontalOrder) {
         Result result = rows0.get(coords.toString());
         if (result == null) {
           body.append("<td/>");
@@ -446,7 +443,7 @@ public class Score {
       List<List<Map<String, Object>>> tests, List<Integer> verticalOrder) {
     List<List<Object>> horizontalOrder = new ArrayList<>();
     List<Object> base = new ArrayList<>();
-    for (int idx = 0; idx < tests.size(); idx++) {
+    while (base.size() < tests.size()) {
       base.add(0);
     }
 
