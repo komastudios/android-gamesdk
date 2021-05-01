@@ -108,14 +108,11 @@ class Utils {
   static Map<String, Object> flattenParams(Map<String, Object> spec) {
     Map<String, Object> params = new HashMap<>();
 
-    List<Object> coordinates = (List<Object>) spec.get("coordinates");
-    List<Object> tests = (List<Object>) spec.get("tests");
+    List<Number> coordinates = (List<Number>) spec.get("coordinates");
+    List<List<Map<String, Object>>> tests = (List<List<Map<String, Object>>>) spec.get("tests");
 
     for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
-      List<Object> jsonArray = (List<Object>) tests.get(coordinateNumber);
-      Map<String, Object> jsonObject = (Map<String, Object>) jsonArray.get(
-          ((Number) coordinates.get(coordinateNumber)).intValue());
-      merge(jsonObject, params);
+      merge(tests.get(coordinateNumber).get(coordinates.get(coordinateNumber).intValue()), params);
     }
     return params;
   }

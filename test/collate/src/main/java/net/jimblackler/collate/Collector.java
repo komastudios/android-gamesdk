@@ -49,7 +49,8 @@ import org.json.JSONException;
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
 
-  static void deviceCollect(String appName, Consumer<List<Object>> emitter) throws IOException {
+  static void deviceCollect(String appName, Consumer<List<Map<String, Object>>> emitter)
+      throws IOException {
     Schema resultsRowSchema = getSchema("resultsRow.schema.json");
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
@@ -62,7 +63,8 @@ class Collector {
     }
   }
 
-  static void cloudCollect(String historyId, Consumer<List<Object>> emitter) throws IOException {
+  static void cloudCollect(String historyId, Consumer<List<Map<String, Object>>> emitter)
+      throws IOException {
     int sleepFor = 0;
     int ioSleepFor = 0;
 
@@ -221,11 +223,11 @@ class Collector {
     } while (inProgress != 0 || reported.isEmpty());
   }
 
-  private static void collectResult(Consumer<List<Object>> emitter, String text,
+  private static void collectResult(Consumer<List<Map<String, Object>>> emitter, String text,
       Map<String, Object> extra, Schema resultsRowSchema) {
     ObjectMapper objectMapper = new ObjectMapper();
     boolean validate = false;
-    List<Object> data = new ArrayList<>();
+    List<Map<String, Object>> data = new ArrayList<>();
     text.lines().forEach(line -> {
       line = line.trim();
       try {
@@ -241,9 +243,9 @@ class Collector {
       }
     });
     if (data.isEmpty()) {
-      data.add(new LinkedHashMap<String, Object>());
+      data.add(new LinkedHashMap<>());
     }
-    ((Map<String, Object>) data.get(0)).put("extra", extra);
+    data.get(0).put("extra", extra);
     emitter.accept(data);
   }
 

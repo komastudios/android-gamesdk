@@ -23,9 +23,8 @@ public class ReportUtils {
     return ((Number) ((Map<String, Object>) metrics.get("meta")).get("time")).longValue();
   }
 
-  static Map<String, Object> getDeviceInfo(Iterable<Object> result) {
-    for (Object data : result) {
-      Map<String, Object> line = (Map<String, Object>) data;
+  static Map<String, Object> getDeviceInfo(Iterable<Map<String, Object>> result) {
+    for (Map<String, Object> line : result) {
       Map<String, Object> deviceInfo = (Map<String, Object>) line.get("deviceInfo");
       if (deviceInfo != null) {
         return deviceInfo;

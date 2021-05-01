@@ -36,10 +36,10 @@ public class Score {
     Map<String, Map<String, Result>> out = new HashMap<>();
     Map<String, Map<String, Object>> deviceInfos = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
-    AtomicReference<List<Object>> tests = new AtomicReference<>();
+    AtomicReference<List<List<Map<String, Object>>>> tests = new AtomicReference<>();
     AtomicReference<String> historyId = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
-    Consumer<List<Object>> collect = result -> {
+    Consumer<List<Map<String, Object>>> collect = result -> {
       if (timer.get() != null) {
         timer.get().cancel();
       }
@@ -47,7 +47,7 @@ public class Score {
       TimerTask task = new TimerTask() {
         @Override
         public void run() {
-          List<Object> _tests = tests.get();
+          List<List<Map<String, Object>>> _tests = tests.get();
           if (_tests == null || _tests.isEmpty()) {
             return;
           }
@@ -84,7 +84,7 @@ public class Score {
       }
       Map<String, Object> runParameters = (Map<String, Object>) deviceInfo.get("params");
       List<Object> coordinates = (List<Object>) params.get("coordinates");
-      tests.set((List<Object>) params.get("tests"));
+      tests.set((List<List<Map<String, Object>>>) params.get("tests"));
 
       assert deviceInfo.containsKey("build");
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
@@ -193,8 +193,8 @@ public class Score {
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> deviceInfos, Path directory, List<Object> tests)
-      throws IOException {
+      Map<String, Map<String, Object>> deviceInfos, Path directory,
+      List<List<Map<String, Object>>> tests) throws IOException {
     StringBuilder body = new StringBuilder();
     // The vertical orders are the variations of the graphs. The vertical order refers to how the
     // dimensions will be ordered in the header, which is arranged like a tree. The first group is
@@ -226,11 +226,12 @@ public class Score {
    * @param objects       The array of dimension arrays.
    * @return true if the permutation is the definitive version.
    */
-  private static boolean worthRendering(Iterable<Integer> verticalOrder, List<Object> objects) {
+  private static boolean worthRendering(
+      Iterable<Integer> verticalOrder, List<List<Map<String, Object>>> objects) {
     int original = 0;
     for (int idx : verticalOrder) {
       if (idx != original) {
-        int n = ((Collection<Object>) objects.get(idx)).size();
+        int n = objects.get(idx).size();
         if (n <= 1) {
           return false;
         }
@@ -276,8 +277,8 @@ public class Score {
   }
 
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> deviceInfos, List<Object> tests, Path directory,
-      List<Integer> verticalOrder) {
+      Map<String, Map<String, Object>> deviceInfos, List<List<Map<String, Object>>> tests,
+      Path directory, List<Integer> verticalOrder) {
     int rowspan = tests.size() + 1;
 
     int colspan = getTotalVariations(tests);
@@ -305,13 +306,12 @@ public class Score {
 
     int repeats = 1;
     for (int idx : verticalOrder) {
-      List<Object> test = (List<Object>) tests.get(idx);
+      Collection<Map<String, Object>> test = tests.get(idx);
       colspan /= test.size();
       body.append("<tr>");
 
       for (int repeat = 0; repeat != repeats; repeat++) {
-        for (int param = 0; param < test.size(); param++) {
-          Map<String, Object> _param = (Map<String, Object>) test.get(param);
+        for (Map<String, Object> _param : test) {
           Node dataExplorer = DataExplorer.getDataExplorer(HtmlUtils.getDocument(), _param);
           body.append("<th colspan=" + colspan + " class='params'>")
               .append(HtmlUtils.toString(dataExplorer))
@@ -443,7 +443,7 @@ public class Score {
    * @return The selections for the tests in an array, ordered left to right.
    */
   private static List<List<Object>> getHorizontalOrder(
-      List<Object> tests, List<Integer> verticalOrder) {
+      List<List<Map<String, Object>>> tests, List<Integer> verticalOrder) {
     List<List<Object>> horizontalOrder = new ArrayList<>();
     List<Object> base = new ArrayList<>();
     for (int idx = 0; idx < tests.size(); idx++) {
@@ -456,7 +456,7 @@ public class Score {
       ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
       while (it.hasPrevious()) {
         int idx = it.previous();
-        Collection<Object> test = (Collection<Object>) tests.get(idx);
+        List<Map<String, Object>> test = tests.get(idx);
         int value = (int) base.get(idx);
         if (value == test.size() - 1) {
           base.set(idx, 0);
@@ -473,7 +473,7 @@ public class Score {
     return horizontalOrder;
   }
 
-  private static int getTotalVariations(List<Object> tests) {
+  private static int getTotalVariations(Iterable<List<Map<String, Object>>> tests) {
     int total = 1;
     for (Object o : tests) {
       total *= ((Collection<Object>) o).size();
