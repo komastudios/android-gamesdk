@@ -37,7 +37,6 @@ public class Score {
     Map<String, Map<String, Object>> deviceInfos = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
     AtomicReference<List<List<Map<String, Object>>>> tests = new AtomicReference<>();
-    AtomicReference<String> historyId = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
     Consumer<List<Map<String, Object>>> collect = result -> {
       if (timer.get() != null) {
@@ -91,7 +90,6 @@ public class Score {
 
       Map<String, Object> extra = (Map<String, Object>) first.get("extra");
       if (extra != null) {
-        historyId.set((String) extra.get("historyId"));
         Map<String, Object> step = (Map<String, Object>) extra.get("step");
         if (step != null) {
           id = step.get("dimensionValue").toString();
@@ -153,7 +151,7 @@ public class Score {
       Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
       group.remove("advisorParameters");
       if (directory.get() == null) {
-        String dirName = historyId.get();
+        String dirName = extra.get("historyId").toString();
         if (dirName == null) {
           dirName = (String) params.get("run");
         }
