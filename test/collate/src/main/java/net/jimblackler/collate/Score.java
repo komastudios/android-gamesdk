@@ -86,6 +86,7 @@ public class Score {
 
       assert deviceInfo.containsKey("build");
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
+      String key = coordinates.toString();
       String id = build.toString();
 
       Map<String, Object> extra = (Map<String, Object>) first.get("extra");
@@ -94,6 +95,10 @@ public class Score {
         if (step != null) {
           id = step.get("dimensionValue").toString();
         }
+      }
+
+      while (out.containsKey(id) && out.get(id).containsKey(key)) {
+        id += "2";
       }
 
       if (directory.get() == null) {
@@ -172,8 +177,8 @@ public class Score {
       group.remove("advisorParameters");
       URI uri = Main.writeGraphs(directory.get(), result);
       System.out.println(uri);
-      results0.put(coordinates.toString(),
-          new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
+      results0.put(
+          key, new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
     };
 
     if (useDevice) {
