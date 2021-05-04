@@ -106,11 +106,19 @@ class Utils {
    * @return The selected parameters.
    */
   static Map<String, Object> flattenParams(Map<String, Object> spec) {
+    return flattenParams((List<Number>) spec.get("coordinates"),
+        (List<List<Map<String, Object>>>) spec.get("tests"));
+  }
+
+  /**
+   * Selects the parameters for a run.
+   * @param coordinates The coordinates to select.
+   * @param tests The test array to select from.
+   * @return The run parameters.
+   */
+  static Map<String, Object> flattenParams(
+      List<Number> coordinates, List<List<Map<String, Object>>> tests) {
     Map<String, Object> params = new HashMap<>();
-
-    List<Number> coordinates = (List<Number>) spec.get("coordinates");
-    List<List<Map<String, Object>>> tests = (List<List<Map<String, Object>>>) spec.get("tests");
-
     for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
       merge(tests.get(coordinateNumber).get(coordinates.get(coordinateNumber).intValue()), params);
     }

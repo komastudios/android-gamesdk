@@ -82,8 +82,7 @@ public class Score {
         }
         return;
       }
-      Map<String, Object> runParameters = (Map<String, Object>) deviceInfo.get("params");
-      List<Object> coordinates = (List<Object>) params.get("coordinates");
+      List<Number> coordinates = (List<Number>) params.get("coordinates");
       tests.set((List<List<Map<String, Object>>>) params.get("tests"));
 
       assert deviceInfo.containsKey("build");
@@ -151,7 +150,7 @@ public class Score {
       float score =
           (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
       Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
-      Map<String, Object> group = Utils.flattenParams((Map<String, Object>) first.get("params"));
+      Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
       group.remove("advisorParameters");
       if (directory.get() == null) {
         String dirName = historyId.get();
