@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af7aed2f_49f54b2d",
+        "filename": "test/memoryadvice/memoryadvice/src/androidTest/java/com/google/android/apps/internal/games/memoryadvice/UtilsTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-05-04T10:06:16Z",
+      "side": 1,
+      "message": "Can we get something more meaningful than \u0027greater than 0\u0027? I know we can\u0027t get an exact value but maybe we can do something like \u0027between 500K and 10M\u0027.",
+      "revId": "0200bf3a1b8ff359f3bc6ae713a6c84e957713c5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
