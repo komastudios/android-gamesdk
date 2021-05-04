@@ -293,6 +293,30 @@ class MemoryMonitor {
       }
     }
 
+    if (fields.containsKey("smaps_rollup")) {
+      long time = System.nanoTime();
+      Object smapsRollupFieldsValue = fields.get("smaps_rollup");
+      Map<String, Object> smapsRollupFields = smapsRollupFieldsValue instanceof Map
+          ? (Map<String, Object>) smapsRollupFieldsValue
+          : null;
+      boolean allFields = Boolean.TRUE.equals(smapsRollupFieldsValue);
+      if (allFields || (smapsRollupFields != null && !smapsRollupFields.isEmpty())) {
+        Map<String, Object> metricsOut = new LinkedHashMap<>();
+        processMemFormatFile("/proc/" + pid + "/smaps_rollup", (key, bytes) -> {
+          if (allFields || Boolean.TRUE.equals(smapsRollupFields.get(key))) {
+            metricsOut.put(key, bytes);
+          }
+        });
+
+        if (recordTimings) {
+          Map<String, Object> meta = new LinkedHashMap<>();
+          meta.put("duration", System.nanoTime() - time);
+          metricsOut.put("_meta", meta);
+        }
+        report.put("smaps_rollup", metricsOut);
+      }
+    }
+
     if (fields.containsKey("status")) {
       long time = System.nanoTime();
       Object statusValue = fields.get("status");
