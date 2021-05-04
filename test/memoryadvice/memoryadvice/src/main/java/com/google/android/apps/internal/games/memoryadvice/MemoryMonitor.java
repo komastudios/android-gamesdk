@@ -2,8 +2,7 @@ package com.google.android.apps.internal.games.memoryadvice;
 
 import static com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor.getDefaultParams;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
-import static com.google.android.apps.internal.games.memoryadvice.Utils.processMeminfo;
-import static com.google.android.apps.internal.games.memoryadvice.Utils.processStatus;
+import static com.google.android.apps.internal.games.memoryadvice.Utils.processMemFormatFile;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -279,13 +278,11 @@ class MemoryMonitor {
       boolean allFields = Boolean.TRUE.equals(meminfoFieldsValue);
       if (allFields || (meminfoFields != null && !meminfoFields.isEmpty())) {
         Map<String, Object> metricsOut = new LinkedHashMap<>();
-        Map<String, Long> memInfo = processMeminfo();
-        for (Map.Entry<String, Long> pair : memInfo.entrySet()) {
-          String key = pair.getKey();
+        processMemFormatFile("/proc/meminfo", (key, bytes) -> {
           if (allFields || Boolean.TRUE.equals(meminfoFields.get(key))) {
-            metricsOut.put(key, pair.getValue());
+            metricsOut.put(key, bytes);
           }
-        }
+        });
 
         if (recordTimings) {
           Map<String, Object> meta = new LinkedHashMap<>();
@@ -304,12 +301,11 @@ class MemoryMonitor {
       boolean allFields = Boolean.TRUE.equals(statusValue);
       if (allFields || (status != null && !status.isEmpty())) {
         Map<String, Object> metricsOut = new LinkedHashMap<>();
-        for (Map.Entry<String, Long> pair : processStatus(pid).entrySet()) {
-          String key = pair.getKey();
+        processMemFormatFile("/proc/" + pid + "/status", (key, bytes) -> {
           if (allFields || Boolean.TRUE.equals(status.get(key))) {
-            metricsOut.put(key, pair.getValue());
+            metricsOut.put(key, bytes);
           }
-        }
+        });
 
         if (recordTimings) {
           Map<String, Object> meta = new LinkedHashMap<>();
