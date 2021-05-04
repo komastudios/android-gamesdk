@@ -107,11 +107,7 @@ class MemoryMonitor {
    * @return A map containing current memory metrics.
    */
   public Map<String, Object> getMemoryMetrics() {
-    Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
-    if (variable == null) {
-      return new LinkedHashMap<>();
-    }
-    return getMemoryMetrics(variable);
+    return getMemoryMetrics((Map<String, Object>) metrics.get("variable"));
   }
 
   /**
@@ -122,6 +118,34 @@ class MemoryMonitor {
    */
   public Map<String, Object> getMemoryMetrics(Map<String, Object> fields) {
     Map<String, Object> report = new LinkedHashMap<>();
+
+    Map<String, Object> _meta = new LinkedHashMap<>();
+    _meta.put("time", System.currentTimeMillis());
+    report.put("meta", _meta);
+
+    if (mapTester.warning()) {
+      report.put("mapTester", true);
+      mapTester.reset();
+    }
+
+    if (canaryProcessTester != null && canaryProcessTester.warning()) {
+      report.put("canaryProcessTester", "red");
+      canaryProcessTester.reset();
+    }
+
+    if (appBackgrounded) {
+      report.put("backgrounded", true);
+    }
+
+    if (latestOnTrimLevel > 0) {
+      report.put("onTrim", latestOnTrimLevel);
+      latestOnTrimLevel = 0;
+    }
+
+    if (fields == null) {
+      // All remaining data requires a fields spec.
+      return report;
+    }
 
     boolean recordTimings = Boolean.TRUE.equals(fields.get("timings"));
     Object debugFieldsValue = fields.get("debug");
@@ -202,25 +226,6 @@ class MemoryMonitor {
           report.put("LowRamDevice", activityManager.isLowRamDevice());
         }
       }
-    }
-
-    if (mapTester.warning()) {
-      report.put("mapTester", true);
-      mapTester.reset();
-    }
-
-    if (canaryProcessTester != null && canaryProcessTester.warning()) {
-      report.put("canaryProcessTester", "red");
-      canaryProcessTester.reset();
-    }
-
-    if (appBackgrounded) {
-      report.put("backgrounded", true);
-    }
-
-    if (latestOnTrimLevel > 0) {
-      report.put("onTrim", latestOnTrimLevel);
-      latestOnTrimLevel = 0;
     }
 
     Object procFieldsValue = fields.get("proc");
@@ -339,10 +344,6 @@ class MemoryMonitor {
         report.put("status", metricsOut);
       }
     }
-
-    Map<String, Object> _meta = new LinkedHashMap<>();
-    _meta.put("time", System.currentTimeMillis());
-    report.put("meta", _meta);
 
     if (Boolean.TRUE.equals(fields.get("predictRealtime"))) {
       if (realtimePredictor == null) {
