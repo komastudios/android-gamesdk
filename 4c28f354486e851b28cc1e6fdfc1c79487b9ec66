@@ -1,0 +1,56 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010462319",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1690793?revision\u003d6",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "531cc753_97bbd570",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-04T09:13:13Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 237,
+        "startChar": 0,
+        "endLine": 237,
+        "endChar": 101
+      },
+      "revId": "4c28f354486e851b28cc1e6fdfc1c79487b9ec66",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010462319",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1690793?revision\u003d6",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0462ebe0_00500fc5",
+        "filename": "GameInput/prefab-src/modules/game-input/include/game-input/gameinput.h",
+        "patchSetId": 6
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-04T09:13:13Z",
+      "side": 1,
+      "message": "TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.",
+      "range": {
+        "startLine": 205,
+        "startChar": 3,
+        "endLine": 205,
+        "endChar": 20
+      },
+      "revId": "4c28f354486e851b28cc1e6fdfc1c79487b9ec66",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
