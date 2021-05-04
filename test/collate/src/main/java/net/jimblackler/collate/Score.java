@@ -60,125 +60,7 @@ public class Score {
       };
       timer.get().schedule(task, 1000 * 10);
 
-      Map<String, Object> first = result.get(0);
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
-      if (params == null) {
-        System.out.println("No usable results. Data returned was:");
-        try {
-          System.out.println(objectWriter.writeValueAsString(first));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-        return;
-      }
-      Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
-      if (deviceInfo == null) {
-        System.out.println("Could not find deviceInfo. Data returned was:");
-        try {
-          System.out.println(objectWriter.writeValueAsString(first));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-        return;
-      }
-      List<Number> coordinates = (List<Number>) params.get("coordinates");
-      tests.set((List<List<Map<String, Object>>>) params.get("tests"));
-
-      assert deviceInfo.containsKey("build");
-      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
-      String key = coordinates.toString();
-      String id = build.toString();
-
-      Map<String, Object> extra = (Map<String, Object>) first.get("extra");
-      if (extra != null) {
-        Map<String, Object> step = (Map<String, Object>) extra.get("step");
-        if (step != null) {
-          id = step.get("dimensionValue").toString();
-        }
-      }
-
-      while (out.containsKey(id) && out.get(id).containsKey(key)) {
-        id += "2";
-      }
-
-      if (directory.get() == null) {
-        String dirName =
-            extra == null ? (String) params.get("run") : (String) extra.get("historyId");
-        directory.set(Path.of("reports").resolve(dirName));
-        try {
-          File outDir = directory.get().toFile();
-          if (outDir.exists()) {
-            // Empty the directory if it already exists.
-            try (Stream<Path> files = Files.walk(directory.get())) {
-              files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-            }
-          }
-          outDir.mkdirs();
-          Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
-        } catch (IOException e) {
-          throw new IllegalStateException(e);
-        }
-      }
-
-      deviceInfos.put(id, deviceInfo);
-
-      long lowestTop = Long.MAX_VALUE;
-      long largest = 0;
-      boolean exited = false;
-      boolean allocFailed = false;
-      boolean serviceCrashed = false;
-
-      for (Object o : result) {
-        Map<String, Object> row = (Map<String, Object>) o;
-        exited |= Boolean.TRUE.equals(row.get("exiting"));
-
-        allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
-        allocFailed |= row.containsKey("criticalLogLines");
-
-        serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
-        long score = 0;
-        Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
-        if (testMetrics != null) {
-          for (Object o2 : testMetrics.values()) {
-            score += ((Number) o2).longValue();
-          }
-        }
-
-        if (score > largest) {
-          largest = score;
-        }
-
-        Map<String, Object> advice = (Map<String, Object>) row.get("advice");
-        if (advice != null) {
-          Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
-          if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
-            for (Object o2 : warnings) {
-              Map<String, Object> warning = (Map<String, Object>) o2;
-              if (!"red".equals(warning.get("level"))) {
-                continue;
-              }
-              long top = score;
-              if (top < lowestTop) {
-                lowestTop = top;
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      float score =
-          (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
-      Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
-      Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
-      group.remove("advisorParameters");
-      URI uri = Main.writeGraphs(directory.get(), result);
-      System.out.println(uri);
-      results0.put(
-          key, new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
+      handleResult(result, out, deviceInfos, directory, tests, objectWriter);
     };
 
     if (useDevice) {
@@ -192,6 +74,126 @@ public class Score {
     }
     URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
     System.out.println(uri);
+  }
+
+  private static void handleResult(List<Map<String, Object>> result,
+      Map<String, Map<String, Result>> out, Map<String, Map<String, Object>> deviceInfos,
+      AtomicReference<Path> directory, AtomicReference<List<List<Map<String, Object>>>> tests,
+      ObjectWriter objectWriter) {
+    Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
+    if (deviceInfo == null) {
+      System.out.println("Could not find deviceInfo.");
+      return;
+    }
+
+    Map<String, Object> first = result.get(0);
+    Map<String, Object> params = (Map<String, Object>) first.get("params");
+    if (params == null) {
+      System.out.println("No usable results. Data returned was:");
+      try {
+        System.out.println(objectWriter.writeValueAsString(first));
+      } catch (JsonProcessingException e) {
+        throw new IllegalStateException(e);
+      }
+      return;
+    }
+    List<Number> coordinates = (List<Number>) params.get("coordinates");
+    tests.set((List<List<Map<String, Object>>>) params.get("tests"));
+
+    assert deviceInfo.containsKey("build");
+    Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
+    String key = coordinates.toString();
+    String id = build.toString();
+
+    Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+    if (extra != null) {
+      Map<String, Object> step = (Map<String, Object>) extra.get("step");
+      if (step != null) {
+        id = step.get("dimensionValue").toString();
+      }
+    }
+
+    while (out.containsKey(id) && out.get(id).containsKey(key)) {
+      id += "2";
+    }
+
+    if (directory.get() == null) {
+      String dirName = extra == null ? (String) params.get("run") : (String) extra.get("historyId");
+      directory.set(Path.of("reports").resolve(dirName));
+      try {
+        File outDir = directory.get().toFile();
+        if (outDir.exists()) {
+          // Empty the directory if it already exists.
+          try (Stream<Path> files = Files.walk(directory.get())) {
+            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+          }
+        }
+        outDir.mkdirs();
+        Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    deviceInfos.put(id, deviceInfo);
+
+    long lowestTop = Long.MAX_VALUE;
+    long largest = 0;
+    boolean exited = false;
+    boolean allocFailed = false;
+    boolean serviceCrashed = false;
+
+    for (Object o : result) {
+      Map<String, Object> row = (Map<String, Object>) o;
+      exited |= Boolean.TRUE.equals(row.get("exiting"));
+
+      allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
+      allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
+      allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
+      allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
+      allocFailed |= row.containsKey("criticalLogLines");
+
+      serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
+      long score = 0;
+      Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+      if (testMetrics != null) {
+        for (Object o2 : testMetrics.values()) {
+          score += ((Number) o2).longValue();
+        }
+      }
+
+      if (score > largest) {
+        largest = score;
+      }
+
+      Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+      if (advice != null) {
+        Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
+        if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
+          for (Object o2 : warnings) {
+            Map<String, Object> warning = (Map<String, Object>) o2;
+            if (!"red".equals(warning.get("level"))) {
+              continue;
+            }
+            long top = score;
+            if (top < lowestTop) {
+              lowestTop = top;
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    float score =
+        (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
+    Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
+    Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
+    group.remove("advisorParameters");
+    URI uri = Main.writeGraphs(directory.get(), result);
+    System.out.println(uri);
+    results0.put(
+        key, new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
