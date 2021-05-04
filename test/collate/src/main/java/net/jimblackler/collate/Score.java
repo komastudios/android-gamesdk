@@ -95,6 +95,26 @@ public class Score {
           id = step.get("dimensionValue").toString();
         }
       }
+
+      if (directory.get() == null) {
+        String dirName =
+            extra == null ? (String) params.get("run") : (String) extra.get("historyId");
+        directory.set(Path.of("reports").resolve(dirName));
+        try {
+          File outDir = directory.get().toFile();
+          if (outDir.exists()) {
+            // Empty the directory if it already exists.
+            try (Stream<Path> files = Files.walk(directory.get())) {
+              files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            }
+          }
+          outDir.mkdirs();
+          Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
+        } catch (IOException e) {
+          throw new IllegalStateException(e);
+        }
+      }
+
       deviceInfos.put(id, deviceInfo);
 
       long lowestTop = Long.MAX_VALUE;
@@ -150,26 +170,6 @@ public class Score {
       Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
       Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
       group.remove("advisorParameters");
-      if (directory.get() == null) {
-        String dirName = extra.get("historyId").toString();
-        if (dirName == null) {
-          dirName = (String) params.get("run");
-        }
-        directory.set(Path.of("reports").resolve(dirName));
-        try {
-          File outDir = directory.get().toFile();
-          if (outDir.exists()) {
-            // Empty the directory if it already exists.
-            try (Stream<Path> files = Files.walk(directory.get())) {
-              files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-            }
-          }
-          outDir.mkdirs();
-          Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
-        } catch (IOException e) {
-          throw new IllegalStateException(e);
-        }
-      }
       URI uri = Main.writeGraphs(directory.get(), result);
       System.out.println(uri);
       results0.put(coordinates.toString(),
