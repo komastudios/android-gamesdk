@@ -256,14 +256,9 @@ public class MemoryAdvisor {
       throw new MemoryAdvisorException("Methods called before Advisor was ready");
     }
 
-    Map<String, Object> metrics;
-    Map<String, Object> variable = (Map<String, Object>) metricsParams.get("variable");
-    if (variable == null) {
-      metrics = null;
-    } else {
-      metrics = memoryMonitor.getMemoryMetrics(variable);
-      results.put("metrics", metrics);
-    }
+    Map<String, Object> metrics =
+        memoryMonitor.getMemoryMetrics((Map<String, Object>) metricsParams.get("variable"));
+    results.put("metrics", metrics);
 
     Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
     Map<String, Object> baseline = memoryMonitor.getBaseline();
