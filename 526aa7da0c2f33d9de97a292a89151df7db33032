@@ -16,6 +16,24 @@
       "message": "Can you comment what the true value means? I think it\u0027s only needed for InputType.TYPE_NULL?",
       "revId": "526aa7da0c2f33d9de97a292a89151df7db33032",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d30bd873_8a46fcfb",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-06T12:02:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "694e304a_b017115e",
+      "revId": "526aa7da0c2f33d9de97a292a89151df7db33032",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
