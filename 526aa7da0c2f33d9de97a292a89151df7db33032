@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010535944",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1690793?revision\u003d10",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ca061f30_5189e31a",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-06T10:09:57Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 237,
+        "startChar": 0,
+        "endLine": 237,
+        "endChar": 101
+      },
+      "revId": "526aa7da0c2f33d9de97a292a89151df7db33032",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
