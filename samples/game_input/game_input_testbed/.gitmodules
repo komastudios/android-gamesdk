@@ -1,0 +1,3 @@
+[submodule "game-input"]
+	path = game-input
+	url = sso://team/android-games-sdk-team/game-input
