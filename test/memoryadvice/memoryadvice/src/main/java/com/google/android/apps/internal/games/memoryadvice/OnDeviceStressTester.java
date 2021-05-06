@@ -54,10 +54,9 @@ class OnDeviceStressTester {
     Intent launchIntent = new Intent(context, StressService.class);
     launchIntent.putExtra("params", JSONObject.wrap(params).toString());
     serviceConnection.set(new ServiceConnection() {
-      private Messenger messenger;
+      private final AtomicReference<Timer> serviceWatcherTimer = new AtomicReference<>();
       private Map<String, Object> baseline;
       private Map<String, Object> limit;
-      private Timer serviceWatcherTimer;
       private int connectionCount;
 
       public void onServiceConnected(ComponentName name, IBinder service) {
@@ -68,7 +67,7 @@ class OnDeviceStressTester {
           return;
         }
         connectionCount++;
-        messenger = new Messenger(service);
+        Messenger messenger = new Messenger(service);
 
         {
           // Ask the service for its pid and baseline metrics.
@@ -84,8 +83,13 @@ class OnDeviceStressTester {
                   throw new IllegalStateException(e);
                 }
                 int servicePid = msg.arg1;
-                serviceWatcherTimer = new Timer();
-                serviceWatcherTimer.scheduleAtFixedRate(new TimerTask() {
+                Timer newTimer = new Timer();
+                Timer oldServiceTimer = serviceWatcherTimer.getAndSet(newTimer);
+                if (oldServiceTimer != null) {
+                  Log.w(TAG, "Service watcher timer set twice");
+                  oldServiceTimer.cancel();
+                }
+                newTimer.scheduleAtFixedRate(new TimerTask() {
                   private long lastSawPid;
                   @Override
                   public void run() {
@@ -108,12 +112,12 @@ class OnDeviceStressTester {
               return true;
             }
           }));
-          sendMessage(message);
+          sendMessage(message, messenger);
         }
-        allocateMemory();
+        allocateMemory(messenger);
       }
 
-      private void allocateMemory() {
+      private void allocateMemory(Messenger messenger) {
         int toAllocate = (int) getMemoryQuantity(getOrDefault(
             (Map<String, Object>) params.get("onDeviceStressTest"), "segmentSize", "4M"));
         Message message = Message.obtain(null, OCCUPY_MEMORY, toAllocate, 0);
@@ -147,26 +151,26 @@ class OnDeviceStressTester {
             if (msg.what == OCCUPY_MEMORY_FAILED) {
               stopService(false);
             } else if (msg.what == OCCUPY_MEMORY_OK) {
-              allocateMemory();
+              allocateMemory(messenger);
             } else {
               throw new MemoryAdvisorException("Unexpected return code " + msg.what);
             }
             return true;
           }
         }));
-        sendMessage(message);
+        sendMessage(message, messenger);
       }
 
       public void onServiceDisconnected(ComponentName name) {
-        messenger = null;
       }
 
-      private void sendMessage(Message message) {
-        Timer oldTimer = timeoutTimer.getAndSet(new Timer());
+      private void sendMessage(Message message, Messenger messenger) {
+        Timer newTimer = new Timer();
+        Timer oldTimer = timeoutTimer.getAndSet(newTimer);
         if (oldTimer != null) {
           oldTimer.cancel();
         }
-        timeoutTimer.get().schedule(new TimerTask() {
+        newTimer.schedule(new TimerTask() {
           @Override
           public void run() {
             Log.w(TAG, "Timed out: stopping service");
@@ -192,7 +196,10 @@ class OnDeviceStressTester {
         ServiceConnection connection = serviceConnection.getAndSet(null);
         if (connection != null) {
           Log.i(TAG, "Unbinding service");
-          serviceWatcherTimer.cancel();
+          Timer oldServiceTimer = serviceWatcherTimer.getAndSet(null);
+          if (oldServiceTimer != null) {
+            oldServiceTimer.cancel();
+          }
           context.unbindService(connection);
           if (context.stopService(launchIntent)) {
             Log.i(TAG, "Service reported stopped");
