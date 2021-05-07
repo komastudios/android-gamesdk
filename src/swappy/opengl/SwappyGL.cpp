@@ -180,10 +180,14 @@ void SwappyGL::enableStats(bool enabled) {
         return;
     }
 
-    if (enabled && swappy->mFrameStatistics == nullptr) {
-        swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
-            *swappy->mEgl, swappy->mCommonBase);
-        ALOGI("Enabling stats");
+    if (enabled) {
+        if (swappy->mFrameStatistics == nullptr) {
+            swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
+                *swappy->mEgl, swappy->mCommonBase);
+            ALOGI("Enabling stats");
+        } else {
+            ALOGI("Stats already enabled");
+        }
     } else {
         swappy->mFrameStatistics = nullptr;
         ALOGI("Disabling stats");
@@ -299,7 +303,6 @@ bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
         (mCommonBase.getRefreshPeriod() - displayTimings.sfOffset)) {
         return EGL_TRUE;
     }
-
     return getEgl()->setPresentationTime(display, surface,
                                          mCommonBase.getPresentationTime());
 }

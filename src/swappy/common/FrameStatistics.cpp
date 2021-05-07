@@ -33,11 +33,12 @@ constexpr std::chrono::nanoseconds FrameStatistics::LOG_EVERY_N_NS;
 
 void FrameStatistics::updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end,
                                    uint64_t stat[]) {
-    const uint64_t deltaTimeNano = end - start;
+    const int64_t deltaTimeNano = end - start;
 
-    uint32_t numFrames =
+    int32_t numFrames =
         deltaTimeNano / mSwappyCommon.getRefreshPeriod().count();
-    numFrames = std::min(numFrames, static_cast<uint32_t>(MAX_FRAME_BUCKETS));
+    numFrames = std::max(
+        0, std::min(numFrames, static_cast<int32_t>(MAX_FRAME_BUCKETS) - 1));
     stat[numFrames]++;
 }
 
