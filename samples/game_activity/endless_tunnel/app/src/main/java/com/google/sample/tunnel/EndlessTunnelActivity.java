@@ -15,4 +15,9 @@ public class EndlessTunnelActivity extends GameActivity {
         // Load the game library:
         System.loadLibrary("game");
     }
+
+    @Override
+    protected void onCreateSurfaceView() {
+        getWindow().takeSurface(this);
+    }
 }
