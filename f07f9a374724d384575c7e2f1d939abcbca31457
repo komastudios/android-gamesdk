@@ -1,0 +1,82 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010644939",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1700086?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d42cab70_923c8d4f",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-10T17:09:52Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 117
+      },
+      "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010644939",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1700086?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b57f8ed6_4b23ee71",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-10T17:09:52Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 128
+      },
+      "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010644939",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1700086?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "68789d17_082766df",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-10T17:09:52Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 623
+      },
+      "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
