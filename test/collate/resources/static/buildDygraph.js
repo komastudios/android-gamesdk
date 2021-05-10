@@ -53,6 +53,11 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
 
     rowOut[0] = time;
 
+    if ('constant' in metrics) {
+      getValues(combined, metrics.constant, '');
+      delete metrics.constant;
+    }
+
     getValues(combined, metrics, '');
     delete combined.time;
     delete combined.onTrim;

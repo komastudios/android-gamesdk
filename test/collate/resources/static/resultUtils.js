@@ -2,7 +2,7 @@ export function rowMetrics(row) {
   if ('advice' in row) {
     return row.advice.metrics;
   } else if ('deviceInfo' in row) {
-    return row.deviceInfo.baseline.constant;
+    return row.deviceInfo.baseline;
   } else if ('metrics' in row) {
     return row.metrics;
   } else {
