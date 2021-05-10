@@ -65,6 +65,13 @@ public class GameActivity
   private static final String KEY_NATIVE_SAVED_STATE = "android:native_state";
 
   protected int contentViewId;
+
+  /**
+   * The SurfaceView used by default for displaying the game and getting a text input.
+   * You can override its creation in `onCreateSurfaceView`.
+   * This can be null, usually if you override `onCreateSurfaceView` to render on the whole activity
+   * window.
+   */
   protected InputEnabledSurfaceView mSurfaceView;
 
   @Override
@@ -99,6 +106,8 @@ public class GameActivity
 
   // Called when we want to set the input state, e.g. before first showing the IME
   public void setTextInputState(State s) {
+    if (mSurfaceView == null) return;
+
     if (mSurfaceView.mInputConnection == null)
       Log.w(LOG_TAG, "No input connection has been set yet");
     else
@@ -109,58 +118,58 @@ public class GameActivity
 
   private SurfaceHolder mCurSurfaceHolder;
 
-  final int[] mLocation = new int[2];
-  int mLastContentX;
-  int mLastContentY;
-  int mLastContentWidth;
-  int mLastContentHeight;
+  protected final int[] mLocation = new int[2];
+  protected int mLastContentX;
+  protected int mLastContentY;
+  protected int mLastContentWidth;
+  protected int mLastContentHeight;
 
-  private boolean mDestroyed;
+  protected boolean mDestroyed;
 
-  private native long loadNativeCode(String path, String funcname, String internalDataPath,
+  protected native long loadNativeCode(String path, String funcname, String internalDataPath,
       String obbPath, String externalDataPath, int sdkVersion, AssetManager assetMgr,
       byte[] savedState);
 
-  private native String getDlError();
+  protected native String getDlError();
 
-  private native void unloadNativeCode(long handle);
+  protected native void unloadNativeCode(long handle);
 
-  private native void onStartNative(long handle);
+  protected native void onStartNative(long handle);
 
-  private native void onResumeNative(long handle);
+  protected native void onResumeNative(long handle);
 
-  private native byte[] onSaveInstanceStateNative(long handle);
+  protected native byte[] onSaveInstanceStateNative(long handle);
 
-  private native void onPauseNative(long handle);
+  protected native void onPauseNative(long handle);
 
-  private native void onStopNative(long handle);
+  protected native void onStopNative(long handle);
 
-  private native void onConfigurationChangedNative(long handle);
+  protected native void onConfigurationChangedNative(long handle);
 
-  private native void onLowMemoryNative(long handle);
+  protected native void onLowMemoryNative(long handle);
 
-  private native void onWindowFocusChangedNative(long handle, boolean focused);
+  protected native void onWindowFocusChangedNative(long handle, boolean focused);
 
-  private native void onSurfaceCreatedNative(long handle, Surface surface);
+  protected native void onSurfaceCreatedNative(long handle, Surface surface);
 
-  private native void onSurfaceChangedNative(
+  protected native void onSurfaceChangedNative(
       long handle, Surface surface, int format, int width, int height);
 
-  private native void onSurfaceRedrawNeededNative(long handle, Surface surface);
+  protected native void onSurfaceRedrawNeededNative(long handle, Surface surface);
 
-  private native void onSurfaceDestroyedNative(long handle);
+  protected native void onSurfaceDestroyedNative(long handle);
 
-  private native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
+  protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
-  private native void onTouchEventNative(long handle, MotionEvent motionEvent);
+  protected native void onTouchEventNative(long handle, MotionEvent motionEvent);
 
-  private native void onKeyDownNative(long handle, KeyEvent keyEvent);
+  protected native void onKeyDownNative(long handle, KeyEvent keyEvent);
 
-  private native void onKeyUpNative(long handle, KeyEvent keyEvent);
+  protected native void onKeyUpNative(long handle, KeyEvent keyEvent);
 
-  private native void onTextInputEventNative(long handle, State softKeyboardEvent);
+  protected native void onTextInputEventNative(long handle, State softKeyboardEvent);
 
-  private native void setInputConnectionNative(long handle, InputConnection c);
+  protected native void setInputConnectionNative(long handle, InputConnection c);
 
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
@@ -172,7 +181,11 @@ public class GameActivity
 
   /**
    * Called to create the SurfaceView when the game will be rendered. It should be stored in
-   * the mSurfaceView field.
+   * the mSurfaceView field, and its ID in contentViewId (if applicable).
+   *
+   * You can also redefine this to not create a SurfaceView at all,
+   * and call `getWindow().takeSurface(this);` instead if you want to render on the whole activity
+   * window.
    */
   protected void onCreateSurfaceView() {
     mSurfaceView = new InputEnabledSurfaceView(this);
@@ -246,7 +259,9 @@ public class GameActivity
     }
 
     // Set up the input connection
-    // setInputConnectionNative(mNativeHandle, mSurfaceView.mInputConnection);
+    if (mSurfaceView != null) {
+      setInputConnectionNative(mNativeHandle, mSurfaceView.mInputConnection);
+    }
 
     super.onCreate(savedInstanceState);
   }
@@ -353,6 +368,8 @@ public class GameActivity
   }
 
   public void onGlobalLayout() {
+    if (mSurfaceView == null) return;
+
     mSurfaceView.getLocationInWindow(mLocation);
     int w = mSurfaceView.getWidth();
     int h = mSurfaceView.getHeight();
