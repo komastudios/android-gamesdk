@@ -212,6 +212,7 @@ public class Score {
     long largest = 0;
     boolean exited = false;
     boolean allocFailed = false;
+    boolean failedToClear = false;
     boolean serviceCrashed = false;
 
     for (Object o : result) {
@@ -221,8 +222,9 @@ public class Score {
       allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
       allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
       allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
-      allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
       allocFailed |= row.containsKey("criticalLogLines");
+
+      failedToClear |= Boolean.TRUE.equals(row.get("failedToClear"));
 
       serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
       long score = 0;
@@ -263,8 +265,9 @@ public class Score {
     group.remove("advisorParameters");
     URI uri = Main.writeGraphs(directory.get(), result);
     System.out.println(uri);
-    results0.put(
-        key, new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
+    results0.put(key,
+        new Result(
+            score, uri, exited && !allocFailed, failedToClear, serviceCrashed, group.toString()));
   }
 
   private static URI writeReport(Map<String, Map<String, Result>> rows,
@@ -485,6 +488,9 @@ public class Score {
             classes.add("good");
           }
         }
+        if (result.isFailedToClear()) {
+          classes.add("failedToClear");
+        }
         if (!result.isAcceptable()) {
           classes.add("unacceptable");
         }
@@ -557,13 +563,16 @@ public class Score {
     private final float score;
     private final URI uri;
     private final boolean acceptable;
+    private final boolean failedToClear;
     private final boolean serviceCrashed;
     private final String group;
 
-    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed, String group) {
+    Result(float score, URI uri, boolean acceptable, boolean failedToClear, boolean serviceCrashed,
+        String group) {
       this.score = score;
       this.uri = uri;
       this.acceptable = acceptable;
+      this.failedToClear = failedToClear;
       this.serviceCrashed = serviceCrashed;
       this.group = group;
     }
@@ -578,6 +587,10 @@ public class Score {
 
     boolean isAcceptable() {
       return acceptable;
+    }
+
+    boolean isFailedToClear() {
+      return failedToClear;
     }
 
     boolean isServiceCrashed() {
