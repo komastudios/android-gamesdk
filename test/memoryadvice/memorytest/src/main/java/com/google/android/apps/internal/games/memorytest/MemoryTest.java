@@ -110,19 +110,9 @@ public class MemoryTest implements MemoryWatcher.Client {
 
     nativeConsume(getMemoryQuantity(getOrDefault(params, "mallocFixed", 0)));
 
-    new Timer().schedule(new TimerTask() {
-      @Override
-      public void run() {
-        Map<String, Object> report = new LinkedHashMap<>();
-        report.put("exiting", true);
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
-        resultsReceiver.accept(report);
-      }
-    }, getDuration(getOrDefault(params, "timeout", "10m")));
-
     IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
     filter.addAction(Intent.ACTION_SCREEN_OFF);
-    context.registerReceiver(new BroadcastReceiver() {
+    BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
         Map<String, Object> report = new LinkedHashMap<>();
@@ -130,7 +120,19 @@ public class MemoryTest implements MemoryWatcher.Client {
         report.put("metrics", memoryAdvisor.getMemoryMetrics());
         resultsReceiver.accept(report);
       }
-    }, filter);
+    };
+    context.registerReceiver(receiver, filter);
+
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        context.unregisterReceiver(receiver);
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("exiting", true);
+        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        resultsReceiver.accept(report);
+      }
+    }, getDuration(getOrDefault(params, "timeout", "10m")));
   }
 
   public static native void initNative();
