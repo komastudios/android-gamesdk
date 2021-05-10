@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ecda1f4_937882a7",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-10T17:25:55Z",
+      "side": 1,
+      "message": "@willosborn: I found this silly mistake, that was the reason why I could not get the text input to work in the version built from AOSP :)",
+      "revId": "e7813a258c8fc008c42804e91328879565917bd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
