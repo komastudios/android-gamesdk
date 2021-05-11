@@ -7,9 +7,9 @@ android {
     ndkVersion "20.0.5594570"
     defaultConfig {
         applicationId "com.tuningfork.insightsdemo"
-        minSdkVersion 16
+        minSdkVersion 23
         targetSdkVersion 28
-        versionCode 16
+        versionCode 23
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
