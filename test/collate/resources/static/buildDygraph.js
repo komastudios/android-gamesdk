@@ -1,4 +1,4 @@
-import {getValues, rowMetrics} from "./resultUtils.js";
+import {getValues, rowMetrics, rowTime} from "./resultUtils.js";
 
 const onTrimCodes = {
   0: 'TRIM_MEMORY_UNKNOWN',
@@ -32,16 +32,79 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
 
   const fields = ['Time'];
   const visibility = [];
+  let startTime = 0;
   let time = 0;
   const series = {};
   const combined = {};
   const rowOut = [0];
   for (const row of result) {
-    let metrics = rowMetrics(row);
-    if (!metrics) {
-      continue;
+    const rowTime1 = rowTime(row);
+    if (startTime === 0) {
+      startTime = rowTime1;
     }
-    time = (metrics.meta.time - deviceInfo.baseline.meta.time) / 1000;
+    time = (rowTime1 - startTime) / 1000;
+
+    if ('exiting' in row) {
+      annotations.push({
+        series: 'applicationAllocated',
+        x: time,
+        shortText: 'E',
+        text: 'Exiting'
+      });
+    }
+    if ('onDestroy' in row) {
+      annotations.push({
+        series: 'applicationAllocated',
+        x: time,
+        shortText: 'D',
+        text: 'onDestroy'
+      });
+    }
+
+    if ('criticalLogLines' in row) {
+      annotations.push({
+        series: 'applicationAllocated',
+        x: time,
+        shortText: 'L',
+        text: row.criticalLogLines[0]
+      });
+    }
+
+    if ('activityPaused' in row) {
+      if (row['activityPaused']) {
+        if (activityPausedStart === -1) {
+          activityPausedStart = time;
+        }
+      } else if (activityPausedStart !== -1) {
+        highlights.push([activityPausedStart, time, 'lightgrey']);
+        activityPausedStart = -1;
+      }
+    }
+
+    let paused = !!row['paused'];
+    if (paused && pausedStart === -1) {
+      pausedStart = time;
+    } else if (!row.paused && pausedStart !== -1) {
+      highlights.push([pausedStart, time, 'yellow']);
+      pausedStart = -1;
+    }
+
+    let serviceCrashed = !!row['serviceCrashed'];
+    if (serviceCrashed && serviceCrashedStart === -1) {
+      serviceCrashedStart = time;
+    } else if (!serviceCrashed && serviceCrashedStart !== -1) {
+      highlights.push([serviceCrashedStart, time, 'cyan']);
+      serviceCrashedStart = -1;
+    }
+
+    let allocFailed = !!row['allocFailed'] || !!row['mmapAnonFailed'] ||
+        !!row['mmapFileFailed'];
+    if (allocFailed && allocFailedStart === -1) {
+      allocFailedStart = time;
+    } else if (!allocFailed && allocFailedStart !== -1) {
+      highlights.push([allocFailedStart, time, 'lightblue']);
+      allocFailedStart = -1;
+    }
 
     if ('testMetrics' in row) {
       let applicationAllocated = 0;
@@ -50,6 +113,8 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
       }
       combined.applicationAllocated = applicationAllocated;
     }
+
+    const metrics = rowMetrics(row) || {};
 
     rowOut[0] = time;
 
@@ -101,22 +166,6 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
 
     graphData.push(rowOut.slice(0));
 
-    if ('exiting' in row) {
-      annotations.push({
-        series: 'applicationAllocated',
-        x: time,
-        shortText: 'E',
-        text: 'Exiting'
-      });
-    }
-    if ('onDestroy' in row) {
-      annotations.push({
-        series: 'applicationAllocated',
-        x: time,
-        shortText: 'D',
-        text: 'onDestroy'
-      });
-    }
     if ('onTrim' in metrics) {
       annotations.push({
         series: 'applicationAllocated',
@@ -150,58 +199,12 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
         }
       }
     }
-
-    if ('criticalLogLines' in row) {
-      annotations.push({
-        series: 'applicationAllocated',
-        x: time,
-        shortText: 'L',
-        text: row.criticalLogLines[0]
-      });
-    }
-
-    if ('activityPaused' in row) {
-      if (row['activityPaused']) {
-        if (activityPausedStart === -1) {
-          activityPausedStart = time;
-        }
-      } else if (activityPausedStart !== -1) {
-        highlights.push([activityPausedStart, time, 'lightgrey']);
-        activityPausedStart = -1;
-      }
-    }
-
-    let paused = !!row['paused'];
-    if (paused && pausedStart === -1) {
-      pausedStart = time;
-    } else if (!row.paused && pausedStart !== -1) {
-      highlights.push([pausedStart, time, 'yellow']);
-      pausedStart = -1;
-    }
-
     let lowMemory = !!(metrics.MemoryInfo && metrics.MemoryInfo.lowMemory);
     if (lowMemory && lowMemoryStart === -1) {
       lowMemoryStart = time;
     } else if (!lowMemory && lowMemoryStart !== -1) {
       highlights.push([lowMemoryStart, time, 'pink']);
       lowMemoryStart = -1;
-    }
-
-    let serviceCrashed = !!row['serviceCrashed'];
-    if (serviceCrashed && serviceCrashedStart === -1) {
-      serviceCrashedStart = time;
-    } else if (!serviceCrashed && serviceCrashedStart !== -1) {
-      highlights.push([serviceCrashedStart, time, 'cyan']);
-      serviceCrashedStart = -1;
-    }
-
-    let allocFailed = !!row['allocFailed'] || !!row['mmapAnonFailed'] ||
-        !!row['mmapFileFailed'];
-    if (allocFailed && allocFailedStart === -1) {
-      allocFailedStart = time;
-    } else if (!allocFailed && allocFailedStart !== -1) {
-      highlights.push([allocFailedStart, time, 'lightblue']);
-      allocFailedStart = -1;
     }
   }
 

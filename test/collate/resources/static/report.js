@@ -1,6 +1,6 @@
 import {buildDygraph} from './buildDygraph.js';
 import {getDataExplorer} from './dataExplorer.js';
-import {rowMetrics} from './resultUtils.js';
+import {rowMetrics, rowTime} from './resultUtils.js';
 
 document.body.addEventListener('click', evt => {
   if (evt.target.href) {
@@ -8,13 +8,6 @@ document.body.addEventListener('click', evt => {
         evt.target.href.replace('gs://', 'https://storage.cloud.google.com/');
   }
 }, false);
-
-function rowTime(row) {
-  if ('time' in row) {
-    return row.time;
-  }
-  return rowMetrics(row).meta.time;
-}
 
 /**
  *
