@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
       @Override
       public void onReceive(Context context, Intent intent) {
         Map<String, Object> report = new LinkedHashMap<>();
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        report.put("time", System.currentTimeMillis());
         if (intent.getBooleanExtra(CRASHED_BEFORE, false)) {
           report.put("serviceCrashed", true);
         }
@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
 
     Map<String, Object> report = new LinkedHashMap<>();
     report.put("activityPaused", false);
-    report.put("metrics", memoryAdvisor.getMemoryMetrics());
+    report.put("time", System.currentTimeMillis());
     try {
       resultsStream.println(objectMapper.writeValueAsString(report));
     } catch (JsonProcessingException e) {
@@ -253,7 +253,7 @@ public class MainActivity extends Activity {
 
     Map<String, Object> report = new LinkedHashMap<>();
     report.put("activityPaused", true);
-    report.put("metrics", memoryAdvisor.getMemoryMetrics());
+    report.put("time", System.currentTimeMillis());
     try {
       resultsStream.println(objectMapper.writeValueAsString(report));
     } catch (JsonProcessingException e) {
@@ -265,7 +265,7 @@ public class MainActivity extends Activity {
   protected void onDestroy() {
     Map<String, Object> report = new LinkedHashMap<>();
     report.put("onDestroy", true);
-    report.put("metrics", memoryAdvisor.getMemoryMetrics());
+    report.put("time", System.currentTimeMillis());
     try {
       resultsStream.println(objectMapper.writeValueAsString(report));
     } catch (JsonProcessingException e) {
@@ -292,7 +292,7 @@ public class MainActivity extends Activity {
         Collection<Object> lines = new ArrayList<>();
         lines.add(line);
         report.put("criticalLogLines", lines);
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        report.put("time", System.currentTimeMillis());
         try {
           resultsStream.println(objectMapper.writeValueAsString(report));
         } catch (JsonProcessingException e) {
@@ -388,7 +388,7 @@ public class MainActivity extends Activity {
           Log.v(MEMORY_BLOCKER, ALLOCATE_ACTION + " " + BACKGROUND_MEMORY_PRESSURE_MB);
           {
             Map<String, Object> report = new LinkedHashMap<>();
-            report.put("metrics", memoryAdvisor.getMemoryMetrics());
+            report.put("time", System.currentTimeMillis());
             Map<String, Object> testMetrics = new LinkedHashMap<>();
             testMetrics.put(
                 "serviceTotalMemory", BYTES_IN_MEGABYTE * BACKGROUND_MEMORY_PRESSURE_MB);
@@ -410,7 +410,7 @@ public class MainActivity extends Activity {
           Log.v(MEMORY_BLOCKER, FREE_ACTION);
           {
             Map<String, Object> report = new LinkedHashMap<>();
-            report.put("metrics", memoryAdvisor.getMemoryMetrics());
+            report.put("time", System.currentTimeMillis());
             Map<String, Object> testMetrics = new LinkedHashMap<>();
             testMetrics.put("serviceTotalMemory", 0);
             report.put("testMetrics", testMetrics);
