@@ -26,7 +26,8 @@ public class AdvisorTest {
 
   @Test
   public void intitialize() throws SchemaException {
-    ImmutableMap<String, Object> params = ImmutableMap.of();
+    ImmutableMap<String, Object> params =
+        ImmutableMap.of("metrics", ImmutableMap.of("baseline", ImmutableMap.of()));
     validator.validate(advisorParametersSchema, params);
     MemoryAdvisor memoryAdvisor =
         new MemoryAdvisor(InstrumentationRegistry.getInstrumentation().getTargetContext(), params);

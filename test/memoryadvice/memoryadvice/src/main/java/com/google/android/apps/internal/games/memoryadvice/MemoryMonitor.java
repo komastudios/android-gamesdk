@@ -1,6 +1,5 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice.MemoryAdvisor.getDefaultParams;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.getOomScore;
 import static com.google.android.apps.internal.games.memoryadvice.Utils.processMemFormatFile;
 
@@ -24,15 +23,9 @@ class MemoryMonitor {
 
   private static final long BYTES_IN_KILOBYTE = 1024;
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
-  private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
-  private final Map<String, Object> baseline;
   private final MapTester mapTester;
   private final ActivityManager activityManager;
-  private final Map<String, Object> metrics;
   private final CanaryProcessTester canaryProcessTester;
-  private final Map<String, Object> build;
-  private Predictor realtimePredictor;
-  private Predictor availablePredictor;
   private boolean appBackgrounded;
   private int latestOnTrimLevel;
   private final int pid = Process.myPid();
@@ -45,7 +38,6 @@ class MemoryMonitor {
    */
   MemoryMonitor(Context context, Map<String, Object> metrics) {
     mapTester = new MapTester(context.getCacheDir());
-    build = BuildInfo.getBuild(context);
     activityManager = (ActivityManager) context.getSystemService((Context.ACTIVITY_SERVICE));
 
     if (metrics != null) {
@@ -61,23 +53,9 @@ class MemoryMonitor {
       } else {
         canaryProcessTester = null;
       }
-
-      Map<String, Object> baseline = (Map<String, Object>) metrics.get("baseline");
-      if (baseline != null) {
-        this.baseline = getMemoryMetrics(baseline);
-        Map<String, Object> constant = (Map<String, Object>) metrics.get("constant");
-        if (constant != null) {
-          this.baseline.put("constant", getMemoryMetrics(constant));
-        }
-      } else {
-        this.baseline = null;
-      }
     } else {
       canaryProcessTester = null;
-      baseline = null;
     }
-
-    this.metrics = metrics;
 
     ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
       @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -90,24 +68,6 @@ class MemoryMonitor {
         appBackgrounded = false;
       }
     });
-  }
-
-  /**
-   * Create an Android memory metrics fetcher to collect the default selection of metrics.
-   *
-   * @param context The Android context to employ.
-   */
-  public MemoryMonitor(Context context) {
-    this(context, (Map<String, Object>) getDefaultParams(context.getAssets()).get("metrics"));
-  }
-
-  /**
-   * Gets Android memory metrics using the default fields.
-   *
-   * @return A map containing current memory metrics.
-   */
-  public Map<String, Object> getMemoryMetrics() {
-    return getMemoryMetrics((Map<String, Object>) metrics.get("variable"));
   }
 
   /**
@@ -345,50 +305,6 @@ class MemoryMonitor {
       }
     }
 
-    if (Boolean.TRUE.equals(fields.get("predictRealtime"))) {
-      if (realtimePredictor == null) {
-        realtimePredictor = new Predictor("/realtime.tflite", "/realtime_features.json");
-      }
-
-      long time = System.nanoTime();
-      Map<String, Object> data = new LinkedHashMap<>();
-      data.put("baseline", baseline);
-      data.put("build", build);
-      data.put("sample", report);
-      try {
-        report.put("predictedUsage", realtimePredictor.predict(data));
-      } catch (MissingPathException e) {
-        throw new IllegalStateException(e);
-      }
-      Map<String, Object> meta = new LinkedHashMap<>();
-      meta.put("duration", System.nanoTime() - time);
-      report.put("_predictedUsageMeta", meta);
-    }
-
-    if (Boolean.TRUE.equals(fields.get("availableRealtime"))) {
-      if (availablePredictor == null) {
-        availablePredictor = new Predictor("/available.tflite", "/available_features.json");
-      }
-
-      long time = System.nanoTime();
-      Map<String, Object> data = new LinkedHashMap<>();
-      data.put("baseline", baseline);
-      data.put("build", build);
-      data.put("sample", report);
-      long available = 0;
-      try {
-        available = (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data));
-      } catch (MissingPathException e) {
-        throw new IllegalStateException(e);
-      }
-      report.put("predictedAvailable", available);
-      if (recordTimings) {
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("duration", System.nanoTime() - time);
-        report.put("_predictedAvailableMeta", meta);
-      }
-    }
-
     return report;
   }
 
@@ -396,13 +312,5 @@ class MemoryMonitor {
     if (level > latestOnTrimLevel) {
       latestOnTrimLevel = level;
     }
-  }
-
-  public Map<String, Object> getBaseline() {
-    return baseline;
-  }
-
-  public Map<String, Object> getBuild() {
-    return build;
   }
 }
