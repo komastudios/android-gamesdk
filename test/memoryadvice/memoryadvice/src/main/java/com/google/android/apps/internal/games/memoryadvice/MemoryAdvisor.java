@@ -68,7 +68,7 @@ public class MemoryAdvisor {
     if (Boolean.TRUE.equals(params.get("predictOomLimit"))) {
       Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
       try {
-        predictedOomLimit = predictor.predict(getDeviceInfo(context));
+        predictedOomLimit = predictor.predict(getDeviceInfo());
       } catch (MissingPathException e) {
         throw new MemoryAdvisorException(e);
       }
@@ -549,10 +549,9 @@ public class MemoryAdvisor {
   /**
    * Fetch information about the device.
    *
-   * @param context The Android context.
    * @return Information about the device, in a map.
    */
-  public Map<String, Object> getDeviceInfo(Context context) {
+  public Map<String, Object> getDeviceInfo() {
     Map<String, Object> deviceInfo = new LinkedHashMap<>();
     deviceInfo.put("build", memoryMonitor.getBuild());
     deviceInfo.put("baseline", memoryMonitor.getBaseline());

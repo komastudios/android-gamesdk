@@ -302,7 +302,7 @@ public class MainActivity extends Activity {
     });
 
     Map<String, Object> report = new LinkedHashMap<>();
-    report.put("deviceInfo", memoryAdvisor.getDeviceInfo(this));
+    report.put("deviceInfo", memoryAdvisor.getDeviceInfo());
     try {
       resultsStream.println(objectMapper.writeValueAsString(report));
     } catch (JsonProcessingException e) {
