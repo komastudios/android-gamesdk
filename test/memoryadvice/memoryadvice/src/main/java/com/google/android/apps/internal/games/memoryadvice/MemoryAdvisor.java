@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
-import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -23,13 +22,21 @@ import java.util.concurrent.TimeUnit;
  */
 public class MemoryAdvisor {
   private static final String TAG = MemoryMonitor.class.getSimpleName();
+  private static final long BYTES_IN_KILOBYTE = 1024;
+  private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
+  private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
+
   private final Map<String, Object> deviceProfile;
   private final Map<String, Object> params;
   private final float predictedOomLimit;
   private final MemoryMonitor memoryMonitor;
+  private final Map<String, Object> build;
+  private Map<String, Object> baseline;
   private Map<String, Object> onDeviceLimit;
   private Map<String, Object> onDeviceBaseline;
   private final Evaluator evaluator = new Evaluator();
+  private Predictor realtimePredictor;
+  private Predictor availablePredictor;
 
   /**
    * Create an Android memory advice fetcher.
@@ -60,8 +67,10 @@ public class MemoryAdvisor {
    * @throws MemoryAdvisorException
    */
   public MemoryAdvisor(Context context, Map<String, Object> params, ReadyHandler readyHandler) {
-    memoryMonitor = new MemoryMonitor(context, (Map<String, Object>) params.get("metrics"));
+    Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
+    memoryMonitor = new MemoryMonitor(context, metrics);
     this.params = params;
+    build = BuildInfo.getBuild(context);
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
 
@@ -74,6 +83,18 @@ public class MemoryAdvisor {
       }
     } else {
       predictedOomLimit = -1;
+    }
+
+    Map<String, Object> baselineSpec = (Map<String, Object>) metrics.get("baseline");
+    baseline = new LinkedHashMap<>();
+    if (baselineSpec == null) {
+      baseline = null;
+    } else {
+      baseline = memoryMonitor.getMemoryMetrics(baselineSpec);
+      Map<String, Object> constant = (Map<String, Object>) metrics.get("constant");
+      if (constant != null) {
+        baseline.put("constant", memoryMonitor.getMemoryMetrics(constant));
+      }
     }
 
     if (params.get("onDeviceStressTest") != null) {
@@ -95,8 +116,7 @@ public class MemoryAdvisor {
         }
       });
     } else {
-      deviceProfile =
-          DeviceProfile.getDeviceProfile(context.getAssets(), params, memoryMonitor.getBaseline());
+      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
       if (readyHandler != null) {
         scheduledExecutorService.schedule(
             () -> readyHandler.onComplete(false), 1, TimeUnit.MILLISECONDS);
@@ -111,7 +131,7 @@ public class MemoryAdvisor {
    * @param assets The AssetManager used to fetch the default parameter file.
    * @return The default parameters as a JSON object.
    */
-  public static Map<String, Object> getDefaultParams(AssetManager assets) {
+  private static Map<String, Object> getDefaultParams(AssetManager assets) {
     Map<String, Object> params;
     try {
       params = new ObjectMapper().reader().readValue(
@@ -256,12 +276,60 @@ public class MemoryAdvisor {
       throw new MemoryAdvisorException("Methods called before Advisor was ready");
     }
 
-    Map<String, Object> metrics =
-        memoryMonitor.getMemoryMetrics((Map<String, Object>) metricsParams.get("variable"));
+    Map<String, Object> metricsSpec = (Map<String, Object>) metricsParams.get("variable");
+    Map<String, Object> metrics = memoryMonitor.getMemoryMetrics(metricsSpec);
+    boolean recordTimings = Boolean.TRUE.equals(metricsSpec.get("timings"));
+    if (Boolean.TRUE.equals(metricsSpec.get("predictRealtime"))) {
+      if (realtimePredictor == null) {
+        realtimePredictor = new Predictor("/realtime.tflite", "/realtime_features.json");
+      }
+
+      long time1 = System.nanoTime();
+      Map<String, Object> data = new LinkedHashMap<>();
+      data.put("baseline", baseline);
+      data.put("build", build);
+      data.put("sample", metrics);
+      try {
+        metrics.put("predictedUsage", realtimePredictor.predict(data));
+      } catch (MissingPathException e) {
+        throw new MemoryAdvisorException(e);
+      }
+
+      if (recordTimings) {
+        Map<String, Object> meta1 = new LinkedHashMap<>();
+        meta1.put("duration", System.nanoTime() - time1);
+        metrics.put("_predictedUsageMeta", meta1);
+      }
+    }
+
+    if (Boolean.TRUE.equals(metricsSpec.get("availableRealtime"))) {
+      if (availablePredictor == null) {
+        availablePredictor = new Predictor("/available.tflite", "/available_features.json");
+      }
+
+      long time1 = System.nanoTime();
+      Map<String, Object> data = new LinkedHashMap<>();
+      data.put("baseline", baseline);
+      data.put("build", build);
+      data.put("sample", metrics);
+
+      try {
+        metrics.put(
+            "predictedAvailable", (long) (BYTES_IN_GIGABYTE * availablePredictor.predict(data)));
+      } catch (MissingPathException e) {
+        throw new MemoryAdvisorException(e);
+      }
+
+      if (recordTimings) {
+        Map<String, Object> meta1 = new LinkedHashMap<>();
+        meta1.put("duration", System.nanoTime() - time1);
+        metrics.put("_predictedAvailableMeta", meta1);
+      }
+    }
+
     results.put("metrics", metrics);
 
     Map<String, Object> heuristics = (Map<String, Object>) params.get("heuristics");
-    Map<String, Object> baseline = memoryMonitor.getBaseline();
     if (heuristics != null) {
       Collection<Object> warnings = new ArrayList<>();
       Object try1 = heuristics.get("try");
@@ -542,10 +610,6 @@ public class MemoryAdvisor {
     memoryMonitor.setOnTrim(level);
   }
 
-  public Map<String, Object> getMemoryMetrics() {
-    return memoryMonitor.getMemoryMetrics();
-  }
-
   /**
    * Fetch information about the device.
    *
@@ -553,8 +617,8 @@ public class MemoryAdvisor {
    */
   public Map<String, Object> getDeviceInfo() {
     Map<String, Object> deviceInfo = new LinkedHashMap<>();
-    deviceInfo.put("build", memoryMonitor.getBuild());
-    deviceInfo.put("baseline", memoryMonitor.getBaseline());
+    deviceInfo.put("build", build);
+    deviceInfo.put("baseline", baseline);
     if (deviceProfile != null) {
       deviceInfo.put("deviceProfile", deviceProfile);
     }
