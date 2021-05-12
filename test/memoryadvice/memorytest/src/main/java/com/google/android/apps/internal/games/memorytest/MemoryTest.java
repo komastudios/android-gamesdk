@@ -117,7 +117,7 @@ public class MemoryTest implements MemoryWatcher.Client {
       public void onReceive(Context context, Intent intent) {
         Map<String, Object> report = new LinkedHashMap<>();
         report.put("action", intent.getAction());
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        report.put("time", System.currentTimeMillis());
         resultsReceiver.accept(report);
       }
     };
@@ -129,7 +129,7 @@ public class MemoryTest implements MemoryWatcher.Client {
         context.unregisterReceiver(receiver);
         Map<String, Object> report = new LinkedHashMap<>();
         report.put("exiting", true);
-        report.put("metrics", memoryAdvisor.getMemoryMetrics());
+        report.put("time", System.currentTimeMillis());
         resultsReceiver.accept(report);
       }
     }, getDuration(getOrDefault(params, "timeout", "10m")));
@@ -297,7 +297,7 @@ public class MemoryTest implements MemoryWatcher.Client {
     runAfterDelay(() -> {
       Map<String, Object> report2 = new LinkedHashMap<>();
       report2.put("paused", true);
-      report2.put("metrics", memoryAdvisor.getMemoryMetrics());
+      report2.put("time", System.currentTimeMillis());
 
       resultsReceiver.accept(report2);
 
