@@ -35,16 +35,17 @@ namespace tuningfork {
 struct BatteryMetric {
     int32_t percentage_, current_charge_;
     Duration time_since_process_start_;
-    bool app_on_foreground_, is_charging_;
+    bool app_on_foreground_, is_charging_, power_save_mode_;
 
     BatteryMetric(int32_t percentage, int32_t currentCharge,
                   const Duration& timeSinceProcessStart, bool appOnForeground,
-                  bool isCharging)
+                  bool isCharging, bool powerSaveMode)
         : percentage_(percentage),
           current_charge_(currentCharge),
           time_since_process_start_(timeSinceProcessStart),
           app_on_foreground_(appOnForeground),
-          is_charging_(isCharging) {}
+          is_charging_(isCharging),
+          power_save_mode_(powerSaveMode) {}
 };
 
 struct BatteryMetricData : public MetricData {
@@ -61,7 +62,8 @@ struct BatteryMetricData : public MetricData {
         BatteryMetric metric(battery_provider->GetBatteryPercentage(),
                              battery_provider->GetBatteryCharge(),
                              time_since_process_start, app_on_foreground,
-                             battery_provider->IsBatteryCharging());
+                             battery_provider->IsBatteryCharging(),
+                             battery_provider->IsPowerSaveModeEnabled());
 
         data_.push_back(metric);
     }

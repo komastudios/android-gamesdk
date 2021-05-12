@@ -527,6 +527,8 @@ message BatteryEvent {
   bool charging = 4;
   // Whether the app is on foreground at the time of collection.
   bool app_on_foreground = 5;
+  // Whether the device is in power save mode at the time of collection.
+  bool power_save_mode = 6;
 }
 
 // A report of device thermal status.
