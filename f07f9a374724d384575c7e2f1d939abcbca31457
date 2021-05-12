@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "036abbaf_f247c169",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-12T13:18:08Z",
+      "side": 1,
+      "message": "Done (ran clang-format)",
+      "parentUuid": "157f6266_f38c2cb8",
+      "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9eb903d0_75ee04a0",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-05-12T09:31:25Z",
       "side": 1,
       "message": "Not a comment you need to address, but I don\u0027t like the way we malloc, init and set here. I think we should add a new_and_copy_construct function (or a C++ interface!).\nIn the meantime, can you add a comment to say that the malloced state is freed by GameInput since ownership is transferred in GameInput_setState?",
+      "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1317c15c_011ab3e0",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-12T13:18:08Z",
+      "side": 1,
+      "message": "As discussed, actually fixed with a free corresponding to the malloc.",
+      "parentUuid": "9eb903d0_75ee04a0",
       "revId": "f07f9a374724d384575c7e2f1d939abcbca31457",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
