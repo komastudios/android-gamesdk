@@ -26,6 +26,7 @@ public class StressService extends Service {
   private Handler messageHandler;
   private MemoryMonitor memoryMonitor;
   private long applicationAllocated;
+  private Map<String, Object> metrics;
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
@@ -38,7 +39,7 @@ public class StressService extends Service {
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
-    Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
+    metrics = (Map<String, Object>) params.get("metrics");
     memoryMonitor = new MemoryMonitor(this, metrics);
 
     return START_NOT_STICKY;
@@ -51,6 +52,7 @@ public class StressService extends Service {
       @Override
       public boolean handleMessage(Message msg) {
         int what = msg.what;
+        Map<String, Object> variable = (Map<String, Object>) metrics.get("variable");
         switch (what) {
           case OnDeviceStressTester.GET_BASELINE_METRICS:
             try {
@@ -58,7 +60,7 @@ public class StressService extends Service {
                   messageHandler, OnDeviceStressTester.GET_BASELINE_METRICS_RETURN, pid, 0);
               Bundle bundle = new Bundle();
               // Metrics before any allocations are are the baseline.
-              Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
+              Map<String, Object> metrics = memoryMonitor.getMemoryMetrics(variable);
               bundle.putString("metrics", JSONObject.wrap(metrics).toString());
               message.obj = bundle;
               msg.replyTo.send(message);
@@ -82,7 +84,7 @@ public class StressService extends Service {
             }
 
             // Memory metrics are calculated and returned to the main process.
-            Map<String, Object> metrics = memoryMonitor.getMemoryMetrics();
+            Map<String, Object> metrics = memoryMonitor.getMemoryMetrics(variable);
 
             // This format matches the format used by the lab stress tester.
             Map<String, Object> stressed = new LinkedHashMap<>();
