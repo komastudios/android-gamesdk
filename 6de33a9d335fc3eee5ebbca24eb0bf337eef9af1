@@ -1,0 +1,56 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010722862",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1700086?revision\u003d4",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d7510019_8b9828a4",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-12T11:21:46Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 128
+      },
+      "revId": "6de33a9d335fc3eee5ebbca24eb0bf337eef9af1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000010722862",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1700086?revision\u003d4",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "84617490_ec3bab11",
+        "filename": "samples/game_input/game_input_testbed/app/src/main/res/drawable-v24/ic_launcher_foreground.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-05-12T11:21:46Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 623
+      },
+      "revId": "6de33a9d335fc3eee5ebbca24eb0bf337eef9af1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
