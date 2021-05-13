@@ -31,20 +31,20 @@ public class GetMemoryMetricsTest {
 
   @Test
   public void debugStats() throws SchemaException {
-    ImmutableMap<Object, Object> variable = ImmutableMap.of("debug", true);
+    ImmutableMap<String, Object> variable = ImmutableMap.of("debug", true);
     Map<String, Object> metrics = getMetrics(variable);
     Map<String, Object> debug = (Map<String, Object>) metrics.get("debug");
     assertThat(debug, notNullValue());
     assertThat(debug.get("NativeHeapAllocatedSize"), notNullValue());
   }
 
-  private Map<String, Object> getMetrics(ImmutableMap<Object, Object> variable)
+  private Map<String, Object> getMetrics(ImmutableMap<String, Object> variable)
       throws ValidationException {
     ImmutableMap<String, Object> metrics =
         ImmutableMap.of("variable", variable, "baseline", ImmutableMap.of());
     validator.validate(monitorParametersSchema, metrics);
     MemoryMonitor memoryMonitor =
         new MemoryMonitor(InstrumentationRegistry.getInstrumentation().getTargetContext(), metrics);
-    return memoryMonitor.getMemoryMetrics();
+    return memoryMonitor.getMemoryMetrics(variable);
   }
 }

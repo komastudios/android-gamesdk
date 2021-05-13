@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
               public void newState(MemoryAdvisor.MemoryState state) {}
             });
 
-        Map<String, Object> deviceInfo = memoryAdvisor.getDeviceInfo(MainActivity.this);
+        Map<String, Object> deviceInfo = memoryAdvisor.getDeviceInfo();
 
         System.out.println(deviceInfo);
 

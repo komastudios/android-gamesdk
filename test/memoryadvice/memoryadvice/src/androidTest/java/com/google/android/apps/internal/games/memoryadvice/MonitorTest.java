@@ -38,7 +38,7 @@ public class MonitorTest {
     ImmutableMap<String, Object> params = ImmutableMap.of();
     validator.validate(monitorParametersSchema, params);
     MemoryMonitor memoryMonitor =
-        new MemoryMonitor(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        new MemoryMonitor(InstrumentationRegistry.getInstrumentation().getTargetContext(), null);
 
     Map<String, Object> memoryMetrics = memoryMonitor.getMemoryMetrics(null);
     validator.validate(metricsResultsSchema, memoryMetrics);
