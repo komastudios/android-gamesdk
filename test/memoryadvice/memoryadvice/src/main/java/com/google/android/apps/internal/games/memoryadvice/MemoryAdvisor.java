@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Wrapper class for methods related to memory advice.
@@ -32,8 +31,6 @@ public class MemoryAdvisor {
   private final MemoryMonitor memoryMonitor;
   private final Map<String, Object> build;
   private Map<String, Object> baseline;
-  private Map<String, Object> onDeviceLimit;
-  private Map<String, Object> onDeviceBaseline;
   private final Evaluator evaluator = new Evaluator();
   private Predictor realtimePredictor;
   private Predictor availablePredictor;
@@ -43,19 +40,8 @@ public class MemoryAdvisor {
    *
    * @param context The Android context to employ.
    */
-  public MemoryAdvisor(Context context, ReadyHandler readyHandler) {
-    this(context, getDefaultParams(context.getAssets()), readyHandler);
-  }
-
-  /**
-   * Create an Android memory advice fetcher.
-   *
-   * @param context The Android context to employ.
-   * @param params  The active configuration.
-   * @throws MemoryAdvisorException
-   */
-  public MemoryAdvisor(Context context, Map<String, Object> params) {
-    this(context, params, null);
+  public MemoryAdvisor(Context context) {
+    this(context, getDefaultParams(context.getAssets()));
   }
 
   /**
@@ -63,10 +49,9 @@ public class MemoryAdvisor {
    *
    * @param context      The Android context to employ.
    * @param params       The active configuration; described by advisorParameters.schema.json.
-   * @param readyHandler A callback used when on device stress test is required.
    * @throws MemoryAdvisorException
    */
-  public MemoryAdvisor(Context context, Map<String, Object> params, ReadyHandler readyHandler) {
+  public MemoryAdvisor(Context context, Map<String, Object> params) {
     Map<String, Object> metrics = (Map<String, Object>) params.get("metrics");
     memoryMonitor = new MemoryMonitor(context, metrics);
     this.params = params;
@@ -97,31 +82,7 @@ public class MemoryAdvisor {
       }
     }
 
-    if (params.get("onDeviceStressTest") != null) {
-      deviceProfile = null;
-      if (readyHandler == null) {
-        throw new MemoryAdvisorException("Ready handler required for on device stress test");
-      }
-      new OnDeviceStressTester(context, params, new OnDeviceStressTester.Consumer() {
-        public void progress(Map<String, Object> metrics) {
-          readyHandler.stressTestProgress(metrics);
-        }
-
-        public void accept(
-            Map<String, Object> baseline, Map<String, Object> limit, boolean timedOut) {
-          onDeviceBaseline = baseline;
-          onDeviceLimit = limit;
-          scheduledExecutorService.schedule(
-              () -> readyHandler.onComplete(timedOut), 1, TimeUnit.MILLISECONDS);
-        }
-      });
-    } else {
-      deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
-      if (readyHandler != null) {
-        scheduledExecutorService.schedule(
-            () -> readyHandler.onComplete(false), 1, TimeUnit.MILLISECONDS);
-      }
-    }
+    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
   }
 
   /**
@@ -269,9 +230,6 @@ public class MemoryAdvisor {
       Map<String, Object> limits = (Map<String, Object>) deviceProfile.get("limits");
       deviceLimit = (Map<String, Object>) limits.get("limit");
       deviceBaseline = (Map<String, Object>) limits.get("baseline");
-    } else if (onDeviceLimit != null) {
-      deviceBaseline = onDeviceBaseline;
-      deviceLimit = onDeviceLimit;
     } else {
       throw new MemoryAdvisorException("Methods called before Advisor was ready");
     }
@@ -621,12 +579,6 @@ public class MemoryAdvisor {
     deviceInfo.put("baseline", baseline);
     if (deviceProfile != null) {
       deviceInfo.put("deviceProfile", deviceProfile);
-    }
-    if (onDeviceBaseline != null) {
-      deviceInfo.put("deviceBaseline", onDeviceBaseline);
-    }
-    if (onDeviceLimit != null) {
-      deviceInfo.put("deviceLimit", onDeviceLimit);
     }
     deviceInfo.put("params", params);
     if (predictedOomLimit != -1) {
