@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:targetApi="28">
+        tools:targetApi="29">
         <activity
             android:name=".OrbitActivity"
             android:screenOrientation="portrait">

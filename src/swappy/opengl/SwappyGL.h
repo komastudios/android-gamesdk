@@ -71,6 +71,8 @@ class SwappyGL {
     static void setFenceTimeout(std::chrono::nanoseconds t);
     static std::chrono::nanoseconds getFenceTimeout();
 
+    static void setBufferStuffingFixWait(int32_t n_frames);
+
    private:
     static SwappyGL *getInstance();
 
@@ -98,7 +100,7 @@ class SwappyGL {
     std::mutex mEglMutex;
     std::unique_ptr<EGL> mEgl;
 
-    std::unique_ptr<FrameStatistics> mFrameStatistics;
+    std::shared_ptr<FrameStatistics> mFrameStatistics;
 
     SwappyCommon mCommonBase;
 };

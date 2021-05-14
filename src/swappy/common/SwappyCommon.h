@@ -28,10 +28,15 @@
 #include "CPUTracer.h"
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
+#include "FrameStatistics.h"
 #include "SwappyDisplayManager.h"
 #include "Thread.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
+
+// Set this flag to not wait for frames, periodically, to test double buffer
+// recovery. Do not keep in production!
+#define ARTIFICIAL_BUFFER_STUFFING 0
 
 namespace swappy {
 
@@ -110,6 +115,15 @@ class SwappyCommon {
     bool isDeviceUnsupported();
 
     void setANativeWindow(ANativeWindow* window);
+
+    void setFrameStatistics(
+        const std::shared_ptr<FrameStatistics>& frameStats) {
+        mFrameStatistics = frameStats;
+    }
+
+    void setBufferStuffingFixWait(int32_t nFrames) {
+        mBufferStuffingFixWait = std::max(0, nFrames);
+    }
 
    protected:
     // Used for testing
@@ -334,6 +348,23 @@ class SwappyCommon {
     bool mWindowChanged GUARDED_BY(mMutex) = false;
     float mLatestFrameRateVote GUARDED_BY(mMutex) = 0.f;
     static constexpr float FRAME_RATE_VOTE_MARGIN = 1.f;  // 1Hz
+
+    // If zero, don't apply the double buffering fix. If non-zero, apply
+    // the fix after this number of bad frames.
+    int mBufferStuffingFixWait = 0;
+    // When zero, buffer stuffing fixing may occur.
+    // After a fix has been applied, this is non-zero and counts down to avoid
+    // consecutive fixes.
+    int mBufferStuffingFixCounter = 0;
+    // Counts the number of consecutive missed frames (as judged by expected
+    // latency).
+    int mMissedFrameCounter = 0;
+
+#if ARTIFICIAL_BUFFER_STUFFING
+    bool mStuffFrame = false;
+#endif
+
+    std::shared_ptr<FrameStatistics> mFrameStatistics;
 };
 
 }  // namespace swappy
