@@ -363,6 +363,15 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
             } else if (key.equals("workload")) {
                 nSetWorkload(sharedPreferences.getInt(key, 0));
                 continue;
+            } else if (key.equals("swappy_disable")) {
+                nDisableSwappy(sharedPreferences.getBoolean(key, true));
+                continue;
+            } else if (key.equals("use_auto_pipeline")) {
+                nSetAutoPipeline(sharedPreferences.getBoolean(key, true));
+                continue;
+            } else if (key.equals("dbfix")) {
+                nSetDoubleBufferFixWait(sharedPreferences.getInt(key, 0));
+                continue;
             }
             nSetPreference(key, sharedPreferences.getString(key, null));
         }
@@ -542,7 +551,10 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native void nStop();
     public native void nSetPreference(String key, String value);
     public native void nSetWorkload(int load);
+    public native void nDisableSwappy(boolean disabled);
     public native void nSetAutoSwapInterval(boolean enabled);
+    public native void nSetAutoPipeline(boolean enabled);
+    public native void nSetDoubleBufferFixWait(int n_frames);
     public native float nGetAverageFps();
     public native float nGetRefreshPeriodNS();
     public native float nGetSwapIntervalNS();

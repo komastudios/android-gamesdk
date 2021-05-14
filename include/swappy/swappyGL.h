@@ -134,6 +134,12 @@ bool SwappyGL_getUseAffinity();
  */
 uint64_t SwappyGL_getFenceTimeoutNS();
 
+/**
+ * @brief Set the number of bad frames to wait before applying a fix for double
+ * buffering. Set to zero in order to turn off this feature.
+ */
+void SwappyGL_setDoubleBufferFixWait(int32_t n_frames);
+
 #ifdef __cplusplus
 };
 #endif

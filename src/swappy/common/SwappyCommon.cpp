@@ -299,8 +299,12 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 
     // if we are running slower than the threshold there is no point to sleep,
     // just let the app run as fast as it can
-    if (mCommonSettings.refreshPeriod * mAutoSwapInterval <=
-        mAutoSwapIntervalThreshold.load()) {
+    if (
+#if ARTIFICIAL_BUFFER_STUFFING
+        !mStuffFrame &&
+#endif
+        mCommonSettings.refreshPeriod * mAutoSwapInterval <=
+            mAutoSwapIntervalThreshold.load()) {
         waitUntilTargetFrame();
 
         // wait for the previous frame to be rendered
@@ -400,6 +404,9 @@ void SwappyCommon::onPreSwap(const SwapHandlers& h) {
             (mCommonSettings.refreshPeriod * mAutoSwapInterval <=
              mAutoSwapIntervalThreshold.load());
     }
+#if ARTIFICIAL_BUFFER_STUFFING
+    mPresentationTimeNeeded = !mStuffFrame && mPresentationTimeNeeded;
+#endif
 
     mSwapTime = std::chrono::steady_clock::now();
     preSwapBuffersCallbacks();
@@ -810,9 +817,58 @@ void SwappyCommon::startFrame() {
         currentFrameTimestamp = mCurrentFrameTimestamp;
     }
 
-    mTargetFrame = currentFrame + mAutoSwapInterval;
+    // Whether to add a wait to fix double buffering.
+    bool waitFrame = false;
+
+    // Periodically make Swappy not frame-pace. Do not keep in production!
+#if ARTIFICIAL_BUFFER_STUFFING
+    mStuffFrame = false;
+#define STUFF_COUNT 80
+    static int stuffCounter = STUFF_COUNT;
+    --stuffCounter;
+    TRACE_INT("STUFF", stuffCounter);
+    if (stuffCounter > 0 && stuffCounter < 10) {
+        mStuffFrame = true;
+    }
+    if (stuffCounter == 0) {
+        stuffCounter = STUFF_COUNT;
+    }
+#endif
 
     const int intervals = (mPipelineMode == PipelineMode::On) ? 2 : 1;
+
+    // Use frame statistics to fix any buffer stuffing
+    if (mDoubleBufferFixWait > 0 && mFrameStatistics) {
+        int32_t lastLatency = mFrameStatistics->lastLatencyRecorded();
+        int expectedLatency = mAutoSwapInterval * intervals;
+        TRACE_INT("ExpectedLatency", expectedLatency);
+        static int waitingForLatencyFix = 0;
+        // Only wait after we've had bad latency for LATENCY_FIX_AFTER frames
+        static int missedFrameCounter = 0;
+        if (waitingForLatencyFix == 0) {
+            if (
+#if ARTIFICIAL_BUFFER_STUFFING
+                // Don't fix the over-stuffing until we've stopped artificially
+                // stuffing
+                !mStuffFrame &&
+#endif
+                lastLatency > expectedLatency) {
+                missedFrameCounter++;
+                if (missedFrameCounter >= mDoubleBufferFixWait) {
+                    waitFrame = true;
+                    waitingForLatencyFix = 2 * lastLatency;
+                    TRACE_INT("LatencyFix", waitingForLatencyFix);
+                }
+            } else {
+                missedFrameCounter = 0;
+            }
+        } else {
+            --waitingForLatencyFix;
+            TRACE_INT("LatencyFix", waitingForLatencyFix);
+        }
+    }
+    mTargetFrame = currentFrame + mAutoSwapInterval;
+    if (waitFrame) mTargetFrame += 1;
 
     // We compute the target time as now
     //   + the time the buffer will be on the GPU and in the queue to the
@@ -828,6 +884,9 @@ void SwappyCommon::startFrame() {
 }
 
 void SwappyCommon::waitUntil(int32_t target) {
+#if ARTIFICIAL_BUFFER_STUFFING
+    if (mStuffFrame) return;
+#endif
     TRACE_CALL();
     std::unique_lock<std::mutex> lock(mWaitingMutex);
     mWaitingCondition.wait(lock, [&]() {

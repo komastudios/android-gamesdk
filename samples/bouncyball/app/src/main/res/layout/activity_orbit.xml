@@ -105,6 +105,7 @@
             android:columnCount="7">
 
         </GridLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

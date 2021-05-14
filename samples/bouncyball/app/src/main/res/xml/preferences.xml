@@ -15,6 +15,13 @@
         android:summary="@string/use_auto_swap_interval_summary"/>
 
     <SwitchPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="true"
+        android:key="use_auto_pipeline"
+        android:summary="@string/use_auto_pipeline_summary"
+        android:title="@string/use_auto_pipeline_title" />
+    <SwitchPreference
         android:key="use_affinity"
         android:title="@string/use_affinity_title"
         android:summary="@string/use_affinity_summary"/>
@@ -29,6 +36,19 @@
         android:title="@string/workload_title"
         android:summary="@string/workload_summary"
         android:defaultValue="0" />
+    <SeekBarPreference
+        android:id="@+id/seekBarPreference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="0"
+        android:key="dbfix"
+        android:max="5"
+        android:summary="@string/dbfix_summary"
+        android:title="@string/dbfix_title" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/swappy_disable"
+        android:title="@string/swappy_disable_title" />
 
 
 </PreferenceScreen>
