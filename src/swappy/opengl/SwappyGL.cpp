@@ -181,17 +181,20 @@ void SwappyGL::enableStats(bool enabled) {
     }
 
     if (enabled) {
-        if (swappy->mFrameStatistics == nullptr) {
-            swappy->mFrameStatistics = std::make_unique<FrameStatistics>(
+        if (!swappy->mFrameStatistics ||
+            swappy->mFrameStatistics->isEssential()) {
+            swappy->mFrameStatistics = std::make_shared<FullFrameStatistics>(
                 *swappy->mEgl, swappy->mCommonBase);
             ALOGI("Enabling stats");
         } else {
             ALOGI("Stats already enabled");
         }
     } else {
-        swappy->mFrameStatistics = nullptr;
+        swappy->mFrameStatistics = std::make_shared<LatencyFrameStatistics>(
+            *swappy->mEgl, swappy->mCommonBase);
         ALOGI("Disabling stats");
     }
+    swappy->mCommonBase.setFrameStatistics(swappy->mFrameStatistics);
 }
 
 void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
@@ -211,7 +214,8 @@ void SwappyGL::getStats(SwappyStats *stats) {
         return;
     }
 
-    if (swappy->mFrameStatistics) *stats = swappy->mFrameStatistics->getStats();
+    if (swappy->mFrameStatistics && !swappy->mFrameStatistics->isEssential())
+        *stats = swappy->mFrameStatistics->getStats();
 }
 
 SwappyGL *SwappyGL::getInstance() {
@@ -305,6 +309,15 @@ bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
     }
     return getEgl()->setPresentationTime(display, surface,
                                          mCommonBase.getPresentationTime());
+}
+
+void SwappyGL::setBufferStuffingFixWait(int32_t n_frames) {
+    TRACE_CALL();
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    swappy->mCommonBase.setBufferStuffingFixWait(n_frames);
 }
 
 }  // namespace swappy
