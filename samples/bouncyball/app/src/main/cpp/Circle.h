@@ -50,7 +50,7 @@ struct Circle {
         return num_segmets;
     }
 
-    static const long MAX_SEGMENTS = 28800000;
+    static const long MAX_SEGMENTS = 5000000;
     static const long MIN_SEGMENTS = 36;
 
     static std::vector<GLfloat> &getVertices(int);
