@@ -18,6 +18,9 @@
 
     <!-- Preference strings -->
 
+    <string name="swappy_enable">swappy_enable</string>
+    <string name="swappy_enable_title">Enable swappy</string>
+
     <string name="swap_interval_key">swap_interval</string>
     <string name="swap_interval_title">Swap Interval</string>
     <string name="swap_interval_summary_prologue">Present a newly-rendered frame every\u0020</string>
@@ -29,9 +32,16 @@
     <string name="use_auto_swap_interval_title">Auto Swap Interval Mode</string>
     <string name="use_auto_swap_interval_summary">Swappy calculates swap interval based on frame rendering time</string>
 
+    <string name="use_auto_pipeline_title">Auto Pipeline Mode</string>
+    <string name="use_auto_pipeline_summary">Swappy decides not to pipeline if CPU + GPU fit into a single frame</string>
+
     <string name="hot_pocket_title">Hot Pocket</string>
     <string name="hot_pocket_summary">Create a spinning thread to encourage higher frequencies</string>
 
     <string name="workload_title">Work load</string>
     <string name="workload_summary">Work load for rendering bouncyball (based on number of vertices)</string>
+
+    <string name="buffer_stuffing_fix_title">Buffer stuffing fix wait (0 to disable)</string>
+    <string name="buffer_stuffing_fix_summary">Number of bad frames to wait before applying the buffer stuffing fix</string>
+
 </resources>

@@ -93,6 +93,8 @@ public:
 
     void setWorkload(int load);
 
+    void setSwappyEnabled(bool enabled);
+
     Stats& frameTimeStats() { return mFrameTimeStats; }
 
 private:
@@ -151,6 +153,7 @@ private:
     // Mean and variance for the pipeline frame time.
     Stats mFrameTimeStats = Stats(20 /* number of samples to average over */);
 
+    bool mSwappyEnabled = true;
 };
 
 } // namespace samples
