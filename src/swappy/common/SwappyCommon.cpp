@@ -810,9 +810,34 @@ void SwappyCommon::startFrame() {
         currentFrameTimestamp = mCurrentFrameTimestamp;
     }
 
-    mTargetFrame = currentFrame + mAutoSwapInterval;
+    // Whether to add a wait to fix buffer stuffing.
+    bool waitFrame = false;
 
     const int intervals = (mPipelineMode == PipelineMode::On) ? 2 : 1;
+
+    // Use frame statistics to fix any buffer stuffing
+    if (mBufferStuffingFixWait > 0 && mFrameStatistics) {
+        int32_t lastLatency = mFrameStatistics->lastLatencyRecorded();
+        int expectedLatency = mAutoSwapInterval * intervals;
+        TRACE_INT("ExpectedLatency", expectedLatency);
+        if (mBufferStuffingFixCounter == 0) {
+            if (lastLatency > expectedLatency) {
+                mMissedFrameCounter++;
+                if (mMissedFrameCounter >= mBufferStuffingFixWait) {
+                    waitFrame = true;
+                    mBufferStuffingFixCounter = 2 * lastLatency;
+                    TRACE_INT("BufferStuffingFix", mBufferStuffingFixCounter);
+                }
+            } else {
+                mMissedFrameCounter = 0;
+            }
+        } else {
+            --mBufferStuffingFixCounter;
+            TRACE_INT("BufferStuffingFix", mBufferStuffingFixCounter);
+        }
+    }
+    mTargetFrame = currentFrame + mAutoSwapInterval;
+    if (waitFrame) mTargetFrame += 1;
 
     // We compute the target time as now
     //   + the time the buffer will be on the GPU and in the queue to the
