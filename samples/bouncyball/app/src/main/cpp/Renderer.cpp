@@ -211,6 +211,10 @@ void Renderer::setWorkload(int load) {
     mWorkload = load;
 }
 
+void Renderer:: setSwappyEnabled(bool enabled) {
+    mSwappyEnabled = enabled;
+}
+
 void Renderer::draw(ThreadState *threadState) {
     // Don't render if we have no surface
     if (threadState->surface == EGL_NO_SURFACE) {
@@ -220,7 +224,8 @@ void Renderer::draw(ThreadState *threadState) {
         return;
     }
 
-    SwappyGL_recordFrameStart(threadState->display, threadState->surface);
+    if (mSwappyEnabled)
+        SwappyGL_recordFrameStart(threadState->display, threadState->surface);
 
     calculateFps();
 
@@ -251,7 +256,10 @@ void Renderer::draw(ThreadState *threadState) {
 
     Circle::draw(aspectRatio, circles, mWorkload);
 
-    SwappyGL_swap(threadState->display, threadState->surface);
+    if (mSwappyEnabled)
+        SwappyGL_swap(threadState->display, threadState->surface);
+    else
+        eglSwapBuffers(threadState->display, threadState->surface);
 
     // If we're still started, request another frame
     requestDraw();
