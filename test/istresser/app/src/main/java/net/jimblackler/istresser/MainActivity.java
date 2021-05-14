@@ -1,7 +1,6 @@
 package net.jimblackler.istresser;
 
 import static com.google.android.apps.internal.games.memoryadvice.Utils.readFile;
-import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getMemoryQuantity;
 import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 import static com.google.android.apps.internal.games.memorytest.DurationUtils.getDuration;
@@ -229,8 +228,71 @@ public class MainActivity extends Activity {
     } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
-    memoryAdvisor = new MemoryAdvisor(this, (Map<String, Object>) params.get("advisorParameters"),
-        (timedOut) -> runOnUiThread(this::startTest));
+    memoryAdvisor = new MemoryAdvisor(this);
+
+    new LogMonitor(line -> {
+      if (line.contains("Out of memory")) {
+        Map<String, Object> report1 = new LinkedHashMap<>();
+        Collection<Object> lines = new ArrayList<>();
+        lines.add(line);
+        report1.put("criticalLogLines", lines);
+        report1.put("time", System.currentTimeMillis());
+        try {
+          resultsStream.println(objectMapper.writeValueAsString(report1));
+        } catch (JsonProcessingException e) {
+          throw new IllegalStateException(e);
+        }
+      }
+    });
+
+    Map<String, Object> report1 = new LinkedHashMap<>();
+    report1.put("deviceInfo", memoryAdvisor.getDeviceInfo());
+    try {
+      resultsStream.println(objectMapper.writeValueAsString(report1));
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
+
+    Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
+    if (switchTest != null) {
+      scheduleAppSwitch(switchTest);
+    }
+
+    Number maxMillisecondsPerSecond = (Number) params.get("maxMillisecondsPerSecond");
+    Number minimumFrequency = (Number) params.get("minimumFrequency");
+    Number maximumFrequency = (Number) params.get("maximumFrequency");
+
+    String paramsString;
+    try {
+      paramsString = objectMapper.writeValueAsString(params);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
+
+    WebView webView = findViewById(R.id.webView);
+
+    new MemoryWatcher(memoryAdvisor,
+        maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
+        minimumFrequency == null ? 200 : minimumFrequency.longValue(),
+        maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
+        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), params, report0 -> {
+          String reportString;
+          try {
+            reportString = objectMapper.writeValueAsString(report0);
+          } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+          }
+          resultsStream.println(reportString);
+          if (Boolean.TRUE.equals(report0.get("exiting"))) {
+            resultsStream.close();
+            finish();
+          } else {
+            runOnUiThread(()
+                              -> webView.loadData(reportString + System.lineSeparator()
+                                      + System.lineSeparator() + paramsString,
+                                  "text/plain; charset=utf-8", "UTF-8"));
+          }
+        }));
   }
 
   @Override
@@ -283,72 +345,6 @@ public class MainActivity extends Activity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  void startTest() {
-    new LogMonitor(line -> {
-      if (line.contains("Out of memory")) {
-        Map<String, Object> report = new LinkedHashMap<>();
-        Collection<Object> lines = new ArrayList<>();
-        lines.add(line);
-        report.put("criticalLogLines", lines);
-        report.put("time", System.currentTimeMillis());
-        try {
-          resultsStream.println(objectMapper.writeValueAsString(report));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-      }
-    });
-
-    Map<String, Object> report = new LinkedHashMap<>();
-    report.put("deviceInfo", memoryAdvisor.getDeviceInfo());
-    try {
-      resultsStream.println(objectMapper.writeValueAsString(report));
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException(e);
-    }
-
-    Map<String, Object> switchTest = (Map<String, Object>) params.get("switchTest");
-    if (switchTest != null) {
-      scheduleAppSwitch(switchTest);
-    }
-
-    Number maxMillisecondsPerSecond = (Number) params.get("maxMillisecondsPerSecond");
-    Number minimumFrequency = (Number) params.get("minimumFrequency");
-    Number maximumFrequency = (Number) params.get("maximumFrequency");
-
-    String paramsString;
-    try {
-      paramsString = objectMapper.writeValueAsString(params);
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException(e);
-    }
-
-    WebView webView = findViewById(R.id.webView);
-
-    new MemoryWatcher(memoryAdvisor,
-        maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
-        minimumFrequency == null ? 200 : minimumFrequency.longValue(),
-        maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
-        new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), params, report0 -> {
-          String reportString;
-          try {
-            reportString = objectMapper.writeValueAsString(report0);
-          } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-          }
-          resultsStream.println(reportString);
-          if (Boolean.TRUE.equals(report0.get("exiting"))) {
-            resultsStream.close();
-            finish();
-          } else {
-            runOnUiThread(()
-                              -> webView.loadData(reportString + System.lineSeparator()
-                                      + System.lineSeparator() + paramsString,
-                                  "text/plain; charset=utf-8", "UTF-8"));
-          }
-        }));
   }
 
   private void scheduleAppSwitch(Map<String, Object> switchTest) {
