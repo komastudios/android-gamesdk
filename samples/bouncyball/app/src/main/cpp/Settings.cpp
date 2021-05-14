@@ -68,6 +68,10 @@ bool Settings::getHotPocket() const {
     return mHotPocket;
 }
 
+bool Settings::getDisableSwappy() const {
+    return mDisableSwappy;
+}
+
 void Settings::notifyListeners() {
     // Grab a local copy of the listeners
     std::vector<Listener> listeners;

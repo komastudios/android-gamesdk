@@ -96,4 +96,8 @@ uint64_t SwappyGL_getFenceTimeoutNS() {
     return SwappyGL::getFenceTimeout().count();
 }
 
+void SwappyGL_setDoubleBufferFixWait(int32_t n_frames) {
+    SwappyGL::setDoubleBufferFixWait(n_frames);
+}
+
 }  // extern "C" {
