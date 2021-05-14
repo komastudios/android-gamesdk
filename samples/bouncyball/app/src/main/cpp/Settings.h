@@ -51,6 +51,8 @@ public:
 
     bool getHotPocket() const;
 
+    bool getEnableSwappy() const;
+
 private:
     void notifyListeners();
 
@@ -58,6 +60,8 @@ private:
     std::vector<Listener> mListeners GUARDED_BY(mMutex);
 
     std::atomic<bool> mHotPocket;
+
+    std::atomic<bool> mEnableSwappy;
 };
 
 } // namespace samples
