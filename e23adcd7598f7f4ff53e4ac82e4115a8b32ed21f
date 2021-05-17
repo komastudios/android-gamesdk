@@ -130,6 +130,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e181b0a_c206f992",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2021-05-17T19:58:13Z",
+      "side": 1,
+      "message": "Oh I confused it with: https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/src/swappy/opengl/SwappyGL.cpp#281",
+      "parentUuid": "bdc1589f_080591fe",
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e44a5ff6_9df5a504",
@@ -447,6 +465,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "daa51f10_64e4c93c",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 855,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2021-05-17T19:58:13Z",
+      "side": 1,
+      "message": "Oh I missed that they are integers, that\u0027s fine then",
+      "parentUuid": "6d5c9818_f1ebdbed",
+      "range": {
+        "startLine": 855,
+        "startChar": 28,
+        "endLine": 855,
+        "endChar": 29
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3a30cab5_34a7b2ee",
@@ -531,6 +573,30 @@
       "side": 1,
       "message": "It\u0027s shared between SwappyCommon and SwappyGL. We really need to make a non-GL interface and add a Vulkan frame stats module too (b/123727506).",
       "parentUuid": "99435b11_3ae98cbf",
+      "range": {
+        "startLine": 103,
+        "startChar": 9,
+        "endLine": 103,
+        "endChar": 19
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e55ad48_9a71191b",
+        "filename": "src/swappy/opengl/SwappyGL.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1388190
+      },
+      "writtenOn": "2021-05-17T19:58:13Z",
+      "side": 1,
+      "message": "I see then I guess in b/123727506 we should have an interface/callbacks in SwappyCommon to manage statistics/latency and avoid passing a shared pointer to this class (i.e. FrameStatistics would be owned by SwappyGl or SwappyVk and SwappyCommon would use callbacks to query this data).",
+      "parentUuid": "d73c7ddc_3faec928",
       "range": {
         "startLine": 103,
         "startChar": 9,
