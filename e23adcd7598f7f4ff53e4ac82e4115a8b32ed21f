@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fd68676_0b280d1a",
+        "filename": "samples/bouncyball/app/src/main/cpp/Circle.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "I\u0027d reduced the number in a previous CL but it\u0027s too low now. It should really be a logarithmic scale, IMO, so we can test low-end devices and high-end ones.",
+      "parentUuid": "65c9cf91_22b52379",
+      "range": {
+        "startLine": 53,
+        "startChar": 37,
+        "endLine": 53,
+        "endChar": 44
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f596cc58_e52df0c8",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "nit: can use have the same semantics as setSwappyEnabled (i.e. nEnableSwappy)",
+      "range": {
+        "startLine": 190,
+        "startChar": 47,
+        "endLine": 190,
+        "endChar": 61
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "393b1679_badebaef",
+        "filename": "samples/bouncyball/app/src/main/cpp/Orbit.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f596cc58_e52df0c8",
       "range": {
         "startLine": 190,
         "startChar": 47,
@@ -64,6 +112,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdc1589f_080591fe",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "I wanted it to be the same as if Swappy was not there at all. Setting the frame time to 100ms doesn\u0027t avoid the frame rate switching logic. Swappy_setEnabled doesn\u0027t exist. I guess we could call destroy and then init again, but this seemed easier.",
+      "parentUuid": "7c091566_436eb17d",
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e44a5ff6_9df5a504",
@@ -77,6 +143,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "nit: enabled",
+      "range": {
+        "startLine": 96,
+        "startChar": 31,
+        "endLine": 96,
+        "endChar": 33
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6206ba68_ea9c9304",
+        "filename": "samples/bouncyball/app/src/main/cpp/Renderer.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e44a5ff6_9df5a504",
       "range": {
         "startLine": 96,
         "startChar": 31,
@@ -110,6 +200,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d98d2e5_17aa72ef",
+        "filename": "samples/bouncyball/app/src/main/java/com/prefabulated/bouncyball/OrbitActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b86e966e_41f1f6e2",
+      "range": {
+        "startLine": 372,
+        "startChar": 35,
+        "endLine": 372,
+        "endChar": 40
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9d34c314_69d7a6a7",
@@ -127,6 +241,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e4d746c_f036eb64",
+        "filename": "samples/bouncyball/app/src/main/res/layout/activity_orbit.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d34c314_69d7a6a7",
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5980f8cf_f8af085c",
@@ -140,6 +272,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "same nit here about spelling",
+      "range": {
+        "startLine": 44,
+        "startChar": 18,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eff7bb58_817b4966",
+        "filename": "samples/bouncyball/app/src/main/res/values/strings.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5980f8cf_f8af085c",
       "range": {
         "startLine": 44,
         "startChar": 18,
@@ -173,6 +329,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "98dcfe0b_0495726d",
+        "filename": "src/swappy/common/FrameStatistics.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74fe5865_bbe9c352",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 28
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4c1a99d_fe685a01",
@@ -186,6 +366,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "these needs to be class members, not static",
+      "range": {
+        "startLine": 845,
+        "startChar": 8,
+        "endLine": 845,
+        "endChar": 14
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2820800_2492fecf",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 845,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4c1a99d_fe685a01",
       "range": {
         "startLine": 845,
         "startChar": 8,
@@ -221,6 +425,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6d5c9818_f1ebdbed",
+        "filename": "src/swappy/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 855,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "These latency values are integer counts of the vsync period, so we\u0027re effectively getting this already. Do you think it\u0027s necessary to use millisecond values instead?",
+      "parentUuid": "0de41df6_7b6dd375",
+      "range": {
+        "startLine": 855,
+        "startChar": 28,
+        "endLine": 855,
+        "endChar": 29
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3a30cab5_34a7b2ee",
         "filename": "src/swappy/opengl/SwappyGL.cpp",
         "patchSetId": 2
@@ -232,6 +460,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "So this would be always enabled for Swappy to work correctly now, maybe we should call it essential?",
+      "range": {
+        "startLine": 185,
+        "startChar": 38,
+        "endLine": 185,
+        "endChar": 47
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92b49c66_d0ca0497",
+        "filename": "src/swappy/opengl/SwappyGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a30cab5_34a7b2ee",
       "range": {
         "startLine": 185,
         "startChar": 38,
@@ -255,6 +507,30 @@
       "writtenOn": "2021-05-14T19:09:36Z",
       "side": 1,
       "message": "why do we need a shared_ptr here?",
+      "range": {
+        "startLine": 103,
+        "startChar": 9,
+        "endLine": 103,
+        "endChar": 19
+      },
+      "revId": "e23adcd7598f7f4ff53e4ac82e4115a8b32ed21f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d73c7ddc_3faec928",
+        "filename": "src/swappy/opengl/SwappyGL.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-17T10:00:12Z",
+      "side": 1,
+      "message": "It\u0027s shared between SwappyCommon and SwappyGL. We really need to make a non-GL interface and add a Vulkan frame stats module too (b/123727506).",
+      "parentUuid": "99435b11_3ae98cbf",
       "range": {
         "startLine": 103,
         "startChar": 9,
