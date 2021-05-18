@@ -33,6 +33,8 @@ class TestBatteryProvider : public tf::IBatteryProvider {
 
     bool IsBatteryCharging() override { return true; }
 
+    bool IsPowerSaveModeEnabled() override { return true; }
+
     bool IsBatteryReportingEnabled() override { return enabled_; }
 };
 

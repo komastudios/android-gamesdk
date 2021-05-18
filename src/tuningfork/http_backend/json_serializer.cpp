@@ -254,6 +254,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             o["current_charge_microampere_hours"] = report.current_charge_;
             o["charging"] = report.is_charging_;
             o["app_on_foreground"] = report.app_on_foreground_;
+            o["power_save_mode"] = report.power_save_mode_;
             battery_events.push_back(o);
         }
     }

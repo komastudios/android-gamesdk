@@ -550,6 +550,7 @@ class PowerManager : java::Object {
     int getCurrentThermalStatus() {
         return CallVIMethod("getCurrentThermalStatus");
     }
+    bool isPowerSaveMode() { return CallVZMethod("isPowerSaveMode"); }
 };
 
 }  // namespace os
