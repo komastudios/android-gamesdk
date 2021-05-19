@@ -33,7 +33,6 @@ android {
 //    prefab {
 //        gameactivity {
 //            headers "src/main/cpp/include"
-//            libraryName "game-activity"
 //        }
 //    }
 }

@@ -7,11 +7,12 @@ import com.google.androidgamesdk.LocalToolchain
 import com.google.androidgamesdk.OboeDownloader
 import com.google.androidgamesdk.BuildInfoFile
 import com.google.androidgamesdk.Toolchain
+import com.google.androidgamesdk.AndroidLibrary
 import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
 import com.google.androidgamesdk.ToolchainEnumerator
+import com.google.androidgamesdk.AarPrefabPatcher
 
-import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
 import org.gradle.internal.os.OperatingSystem;
@@ -53,6 +54,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy')
                 new ExternalAndroidProject("test/swappy/testapp")
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
+
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
         .setAarLibrary("games-performance-tuner", "1.1.0-beta03")
         .setUsesProtobuf()
@@ -94,9 +96,17 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
+def gameActivityLibrary = new AndroidLibrary('game_activity', "GameActivity")
+        .setAarLibrary("games-activity", "0.0.1")
+        .setPrefabFolderName("prefab-src")
+
+def gameInputLibrary = new AndroidLibrary('game_input', "GameInput")
+        .setAarLibrary("games-text-input", "0.0.1")
+        .setPrefabFolderName("prefab-src")
+
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
-        + osFolderName(ExternalToolName.PROTOBUF)).getPath()
+            + osFolderName(ExternalToolName.PROTOBUF)).getPath()
 }
 
 def getEnvironment() {
@@ -105,7 +115,7 @@ def getEnvironment() {
     if (OperatingSystem.current().isWindows()) {
         trans = { it.toUpperCase() }
     }
-    System.getenv().each{entry -> env[trans(entry.key)] = entry.value}
+    System.getenv().each { entry -> env[trans(entry.key)] = entry.value }
     return env
 }
 
@@ -158,7 +168,16 @@ allprojects {
     }
 }
 
-def allLibraries = [swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary, oboeNativeLibrary]
+// All the libraries that are part of the Game SDK. These can be native libraries (which we can
+// package in a zip, or in an AAR) or "Android libraries" (which are built by default in an AAR).
+def allLibraries = [
+        swappyNativeLibrary,
+        tuningForkNativeLibrary,
+        memoryAdviceNativeLibrary,
+        oboeNativeLibrary,
+        gameActivityLibrary,
+        gameInputLibrary,
+]
 
 def getBuildPath() {
     return new File("$projectDir/build").getPath()
@@ -181,9 +200,8 @@ def getDistPath() {
 }
 
 def getTempPath() {
-    return new File("$projectDir/../.temp").getPath()//.getAbsolutePath()
+    return new File("$projectDir/../.temp").getPath()
 }
-
 
 def buildHostModule(subdir, buildType) {
     def toolchain = getLocalToolchain()
@@ -202,18 +220,20 @@ def buildHostModule(subdir, buildType) {
 def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collection<NativeLibrary> libraries, subdir) {
     def buildKey = toolchain.getBuildKey(buildOptions)
 
-    def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
-    def outputFolder = joinPath(getOutPath(), buildKey)
-    def cmakeProjectFolder = joinPath("$projectDir", subdir)
-    def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
-    def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
+    if (!libraries.isEmpty()) {
+        def workingFolder = joinPath(getTempPath(), buildKey, '.cmake')
+        def outputFolder = joinPath(getOutPath(), buildKey)
+        def cmakeProjectFolder = joinPath("$projectDir", subdir)
+        def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
+        def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
 
-    runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
-    runNinja(project, toolchain, workingFolder)
+        runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
+        runNinja(project, toolchain, workingFolder)
 
-    def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
-    jsonDescription.text = '{"abi":"'+buildOptions.arch+'","api":'+toolchain.getAndroidVersion()+
-        ',"ndk":'+toolchain.getNdkVersionNumber()+',"stl":"'+buildOptions.stl+'"}'
+        def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
+        jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
+                ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+    }
 
     return [arch: buildOptions.arch, buildKey: buildKey]
 }
@@ -225,39 +245,29 @@ task cleanPath(type: Delete) {
     delete getBuildPath()
 }
 
-def executeCmd(cmd, dir) {
-    def out = new StringBuilder()
-    def err = new StringBuilder()
-    def process = cmd.execute(null, new File(dir))
-    process.consumeProcessOutput(out, err)
-    process.waitFor()
-    logger.info("Running $cmd")
-    if(out.length()>0)
-        logger.info(out.toString())
-    if(err.length()>0)
-        logger.error(err.toString())
-}
-
-def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
+/**
+ * Generate the structure of files needed to make an AAR from a native library.
+ */
+def copyNativeLibraryToPrefabAar(buildInfo, outFolder, library) {
     def libraryName = library.nativeLibraryName
     def prefabName = library.aarLibraryName
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
     def buildFolder = joinPath(getPackagePath(), outFolder)
-    def sharedLibBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'libs',
-                                  'android.'+buildKey)
-    def staticLibBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'libs',
-                                  'android.'+buildKey)
+    def sharedLibBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName, 'libs',
+            'android.' + buildKey)
+    def staticLibBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'libs',
+            'android.' + buildKey)
     def staticsFolder = joinPath(getOutPath(), buildKey)
-    def sharedIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'include', libraryName)
-    def staticIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'include', libraryName)
-    def sharedCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName, 'include', 'common')
-    def staticCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab','modules', libraryName + '_static', 'include', 'common')
+    def sharedIncludeBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName, 'include', libraryName)
+    def staticIncludeBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'include', libraryName)
+    def sharedCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName, 'include', 'common')
+    def staticCommonIncludeBuildFolder = joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'include', 'common')
     def headerFolder = './include/' + libraryName
     def commonHeaderFolder = './include/common'
 
-    // TODO: including the dynamic library (uncommenting these next lines)
+    // TODO: including the dynamic library
     // errors because no proper library can be found for module swappy (the shared version),
     // probably because we're using c++_static in samples?
     def buildSharedLibrary = false
@@ -336,14 +346,17 @@ def copyLibraryToPrefabAar(buildInfo, outFolder, library) {
     }
 }
 
-def copyLibs(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo = false,
-            useFullBuildKey = false, flattenLibDirs = false, shared = true) {
+/**
+ * Copy the generated .so/.a files for native libraries to the package folder.
+ */
+def copyNativeLibs(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticToo = false,
+                   useFullBuildKey = false, flattenLibDirs = false, shared = true) {
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake')
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def libBuildFolder = joinPath(buildFolder, 'libs',
-                                  useFullBuildKey ? buildKey : arch, 'lib')
+            useFullBuildKey ? buildKey : arch, 'lib')
 
     if (shared) {
         libraries.forEach({ nativeLibrary ->
@@ -364,18 +377,20 @@ def copyLibs(buildInfo, outFolder, Collection<NativeLibrary> libraries, staticTo
         def staticsFolder = joinPath(getOutPath(), buildKey)
         def staticLibsBuildFolder = joinPath(buildFolder, 'libs', buildKey)
 
-        libraries.forEach({nativeLibrary ->
+        libraries.forEach({ nativeLibrary ->
             copy {
                 from file(staticsFolder)
                 include "lib" + nativeLibrary.nativeLibraryName + "_static.a"
                 into file(staticLibsBuildFolder)
             }
         })
-
     }
 }
 
-def copyIncludes(outFolder, Collection<NativeLibrary> libraries) {
+/**
+ * Copy the header files of native libraries to the package folder.
+ */
+def copyNativeLibrariesIncludes(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
     def headerFolder = './include'
     def includeBuildFolder = joinPath(buildFolder, 'include')
@@ -397,6 +412,9 @@ def copyIncludes(outFolder, Collection<NativeLibrary> libraries) {
     }
 }
 
+/**
+ * Copy the common documentation files to the package folder.
+ */
 def copyDocs(outFolder) {
     copy {
         from "LICENSE", "THIRD_PARTY_NOTICES", "RELEASE_NOTES"
@@ -404,8 +422,10 @@ def copyDocs(outFolder) {
     }
 }
 
-// Copy samples for packaging. Also rename CMakeLists.txt files so that the
-// one distributed are using the packaged game sdk.
+/**
+ * Copy samples for packaging. Also rename CMakeLists.txt files so that the
+ * one distributed are using the packaged game sdk.
+ */
 def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
     def buildFolder = getPackagePath() + '/' + outFolder
 
@@ -423,7 +443,7 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
 
     // Library specific files
     libraries.forEach({ nativeLibrary ->
-        nativeLibrary.sampleAndroidProjects.forEach({externalAndroidProject ->
+        nativeLibrary.sampleAndroidProjects.forEach({ externalAndroidProject ->
             if (externalAndroidProject.projectDestinationPath) {
                 copy {
                     from file(externalAndroidProject.projectRootPath)
@@ -436,7 +456,7 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
             }
         })
 
-        nativeLibrary.sampleExtraFolderPaths.forEach({sampleFolder ->
+        nativeLibrary.sampleExtraFolderPaths.forEach({ sampleFolder ->
             copy {
                 from file(sampleFolder.sourcePath)
                 into file(joinPath(buildFolder, sampleFolder.destinationPath))
@@ -449,19 +469,44 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
     })
 }
 
-def unityNativeBuild(libraries, buildType="Release") {
+/**
+ * Copy the generated AAR to the package folder.
+ * Also patch the AAR with a prefab folder if necessary.
+ */
+def copyAndroidLibraryAar(AndroidLibrary library, String outFolder) {
+    def buildFolder = getPackagePath() + '/' + outFolder
+    def aarPath = joinPath(getOutPath(), "outputs/aar/${library.projectName}.aar");
+
+    // Inject the sources of the "header only" library, in Prefab format.
+    // This can be removed once projects are upgraded to use prefabPublishing.
+    if (!library.prefabFolderName.isEmpty()) {
+        def aarPrefabPatcher = new AarPrefabPatcher()
+        aarPrefabPatcher.injectPrefabFolder(
+                aarPath,
+                joinPath(getProjectDir().getPath(), library.projectName, library.prefabFolderName))
+    }
+
+    copy {
+        from aarPath
+        into buildFolder
+    }
+}
+
+// TODO: maybe rename these functions to buildUnityNativeLibraries
+def unityNativeBuild(libraries, buildType = "Release") {
     def threadChecks = false
     def allAbis = new ToolchainEnumerator().allAbis
     return allAbis.collect {
         buildNativeModules(
-                new BuildOptions(buildType, threadChecks,  "c++_static", it),
+                new BuildOptions(buildType, threadChecks, "c++_static", it),
                 new SpecificToolchain(project, "21", "r19"),
                 libraries,
                 "src")
     }
 }
 
-def sdkNativeBuild(libraries, buildType="Release") {
+// TODO: maybe rename these functions to buildNativeLibraries
+def sdkNativeBuild(libraries, buildType = "Release") {
     def threadChecks = false
     def toolchainEnumerator = new ToolchainEnumerator()
     def allToolchains = toolchainEnumerator.enumerateAllToolchains(project)
@@ -478,6 +523,7 @@ def sdkNativeBuild(libraries, buildType="Release") {
     })
 }
 
+// TODO: maybe rename these functions to buildAarNativeLibraries
 def sdkAarNativeBuild(libraries, buildType) {
     def threadChecks = false
     def toolchainEnumerator = new ToolchainEnumerator()
@@ -495,8 +541,9 @@ def sdkAarNativeBuild(libraries, buildType) {
     })
 }
 
+// TODO: maybe rename these functions to buildSpecificNativeLibraries
 def specificNativeBuild(specificToolchainConfiguration, libraries,
-                        buildType="Release") {
+                        buildType = "Release") {
     def threadChecks = false
     def allAbis = new ToolchainEnumerator().allAbis
     def toolchain = new SpecificToolchain(project,
@@ -513,12 +560,12 @@ def specificNativeBuild(specificToolchainConfiguration, libraries,
 
 def getLocalToolchain() {
     def kApiLevel = project.hasProperty("androidApiLevel") ?
-        project.androidApiLevel : "24"
+            project.androidApiLevel : "24"
     def ndkVersion = project.hasProperty("ndk") ? project.ndk : null;
     return new LocalToolchain(project, kApiLevel, ndkVersion)
 }
 
-def localNativeBuild(libraries, subdir = "src", buildType="Release") {
+def localNativeBuild(libraries, subdir = "src", buildType = "Release") {
     def allAbis = new ToolchainEnumerator().allAbis
     def toolchain = getLocalToolchain();
     def threadChecks = true
@@ -530,7 +577,7 @@ def localNativeBuild(libraries, subdir = "src", buildType="Release") {
 
 def getBuildType() {
     return project.hasProperty("buildType") ?
-        project.buildType : "Release"
+            project.buildType : "Release"
 }
 
 def getPackageName() {
@@ -560,6 +607,7 @@ e.g. ./gradlew packageSpecificZip -Plibraries=swappy -Psdk=14 -Pndk=r16 -Pstl='c
     return [sdk: project.sdk, ndk: project.ndk, stl: project.stl]
 }
 
+/** Returns the library that should be built. */
 def filterLibraries(allLibraries) {
     if (!project.hasProperty("libraries")) {
         return []
@@ -580,6 +628,18 @@ def filterLibraries(allLibraries) {
     }
 }
 
+Collection<NativeLibrary> filterNativeLibraries(allLibraries) {
+    return filterLibraries(allLibraries).findAll { library ->
+        library instanceof NativeLibrary
+    }
+}
+
+Collection<AndroidLibrary> filterAndroidLibraries(allLibraries) {
+    return filterLibraries(allLibraries).findAll { library ->
+        library instanceof AndroidLibrary
+    }
+}
+
 class BuildTask extends DefaultTask {
 }
 
@@ -588,7 +648,7 @@ task build(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.nativeBuild = { -> sdkNativeBuild(filterLibraries(allLibraries), getBuildType()) }
+    ext.nativeBuild = { -> sdkNativeBuild(filterNativeLibraries(allLibraries), getBuildType()) }
 }
 
 task buildUnity(type: BuildTask) {
@@ -596,7 +656,7 @@ task buildUnity(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
-    ext.nativeBuild = { -> unityNativeBuild(filterLibraries(allLibraries), getBuildType()) }
+    ext.nativeBuild = { -> unityNativeBuild(filterNativeLibraries(allLibraries), getBuildType()) }
 }
 
 task buildLocal(type: BuildTask) {
@@ -604,7 +664,9 @@ task buildLocal(type: BuildTask) {
     ext.withSharedLibs = true
     ext.withStaticLibs = true
     ext.withFullBuildKey = false
-    ext.nativeBuild = { -> localNativeBuild(filterLibraries(allLibraries), "src", getBuildType()) }
+    ext.nativeBuild = { ->
+        localNativeBuild(filterNativeLibraries(allLibraries), "src", getBuildType())
+    }
 }
 
 task buildSpecific(type: BuildTask) {
@@ -613,56 +675,72 @@ task buildSpecific(type: BuildTask) {
     ext.withStaticLibs = true
     ext.withFullBuildKey = false
     ext.nativeBuild = { ->
-        specificNativeBuild(getSpecificToolchainConfiguration(), filterLibraries(allLibraries), getBuildType())
+        specificNativeBuild(getSpecificToolchainConfiguration(), filterNativeLibraries(allLibraries), getBuildType())
     }
 }
 
+// The buildXxx tasks are the central tasks: they take care of building the native libraries
+// (i.e: C and C++ only libraries), the Android libraries (i.e: AAR projects, with C/C++ headers
+// provided by Prefab) and copy the generated files to the package folder.
 tasks.withType(BuildTask) {
-    def libraries = filterLibraries(allLibraries)
+    def nativeLibraries = filterNativeLibraries(allLibraries)
+    def androidLibraries = filterAndroidLibraries(allLibraries)
 
     dependsOn ':extras:assembleRelease'
-    libraries.each { nativeLibrary ->
+    nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+    }
+    androidLibraries.each { androidLibrary ->
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     doFirst {
         // Ensure some libraries to build were set
-        if (libraries.isEmpty()) {
+        if (nativeLibraries.isEmpty() && androidLibraries.isEmpty()) {
             throw new GradleException("""
 Must specify which libraries to build,
-e.g. ./gradlew build -Plibraries=swappy,tuningfork""")
+e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
         }
     }
 
     doLast {
         def packageName = getPackageName()
+
         // Clear the package path to ensure the task zip is not polluted
         // by previous build tasks.
         delete joinPath(getPackagePath(), packageName)
 
+        // Android libraries are already built, just add the AARs to the package.
+        androidLibraries.each {
+            copyAndroidLibraryAar(it, packageName)
+        }
+
+        // Build native libraries, and add their libs/includes/docs/samples to the package.
         nativeBuild().each {
-            copyLibs(it, packageName, libraries, withStaticLibs,
+            copyNativeLibs(it, packageName, nativeLibraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
-        copyIncludes(packageName, libraries)
-
+        copyNativeLibrariesIncludes(packageName, nativeLibraries)
         copyDocs(packageName)
-
         if (shouldIncludeSampleSources()) {
-            copySampleSources(packageName, libraries)
+            copySampleSources(packageName, nativeLibraries)
         }
     }
 }
 
-// Build task for making an AAR that can be used with Prefab
+// Build task for making an AAR that can be used with Prefab.
 task buildAar {
-    def libraries = filterLibraries(allLibraries)
+    def nativeLibraries = filterNativeLibraries(allLibraries)
+    def androidLibraries = filterAndroidLibraries(allLibraries)
 
     dependsOn ':extras:assembleRelease'
-    libraries.each { nativeLibrary ->
+    nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+    }
+    androidLibraries.each { androidLibrary ->
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     doFirst {
@@ -671,16 +749,18 @@ task buildAar {
         delete joinPath(getPackagePath(), getPackageName())
     }
 
-    ext.flattenLibs = false
-    ext.withSharedLibs = true
-    ext.withStaticLibs = true
-    ext.withFullBuildKey = true
-    ext.nativeBuild = { -> sdkAarNativeBuild(libraries, getBuildType()) }
     doLast {
         def packageName = getPackageName()
-        nativeBuild().each { buildInfo ->
-            libraries.forEach {
-                library -> copyLibraryToPrefabAar(buildInfo, packageName, library)
+
+        // Android libraries are already built, just add the AARs to the package.
+        androidLibraries.each {
+            copyAndroidLibraryAar(it, packageName)
+        }
+
+        // Build native libraries, and add them to the AAR
+        sdkAarNativeBuild(nativeLibraries, getBuildType()).each { buildInfo ->
+            nativeLibraries.forEach {
+                library -> copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
             }
         }
     }
@@ -700,7 +780,7 @@ task localUnitTests {
         if (project.hasProperty('arch'))
             parch = arch
         def buildInfo = localNativeBuild([swappyNativeLibrary, tuningForkNativeLibrary, memoryAdviceNativeLibrary], "test/$pcomponent")
-        def buildKey = buildInfo.buildKey.findAll{it.contains(parch)}[0]
+        def buildKey = buildInfo.buildKey.findAll { it.contains(parch) }[0]
         def cmakeFolder = getTempPath() + "/$buildKey/.cmake"
         def toolchain = getLocalToolchain();
         def adb = toolchain.getAdbPath();
@@ -728,10 +808,10 @@ task localDeviceInfoUnitTests {
 task format {
     doLast {
         def formattedFiles =
-            fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"]) +
-            fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
-            fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h'])
+                fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"]) +
+                        fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
+                        fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+                        fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h'])
 
         formattedFiles.files.each { file ->
             exec {
@@ -748,14 +828,14 @@ task buildSampleArtifacts {
         def buildFolder = joinPath(getPackagePath(), getPackageName())
         def builder = new ExternalAndroidProjectBuilder(project, buildFolder)
         builder.setSkipSamplesBuild(shouldSkipSamplesBuild())
-        filterLibraries(allLibraries).forEach { nativeLibrary ->
+        filterNativeLibraries(allLibraries).forEach { nativeLibrary ->
             logger.info("Building samples of " + nativeLibrary.nativeLibraryName + "...")
             builder.buildSampleArtifacts(nativeLibrary)
         }
     }
 }
 
-// Zipping things up
+/** Create a ZIP file for the entire "package" generated by a build task. */
 def addZipTask(name, buildTask, archName) {
     tasks.register(name, Zip) {
         dependsOn buildTask
@@ -787,16 +867,16 @@ def addZipTask(name, buildTask, archName) {
             }
 
             def out = services.get(StyledTextOutputFactory).create("output")
-            out.style(Style.Identifier).text('\n' + archName +' is in ')
-            .style(Style.ProgressStatus)
-                .println(destinationDirectory.get());
+            out.style(Style.Identifier).text('\n' + archName + ' is in ')
+                    .style(Style.ProgressStatus)
+                    .println(destinationDirectory.get());
         }
     }
 
 }
 
 task prepareMavenZipContent {
-    description "Build the AAR and prepare the versioned pom file for the specified library"
+    description "Build the AAR and prepare the versioned pom file for the specified libraries"
     dependsOn "packageAar"
 
     doLast {
@@ -805,7 +885,7 @@ task prepareMavenZipContent {
         delete mavenZipContentFolder
         mkdir mavenZipContentFolder
 
-        filterLibraries(allLibraries).forEach { nativeLibrary ->
+        filterNativeLibraries(allLibraries).forEach { nativeLibrary ->
             def libraryName = nativeLibrary.aarLibraryName
             def aarVersion = nativeLibrary.aarVersion
 
@@ -813,6 +893,24 @@ task prepareMavenZipContent {
                 from file(joinPath(buildFolder, "gamesdk.aar"))
                 into file(joinPath(mavenZipContentFolder))
                 rename "gamesdk.aar", libraryName + "-" + aarVersion + ".aar"
+            }
+
+            copy {
+                from file(joinPath("src", "maven", libraryName + ".pom"))
+                into file(joinPath(mavenZipContentFolder))
+                rename libraryName + ".pom", libraryName + "-" + aarVersion + ".pom"
+                filter(ReplaceTokens, tokens: [aarVersion: aarVersion])
+            }
+        }
+
+        filterAndroidLibraries(allLibraries).forEach { androidLibrary ->
+            def libraryName = androidLibrary.aarLibraryName
+            def aarVersion = androidLibrary.aarVersion
+
+            copy {
+                from file(joinPath(buildFolder, androidLibrary.projectName + ".aar"))
+                into file(joinPath(mavenZipContentFolder))
+                rename androidLibrary.projectName + ".aar", libraryName + "-" + aarVersion + ".aar"
             }
 
             copy {
@@ -859,7 +957,9 @@ addZipTask("packageAar", buildAar, "gamesdk.aar")
 task jetpadJson {
     doLast {
         def buildInfoFile = new BuildInfoFile()
-        buildInfoFile.writeLibrariesBuildInfoFile(filterLibraries(allLibraries),
+        buildInfoFile.writeLibrariesBuildInfoFile(
+                filterNativeLibraries(allLibraries),
+                filterAndroidLibraries(allLibraries),
                 getDistPath(), getPackageName())
     }
 }
