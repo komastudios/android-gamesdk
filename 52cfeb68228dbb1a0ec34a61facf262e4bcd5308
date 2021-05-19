@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d3f03ab_5ca26410",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-05-19T20:30:31Z",
+      "side": 1,
+      "message": "See bug for details of why this is needed.\nThe traces look a bit different than before. See screenshot: http://screen/5ikV7nHjBV4ESP5\nNote async trace functions require API \u003e\u003d 29: https://developer.android.com/ndk/reference/group/tracing",
+      "revId": "52cfeb68228dbb1a0ec34a61facf262e4bcd5308",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
