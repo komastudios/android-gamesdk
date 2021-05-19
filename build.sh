@@ -28,6 +28,8 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
+    ./gradlew buildGameActivityAar -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew buildGameInputAar -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -40,6 +42,8 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
+    ./gradlew buildGameActivityAar -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew buildGameInputAar -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name

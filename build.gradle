@@ -10,6 +10,7 @@ import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
 import com.google.androidgamesdk.ToolchainEnumerator
+import com.google.androidgamesdk.AarPrefabPatcher
 
 import java.nio.file.Paths
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
@@ -756,9 +757,9 @@ task buildSampleArtifacts {
 }
 
 // Zipping things up
-def addZipTask(name, buildTask, archName) {
+def addZipTask(name, buildTasks, archName) {
     tasks.register(name, Zip) {
-        dependsOn buildTask
+        dependsOn buildTasks
 
         if (shouldIncludeSampleArtifacts()) {
             dependsOn buildSampleArtifacts
@@ -850,11 +851,66 @@ task packageMavenZip(type: Zip) {
     }
 }
 
-addZipTask("packageUnityZip", buildUnity, "builds.zip")
-addZipTask("packageZip", build, "gamesdk.zip")
-addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
-addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
-addZipTask("packageAar", buildAar, "gamesdk.aar")
+// TODO: add dependencies?
+addZipTask("packageUnityZip", [buildUnity], "builds.zip")
+addZipTask("packageZip", [build], "gamesdk.zip")
+addZipTask("packageLocalZip", [buildLocal], "gamesdk.zip")
+addZipTask("packageSpecificZip", [buildSpecific], "gamesdk.zip")
+addZipTask("packageAar", [buildAar], "gamesdk.aar")
+
+task buildGameActivityAar {
+    dependsOn ":GameActivity:assembleRelease"
+
+    doLast {
+        def aarPath = joinPath(getOutPath(), "outputs/aar/GameInput.aar");
+
+        // Inject the sources of the "header only" library, in Prefab format.
+        // This can be removed once projects are upgraded to use prefabPublishing.
+        def aarPrefabPatcher = new AarPrefabPatcher()
+        aarPrefabPatcher.injectPrefabFolder(
+                joinPath(getOutPath(), "outputs/aar/GameActivity.aar"),
+                joinPath(getProjectDir().getPath(), "GameActivity/prefab-src"))
+
+        copy {
+            from aarPath
+            into joinPath(getPackagePath(), getPackageName())
+        }
+
+        if (getDistPath() != getPackagePath()) {
+            copy {
+                from getPackagePath()
+                into getDistPath()
+            }
+        }
+    }
+}
+
+task buildGameInputAar {
+    dependsOn ":GameInput:assembleRelease"
+
+    doLast {
+        def aarPath = joinPath(getOutPath(), "outputs/aar/GameInput.aar");
+
+        // Inject the sources of the "header only" library, in Prefab format.
+        // This can be removed once projects are upgraded to use prefabPublishing.
+        def aarPrefabPatcher = new AarPrefabPatcher()
+        aarPrefabPatcher.injectPrefabFolder(
+                aarPath,
+                joinPath(getProjectDir().getPath(), "GameInput/prefab-src"))
+
+        copy {
+            from aarPath
+            into joinPath(getPackagePath(), getPackageName())
+        }
+
+        if (getDistPath() != getPackagePath()) {
+            copy {
+                from getPackagePath()
+                into getDistPath()
+            }
+        }
+    }
+}
 
 task jetpadJson {
     doLast {
