@@ -4,13 +4,11 @@ Game Input is providing a simple API to show and hide the soft keyboard, set and
 
 ## Build the GameInput AAR from sources
 
-Use the script to build the GameInput AAR and inject the C++ source files.
+From the "gamesdk" directory:
 
-* `cd GameInput && ./build.sh`
+* `./gradlew packageLocalZip -Plibraries=game_input`
 
-> Note that this is a temporary workaround (in the future, running `./gradlew :GameInput:assembleRelease` should be enough).
-
-The AAR is outputed in `out/outputs/aar/GameInput.aar` (`out` directory being where you cloned the Android Game SDK).
+The AAR is outputed in the `package` directory.
 
 ## Integrate GameInput AAR to your build
 
