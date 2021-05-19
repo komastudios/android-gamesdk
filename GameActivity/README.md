@@ -9,13 +9,11 @@ GameActivity is an Android `Activity` modeled on the API of `NativeActivity`, bu
 
 ## Build the GameActivity AAR from sources
 
-Use the script to build the GameActivity AAR and inject the C++ source files.
+From the `gamesdk` directory:
 
-* `cd GameActivity && ./build.sh`
+* `./gradlew packageLocalZip -Plibraries=game_activity`
 
-> Note that this is a temporary workaround (in the future, running `./gradlew :GameActivity:assembleRelease` should be enough).
-
-The AAR is outputed in `out/outputs/aar/GameActivity.aar` (`out` directory being where you cloned the Android Game SDK). It contains GameActivity, both the Java class and its C++ implementation, and the "android_native_app_glue" library.
+The AAR is output in the `package` directory. It contains GameActivity, both the Java class and its C++ implementation, and the "android_native_app_glue" library.
 
 ## Integrate GameActivity AAR to your build
 
