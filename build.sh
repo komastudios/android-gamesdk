@@ -24,6 +24,11 @@ else
     dist_dir=$DIST_DIR
 fi
 
+
+# Temporary: build the GameActivity AAR
+./gradlew :GameActivity:assembleRelease
+cp ../out/outputs/aar/GameActivity.aar "$dist_dir/$package_name"
+
 # Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
@@ -46,16 +51,6 @@ else
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
-
-# Temporary: build the GameActivity/GameInput AARs
-pushd GameActivity
-./build.sh
-cp ../../out/outputs/aar/GameActivity.aar "$dist_dir/$package_name"
-popd
-pushd GameInput
-./build.sh
-cp ../../out/outputs/aar/GameInput.aar "$dist_dir/$package_name"
-popd
 
 # Calculate hash of the zip file
 pushd "$dist_dir/$package_name"
