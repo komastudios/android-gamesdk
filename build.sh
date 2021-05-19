@@ -47,6 +47,16 @@ else
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
+# Temporary: build the GameActivity/GameInput AARs
+pushd GameActivity
+./build.sh
+cp ../../out/outputs/aar/GameActivity.aar "$dist_dir/$package_name"
+popd
+pushd GameInput
+./build.sh
+cp ../../out/outputs/aar/GameInput.aar "$dist_dir/$package_name"
+popd
+
 # Calculate hash of the zip file
 pushd "$dist_dir/$package_name"
 sha256sum gamesdk.zip > gamesdk.zip.sha256
