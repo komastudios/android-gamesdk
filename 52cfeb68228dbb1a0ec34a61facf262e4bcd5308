@@ -16,6 +16,40 @@
       "message": "See bug for details of why this is needed.\nThe traces look a bit different than before. See screenshot: http://screen/5ikV7nHjBV4ESP5\nNote async trace functions require API \u003e\u003d 29: https://developer.android.com/ndk/reference/group/tracing",
       "revId": "52cfeb68228dbb1a0ec34a61facf262e4bcd5308",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27bdbf32_4d133662",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-20T10:28:39Z",
+      "side": 1,
+      "message": "LGTM apart from the missing cache removal, which was my fault.\nA shame it restricts us to API\u003e\u003d29, but that can\u0027t be avoided by the looks of it.",
+      "revId": "52cfeb68228dbb1a0ec34a61facf262e4bcd5308",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5949cae_0f00421c",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-20T10:28:39Z",
+      "side": 1,
+      "message": "I think we need to delete the id from the cache here too.",
+      "revId": "52cfeb68228dbb1a0ec34a61facf262e4bcd5308",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
