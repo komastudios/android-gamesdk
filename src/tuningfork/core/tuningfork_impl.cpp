@@ -214,13 +214,22 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         ALOGV("Set annotation id to %" PRIu32, id);
         bool changed = current_annotation_id_.detail.annotation != id;
         if (!changed) return current_annotation_id_;
-#if __ANDROID_API__ >= 23
+#if __ANDROID_API__ >= 29
         if (ATrace_isEnabled()) {
             // Finish the last section if there was one and start a new one.
-            if (trace_started_)
-                ATrace_endSection();
-            else
+            static constexpr int32_t kATraceAsyncCookie = 0x5eaf00d;
+            if (trace_started_) {
+                auto last_annotation = trace_marker_cache_.find(last_id_);
+                if (last_annotation == trace_marker_cache_.end()) {
+                    ALOGE("Annotation %u has vanished!", last_id_);
+                } else {
+                    ATrace_endAsyncSection(last_annotation->second.c_str(),
+                                           kATraceAsyncCookie);
+                    trace_marker_cache_.erase(last_annotation);
+                }
+            } else {
                 trace_started_ = true;
+            }
             // Guard against concurrent access to the cache
             std::lock_guard<std::mutex> lock(trace_marker_cache_mutex_);
             auto it = trace_marker_cache_.find(id);
@@ -232,7 +241,8 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
                                           annotation)})
                          .first;
             }
-            ATrace_beginSection(it->second.c_str());
+            ATrace_beginAsyncSection(it->second.c_str(), kATraceAsyncCookie);
+            last_id_ = id;
         }
 #endif
         current_annotation_id_ = MetricId::FrameTime(id, 0);
