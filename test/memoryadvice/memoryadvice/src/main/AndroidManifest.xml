@@ -2,8 +2,6 @@
     package="com.google.android.apps.internal.games.memoryadvice">
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <service android:name="com.google.android.apps.internal.games.memoryadvice.StressService"
-            android:process=":com.google.android.apps.internal.games.memoryadvice.StressProcess" />
         <service android:name="com.google.android.apps.internal.games.memoryadvice.CanaryService"
             android:process=":com.google.android.apps.internal.games.memoryadvice.CanaryProcess" />
     </application>
