@@ -92,7 +92,8 @@ public class Score {
             Map<String, Object> first = result.get(0);
             first.put("params", paramsIn);
           }
-          handleResult(result, out, deviceInfos, directory, tests, objectWriter);
+          handleResult(result, out, deviceInfos, directory, tests, objectWriter,
+              Boolean.TRUE.equals(results1.get("automatic")));
         }
       });
     } else {
@@ -118,7 +119,7 @@ public class Score {
         };
         timer.get().schedule(task, 1000 * 10);
 
-        handleResult(result, out, deviceInfos, directory, tests, objectWriter);
+        handleResult(result, out, deviceInfos, directory, tests, objectWriter, true);
       };
 
       if (useDevice) {
@@ -150,13 +151,13 @@ public class Score {
   private static void handleResult(List<Map<String, Object>> result,
       Map<String, Map<String, Result>> out, Map<String, Map<String, Object>> deviceInfos,
       AtomicReference<Path> directory, AtomicReference<List<List<Map<String, Object>>>> tests,
-      ObjectWriter objectWriter) {
+      ObjectWriter objectWriter, boolean automatic) {
     Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
     if (deviceInfo == null) {
       System.out.println("Could not find deviceInfo.");
       return;
     }
-
+    deviceInfo.put("automatic", automatic);
     Map<String, Object> first = result.get(0);
     Map<String, Object> params = (Map<String, Object>) first.get("params");
     if (params == null) {
@@ -380,6 +381,9 @@ public class Score {
         .append("<th rowspan=" + rowspan + " >")
         .append("totalMem")
         .append("</th>")
+        .append("<th rowspan=" + rowspan + " >")
+        .append("Automatic")
+        .append("</th>")
         .append("</tr>");
 
     int repeats = 1;
@@ -402,7 +406,7 @@ public class Score {
 
     List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
     body.append("<tr>");
-    body.append("<td colspan=6/>");
+    body.append("<td colspan=7/>");
     for (List<Object> coords : horizontalOrder) {
       int total = 0;
       int acceptable = 0;
@@ -461,6 +465,9 @@ public class Score {
           .append("</td>")
           .append("<td>")
           .append(totalMem / (1024 * 1024))
+          .append("</td>")
+          .append("<td>")
+          .append(Boolean.TRUE.equals(deviceInfo.get("automatic")) ? "auto" : "")
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
