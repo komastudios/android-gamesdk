@@ -41,7 +41,7 @@ public class MemoryTest implements MemoryWatcher.Client {
   private final Timer timer = new Timer();
   private final TestSurface testSurface;
   private final MmapFileGroup mmapFiles;
-  private long allocationStartedTime = System.currentTimeMillis();
+  private long allocationStartedTime = -1;
   private long nativeAllocatedByTest;
   private long vkAllocatedByTest;
   private long mmapAnonAllocatedByTest;
@@ -133,6 +133,10 @@ public class MemoryTest implements MemoryWatcher.Client {
         resultsReceiver.accept(report);
       }
     }, getDuration(getOrDefault(params, "timeout", "10m")));
+
+    runAfterDelay(() -> {
+      allocationStartedTime = System.currentTimeMillis();
+    }, getDuration(getOrDefault(params, "delayBeforeAllocation", "2s")));
   }
 
   public static native void initNative();
