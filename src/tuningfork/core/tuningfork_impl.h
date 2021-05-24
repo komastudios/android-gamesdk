@@ -15,6 +15,7 @@
  */
 
 #include <atomic>
+#include <map>
 #include <memory>
 
 #include "Trace.h"
@@ -27,6 +28,8 @@
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
 #include "session.h"
+#include "thermal_metric.h"
+#include "thermal_reporting_task.h"
 #include "time_provider.h"
 #include "tuningfork_internal.h"
 #include "tuningfork_swappy.h"
@@ -55,6 +58,8 @@ class TuningForkImpl : public IdProvider {
     std::atomic<int> next_ikey_;
     std::unique_ptr<ProtobufSerialization> training_mode_params_;
     std::unique_ptr<AsyncTelemetry> async_telemetry_;
+    LoadingTimeMetadataId loading_time_metadata_next_id_ =
+        1;  // 0 is implicitly an empty LoadingTimeMetadata struct
     std::mutex loading_time_metadata_map_mutex_;
     std::unordered_map<LoadingTimeMetadataWithGroup, LoadingTimeMetadataId>
         loading_time_metadata_map_;
@@ -65,6 +70,7 @@ class TuningForkImpl : public IdProvider {
     std::mutex live_loading_events_mutex_;
     AnnotationMap annotation_map_;
     std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
+    std::shared_ptr<ThermalReportingTask> thermal_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;
@@ -78,6 +84,14 @@ class TuningForkImpl : public IdProvider {
     std::string current_loading_group_;
     MetricId current_loading_group_metric_;
     Duration current_loading_group_start_time_ = Duration::zero();
+
+    // Caching of ATrace markers
+#if __ANDROID_API__ >= 29
+    bool trace_started_ = false;
+    std::mutex trace_marker_cache_mutex_;
+    std::map<AnnotationId, std::string> trace_marker_cache_;
+    AnnotationId last_id_;
+#endif
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,

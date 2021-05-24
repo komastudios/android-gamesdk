@@ -8,14 +8,26 @@ class JsonUtils {
    * @param path A path separated by forward slashes, and beginning with a forward slash.
    * @param object The object found in the object at the supplied path.
    */
-  public static <T> T getFromPath(String path, Map<String, Object> object) {
-    path = path.substring(1);
-    int slash = path.indexOf('/');
+  public static <T> T getFromPath(String path, Map<String, Object> object)
+      throws MissingPathException {
+    try {
+      path = path.substring(1);
+      int slash = path.indexOf('/');
 
-    if (slash == -1) {
-      return (T) object.get(path);
+      if (slash == -1) {
+        if (!object.containsKey(path)) {
+          throw new MissingPathException();
+        }
+        return (T) object.get(path);
+      }
+      String nextPart = path.substring(0, slash);
+      if (!object.containsKey(nextPart)) {
+        throw new MissingPathException();
+      }
+
+      return getFromPath(path.substring(slash), (Map<String, Object>) object.get(nextPart));
+    } catch (MissingPathException ex) {
+      throw new MissingPathException("Missing path: " + path);
     }
-    return getFromPath(
-        path.substring(slash), (Map<String, Object>) object.get(path.substring(0, slash)));
   }
 }

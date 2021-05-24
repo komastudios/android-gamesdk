@@ -1,10 +1,11 @@
 package net.jimblackler.collate;
 
+import static com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTrustedTransport;
 import static net.jimblackler.collate.JsonUtils.getSchema;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.toolresults.ToolResults;
@@ -17,18 +18,27 @@ import com.google.api.services.toolresults.model.StepDimensionValueEntry;
 import com.google.api.services.toolresults.model.TestExecutionStep;
 import com.google.api.services.toolresults.model.ToolExecution;
 import com.google.api.services.toolresults.model.ToolOutputReference;
-import com.google.auth.oauth2.AccessToken;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +56,8 @@ import org.json.JSONException;
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
 
-  static void deviceCollect(String appName, Consumer<List<Object>> emitter) throws IOException {
+  static void deviceCollect(String appName, Consumer<List<Map<String, Object>>> emitter)
+      throws IOException {
     Schema resultsRowSchema = getSchema("resultsRow.schema.json");
     // Requires adb root
     Path outputFile = Files.createTempFile("data-", ".json");
@@ -59,7 +70,8 @@ class Collector {
     }
   }
 
-  static void cloudCollect(String historyId, Consumer<List<Object>> emitter) throws IOException {
+  static void cloudCollect(String historyId, Consumer<List<Map<String, Object>>> emitter)
+      throws IOException {
     int sleepFor = 0;
     int ioSleepFor = 0;
 
@@ -71,20 +83,24 @@ class Collector {
 
     int inProgress = 0;
     Collection<String> reported = new HashSet<>();
+    NetHttpTransport httpTransport = null;
+    try {
+      httpTransport = newTrustedTransport();
+    } catch (GeneralSecurityException e) {
+      throw new IOException(e);
+    }
+    JacksonFactory jsonFactory = new JacksonFactory();
+    GoogleCredentials googleCredentials = AuthUserFlow.runAuthUserFlow(
+        Collector.class.getResourceAsStream("/clientSecrets.json"), jsonFactory, httpTransport,
+        ImmutableList.of("https://www.googleapis.com/auth/devstorage.read_only",
+            "https://www.googleapis.com/auth/cloud-platform"));
+    HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(googleCredentials);
     do {
-      String accessToken = Auth.getAccessToken();
       try {
-        GoogleCredentials credentials1 =
-            GoogleCredentials.create(new AccessToken(accessToken, null));
         Storage storage =
-            StorageOptions.newBuilder().setCredentials(credentials1).build().getService();
-
-        GoogleCredential credentials =
-            new GoogleCredential.Builder().build().setAccessToken(accessToken);
+            StorageOptions.newBuilder().setCredentials(googleCredentials).build().getService();
         ToolResults toolResults =
-            new ToolResults
-                .Builder(new NetHttpTransport(), new JacksonFactory(),
-                    new NetHttpTransport().createRequestFactory(credentials).getInitializer())
+            new ToolResults.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
                 .setServicePath(ToolResults.DEFAULT_SERVICE_PATH)
                 .setApplicationName(projectId)
                 .build();
@@ -214,11 +230,11 @@ class Collector {
     } while (inProgress != 0 || reported.isEmpty());
   }
 
-  private static void collectResult(Consumer<List<Object>> emitter, String text,
+  private static void collectResult(Consumer<List<Map<String, Object>>> emitter, String text,
       Map<String, Object> extra, Schema resultsRowSchema) {
     ObjectMapper objectMapper = new ObjectMapper();
     boolean validate = false;
-    List<Object> data = new ArrayList<>();
+    List<Map<String, Object>> data = new ArrayList<>();
     text.lines().forEach(line -> {
       line = line.trim();
       try {
@@ -234,9 +250,11 @@ class Collector {
       }
     });
     if (data.isEmpty()) {
-      data.add(new LinkedHashMap<String, Object>());
+      data.add(new LinkedHashMap<>());
     }
-    ((Map<String, Object>) data.get(0)).put("extra", extra);
+    if (extra != null) {
+      data.get(0).put("extra", extra);
+    }
     emitter.accept(data);
   }
 
@@ -263,6 +281,40 @@ class Collector {
       return s;
     } catch (MalformedInputException e) {
       throw new IOException(e);
+    }
+  }
+
+  public static void datastoreCollect(String version, Consumer<Entity> consumer)
+      throws IOException {
+    NetHttpTransport httpTransport = null;
+    try {
+      httpTransport = newTrustedTransport();
+    } catch (GeneralSecurityException e) {
+      throw new IOException(e);
+    }
+    JacksonFactory jsonFactory = new JacksonFactory();
+    String secretsName = "/clientSecrets_gatherBenchmarks.json";
+    GoogleCredentials googleCredentials =
+        AuthUserFlow.runAuthUserFlow(Collector.class.getResourceAsStream(secretsName), jsonFactory,
+            httpTransport, ImmutableList.of("https://www.googleapis.com/auth/datastore"));
+    Map<String, Object> secrets =
+        jsonFactory.fromInputStream(Collector.class.getResourceAsStream(secretsName), Map.class);
+    Map<String, Object> installed = (Map<String, Object>) secrets.get("installed");
+    String projectId = (String) installed.get("project_id");
+    Datastore datastore = DatastoreOptions.newBuilder()
+                              .setCredentials(googleCredentials)
+                              .setProjectId(projectId)
+                              .build()
+                              .getService();
+
+    QueryResults<Entity> results =
+        datastore.run(Query.newEntityQueryBuilder()
+                          .setKind("Benchmark")
+                          .setFilter(StructuredQuery.PropertyFilter.eq("versionName", version))
+                          .build());
+
+    while (results.hasNext()) {
+      consumer.accept(results.next());
     }
   }
 }

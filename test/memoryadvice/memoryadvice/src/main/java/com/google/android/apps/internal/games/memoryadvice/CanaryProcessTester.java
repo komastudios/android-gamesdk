@@ -55,6 +55,6 @@ class CanaryProcessTester {
     };
 
     context.startService(launchIntent);
-    context.bindService(launchIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    context.bindService(launchIntent, serviceConnection, Context.BIND_ALLOW_OOM_MANAGEMENT);
   }
 }

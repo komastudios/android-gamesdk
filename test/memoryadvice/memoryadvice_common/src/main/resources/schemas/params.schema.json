@@ -24,8 +24,45 @@
     "malloc": {
       "$ref": "memoryQuantity.schema.json"
     },
+    "mallocFixed": {
+      "$ref": "memoryQuantity.schema.json"
+    },
+    "glFixed": {
+      "$ref": "memoryQuantity.schema.json"
+    },
     "vkTest": {
       "$ref": "memoryQuantity.schema.json"
+    },
+    "mmapAnon": {
+      "properties": {
+        "blockSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "allocPerMillisecond": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
+    },
+    "mmapFile": {
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fileSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "blockSize": {
+          "$ref": "memoryQuantity.schema.json"
+        },
+        "allocPerMillisecond": {
+          "$ref": "memoryQuantity.schema.json"
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
     },
     "maxConsumer": {
       "$ref": "memoryQuantity.schema.json"
@@ -60,9 +97,6 @@
       "description": "Enables a test where the stress application is put into the background by launching another app.",
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
         "launchDuration": {
           "$ref": "duration.schema.json"
         },
@@ -70,9 +104,6 @@
           "$ref": "duration.schema.json"
         }
       },
-      "required": [
-        "enabled"
-      ],
       "type": "object"
     },
     "advisorParameters": {
@@ -86,6 +117,9 @@
     },
     "delayAfterRelease": {
       "$ref": "duration.schema.json"
+    },
+    "memoryToFreePerCycle": {
+      "$ref": "memoryQuantity.schema.json"
     }
   },
   "type": "object"

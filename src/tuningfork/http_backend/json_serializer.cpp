@@ -197,6 +197,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     std::vector<Json::object> render_histograms;
     std::vector<Json::object> loading_events;
     std::vector<Json::object> battery_events;
+    std::vector<Json::object> thermal_events;
     duration = Duration::zero();
     for (const auto& th :
          session_.GetNonEmptyHistograms<FrameTimeMetricData>()) {
@@ -253,7 +254,19 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             o["current_charge_microampere_hours"] = report.current_charge_;
             o["charging"] = report.is_charging_;
             o["app_on_foreground"] = report.app_on_foreground_;
+            o["power_save_mode"] = report.power_save_mode_;
             battery_events.push_back(o);
+        }
+    }
+    for (const auto& th : session_.GetNonEmptyHistograms<ThermalMetricData>()) {
+        auto ft = th->metric_id_.detail;
+        if (ft.annotation != annotation) continue;
+        for (auto& report : th->data_) {
+            Json::object o({});
+            o["event_time"] =
+                DurationToSecondsString(report.time_since_process_start_);
+            o["thermal_state"] = report.thermal_state_;
+            thermal_events.push_back(o);
         }
     }
 
@@ -271,6 +284,10 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     // Battery events
     if (battery_events.size() > 0) {
         ret["battery"] = Json::object{{"battery_event", battery_events}};
+    }
+    // Thermal events
+    if (thermal_events.size() > 0) {
+        ret["thermal"] = Json::object{{"thermal_event", thermal_events}};
     }
     return ret;
 }

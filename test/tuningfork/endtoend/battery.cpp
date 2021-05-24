@@ -89,7 +89,8 @@ TEST(TuningForkTest, TestEndToEndWithBattery) {
             "charging":true,
             "current_charge_microampere_hours":1234,
             "event_time":"!REGEX(.*?s)",
-            "percentage":70
+            "percentage":70,
+            "power_save_mode":true
           }
         ]
       },

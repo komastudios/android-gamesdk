@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +23,11 @@ class Main {
     });
   }
 
-  static URI writeGraphs(Path directory, List<Object> result) {
+  static URI writeGraphs(Path directory, List<Map<String, Object>> result) {
     ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
     try {
       Path outputFile;
-      Map<String, Object> first = (Map<String, Object>) result.get(0);
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
+      Map<String, Object> params = (Map<String, Object>) result.get(0).get("params");
       Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
       Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
       Map<String, Object> fields = (Map<String, Object>) build.get("fields");

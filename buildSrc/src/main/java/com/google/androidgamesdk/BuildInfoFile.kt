@@ -58,6 +58,7 @@ class BuildInfoFile {
             ArtifactBuildInfo(
                 groupId = "androidx.games",
                 artifactId = nativeLibrary.aarLibraryName,
+                path = "/src/" + nativeLibrary.nativeLibraryName,
                 projectZipPath = packageName + '/' +
                         nativeLibrary.aarLibraryName + "-maven-zip.zip",
                 sha = headCommitSha,

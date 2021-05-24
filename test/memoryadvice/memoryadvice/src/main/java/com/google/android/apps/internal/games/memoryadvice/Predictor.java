@@ -4,7 +4,7 @@ import static com.google.android.apps.internal.games.memoryadvice.ByteArrayUtils
 import static com.google.android.apps.internal.games.memoryadvice.JsonUtils.getFromPath;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
@@ -24,8 +24,8 @@ class Predictor {
    */
   Predictor(String model, String features) {
     try {
-      this.features = new Gson().fromJson(
-          readStream(Predictor.class.getResourceAsStream(features)), List.class);
+      this.features = new ObjectMapper().reader().readValue(
+          Predictor.class.getResourceAsStream(features), List.class);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
@@ -42,7 +42,7 @@ class Predictor {
    * @param data The map containing the input set.
    * @return The prediction.
    */
-  float predict(Map<String, Object> data) {
+  float predict(Map<String, Object> data) throws MissingPathException {
     float[] featuresArray = new float[features.size()];
     for (int idx = 0; idx != features.size(); idx++) {
       String feature = features.get(idx);

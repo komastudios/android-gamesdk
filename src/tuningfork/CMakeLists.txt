@@ -57,9 +57,11 @@ set( TUNINGFORK_SRCS
   core/frametime_metric.cpp
   core/loadingtime_metric.cpp
   core/memory_telemetry.cpp
+  core/protobuf_util_internal.cpp
   core/request_info.cpp
   core/runnable.cpp
   core/session.cpp
+  core/thermal_reporting_task.cpp
   core/tuningfork.cpp
   core/tuningfork_c.cpp
   core/tuningfork_extra.cpp

@@ -26,6 +26,7 @@
 #include "histogram.h"
 #include "loadingtime_metric.h"
 #include "memory_metric.h"
+#include "thermal_metric.h"
 
 namespace tuningfork {
 
@@ -64,6 +65,9 @@ class Session {
                 case Metric::Type::BATTERY:
                     d = TakeBatteryData(id);
                     break;
+                case Metric::Type::THERMAL:
+                    d = TakeThermalData(id);
+                    break;
                 case Metric::Type::ERROR:
                     return nullptr;
             }
@@ -91,6 +95,9 @@ class Session {
 
     // Create a BatteryTimeSeries and add it to the available battery data.
     BatteryMetricData* CreateBatteryTimeSeries(MetricId id);
+
+    // Create a ThermalTimeSeries and add it to the available thermal data.
+    ThermalMetricData* CreateThermalTimeSeries(MetricId id);
 
     // Clear the data in each created histogram or time series.
     void ClearData();
@@ -169,15 +176,26 @@ class Session {
         return p;
     }
 
+    // Get an available metric that has been set up to work with this id.
+    ThermalMetricData* TakeThermalData(MetricId id) {
+        if (available_thermal_data_.empty()) return nullptr;
+        auto p = available_thermal_data_.back();
+        available_thermal_data_.pop_back();
+        p->metric_id_ = id;
+        return p;
+    }
+
     TimeInterval time_ = {};
     std::vector<std::unique_ptr<FrameTimeMetricData>> frame_time_data_;
     std::vector<std::unique_ptr<LoadingTimeMetricData>> loading_time_data_;
     std::vector<std::unique_ptr<MemoryMetricData>> memory_data_;
     std::vector<std::unique_ptr<BatteryMetricData>> battery_data_;
+    std::vector<std::unique_ptr<ThermalMetricData>> thermal_data_;
     std::list<FrameTimeMetricData*> available_frame_time_data_;
     std::vector<LoadingTimeMetricData*> available_loading_time_data_;
     std::vector<MemoryMetricData*> available_memory_data_;
     std::vector<BatteryMetricData*> available_battery_data_;
+    std::vector<ThermalMetricData*> available_thermal_data_;
     std::unordered_map<MetricId, MetricData*> metric_data_;
     std::vector<CrashReason> crash_data_;
     std::vector<InstrumentationKey> instrumentation_keys_;

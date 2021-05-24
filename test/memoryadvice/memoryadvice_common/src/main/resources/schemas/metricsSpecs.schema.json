@@ -53,6 +53,14 @@
         }
       ]
     },
+    "smaps_rollup": {
+      "description": "Metrics obtained from `/proc/(pid)/smaps_rollup`.",
+      "allOf": [
+        {
+          "$ref": "metricsSpecGroup.schema.json"
+        }
+      ]
+    },
     "status": {
       "description": "Metrics obtained from `/proc/(pid)/status`.",
       "allOf": [
@@ -76,6 +84,9 @@
       "type": "boolean"
     },
     "availableRealtime": {
+      "type": "boolean"
+    },
+    "timings": {
       "type": "boolean"
     }
   },
