@@ -10,3 +10,4 @@ pluginManagement {
 
 include ':memoryadvice_common'
 include ':memoryadvice'
+include ':memorytest'

@@ -10,9 +10,16 @@ export function rowMetrics(row) {
   }
 }
 
+export function rowTime(row) {
+  if ('time' in row) {
+    return row.time;
+  }
+  return rowMetrics(row).meta.time;
+}
+
 export function getValues(combined, object, path) {
   for (const [key, value] of Object.entries(object)) {
-    if (Number.isInteger(value)) {
+    if (typeof value === 'number') {
       combined[path + key] = value;
     } else if (value.constructor === Object) {
       getValues(combined, value, key + '/');

@@ -28,6 +28,7 @@ class IBatteryProvider {
     virtual int32_t GetBatteryCharge() = 0;
     virtual bool IsBatteryCharging() = 0;
     virtual bool IsBatteryReportingEnabled() = 0;
+    virtual bool IsPowerSaveModeEnabled() = 0;
 };
 
 // Implementation that uses JNI calls to BatteryManager.
@@ -37,6 +38,7 @@ class DefaultBatteryProvider : public IBatteryProvider {
     int32_t GetBatteryCharge() override;
     bool IsBatteryCharging() override;
     bool IsBatteryReportingEnabled() override;
+    bool IsPowerSaveModeEnabled() override;
 };
 
 }  // namespace tuningfork

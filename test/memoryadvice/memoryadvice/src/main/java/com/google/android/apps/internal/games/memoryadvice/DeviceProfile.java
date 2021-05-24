@@ -1,12 +1,12 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice_common.ConfigUtils.getOrDefault;
 import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
 
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.util.Log;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,11 +50,13 @@ class DeviceProfile {
 
     Map<String, Object> lookup = null;
     try {
-      lookup = new Gson().fromJson(readStream(assets.open("memoryadvice/lookup.json")), Map.class);
+      ObjectReader objectReader = new ObjectMapper().reader();
+      lookup =
+          objectReader.readValue(readStream(assets.open("memoryadvice/lookup.json")), Map.class);
 
-      String matchStrategy = getOrDefault(params, "matchStrategy", "fingerprint");
+      String matchStrategy = (String) params.get("matchStrategy");
       String best;
-      if ("fingerprint".equals(matchStrategy)) {
+      if (matchStrategy == null || "fingerprint".equals(matchStrategy)) {
         best = matchByFingerprint(lookup);
       } else if ("baseline".equals(matchStrategy)) {
         best = matchByBaseline(lookup, baseline);
@@ -109,23 +111,23 @@ class DeviceProfile {
 
       float totalScore = 0;
       int totalUnion = 0;
-      for (String groupName : prospectBaseline.keySet()) {
-        if (!baseline.containsKey(groupName)) {
-          continue;
+      for (Map.Entry<String, Object> e : prospectBaseline.entrySet()) {
+        Map<String, Object> prospectBaselineGroup = (Map<String, Object>) e.getValue();
+        Map<String, Object> baselineGroup = (Map<String, Object>) baseline.get(e.getKey());
+        if (baselineGroup == null) {
+          break;
         }
-        Map<String, Object> prospectBaselineGroup =
-            (Map<String, Object>) prospectBaseline.get(groupName);
-        Map<String, Object> baselineGroup = (Map<String, Object>) baseline.get(groupName);
-        for (String metric : prospectBaselineGroup.keySet()) {
-          if (!baselineGroup.containsKey(metric)) {
+        for (Map.Entry<String, Object> entry1 : prospectBaselineGroup.entrySet()) {
+          String metric = entry1.getKey();
+          Number baselineMetric = (Number) baselineGroup.get(metric);
+          if (baselineMetric == null) {
             continue;
           }
           totalUnion++;
           SortedSet<Long> values = baselineValuesTable.get(metric);
           int prospectPosition =
-              getPositionInList(values, ((Number) prospectBaselineGroup.get(metric)).longValue());
-          int ownPosition =
-              getPositionInList(values, ((Number) baselineGroup.get(metric)).longValue());
+              getPositionInList(values, ((Number) entry1.getValue()).longValue());
+          int ownPosition = getPositionInList(values, baselineMetric.longValue());
           float score = (float) Math.abs(prospectPosition - ownPosition) / values.size();
           totalScore += score;
         }
@@ -171,16 +173,22 @@ class DeviceProfile {
    */
   private static Map<String, SortedSet<Long>> buildBaselineValuesTable(Map<String, Object> lookup) {
     Map<String, SortedSet<Long>> table = new HashMap<>();
-    for (String device : lookup.keySet()) {
-      Map<String, Object> limits = (Map<String, Object>) lookup.get(device);
+    for (Object o : lookup.values()) {
+      Map<String, Object> limits = (Map<String, Object>) o;
       Map<String, Object> prospectBaseline = (Map<String, Object>) limits.get("baseline");
-      for (String groupName : prospectBaseline.keySet()) {
-        Map<String, Object> group = (Map<String, Object>) prospectBaseline.get(groupName);
-        for (String metric : group.keySet()) {
-          if (!table.containsKey(metric)) {
-            table.put(metric, new TreeSet<Long>());
+      if (prospectBaseline == null) {
+        continue;
+      }
+      for (Object o1 : prospectBaseline.values()) {
+        Map<String, Object> group = (Map<String, Object>) o1;
+        for (Map.Entry<String, Object> entry : group.entrySet()) {
+          String metric = entry.getKey();
+          SortedSet<Long> metricValues = table.get(metric);
+          if (metricValues == null) {
+            metricValues = new TreeSet<>();
+            table.put(metric, metricValues);
           }
-          table.get(metric).add(((Number) group.get(metric)).longValue());
+          metricValues.add(((Number) entry.getValue()).longValue());
         }
       }
     }

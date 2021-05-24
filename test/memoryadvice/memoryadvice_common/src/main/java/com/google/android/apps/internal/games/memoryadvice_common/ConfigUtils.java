@@ -43,13 +43,9 @@ public class ConfigUtils {
    * @param object The map to extract the value from.
    * @param key The key associated with the value.
    * @param defaultValue The value to return if the map does not specify the key.
-   * @param <T> The parameter type.
    * @return The associated value, or the defaultValue if the object does not define the key.
    */
-  public static <T> T getOrDefault(Map<String, Object> object, String key, T defaultValue) {
-    if (object.containsKey(key)) {
-      return (T) object.get(key);
-    }
-    return defaultValue;
+  public static Object getOrDefault(Map<String, Object> object, String key, Object defaultValue) {
+    return object.containsKey(key) ? object.get(key) : defaultValue;
   }
 }

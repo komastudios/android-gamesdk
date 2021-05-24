@@ -62,6 +62,7 @@ include_directories(
 
 set(TEST_SRCS
   annotation_test.cpp
+  annotation_descriptor_test.cpp
   endtoend/abandoned_loading.cpp
   endtoend/annotation.cpp
   endtoend/battery.cpp

@@ -46,7 +46,6 @@ add_library( swappy_static
 
              ${SOURCE_LOCATION_COMMON}/ChoreographerFilter.cpp
              ${SOURCE_LOCATION_COMMON}/ChoreographerThread.cpp
-             ${SOURCE_LOCATION_COMMON}/FrameStatistics.cpp
              ${SOURCE_LOCATION_COMMON}/CpuInfo.cpp
              ${SOURCE_LOCATION_COMMON}/Settings.cpp
              ${SOURCE_LOCATION_COMMON}/Thread.cpp
@@ -57,6 +56,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION_OPENGL}/EGL.cpp
              ${SOURCE_LOCATION_OPENGL}/swappyGL_c.cpp
              ${SOURCE_LOCATION_OPENGL}/SwappyGL.cpp
+             ${SOURCE_LOCATION_OPENGL}/FrameStatisticsGL.cpp
              ${SOURCE_LOCATION_VULKAN}/swappyVk_c.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVk.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp

@@ -16,7 +16,11 @@
 
 #include "battery_provider.h"
 
+#include "Log.h"
 #include "jni/jni_wrap.h"
+#include "system_utils.h"
+
+#define LOG_TAG "TuningFork"
 
 namespace tuningfork {
 
@@ -40,20 +44,20 @@ int32_t DefaultBatteryProvider::GetBatteryPercentage() {
 }
 
 int32_t DefaultBatteryProvider::GetBatteryCharge() {
-#if __ANDROID_API__ >= 21
-    using namespace gamesdk::jni;
-    java::Object obj = AppContext().getSystemService(
-        android::content::Context::BATTERY_SERVICE);
-    if (!obj.IsNull()) {
-        android::os::BatteryManager battery_manager(std::move(obj));
-        return battery_manager.getIntProperty(
-            android::os::BatteryManager::BATTERY_PROPERTY_CHARGE_COUNTER);
+    if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 21) {
+        using namespace gamesdk::jni;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::BATTERY_SERVICE);
+        if (!obj.IsNull()) {
+            android::os::BatteryManager battery_manager(std::move(obj));
+            return battery_manager.getIntProperty(
+                android::os::BatteryManager::BATTERY_PROPERTY_CHARGE_COUNTER);
+        } else {
+            return 0;
+        }
     } else {
         return 0;
     }
-#else
-    return 0;
-#endif
 }
 
 bool DefaultBatteryProvider::IsBatteryCharging() {
@@ -68,6 +72,23 @@ bool DefaultBatteryProvider::IsBatteryCharging() {
         android::content::Intent battery_intent(std::move(obj));
         return battery_intent.getIntExtra(
             android::os::BatteryManager::EXTRA_PLUGGED, 0);
+    } else {
+        return false;
+    }
+}
+
+bool DefaultBatteryProvider::IsPowerSaveModeEnabled() {
+    if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 21) {
+        using namespace gamesdk::jni;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::POWER_SERVICE);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+        if (!obj.IsNull()) {
+            android::os::PowerManager power_manager(std::move(obj));
+            return power_manager.isPowerSaveMode();
+        } else {
+            return false;
+        }
     } else {
         return false;
     }

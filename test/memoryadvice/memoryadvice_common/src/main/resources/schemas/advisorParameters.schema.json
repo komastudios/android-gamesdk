@@ -4,20 +4,6 @@
   "description": "Configuration for the memory advisor.",
   "additionalProperties": false,
   "properties": {
-    "onDeviceStressTest": {
-      "description": "Configuration for a stress test performed on initialization.",
-      "properties": {
-        "segmentSize": {
-          "description": "How much memory to allocate on each iteration.",
-          "allOf": [
-            {
-              "$ref": "memoryQuantity.schema.json"
-            }
-          ]
-        }
-      },
-      "type": "object"
-    },
     "predictOomLimit": {
       "description": "Enables on-device prediction of the oom_score limit.",
       "type": "boolean"

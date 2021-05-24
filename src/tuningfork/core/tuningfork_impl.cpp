@@ -16,9 +16,10 @@
 
 #include "tuningfork_impl.h"
 
+#include <android/trace.h>
+
 #include <chrono>
 #include <cinttypes>
-#include <map>
 #include <sstream>
 #include <vector>
 
@@ -32,6 +33,7 @@
 #include "lifecycle_upload_event.h"
 #include "memory_telemetry.h"
 #include "metric.h"
+#include "thermal_reporting_task.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
@@ -192,6 +194,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
     for (int i = 0; i < limits.battery; ++i) {
         session.CreateBatteryTimeSeries(MetricId::Battery(0));
     }
+
+    for (int i = 0; i < limits.thermal; ++i) {
+        session.CreateThermalTimeSeries(MetricId::Thermal(0));
+    }
 }
 
 // Return the set annotation id or -1 if it could not be set
@@ -206,8 +212,42 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         return MetricId{annotation_util::kAnnotationError};
     } else {
         ALOGV("Set annotation id to %" PRIu32, id);
+        bool changed = current_annotation_id_.detail.annotation != id;
+        if (!changed) return current_annotation_id_;
+#if __ANDROID_API__ >= 29
+        if (ATrace_isEnabled()) {
+            // Finish the last section if there was one and start a new one.
+            static constexpr int32_t kATraceAsyncCookie = 0x5eaf00d;
+            if (trace_started_) {
+                auto last_annotation = trace_marker_cache_.find(last_id_);
+                if (last_annotation == trace_marker_cache_.end()) {
+                    ALOGE("Annotation %u has vanished!", last_id_);
+                } else {
+                    ATrace_endAsyncSection(last_annotation->second.c_str(),
+                                           kATraceAsyncCookie);
+                    trace_marker_cache_.erase(last_annotation);
+                }
+            } else {
+                trace_started_ = true;
+            }
+            // Guard against concurrent access to the cache
+            std::lock_guard<std::mutex> lock(trace_marker_cache_mutex_);
+            auto it = trace_marker_cache_.find(id);
+            if (it == trace_marker_cache_.end()) {
+                it = trace_marker_cache_
+                         .insert(
+                             {id, "APTAnnotation@" +
+                                      annotation_util::HumanReadableAnnotation(
+                                          annotation)})
+                         .first;
+            }
+            ATrace_beginAsyncSection(it->second.c_str(), kATraceAsyncCookie);
+            last_id_ = id;
+        }
+#endif
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
+        thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
         return current_annotation_id_;
     }
 }
@@ -567,6 +607,9 @@ void TuningForkImpl::InitAsyncTelemetry() {
         &activity_lifecycle_state_, time_provider_, battery_provider_,
         MetricId::Battery(0));
     async_telemetry_->AddTask(battery_reporting_task_);
+    thermal_reporting_task_ = std::make_shared<ThermalReportingTask>(
+        time_provider_, MetricId::Thermal(0));
+    async_telemetry_->AddTask(thermal_reporting_task_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
 }
@@ -591,13 +634,11 @@ TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
 TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
     const LoadingTimeMetadataWithGroup &metadata, LoadingTimeMetadataId &id) {
     std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
-    static LoadingTimeMetadataId loading_time_metadata_next_id =
-        1;  // 0 is implicitly an empty LoadingTimeMetadata struct
     auto it = loading_time_metadata_map_.find(metadata);
     if (it != loading_time_metadata_map_.end()) {
         id = it->second;
     } else {
-        id = loading_time_metadata_next_id++;
+        id = loading_time_metadata_next_id_++;
         loading_time_metadata_map_.insert({metadata, id});
     }
     return TUNINGFORK_ERROR_OK;

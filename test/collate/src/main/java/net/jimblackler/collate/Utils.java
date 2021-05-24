@@ -106,16 +106,21 @@ class Utils {
    * @return The selected parameters.
    */
   static Map<String, Object> flattenParams(Map<String, Object> spec) {
+    return flattenParams((List<Number>) spec.get("coordinates"),
+        (List<List<Map<String, Object>>>) spec.get("tests"));
+  }
+
+  /**
+   * Selects the parameters for a run.
+   * @param coordinates The coordinates to select.
+   * @param tests The test array to select from.
+   * @return The run parameters.
+   */
+  static Map<String, Object> flattenParams(
+      List<Number> coordinates, List<List<Map<String, Object>>> tests) {
     Map<String, Object> params = new HashMap<>();
-
-    List<Object> coordinates = (List<Object>) spec.get("coordinates");
-    List<Object> tests = (List<Object>) spec.get("tests");
-
     for (int coordinateNumber = 0; coordinateNumber != coordinates.size(); coordinateNumber++) {
-      List<Object> jsonArray = (List<Object>) tests.get(coordinateNumber);
-      Map<String, Object> jsonObject = (Map<String, Object>) jsonArray.get(
-          ((Number) coordinates.get(coordinateNumber)).intValue());
-      merge(jsonObject, params);
+      merge(tests.get(coordinateNumber).get(coordinates.get(coordinateNumber).intValue()), params);
     }
     return params;
   }
@@ -127,22 +132,22 @@ class Utils {
    * @param out The second map and the object into which changes are written.
    */
   private static void merge(Map<String, Object> in, Map<String, Object> out) {
-    in = clone(in);
     for (Map.Entry<String, Object> entry : in.entrySet()) {
       String key = entry.getKey();
       Object inObject = entry.getValue();
       Object outObject = out.get(key);
-      if (outObject != null) {
-        if (inObject instanceof List && outObject instanceof List) {
-          ((Collection<Object>) outObject).addAll((Collection<?>) inObject);
-          continue;
-        }
-        if (inObject instanceof Map && outObject instanceof Map) {
-          merge((Map<String, Object>) inObject, ((Map<String, Object>) outObject));
-          continue;
-        }
+      if (outObject == null) {
+        out.put(key, clone(inObject));
+        continue;
       }
-      out.put(key, inObject);
+      if (inObject instanceof List && outObject instanceof List) {
+        ((Collection<Object>) outObject).addAll((Collection<?>) clone(inObject));
+        continue;
+      }
+      if (inObject instanceof Map && outObject instanceof Map) {
+        merge((Map<String, Object>) inObject, ((Map<String, Object>) outObject));
+        continue;
+      }
     }
   }
 

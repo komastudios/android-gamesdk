@@ -120,6 +120,9 @@ JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nStart(JNIEnv * /* env */, jobject /* this */) {
     ALOGI("start");
     Renderer::getInstance()->start();
+    // Clear stats when we come back from the settings activity.
+    SwappyGL_enableStats(false);
+    SwappyGL_enableStats(true);
 }
 
 JNIEXPORT void JNICALL
@@ -136,8 +139,14 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nSetPreference(JNIEnv *env, jobje
 
 JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nSetAutoSwapInterval(JNIEnv *env, jobject /* this */,
-                                                              jboolean enabled) {
+                                                                    jboolean enabled) {
     SwappyGL_setAutoSwapInterval(enabled);
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetAutoPipeline(JNIEnv *env, jobject /* this */,
+                                                                    jboolean enabled) {
+    SwappyGL_setAutoPipelineMode(enabled);
 }
 
 JNIEXPORT float JNICALL
@@ -168,6 +177,20 @@ JNIEXPORT void JNICALL
 Java_com_prefabulated_bouncyball_OrbitActivity_nSetWorkload(JNIEnv * /* env */, jobject /* this */,
                                                             jint load) {
     Renderer::getInstance()->setWorkload(load);
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetBufferStuffingFixWait(JNIEnv * /* env */,
+                                                            jobject /* this */,
+                                                            jint n_frames) {
+    SwappyGL_setBufferStuffingFixWait(n_frames);
+}
+
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nEnableSwappy(JNIEnv * /* env */,
+                                                              jobject /* this */,
+                                                              jboolean enabled) {
+    Renderer::getInstance()->setSwappyEnabled(enabled);
 }
 
 JNIEXPORT int JNICALL

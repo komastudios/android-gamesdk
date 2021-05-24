@@ -152,6 +152,8 @@ message TelemetryReport {
   PartialLoadingReport partial_loading = 7;
   // Information on battery usage.
   BatteryReport battery = 8;
+  // Information on device thermal state.
+  ThermalReport thermal = 9;
 }
 
 // Self reported context from a device requesting telemetry logging.
@@ -525,4 +527,42 @@ message BatteryEvent {
   bool charging = 4;
   // Whether the app is on foreground at the time of collection.
   bool app_on_foreground = 5;
+  // Whether the device is in power save mode at the time of collection.
+  bool power_save_mode = 6;
+}
+
+// A report of device thermal status.
+message ThermalReport {
+  // A series of collected thermal events.
+  repeated ThermalEvent thermal_event = 1;
+}
+
+// A single thermal event describing the thermal state of the device.
+message ThermalEvent {
+  // Enum listing the thermal state, and the effects of it on the device.
+  enum ThermalState {
+    // Device had no thermal state data, due to low api level.
+    THERMAL_STATE_UNSPECIFIED = 0;
+    // No thermal problems.
+    THERMAL_STATE_NONE = 1;
+    // Light throttling where UX is not impacted.
+    THERMAL_STATE_LIGHT = 2;
+    // Moderate throttling where UX is not largely impacted.
+    THERMAL_STATE_MODERATE = 3;
+    // Severe throttling where UX is largely impacted.
+    THERMAL_STATE_SEVERE = 4;
+    // Platform has done everything to reduce power.
+    THERMAL_STATE_CRITICAL = 5;
+    // Key components in platform are shutting down due to thermal condition.
+    // Device functionalities are limited.
+    THERMAL_STATE_EMERGENCY = 6;
+    // Indicates that the device needs shutdown immediately.
+    THERMAL_STATE_SHUTDOWN = 7;
+  }
+
+  // Duration from process start to the time the event is collected.
+  google.protobuf.Duration event_time = 1;
+
+  // Thermal status of the device at the time of collection.
+  ThermalState thermal_state = 2;
 }

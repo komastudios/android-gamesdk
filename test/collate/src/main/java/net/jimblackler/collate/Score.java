@@ -2,8 +2,10 @@ package net.jimblackler.collate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.api.client.util.Lists;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
+import com.google.cloud.datastore.Blob;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -14,6 +16,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -27,163 +30,103 @@ import org.w3c.dom.Node;
 
 public class Score {
   private static final boolean USE_DEVICE = false;
+  private static final boolean USE_DATASTORE = true;
+  private static final String VERSION = "1.7r";
 
   public static void main(String[] args) throws IOException {
-    go(USE_DEVICE);
+    go(USE_DEVICE, USE_DATASTORE);
   }
 
-  static void go(boolean useDevice) throws IOException {
-    ObjectWriter objectWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
+  static void go(boolean useDevice, boolean useDatastore) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
     Map<String, Map<String, Result>> out = new HashMap<>();
     Map<String, Map<String, Object>> deviceInfos = new HashMap<>();
     AtomicReference<Path> directory = new AtomicReference<>();
-    AtomicReference<List<Object>> tests = new AtomicReference<>();
-    AtomicReference<String> historyId = new AtomicReference<>();
+    AtomicReference<List<List<Map<String, Object>>>> tests = new AtomicReference<>();
     AtomicReference<Timer> timer = new AtomicReference<>();
-    Consumer<List<Object>> collect = result -> {
-      if (timer.get() != null) {
-        timer.get().cancel();
-      }
-      timer.set(new Timer());
-      TimerTask task = new TimerTask() {
-        @Override
-        public void run() {
-          List<Object> _tests = tests.get();
-          if (_tests == null || _tests.isEmpty()) {
-            return;
-          }
-          try {
-            URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
-            System.out.println(uri);
-          } catch (IOException e) {
-            throw new IllegalStateException(e);
-          }
-        }
-      };
-      timer.get().schedule(task, 1000 * 10);
 
-      Map<String, Object> first = (Map<String, Object>) result.get(0);
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
-      if (params == null) {
-        System.out.println("No usable results. Data returned was:");
+    if (useDatastore) {
+      ObjectReader objectReader = objectMapper.reader();
+      ObjectReader smileReader = new SmileMapper().reader();
+      Collection<Number> runTimes = new HashSet<>();
+      Collector.datastoreCollect(VERSION, entity -> {
+        Map<String, Object> results1 = null;
         try {
-          System.out.println(objectWriter.writeValueAsString(first));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-        return;
-      }
-      Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
-      if (deviceInfo == null) {
-        System.out.println("Could not find deviceInfo. Data returned was:");
-        try {
-          System.out.println(objectWriter.writeValueAsString(first));
-        } catch (JsonProcessingException e) {
-          throw new IllegalStateException(e);
-        }
-        return;
-      }
-      Map<String, Object> runParameters = (Map<String, Object>) deviceInfo.get("params");
-      List<Object> coordinates = (List<Object>) params.get("coordinates");
-      tests.set((List<Object>) params.get("tests"));
-
-      assert deviceInfo.containsKey("build");
-      Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
-      String id = build.toString();
-
-      Map<String, Object> extra = (Map<String, Object>) first.get("extra");
-      if (extra != null) {
-        historyId.set((String) extra.get("historyId"));
-        Map<String, Object> step = (Map<String, Object>) extra.get("step");
-        if (step != null) {
-          id = step.get("dimensionValue").toString();
-        }
-      }
-      deviceInfos.put(id, deviceInfo);
-
-      long lowestTop = Long.MAX_VALUE;
-      long largest = 0;
-      boolean exited = false;
-      boolean allocFailed = false;
-      boolean serviceCrashed = false;
-
-      for (Object o : result) {
-        Map<String, Object> row = (Map<String, Object>) o;
-        exited |= Boolean.TRUE.equals(row.get("exiting"));
-
-        allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
-        allocFailed |= Boolean.TRUE.equals(row.get("failedToClear"));
-        allocFailed |= row.containsKey("criticalLogLines");
-
-        serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
-        long score = 0;
-        Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
-        if (testMetrics != null) {
-          for (Object o2 : testMetrics.values()) {
-            score += ((Number) o2).longValue();
+          if (entity.contains("resultsSmile")) {
+            Blob resultsSmile = entity.getBlob("resultsSmile");
+            results1 = smileReader.readValue(resultsSmile.toByteArray(), Map.class);
+          } else {
+            results1 = objectReader.readValue(entity.getString("results"), Map.class);
           }
-        }
-
-        if (score > largest) {
-          largest = score;
-        }
-
-        Map<String, Object> advice = (Map<String, Object>) row.get("advice");
-        if (advice != null) {
-          Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
-          if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
-            for (Object o2 : warnings) {
-              Map<String, Object> warning = (Map<String, Object>) o2;
-              if (!"red".equals(warning.get("level"))) {
-                continue;
-              }
-              long top = score;
-              if (top < lowestTop) {
-                lowestTop = top;
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      float score =
-          (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
-      Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
-      Map<String, Object> group = Utils.clone(runParameters);
-      group.remove("advisorParameters");
-      if (directory.get() == null) {
-        String dirName = historyId.get();
-        if (dirName == null) {
-          dirName = (String) params.get("run");
-        }
-        directory.set(Path.of("reports").resolve(dirName));
-        try {
-          File outDir = directory.get().toFile();
-          if (outDir.exists()) {
-            // Empty the directory if it already exists.
-            try (Stream<Path> files = Files.walk(directory.get())) {
-              files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-            }
-          }
-          outDir.mkdirs();
-          Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
         } catch (IOException e) {
           throw new IllegalStateException(e);
         }
-      }
-      URI uri = Main.writeGraphs(directory.get(), result);
-      System.out.println(uri);
-      results0.put(coordinates.toString(),
-          new Result(score, uri, exited && !allocFailed, serviceCrashed, group.toString()));
-    };
 
-    if (useDevice) {
-      Collector.deviceCollect("net.jimblackler.istresser", collect);
+        String testType = (String) results1.get("test");
+        if (!"management".equals(testType)) {
+          return;
+        }
+
+        Number runTime = (Number) results1.get("runTime");
+        if (!runTimes.add(runTime)) {
+          return;
+        }
+
+        List<List<Map<String, Object>>> tests1 =
+            (List<List<Map<String, Object>>>) results1.get("tests");
+
+        Map<String, Object> buildConfig = (Map<String, Object>) results1.get("buildConfig");
+
+        String versionName = (String) buildConfig.get("VERSION_NAME");
+
+        List<List<Map<String, Object>>> results =
+            (List<List<Map<String, Object>>>) results1.get("results");
+        for (int testNumber = 0; testNumber != results.size(); testNumber++) {
+          List<Map<String, Object>> result = results.get(testNumber);
+          Map<String, Object> paramsIn = new LinkedHashMap<>();
+          paramsIn.put("tests", tests1);
+          paramsIn.put("coordinates", getCoordinates(testNumber, tests1));
+          paramsIn.put("run", versionName);
+          if (!result.isEmpty()) {
+            Map<String, Object> first = result.get(0);
+            first.put("params", paramsIn);
+          }
+          handleResult(result, out, deviceInfos, directory, tests, objectWriter,
+              Boolean.TRUE.equals(results1.get("automatic")));
+        }
+      });
     } else {
-      Collector.cloudCollect(null, collect);
+      Consumer<List<Map<String, Object>>> collect = result -> {
+        if (timer.get() != null) {
+          timer.get().cancel();
+        }
+        timer.set(new Timer());
+        TimerTask task = new TimerTask() {
+          @Override
+          public void run() {
+            List<List<Map<String, Object>>> _tests = tests.get();
+            if (_tests == null || _tests.isEmpty()) {
+              return;
+            }
+            try {
+              URI uri = writeReport(out, deviceInfos, directory.get(), _tests);
+              System.out.println(uri);
+            } catch (IOException e) {
+              throw new IllegalStateException(e);
+            }
+          }
+        };
+        timer.get().schedule(task, 1000 * 10);
+
+        handleResult(result, out, deviceInfos, directory, tests, objectWriter, true);
+      };
+
+      if (useDevice) {
+        Collector.deviceCollect("net.jimblackler.istresser", collect);
+      } else {
+        Collector.cloudCollect(null, collect);
+      }
     }
 
     if (timer.get() != null) {
@@ -193,9 +136,144 @@ public class Score {
     System.out.println(uri);
   }
 
+  private static Collection<Integer> getCoordinates(
+      int testNumber, List<List<Map<String, Object>>> tests) {
+    List<Integer> coordinates = new ArrayList<>();
+    int calc = testNumber;
+    for (int idx = tests.size() - 1; idx >= 0; idx--) {
+      int dimensionSize = tests.get(idx).size();
+      coordinates.add(0, calc % dimensionSize);
+      calc /= dimensionSize;
+    }
+    return coordinates;
+  }
+
+  private static void handleResult(List<Map<String, Object>> result,
+      Map<String, Map<String, Result>> out, Map<String, Map<String, Object>> deviceInfos,
+      AtomicReference<Path> directory, AtomicReference<List<List<Map<String, Object>>>> tests,
+      ObjectWriter objectWriter, boolean automatic) {
+    Map<String, Object> deviceInfo = ReportUtils.getDeviceInfo(result);
+    if (deviceInfo == null) {
+      System.out.println("Could not find deviceInfo.");
+      return;
+    }
+    deviceInfo.put("automatic", automatic);
+    Map<String, Object> first = result.get(0);
+    Map<String, Object> params = (Map<String, Object>) first.get("params");
+    if (params == null) {
+      System.out.println("No usable results. Data returned was:");
+      try {
+        System.out.println(objectWriter.writeValueAsString(first));
+      } catch (JsonProcessingException e) {
+        throw new IllegalStateException(e);
+      }
+      return;
+    }
+    List<Number> coordinates = (List<Number>) params.get("coordinates");
+    tests.set((List<List<Map<String, Object>>>) params.get("tests"));
+
+    assert deviceInfo.containsKey("build");
+    Map<String, Object> build = (Map<String, Object>) deviceInfo.get("build");
+    String key = coordinates.toString();
+    String id = build.toString();
+
+    Map<String, Object> extra = (Map<String, Object>) first.get("extra");
+    if (extra != null) {
+      Map<String, Object> step = (Map<String, Object>) extra.get("step");
+      if (step != null) {
+        id = step.get("dimensionValue").toString();
+      }
+    }
+
+    while (out.containsKey(id) && out.get(id).containsKey(key)) {
+      id += "2";
+    }
+
+    if (directory.get() == null) {
+      String dirName = extra == null ? (String) params.get("run") : (String) extra.get("historyId");
+      directory.set(Path.of("reports").resolve(dirName));
+      try {
+        File outDir = directory.get().toFile();
+        if (outDir.exists()) {
+          // Empty the directory if it already exists.
+          try (Stream<Path> files = Files.walk(directory.get())) {
+            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+          }
+        }
+        outDir.mkdirs();
+        Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    deviceInfos.put(id, deviceInfo);
+
+    long lowestTop = Long.MAX_VALUE;
+    long largest = 0;
+    boolean exited = false;
+    boolean allocFailed = false;
+    boolean failedToClear = false;
+    boolean serviceCrashed = false;
+
+    for (Object o : result) {
+      Map<String, Object> row = (Map<String, Object>) o;
+      exited |= Boolean.TRUE.equals(row.get("exiting"));
+
+      allocFailed |= Boolean.TRUE.equals(row.get("allocFailed"));
+      allocFailed |= Boolean.TRUE.equals(row.get("mmapAnonFailed"));
+      allocFailed |= Boolean.TRUE.equals(row.get("mmapFileFailed"));
+      allocFailed |= row.containsKey("criticalLogLines");
+
+      failedToClear |= Boolean.TRUE.equals(row.get("failedToClear"));
+
+      serviceCrashed |= Boolean.TRUE.equals(row.get("serviceCrashed"));
+      long score = 0;
+      Map<String, Object> testMetrics = (Map<String, Object>) row.get("testMetrics");
+      if (testMetrics != null) {
+        for (Object o2 : testMetrics.values()) {
+          score += ((Number) o2).longValue();
+        }
+      }
+
+      if (score > largest) {
+        largest = score;
+      }
+
+      Map<String, Object> advice = (Map<String, Object>) row.get("advice");
+      if (advice != null) {
+        Iterable<Object> warnings = (Iterable<Object>) advice.get("warnings");
+        if (warnings != null && !Boolean.TRUE.equals(row.get("paused"))) {
+          for (Object o2 : warnings) {
+            Map<String, Object> warning = (Map<String, Object>) o2;
+            if (!"red".equals(warning.get("level"))) {
+              continue;
+            }
+            long top = score;
+            if (top < lowestTop) {
+              lowestTop = top;
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    float score =
+        (lowestTop == Long.MAX_VALUE ? (float) largest : (float) lowestTop) / (1024 * 1024);
+    Map<String, Result> results0 = out.computeIfAbsent(id, k -> new HashMap<>());
+    Map<String, Object> group = Utils.flattenParams(coordinates, tests.get());
+    group.remove("advisorParameters");
+    URI uri = Main.writeGraphs(directory.get(), result);
+    System.out.println(uri);
+    results0.put(key,
+        new Result(
+            score, uri, exited && !allocFailed, failedToClear, serviceCrashed, group.toString()));
+  }
+
   private static URI writeReport(Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> deviceInfos, Path directory, List<Object> tests)
-      throws IOException {
+      Map<String, Map<String, Object>> deviceInfos, Path directory,
+      List<List<Map<String, Object>>> tests) throws IOException {
     StringBuilder body = new StringBuilder();
     // The vertical orders are the variations of the graphs. The vertical order refers to how the
     // dimensions will be ordered in the header, which is arranged like a tree. The first group is
@@ -227,11 +305,12 @@ public class Score {
    * @param objects       The array of dimension arrays.
    * @return true if the permutation is the definitive version.
    */
-  private static boolean worthRendering(Iterable<Integer> verticalOrder, List<Object> objects) {
+  private static boolean worthRendering(
+      Iterable<Integer> verticalOrder, List<List<Map<String, Object>>> objects) {
     int original = 0;
     for (int idx : verticalOrder) {
       if (idx != original) {
-        int n = ((Collection<Object>) objects.get(idx)).size();
+        int n = objects.get(idx).size();
         if (n <= 1) {
           return false;
         }
@@ -277,8 +356,8 @@ public class Score {
   }
 
   private static void writeTable(StringBuilder body, Map<String, Map<String, Result>> rows,
-      Map<String, Map<String, Object>> deviceInfos, List<Object> tests, Path directory,
-      List<Integer> verticalOrder) {
+      Map<String, Map<String, Object>> deviceInfos, List<List<Map<String, Object>>> tests,
+      Path directory, List<Integer> verticalOrder) {
     int rowspan = tests.size() + 1;
 
     int colspan = getTotalVariations(tests);
@@ -302,17 +381,19 @@ public class Score {
         .append("<th rowspan=" + rowspan + " >")
         .append("totalMem")
         .append("</th>")
+        .append("<th rowspan=" + rowspan + " >")
+        .append("Automatic")
+        .append("</th>")
         .append("</tr>");
 
     int repeats = 1;
     for (int idx : verticalOrder) {
-      List<Object> test = (List<Object>) tests.get(idx);
+      Collection<Map<String, Object>> test = tests.get(idx);
       colspan /= test.size();
       body.append("<tr>");
 
       for (int repeat = 0; repeat != repeats; repeat++) {
-        for (int param = 0; param < test.size(); param++) {
-          Map<String, Object> _param = (Map<String, Object>) test.get(param);
+        for (Map<String, Object> _param : test) {
           Node dataExplorer = DataExplorer.getDataExplorer(HtmlUtils.getDocument(), _param);
           body.append("<th colspan=" + colspan + " class='params'>")
               .append(HtmlUtils.toString(dataExplorer))
@@ -325,9 +406,8 @@ public class Score {
 
     List<List<Object>> horizontalOrder = getHorizontalOrder(tests, verticalOrder);
     body.append("<tr>");
-    body.append("<td colspan=6/>");
-    for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-      List<Object> coords = horizontalOrder.get(idx);
+    body.append("<td colspan=7/>");
+    for (List<Object> coords : horizontalOrder) {
       int total = 0;
       int acceptable = 0;
       float validScore = 0;
@@ -385,20 +465,21 @@ public class Score {
           .append("</td>")
           .append("<td>")
           .append(totalMem / (1024 * 1024))
+          .append("</td>")
+          .append("<td>")
+          .append(Boolean.TRUE.equals(deviceInfo.get("automatic")) ? "auto" : "")
           .append("</td>");
 
       Map<String, Float> maxScore = new HashMap<>();
 
-      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        List<Object> coords = horizontalOrder.get(idx);
+      for (List<Object> coords : horizontalOrder) {
         Result result = rows0.get(coords.toString());
         if (result != null && result.isAcceptable()) {
           maxScore.merge(result.getGroup(), result.getScore(), Math::max);
         }
       }
 
-      for (int idx = 0; idx != horizontalOrder.size(); idx++) {
-        List<Object> coords = horizontalOrder.get(idx);
+      for (List<Object> coords : horizontalOrder) {
         Result result = rows0.get(coords.toString());
         if (result == null) {
           body.append("<td/>");
@@ -413,6 +494,9 @@ public class Score {
           } else if (result.getScore() > max * 0.90) {
             classes.add("good");
           }
+        }
+        if (result.isFailedToClear()) {
+          classes.add("failedToClear");
         }
         if (!result.isAcceptable()) {
           classes.add("unacceptable");
@@ -444,10 +528,10 @@ public class Score {
    * @return The selections for the tests in an array, ordered left to right.
    */
   private static List<List<Object>> getHorizontalOrder(
-      List<Object> tests, List<Integer> verticalOrder) {
+      List<List<Map<String, Object>>> tests, List<Integer> verticalOrder) {
     List<List<Object>> horizontalOrder = new ArrayList<>();
     List<Object> base = new ArrayList<>();
-    for (int idx = 0; idx < tests.size(); idx++) {
+    while (base.size() < tests.size()) {
       base.add(0);
     }
 
@@ -457,7 +541,7 @@ public class Score {
       ListIterator<Integer> it = verticalOrder.listIterator(verticalOrder.size());
       while (it.hasPrevious()) {
         int idx = it.previous();
-        Collection<Object> test = (Collection<Object>) tests.get(idx);
+        List<Map<String, Object>> test = tests.get(idx);
         int value = (int) base.get(idx);
         if (value == test.size() - 1) {
           base.set(idx, 0);
@@ -474,7 +558,7 @@ public class Score {
     return horizontalOrder;
   }
 
-  private static int getTotalVariations(List<Object> tests) {
+  private static int getTotalVariations(Iterable<List<Map<String, Object>>> tests) {
     int total = 1;
     for (Object o : tests) {
       total *= ((Collection<Object>) o).size();
@@ -486,13 +570,16 @@ public class Score {
     private final float score;
     private final URI uri;
     private final boolean acceptable;
+    private final boolean failedToClear;
     private final boolean serviceCrashed;
     private final String group;
 
-    Result(float score, URI uri, boolean acceptable, boolean serviceCrashed, String group) {
+    Result(float score, URI uri, boolean acceptable, boolean failedToClear, boolean serviceCrashed,
+        String group) {
       this.score = score;
       this.uri = uri;
       this.acceptable = acceptable;
+      this.failedToClear = failedToClear;
       this.serviceCrashed = serviceCrashed;
       this.group = group;
     }
@@ -507,6 +594,10 @@ public class Score {
 
     boolean isAcceptable() {
       return acceptable;
+    }
+
+    boolean isFailedToClear() {
+      return failedToClear;
     }
 
     boolean isServiceCrashed() {

@@ -27,9 +27,8 @@ public class Timing {
     Map<String, Map<String, Long>> totalsByFingerprint = new HashMap<>();
     Map<String, Map<String, Long>> countsByFingerprint = new HashMap<>();
 
-    Consumer<List<Object>> collect = results -> {
-      Map<String, Object> first = (Map<String, Object>) results.get(0);
-      Map<String, Object> params = (Map<String, Object>) first.get("params");
+    Consumer<List<Map<String, Object>>> collect = results -> {
+      Map<String, Object> params = (Map<String, Object>) results.get(0).get("params");
       if (params == null) {
         return;
       }
