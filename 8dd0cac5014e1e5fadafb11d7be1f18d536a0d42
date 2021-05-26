@@ -16,6 +16,57 @@
       "message": "This adds support for building GameActivity/GameInput as part of our build.\n\nNote that when approved, I\u0027ll deactivate the build as part of the ZIP (packageZip) so that it\u0027s not yet included (but the AARs will still be built, so that we can still try them/share them).",
       "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "501826bf_bd29a1a3",
+        "filename": "GameInput/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-26T13:12:03Z",
+      "side": 1,
+      "message": "nit: outputed -\u003e output",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb9a471c_c9c50faa",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 807,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-26T13:12:03Z",
+      "side": 1,
+      "message": "nit: indentation",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e37ccf31_7edb239e",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/AndroidLibrary.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-26T13:12:03Z",
+      "side": 1,
+      "message": "\u0027AndroidLibrary\u0027 is a bit generic. Should we call it AARLibrary? AARBasedLibrary? JetpackLibrary? Any other ideas?",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
