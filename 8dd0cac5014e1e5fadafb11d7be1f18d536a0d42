@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "11d575ac_3ac17527",
+        "filename": "GameInput/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-26T14:59:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "501826bf_bd29a1a3",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb9a471c_c9c50faa",
@@ -52,6 +70,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29dd3a63_72f972a1",
+        "filename": "build.gradle",
+        "patchSetId": 5
+      },
+      "lineNbr": 807,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-26T14:59:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb9a471c_c9c50faa",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e37ccf31_7edb239e",
@@ -65,6 +101,24 @@
       "writtenOn": "2021-05-26T13:12:03Z",
       "side": 1,
       "message": "\u0027AndroidLibrary\u0027 is a bit generic. Should we call it AARLibrary? AARBasedLibrary? JetpackLibrary? Any other ideas?",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40fab62b_59227267",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/AndroidLibrary.kt",
+        "patchSetId": 5
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-26T14:59:58Z",
+      "side": 1,
+      "message": "Agree, I chose \"Android Library\" as it\u0027s the name used in the DAC docs, but changed to AndroidArchiveLibrary. As Library is what it is and Android Archive is the format (\"an Android library compiles into an Android Archive (AAR) file\").",
+      "parentUuid": "e37ccf31_7edb239e",
       "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
