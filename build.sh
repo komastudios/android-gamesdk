@@ -28,11 +28,13 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_input -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_input -PdistPath="$dist_dir" -PpackageName=$package_name
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
@@ -40,11 +42,13 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_input -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_input -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
 # Calculate hash of the zip file
