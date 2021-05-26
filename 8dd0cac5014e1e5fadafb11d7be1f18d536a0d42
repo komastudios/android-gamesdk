@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0de3b027_e95a80e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-05-26T12:59:58Z",
+      "side": 1,
+      "message": "This adds support for building GameActivity/GameInput as part of our build.\n\nNote that when approved, I\u0027ll deactivate the build as part of the ZIP (packageZip) so that it\u0027s not yet included (but the AARs will still be built, so that we can still try them/share them).",
+      "revId": "8dd0cac5014e1e5fadafb11d7be1f18d536a0d42",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
