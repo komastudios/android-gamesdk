@@ -16,6 +16,24 @@
       "message": "It\u0027s unrelated, but can you remove this, too, please?",
       "revId": "4deb563a68424e80ed39fd3d9180626fa56019ef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a62c9414_1bfb98f8",
+        "filename": "samples/tuningfork/insightsdemo/app/src/main/proto/dev_tuningfork.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1395136
+      },
+      "writtenOn": "2021-05-27T10:57:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3fe7258_b5c47bda",
+      "revId": "4deb563a68424e80ed39fd3d9180626fa56019ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
