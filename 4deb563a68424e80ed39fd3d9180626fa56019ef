@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3fe7258_b5c47bda",
+        "filename": "samples/tuningfork/insightsdemo/app/src/main/proto/dev_tuningfork.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-05-27T08:04:03Z",
+      "side": 1,
+      "message": "It\u0027s unrelated, but can you remove this, too, please?",
+      "revId": "4deb563a68424e80ed39fd3d9180626fa56019ef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
