@@ -99,6 +99,14 @@ TEST(TuningForkTest, TestEndToEndWithBattery) {
          "counts": [**],
          "instrument_id": 64000
         }]
+      },
+      "thermal":{
+        "thermal_event":[
+          {
+            "event_time":"!REGEX(.*?s)",
+            "thermal_state":3
+          }
+        ]
       }
     }
   }]
