@@ -15,7 +15,9 @@
  */
 
 /**
- * @file gameinput.h
+ * @defgroup game_input Game Text Input
+ * The interface to use Game Text Input.
+ * @{
  */
 
 #pragma once
@@ -28,7 +30,9 @@
  * start==end. An undefined span is specified with start = end = SPAN_UNDEFINED.
  */
 typedef struct GameInputSpan {
+  /** The start of the region (inclusive). */
   int start;
+  /** The end of the region (exclusive). */
   int end;
 } GameInputSpan;
 
@@ -214,3 +218,5 @@ void GameInput_processEvent(GameInput *input, jobject eventState);
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */

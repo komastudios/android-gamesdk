@@ -16,6 +16,7 @@
 
 /**
  * @addtogroup GameActivity Game Activity
+ * The interface to use GameActivity.
  * @{
  */
 
@@ -514,13 +515,19 @@ enum {
  */
 void GameActivity_showSoftInput(GameActivity* activity, uint32_t flags);
 
-/* Set the text entry state.
+/**
+ * Set the text entry state (see documentation of the struct in the Game Text
+ * Input library reference).
+ *
  * Ownership of the state is maintained by the caller.
  */
 void GameActivity_setTextInputState(GameActivity* activity,
                                     const GameInputState* state);
 
-/* Get the last-received text entry state.
+/**
+ * Get the last-received text entry state (see documentation of the struct in
+ * the Game Text Input library reference).
+ *
  * Ownership of the returned value is maintained by the GameActivity: do not
  * delete it.
  */
@@ -555,6 +562,6 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
 };
 #endif
 
-#endif  // ANDROID_GAME_SDK_GAME_ACTIVITY_H
-
 /** @} */
+
+#endif  // ANDROID_GAME_SDK_GAME_ACTIVITY_H
