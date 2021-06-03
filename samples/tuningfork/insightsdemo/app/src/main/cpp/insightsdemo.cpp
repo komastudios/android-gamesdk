@@ -79,7 +79,6 @@ extern "C"
 void SetAnnotations() {
     if(proto_tf::Level_IsValid(sLevel)) {
         Annotation a;
-        a.set_loading(sLoading?proto_tf::LOADING:proto_tf::NOT_LOADING);
         a.set_level((proto_tf::Level)sLevel);
         auto ser = tf::TuningFork_CProtobufSerialization_Alloc(a);
         if (TuningFork_setCurrentAnnotation(&ser)!=TUNINGFORK_ERROR_OK) {
@@ -204,8 +203,6 @@ Java_com_tuningfork_insightsdemo_TFTestActivity_onChoreographer(JNIEnv */*env*/,
                 // Loading next level
                 sLoading = true;
                 Annotation a;
-                a.set_loading(sLoading ? proto_tf::LOADING
-                                       : proto_tf::NOT_LOADING);
                 ++sLevel;
                 if (sLevel > proto_tf::Level_MAX) sLevel = proto_tf::LEVEL_1;
                 a.set_level((proto_tf::Level) sLevel);

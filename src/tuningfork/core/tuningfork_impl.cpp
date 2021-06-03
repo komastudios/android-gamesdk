@@ -608,7 +608,7 @@ void TuningForkImpl::InitAsyncTelemetry() {
         MetricId::Battery(0));
     async_telemetry_->AddTask(battery_reporting_task_);
     thermal_reporting_task_ = std::make_shared<ThermalReportingTask>(
-        time_provider_, MetricId::Thermal(0));
+        time_provider_, battery_provider_, MetricId::Thermal(0));
     async_telemetry_->AddTask(thermal_reporting_task_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
