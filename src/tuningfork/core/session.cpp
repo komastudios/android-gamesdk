@@ -57,7 +57,7 @@ ThermalMetricData* Session::CreateThermalTimeSeries(MetricId id) {
     return p;
 }
 
-void Session::RecordCrash(CrashReason reason) {
+void Session::RecordCrash(const CrashReason reason) {
     std::lock_guard<std::mutex> lock(crash_mutex_);
     crash_data_.push_back(reason);
 }
