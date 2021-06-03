@@ -1,0 +1,316 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3e15544f_eb520862",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 108
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "622973d9_5febafeb",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 106
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "20cb984a_a43563c1",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 132
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1bcd938d_dfcbdc4b",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 110
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "567bab88_9da95d83",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 141
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "17f4f1fc_8028d25a",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 108
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6111b930_8bb71865",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Prefer to use appActivity.getSystemService(InputManager.class) instead to avoid the cast.",
+      "range": {
+        "startLine": 77,
+        "startChar": 23,
+        "endLine": 77,
+        "endChar": 67
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a8f4c511_015737a9",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 260,
+        "startChar": 0,
+        "endLine": 260,
+        "endChar": 106
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8503c2ee_8bd531d6",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 270,
+        "startChar": 0,
+        "endLine": 270,
+        "endChar": 121
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "82e2ba53_3ac91c9f",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 352,
+        "startChar": 0,
+        "endLine": 352,
+        "endChar": 119
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f2a2b0eb_e432a4da",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 366,
+        "startChar": 0,
+        "endLine": 366,
+        "endChar": 120
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427633",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "11a479d0_f5b4b6f6",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:15:20Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 374,
+        "startChar": 0,
+        "endLine": 374,
+        "endChar": 110
+      },
+      "revId": "02756cbd4dd2547e397830f1727140d718a0df2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
