@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4f38ab5_21e46785",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-03T15:40:51Z",
+      "side": 1,
+      "message": "Looks good.\nWe need to update\nhttps://source.corp.google.com/piper///depot/google3/google/android/performanceparameters/v1/performanceparameters.proto\ntoo, and probably before this is submitted. I\u0027m not sure how strict the Play parsing of the uploaded protos is.",
+      "revId": "bbabb3ad53ffb3dda38d77357b4d9e6f95c023ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b322a76_02c6fc47",
+        "filename": "src/tuningfork/core/request_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-03T15:40:51Z",
+      "side": 1,
+      "message": "I think we need\nRequestInfo info {};\nhere in order to make sure all the structure members are zero-initialized. Otherwise, if we\u0027re missing some values they may be garbage.",
+      "revId": "bbabb3ad53ffb3dda38d77357b4d9e6f95c023ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
