@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b2a8c5b_27e30c71",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-06-03T16:37:04Z",
+      "side": 1,
+      "message": "I just submitted that cl as well.",
+      "parentUuid": "d4f38ab5_21e46785",
+      "revId": "bbabb3ad53ffb3dda38d77357b4d9e6f95c023ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b322a76_02c6fc47",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-06-03T15:40:51Z",
       "side": 1,
       "message": "I think we need\nRequestInfo info {};\nhere in order to make sure all the structure members are zero-initialized. Otherwise, if we\u0027re missing some values they may be garbage.",
+      "revId": "bbabb3ad53ffb3dda38d77357b4d9e6f95c023ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c18c7edf_ba85d04a",
+        "filename": "src/tuningfork/core/request_info.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-06-03T16:37:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b322a76_02c6fc47",
       "revId": "bbabb3ad53ffb3dda38d77357b4d9e6f95c023ec",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
