@@ -19,6 +19,7 @@
 #include <android/api-level.h>
 #include <stdlib.h>
 
+#include <cstdio>
 #include <fstream>
 #include <sstream>
 
@@ -36,6 +37,12 @@ ActivityLifecycleState::ActivityLifecycleState() {
     lifecycle_path_builder << "/lifecycle.bin";
     tf_lifecycle_path_str_ = lifecycle_path_builder.str();
     ALOGV("Path to lifecycle file: %s", tf_lifecycle_path_str_.c_str());
+
+    std::stringstream crash_info_path_builder;
+    crash_info_path_builder << DefaultTuningForkSaveDirectory()
+                            << "/crash_info.bin";
+    tf_crash_info_file_ = crash_info_path_builder.str();
+    ALOGV("Path to crash info file: %s", tf_crash_info_file_.c_str());
 }
 
 ActivityLifecycleState::~ActivityLifecycleState() {}
@@ -114,6 +121,34 @@ TuningFork_LifecycleState ActivityLifecycleState::GetCurrentState() {
 bool ActivityLifecycleState::IsAppOnForeground() { return app_on_foreground_; }
 
 CrashReason ActivityLifecycleState::GetLatestCrashReason() {
+    if (!file_utils::FileExists(tf_crash_info_file_)) {
+        return GetReasonFromActivityManager();
+    } else {
+        std::ifstream file(tf_crash_info_file_);
+        int signal;
+        file >> signal;
+        file.close();
+        if (!remove(tf_crash_info_file_.c_str())) {
+            ALOGE_ONCE("Failed to delete the crash info file.");
+        }
+        return ConvertSignalToCrashReason(signal);
+    }
+}
+
+CrashReason ActivityLifecycleState::ConvertSignalToCrashReason(int signal) {
+    switch (signal) {
+        case SIGFPE:
+            return FLOATING_POINT_ERROR;
+        case SIGSEGV:
+            return SEGMENTATION_FAULT;
+        case SIGBUS:
+            return BUS_ERROR;
+        default:
+            return CRASH_REASON_UNSPECIFIED;
+    }
+}
+
+CrashReason ActivityLifecycleState::GetReasonFromActivityManager() {
     if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 30) {
         using namespace gamesdk::jni;
         auto app_context = AppContext();

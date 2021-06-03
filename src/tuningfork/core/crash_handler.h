@@ -32,6 +32,7 @@ class CrashHandler {
    private:
     std::function<bool(void)> callback_;
     bool handler_inited_ = false;
+    std::string tf_crash_info_file_;
     static bool InstallHandlerLocked();
     static void RestoreHandlerLocked();
     static void SignalHandler(int sig, siginfo_t* info, void* ucontext);
