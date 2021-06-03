@@ -532,6 +532,12 @@ class Build {
     static jni::String FINGERPRINT() {
         return GetStaticStringField(class_name, "FINGERPRINT");
     }
+    static jni::String SOC_MODEL() {
+        return GetStaticStringField(class_name, "SOC_MODEL");
+    }
+    static jni::String SOC_MANUFACTURER() {
+        return GetStaticStringField(class_name, "SOC_MANUFACTURER");
+    }
 };  // Class Build
 
 class BatteryManager : java::Object {
