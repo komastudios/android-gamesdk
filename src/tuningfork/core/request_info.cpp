@@ -122,6 +122,11 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
         info.brand = gamesdk::jni::android::os::Build::BRAND().C();
         info.product = gamesdk::jni::android::os::Build::PRODUCT().C();
         info.device = gamesdk::jni::android::os::Build::DEVICE().C();
+        if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 31) {
+            info.soc_model = gamesdk::jni::android::os::Build::SOC_MODEL().C();
+            info.soc_manufacturer =
+                gamesdk::jni::android::os::Build::SOC_MANUFACTURER().C();
+        }
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
     info.swappy_version = settings.c_settings.swappy_version;
