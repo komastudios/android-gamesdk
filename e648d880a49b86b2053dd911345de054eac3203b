@@ -1,0 +1,576 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "696a7537_4b03d52b",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 106
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f538908f_551a1b4d",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 131
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bb989b53_46151253",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 251,
+        "startChar": 67,
+        "endLine": 251,
+        "endChar": 68
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e06008cb_5215b01f",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 270,
+        "startChar": 68,
+        "endLine": 270,
+        "endChar": 69
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c478f9d5_0ff24584",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 281,
+        "startChar": 87,
+        "endLine": 281,
+        "endChar": 88
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d2bf466b_e2e1bbe8",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 291,
+        "startChar": 95,
+        "endLine": 291,
+        "endChar": 96
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ce75f6ba_f13f2ffe",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 293,
+        "startChar": 95,
+        "endLine": 293,
+        "endChar": 96
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "59218f28_09c91dda",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 294,
+        "startChar": 90,
+        "endLine": 294,
+        "endChar": 91
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "596e21d1_04ea6d76",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 295,
+        "startChar": 97,
+        "endLine": 295,
+        "endChar": 98
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3c04429d_08d34236",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 296,
+        "startChar": 93,
+        "endLine": 296,
+        "endChar": 94
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4d3aa8ba_47c0088d",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 298,
+        "startChar": 98,
+        "endLine": 298,
+        "endChar": 99
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bc43f4a0_17911da2",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 361,
+        "startChar": 64,
+        "endLine": 361,
+        "endChar": 65
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fa730128_9813d884",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 362,
+        "startChar": 70,
+        "endLine": 362,
+        "endChar": 71
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c70eff77_e0b05b9a",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 394,
+        "startChar": 73,
+        "endLine": 394,
+        "endChar": 74
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "28f1808b_f826f100",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 397,
+        "startChar": 75,
+        "endLine": 397,
+        "endChar": 76
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f610d420_35cf3d74",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 409,
+        "startChar": 91,
+        "endLine": 409,
+        "endChar": 92
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "96d20c12_594ed8ad",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 410,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 410,
+        "startChar": 52,
+        "endLine": 410,
+        "endChar": 53
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ea9a2d0b_5cec9273",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 414,
+        "startChar": 58,
+        "endLine": 414,
+        "endChar": 59
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "75fd57fa_5541aa72",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 424,
+        "startChar": 97,
+        "endLine": 424,
+        "endChar": 98
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c3c33cd8_5105f20b",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 427,
+        "startChar": 97,
+        "endLine": 427,
+        "endChar": 98
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "593d53bd_fde2e334",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 428,
+        "startChar": 74,
+        "endLine": 428,
+        "endChar": 75
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011426338",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726897?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e4235add_01b50e2f",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 575,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T19:40:37Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 575,
+        "startChar": 73,
+        "endLine": 575,
+        "endChar": 74
+      },
+      "revId": "e648d880a49b86b2053dd911345de054eac3203b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
