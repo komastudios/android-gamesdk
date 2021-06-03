@@ -1,0 +1,134 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427663",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c183d928_b5e29372",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:16:18Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 104,
+        "startChar": 64,
+        "endLine": 104,
+        "endChar": 65
+      },
+      "revId": "1442c79bee1bb703eb8769b7f1cd341d462661bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427663",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "44050d13_68164fab",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:16:18Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 107,
+        "startChar": 88,
+        "endLine": 107,
+        "endChar": 89
+      },
+      "revId": "1442c79bee1bb703eb8769b7f1cd341d462661bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427663",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8e243794_34a2ae8f",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:16:18Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 110,
+        "startChar": 89,
+        "endLine": 110,
+        "endChar": 90
+      },
+      "revId": "1442c79bee1bb703eb8769b7f1cd341d462661bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427663",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "dbbf48c8_e4bae059",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:16:18Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 126,
+        "startChar": 75,
+        "endLine": 126,
+        "endChar": 76
+      },
+      "revId": "1442c79bee1bb703eb8769b7f1cd341d462661bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011427663",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1726899?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cdcc58dd_a9b07e1d",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-03T20:16:18Z",
+      "side": 1,
+      "message": "Prefer to use appActivity.getSystemService(InputManager.class) instead to avoid the cast.",
+      "range": {
+        "startLine": 79,
+        "startChar": 23,
+        "endLine": 79,
+        "endChar": 67
+      },
+      "revId": "1442c79bee1bb703eb8769b7f1cd341d462661bb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
