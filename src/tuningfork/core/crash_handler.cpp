@@ -31,11 +31,16 @@ void CrashHandler::Init(std::function<bool(void)> callback) {}
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <functional>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 
 #include "Log.h"
 #define LOG_TAG "TFCrashHandler"
+#include "system_utils.h"
+#include "tuningfork_utils.h"
 
 namespace tuningfork {
 
@@ -152,6 +157,14 @@ void CrashHandler::Init(std::function<bool(void)> callback) {
     InstallAlternateStackLocked();
     InstallHandlerLocked();
     g_handler_stack_->push_back(this);
+
+    std::stringstream crash_file_path_builder;
+    crash_file_path_builder << DefaultTuningForkSaveDirectory();
+    file_utils::CheckAndCreateDir(crash_file_path_builder.str());
+    crash_file_path_builder << "/crash_info.bin";
+    tf_crash_info_file_ = crash_file_path_builder.str();
+    ALOGV("Path to crash info file: %s", tf_crash_info_file_.c_str());
+
     handler_inited_ = true;
     callback_ = callback;
     ALOGI("CrashHandler initialized");
@@ -253,6 +266,13 @@ void CrashHandler::SignalHandler(int sig, siginfo_t *info, void *ucontext) {
 bool CrashHandler::HandlerSignal(int sig, siginfo_t *info, void *ucontext) {
     ALOGI("HandlerSignal: sig %d, name %s, pid %d", sig, GetSignalName(sig),
           info->si_pid);
+
+    std::ofstream file(tf_crash_info_file_);
+    if (file.is_open()) {
+        file << sig;
+    } else {
+        ALOGE_ONCE("Crash reason couldn't be stored.");
+    }
 
     if (callback_) {
         callback_();
