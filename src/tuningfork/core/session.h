@@ -37,6 +37,9 @@ struct TimeInterval {
 typedef enum CrashReason {
     CRASH_REASON_UNSPECIFIED = 0,
     LOW_MEMORY = 1,
+    SEGMENTATION_FAULT = 2,
+    BUS_ERROR = 3,
+    FLOATING_POINT_ERROR = 4,
 
 } CrashReason;
 
@@ -130,7 +133,7 @@ class Session {
             return 0;
     }
 
-    void RecordCrash(CrashReason reason);
+    void RecordCrash(const CrashReason& reason);
     std::vector<CrashReason> GetCrashReports() const;
 
    private:

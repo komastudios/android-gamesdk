@@ -111,7 +111,7 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
          * SIGSEGV 11
          * */
 
-        raiseSignal(4);
+        raiseSignal(11);
     }
 
     public void OnClick_SetFidelityParameters(View view) {
