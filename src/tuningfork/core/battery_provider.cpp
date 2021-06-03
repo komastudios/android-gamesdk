@@ -94,6 +94,33 @@ bool DefaultBatteryProvider::IsPowerSaveModeEnabled() {
     }
 }
 
+IBatteryProvider::ThermalState
+DefaultBatteryProvider::GetCurrentThermalStatus() {
+    if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 29 &&
+        gamesdk::jni::IsValid()) {
+        using namespace gamesdk::jni;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::POWER_SERVICE);
+        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            IBatteryProvider::THERMAL_STATE_UNSPECIFIED);
+        if (!obj.IsNull()) {
+            android::os::PowerManager power_manager(std::move(obj));
+            int status = power_manager.getCurrentThermalStatus();
+            if (status < 0 || status > 6) {
+                return IBatteryProvider::THERMAL_STATE_UNSPECIFIED;
+            } else {
+                // Adding +1 here because we want 0 to be thermal status
+                // 'unspecified', which shifts the entire enum by 1
+                return static_cast<IBatteryProvider::ThermalState>(status + 1);
+            }
+        } else {
+            return IBatteryProvider::THERMAL_STATE_UNSPECIFIED;
+        }
+    } else {
+        return IBatteryProvider::THERMAL_STATE_UNSPECIFIED;
+    }
+}
+
 bool DefaultBatteryProvider::IsBatteryReportingEnabled() { return true; }
 
 }  // namespace tuningfork

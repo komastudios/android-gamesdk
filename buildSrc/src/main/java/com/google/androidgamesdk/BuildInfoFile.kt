@@ -47,22 +47,34 @@ class BuildInfoFile {
     }
 
     fun writeLibrariesBuildInfoFile(
-        libraries: Collection<NativeLibrary>,
+        nativeLibraries: Collection<NativeLibrary>,
+        androidArchiveLibraries: Collection<AndroidArchiveLibrary>,
         distPath: String,
         packageName: String
     ) {
         val headCommitSha = getGitCommitShaAtHead()
 
-        val artifactsBuildInfo: List<ArtifactBuildInfo> = libraries.map {
+        val artifactsBuildInfo: List<ArtifactBuildInfo> = nativeLibraries.map {
             nativeLibrary: NativeLibrary ->
             ArtifactBuildInfo(
                 groupId = "androidx.games",
                 artifactId = nativeLibrary.aarLibraryName,
                 path = "/src/" + nativeLibrary.nativeLibraryName,
                 projectZipPath = packageName + '/' +
-                        nativeLibrary.aarLibraryName + "-maven-zip.zip",
+                    nativeLibrary.aarLibraryName + "-maven-zip.zip",
                 sha = headCommitSha,
                 version = nativeLibrary.aarVersion
+            )
+        } + androidArchiveLibraries.map {
+            androidArchiveLibrary: AndroidArchiveLibrary ->
+            ArtifactBuildInfo(
+                groupId = "androidx.games",
+                artifactId = androidArchiveLibrary.aarLibraryName,
+                path = androidArchiveLibrary.projectName,
+                projectZipPath = packageName + '/' +
+                    androidArchiveLibrary.aarLibraryName + "-maven-zip.zip",
+                sha = headCommitSha,
+                version = androidArchiveLibrary.aarVersion
             )
         }
 

@@ -21,9 +21,12 @@ namespace tuningfork {
 class Session;
 
 void ThermalReportingTask::DoWork(Session *session) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    session->GetData<ThermalMetricData>(id_)->Record(
-        time_provider_->TimeSinceProcessStart());
+    if (battery_provider_ != nullptr &&
+        battery_provider_->IsBatteryReportingEnabled()) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        session->GetData<ThermalMetricData>(id_)->Record(
+            time_provider_->TimeSinceProcessStart(), battery_provider_);
+    }
 }
 
 void ThermalReportingTask::UpdateMetricId(MetricId id) {

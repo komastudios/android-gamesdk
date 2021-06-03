@@ -31,6 +31,10 @@ class TestBatteryProvider : public tf::IBatteryProvider {
 
     int32_t GetBatteryCharge() override { return 1234; }
 
+    tf::IBatteryProvider::ThermalState GetCurrentThermalStatus() override {
+        return tf::IBatteryProvider::THERMAL_STATE_MODERATE;
+    }
+
     bool IsBatteryCharging() override { return true; }
 
     bool IsPowerSaveModeEnabled() override { return true; }
