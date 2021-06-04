@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f94e17e8_162d1220",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 519,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5793382_d7bdbfa6",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd88b0db_2d933b19",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "Replace with \u0027An optional pointer to application-defined state.\u0027?",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dcd4017_144c4c1b",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd88b0db_2d933b19",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "81c67509_97fb47f2",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a5c9f47_fa4dabca",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "da3dd7f1_dfc1fd08",
@@ -65,6 +119,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "Remove \u0027This is\u0027.\nWhat instance is this talking about? The app instance?",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e81e0bee_b0b82532",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Fixed and added \"activity\".",
+      "parentUuid": "da3dd7f1_dfc1fd08",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -86,6 +158,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbff78f6_c53b7bed",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cab53f36_50a8c427",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "14aa3b28_11c04f4c",
@@ -99,6 +189,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "Is this read-only by the app? If so, it should be mentioned.",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e30bd931_83fafe8a",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14aa3b28_11c04f4c",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -120,6 +228,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0b67052_87fc45ec",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ce73bf17_15043a51",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81686241_cb8a2d40",
@@ -133,6 +259,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "And again.",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84ef44f3_b94a943c",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81686241_cb8a2d40",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -154,6 +298,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c484cfc_35a849b4",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3f606bd_a513bec1",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "84f6f7e8_b0bd5194",
@@ -167,6 +329,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "Again, say \u0027This method should be called when...\u0027",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc0ab4ec_bb861a13",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84f6f7e8_b0bd5194",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -188,6 +368,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a16d1691_f0273cac",
+        "filename": "GameInput/prefab-src/modules/game-input/include/game-input/gameinput.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d730779b_1dd9f784",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4b6637ac_de77bbd5",
@@ -201,6 +399,24 @@
       "writtenOn": "2021-06-03T15:29:45Z",
       "side": 1,
       "message": "\u0027The interface to use GameInput\u0027? That makes it consistent with the GameActivity header.\nWe\u0027re probably going to need to rename GameInput as it\u0027s too generic, but let\u0027s see what the API review council say.",
+      "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4620b29a_a60818be",
+        "filename": "GameInput/prefab-src/modules/game-input/include/game-input/gameinput.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-04T09:05:27Z",
+      "side": 1,
+      "message": "Done.\n\nProbably a good idea to do a renaming of the whole interface and structs to GameTextInput. For now, keeping things consistent then.",
+      "parentUuid": "4b6637ac_de77bbd5",
       "revId": "7c8624242f4dd75a403e5f608959781f895b72cd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
