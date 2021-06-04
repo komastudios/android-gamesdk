@@ -16,6 +16,23 @@
       "message": "Game Controller library initial commit review (split across 5 CLs)",
       "revId": "6d3853cdb4d670740151f0588fb8bea6e6fb1fc3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f1c7d34_00b701c7",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:28:33Z",
+      "side": 1,
+      "message": "NCT_S ?",
+      "revId": "6d3853cdb4d670740151f0588fb8bea6e6fb1fc3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
