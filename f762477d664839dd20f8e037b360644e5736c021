@@ -16,6 +16,74 @@
       "message": "Game Controller library initial commit review (split across 5 CLs)",
       "revId": "f762477d664839dd20f8e037b360644e5736c021",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ea5793e_8470870b",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:20:25Z",
+      "side": 1,
+      "message": "I think you need to call DeleteLocalRef on this after it\u0027s been used.",
+      "revId": "f762477d664839dd20f8e037b360644e5736c021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ba8029b_c1915292",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1053,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:20:25Z",
+      "side": 1,
+      "message": "nit: } // namespace paddleboat",
+      "revId": "f762477d664839dd20f8e037b360644e5736c021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bc81052_3e3306c1",
+        "filename": "GameController/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:20:25Z",
+      "side": 1,
+      "message": "Any reason this is not a member variable rather than static?",
+      "revId": "f762477d664839dd20f8e037b360644e5736c021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5faf59a3_2c34fd2a",
+        "filename": "GameController/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:20:25Z",
+      "side": 1,
+      "message": "} // namespace paddleboat",
+      "revId": "f762477d664839dd20f8e037b360644e5736c021",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
