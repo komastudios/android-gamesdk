@@ -33,6 +33,23 @@
       "message": "Not really any comments on this from my side, appreciate the clear documentation of every part of the interface :)",
       "revId": "7d9a0034f72b9db87bcb8178a4176decb5bab611",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7cf9e46_01683b85",
+        "filename": "GameController/src/main/cpp/paddleboat_c.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:00:28Z",
+      "side": 1,
+      "message": "nit: Comment that this matches extern \"C\"?",
+      "revId": "7d9a0034f72b9db87bcb8178a4176decb5bab611",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
