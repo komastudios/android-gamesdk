@@ -16,6 +16,74 @@
       "message": "Game Controller library initial commit review (split across 5 CLs)",
       "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f0c2234_a341e1dc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:27:47Z",
+      "side": 1,
+      "message": "LGTM except for the namespace ending bracket comment nits",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5a46c86_88a9f00a",
+        "filename": "GameController/src/main/cpp/GameController.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:27:47Z",
+      "side": 1,
+      "message": "} // anonymous namespace",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e665b79c_3ba9301a",
+        "filename": "GameController/src/main/cpp/GameController.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:27:47Z",
+      "side": 1,
+      "message": "} // namespace paddleboat",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1fa3da03_d16db7ed",
+        "filename": "GameController/src/main/cpp/GameController.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-04T19:27:47Z",
+      "side": 1,
+      "message": "nit: } // namespace paddleboat",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
