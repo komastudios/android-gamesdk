@@ -46,6 +46,8 @@ struct RequestInfo {
     std::string brand;
     std::string product;
     std::string device;
+    std::string soc_model;
+    std::string soc_manufacturer;
     uint32_t swappy_version;
 
     // Note that this will include an empty experiment_id and

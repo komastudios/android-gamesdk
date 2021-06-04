@@ -36,6 +36,8 @@ static std::string AbandonedLoadingEvent(int type, const std::string& duration,
       "gles_version": {"major": 0, "minor": 0},
       "model": "",
       "product": "",
+      "soc_manufacturer": "",
+      "soc_model": "",
       "total_memory_bytes": 0
     },
     "game_sdk_info": {"session_id": "", "version": "1.0.0"},
