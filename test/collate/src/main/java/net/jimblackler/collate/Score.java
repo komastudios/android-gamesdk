@@ -51,7 +51,7 @@ public class Score {
       ObjectReader smileReader = new SmileMapper().reader();
       Collection<Number> runTimes = new HashSet<>();
       Collector.datastoreCollect(VERSION, entity -> {
-        Map<String, Object> results1 = null;
+        Map<String, Object> results1;
         try {
           if (entity.contains("resultsSmile")) {
             Blob resultsSmile = entity.getBlob("resultsSmile");
