@@ -97,11 +97,11 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "0.0.1")
+        .setAarLibrary("games-activity", "1.0.0-alpha01")
         .setPrefabFolderName("prefab-src")
 
 def gameInputLibrary = new AndroidArchiveLibrary('game_input', "GameInput")
-        .setAarLibrary("games-text-input", "0.0.1")
+        .setAarLibrary("games-text-input", "1.0.0-alpha01")
         .setPrefabFolderName("prefab-src")
 
 def protobufInstallDir() {
