@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84a4d53c_55002825",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-07T21:29:28Z",
+      "side": 1,
+      "message": "Does \u0027remove\u0027 work while \u0027file\u0027 still holds a file handle? I\u0027d close \u0027file\u0027 first (put file reading in a block and let the destructor close it) and then call \u0027remove\u0027. Also check the return value of \u0027remove\u0027.",
+      "revId": "930b15ee858da874f1cd37fbdb23fd8dcdcabe86",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
