@@ -35,6 +35,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "93893ca0_1723adb0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-07T15:00:57Z",
+      "side": 1,
+      "message": "LGTM! Note that running clang-format should fix all the nits related to the namespace comments. \nBut probably not pragmatic to run this now on all the CLs, better to fix manually I think.",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f5a46c86_88a9f00a",
