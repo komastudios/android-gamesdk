@@ -33,6 +33,24 @@
       "message": "NCT_S ?",
       "revId": "6d3853cdb4d670740151f0588fb8bea6e6fb1fc3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f62e9d7_0ebc298a",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T17:50:15Z",
+      "side": 1,
+      "message": "Leftover from S experiments, removed.",
+      "parentUuid": "6f1c7d34_00b701c7",
+      "revId": "6d3853cdb4d670740151f0588fb8bea6e6fb1fc3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
