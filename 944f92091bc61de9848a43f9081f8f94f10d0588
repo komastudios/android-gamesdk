@@ -69,6 +69,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a061c2cb_2a561fa2",
+        "filename": "GameController/src/main/cpp/GameController.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T17:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f5a46c86_88a9f00a",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e665b79c_3ba9301a",
@@ -86,6 +104,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9fd8ec1_65983d36",
+        "filename": "GameController/src/main/cpp/GameController.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T17:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e665b79c_3ba9301a",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1fa3da03_d16db7ed",
@@ -99,6 +135,24 @@
       "writtenOn": "2021-06-04T19:27:47Z",
       "side": 1,
       "message": "nit: } // namespace paddleboat",
+      "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3f399e7_f25b912b",
+        "filename": "GameController/src/main/cpp/GameController.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T17:54:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1fa3da03_d16db7ed",
       "revId": "944f92091bc61de9848a43f9081f8f94f10d0588",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
