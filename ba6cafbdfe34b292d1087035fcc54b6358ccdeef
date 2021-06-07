@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1120285_651d648a",
+        "filename": "GameController/src/main/cpp/GameControllerGameActivityMirror.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "For the time being, this is intentionally standalone. From discussions, this will always be \u0027backwards compatible\u0027 with future changes. It is likely at some future point in time, if GameController gets fully integrated into the existing Game SDK build, this can get a refactor to go away.",
+      "parentUuid": "6fc4e532_5454d3b5",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8df4d8b2_278f5f71",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "} // namespace paddleboat\nas per the C++ style guide",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "668314ec_e9781fc7",
+        "filename": "GameController/src/main/cpp/GameControllerGameActivityMirror.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8df4d8b2_278f5f71",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ea5efb2_08b919b8",
+        "filename": "GameController/src/main/cpp/GameControllerInternalConstants.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5b91f4c_e2f91e51",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "57063b5b_0d51b099",
@@ -82,6 +136,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "Remove paddleboat_ since we\u0027re in the paddleboat namespace?",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5470d131_2366e391",
+        "filename": "GameController/src/main/cpp/GameControllerLog.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57063b5b_0d51b099",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -103,6 +175,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca88fcd4_bfffcef9",
+        "filename": "GameController/src/main/cpp/GameControllerLog.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6350cebd_967d4a84",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a8ec9d0e_299ea35d",
@@ -116,6 +206,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "} // namespace paddleboat",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "165447d6_57c7df5c",
+        "filename": "GameController/src/main/cpp/GameControllerLog.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8ec9d0e_299ea35d",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -137,6 +245,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e152c60_f75f8704",
+        "filename": "GameController/src/main/cpp/GameControllerLog.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8cf5e256_33f21874",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf4a6593_4011ddc2",
@@ -150,6 +276,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "} // anonymous namespace",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5e47ab2_3602e32c",
+        "filename": "GameController/src/main/cpp/GameControllerLogStrings.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf4a6593_4011ddc2",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -171,6 +315,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4e2b536_11be433d",
+        "filename": "GameController/src/main/cpp/GameControllerMappingUtils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8300c93_4202084f",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3c06bd75_0c9a6caf",
@@ -184,6 +346,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "} // namespace paddleboat",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c01fbb9_13793343",
+        "filename": "GameController/src/main/cpp/GameControllerMappingUtils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c06bd75_0c9a6caf",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -205,6 +385,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c573fdb_bd6e2621",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 879,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c15c395_bc3f5da1",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ff594cc2_7cb28b5e",
@@ -218,6 +416,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "Remove PB_ since we\u0027re in the paddleboat namespace?",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8ea1128_fac202d9",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff594cc2_7cb28b5e",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -239,6 +455,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "635ae140_a2c1773a",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b8cc1eb_09353f2c",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "35df0e7d_2f587966",
@@ -252,6 +486,24 @@
       "writtenOn": "2021-06-04T17:21:34Z",
       "side": 1,
       "message": "Can we use Log.h from \u003cgamesdk\u003e/include/common or do we want this to be completely independent?",
+      "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c8b174d1_53b679f7",
+        "filename": "GameController/src/main/cpp/Log.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-07T18:02:51Z",
+      "side": 1,
+      "message": "For now, independent. If we fully integrate GameController into the Game SDK build, this can be a future TODO to remove.",
+      "parentUuid": "35df0e7d_2f587966",
       "revId": "ba6cafbdfe34b292d1087035fcc54b6358ccdeef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
