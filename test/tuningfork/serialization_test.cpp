@@ -47,6 +47,8 @@ RequestInfo test_device_info{
     "BRAND" /*brand*/,
     "PRODUCT" /*product*/,
     "DEVICE" /*device*/,
+    "SOC_MODEL" /*soc_model*/,
+    "SOC_MANUFACTURER" /*soc_manufacturer*/,
     ANDROID_GAMESDK_PACKED_VERSION(2, 7, 0) /*swappy_version*/};
 
 std::string test_device_info_ser = R"TF({
@@ -60,6 +62,8 @@ std::string test_device_info_ser = R"TF({
   },
   "model": "MODEL",
   "product": "PRODUCT",
+  "soc_manufacturer": "SOC_MANUFACTURER",
+  "soc_model": "SOC_MODEL",
   "total_memory_bytes": 2387
 })TF";
 
@@ -88,6 +92,8 @@ std::string report_start = R"TF({
       },
       "model": "MODEL",
       "product": "PRODUCT",
+      "soc_manufacturer": "SOC_MANUFACTURER",
+      "soc_model": "SOC_MODEL",
       "total_memory_bytes": 2387
     },
     "game_sdk_info": {

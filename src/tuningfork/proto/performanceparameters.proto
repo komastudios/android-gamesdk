@@ -221,6 +221,16 @@ message DeviceSpec {
   // See:
   // https://developer.android.com/reference/android/os/Build.html#DEVICE
   string device = 9;
+
+  // The model name of the device's primary system-on-chip.
+  // See:
+  // https://developer.android.com/reference/android/os/Build#SOC_MODEL
+  string soc_model = 10;
+
+  // The manufacturer of the device's primary system-on-chip.
+  // See:
+  // https://developer.android.com/reference/android/os/Build#SOC_MANUFACTURER
+  string soc_manufacturer = 11;
 }
 
 // Message representing a version of OpenGL ES.
