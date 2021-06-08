@@ -65,6 +65,8 @@ TEST(EndToEndTest, WithMemory) {
       },
       "model": "",
       "product": "",
+      "soc_manufacturer": "",
+      "soc_model": "",
       "total_memory_bytes": 0
     },
     "game_sdk_info": {

@@ -51,7 +51,7 @@ public class Score {
       ObjectReader smileReader = new SmileMapper().reader();
       Collection<Number> runTimes = new HashSet<>();
       Collector.datastoreCollect(VERSION, entity -> {
-        Map<String, Object> results1 = null;
+        Map<String, Object> results1;
         try {
           if (entity.contains("resultsSmile")) {
             Blob resultsSmile = entity.getBlob("resultsSmile");
@@ -324,7 +324,7 @@ public class Score {
    * Get a list of all possible orderings of a given permutation.
    * For example: '2' would return 1,2; 2,1
    *
-   * @param size
+   * @param size The permutation.
    * @return The list of possible orderings.
    */
   private static List<List<Integer>> getPermutations(int size) {
