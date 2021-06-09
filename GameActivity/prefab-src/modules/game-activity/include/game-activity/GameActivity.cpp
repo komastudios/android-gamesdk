@@ -452,8 +452,8 @@ static thread_local std::string g_error_msg;
 static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
                                    jstring path, jstring funcName,
                                    jstring internalDataDir, jstring obbDir,
-                                   jstring externalDataDir, int sdkVersion,
-                                   jobject jAssetMgr, jbyteArray savedState) {
+                                   jstring externalDataDir, jobject jAssetMgr,
+                                   jbyteArray savedState) {
   LOG_TRACE("loadNativeCode_native");
   const char *pathStr = env->GetStringUTFChars(path, NULL);
   NativeCode *code = NULL;
@@ -533,8 +533,6 @@ static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
   code->externalDataPathObj = dirStr;
   code->externalDataPath = code->externalDataPathObj.c_str();
   if (externalDataDir) env->ReleaseStringUTFChars(externalDataDir, dirStr);
-
-  code->sdkVersion = sdkVersion;
 
   code->javaAssetManager = env->NewGlobalRef(jAssetMgr);
   code->assetManager = AAssetManager_fromJava(env, jAssetMgr);
@@ -779,10 +777,10 @@ static bool enabledAxes[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT] = {
     /* AMOTION_EVENT_AXIS_X */ true,
     /* AMOTION_EVENT_AXIS_Y */ true,
     // Disable all other axes by default (they can be enabled using
-    // `GameActivityPointerInfo_enableAxis`).
+    // `GameActivityInputInfo_enableAxis`).
     false};
 
-extern "C" void GameActivityPointerInfo_enableAxis(int32_t axis) {
+extern "C" void GameActivityInputInfo_enableAxis(int32_t axis) {
   if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
     return;
   }
@@ -790,7 +788,7 @@ extern "C" void GameActivityPointerInfo_enableAxis(int32_t axis) {
   enabledAxes[axis] = true;
 }
 
-extern "C" void GameActivityPointerInfo_disableAxis(int32_t axis) {
+extern "C" void GameActivityInputInfo_disableAxis(int32_t axis) {
   if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
     return;
   }
@@ -880,7 +878,7 @@ extern "C" GameActivityMotionEvent *GameActivityMotionEvent_fromJava(
 
   uint32_t pointerCount =
       env->CallIntMethod(motionEvent, gMotionEventClassInfo.getPointerCount);
-  GameActivityPointerInfo *pointers = new GameActivityPointerInfo[pointerCount];
+  GameActivityInputInfo *pointers = new GameActivityInputInfo[pointerCount];
   for (uint32_t i = 0; i < pointerCount; ++i) {
     pointers[i] = {
         /*id=*/env->CallIntMethod(motionEvent,
@@ -1074,7 +1072,7 @@ static void setInputConnection_native(JNIEnv *env, jobject activity,
 static const JNINativeMethod g_methods[] = {
     {"loadNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/"
-     "String;Ljava/lang/String;ILandroid/content/res/AssetManager;[B)J",
+     "String;Ljava/lang/String;Landroid/content/res/AssetManager;[B)J",
      (void *)loadNativeCode_native},
     {"getDlError", "()Ljava/lang/String;", (void *)getDlError_native},
     {"unloadNativeCode", "(J)V", (void *)unloadNativeCode_native},
@@ -1160,10 +1158,10 @@ extern "C" int GameActivity_register(JNIEnv *env) {
 extern "C" jlong Java_com_google_androidgamesdk_GameActivity_loadNativeCode(
     JNIEnv *env, jobject javaGameActivity, jstring path, jstring funcName,
     jstring internalDataDir, jstring obbDir, jstring externalDataDir,
-    int sdkVersion, jobject jAssetMgr, jbyteArray savedState) {
+    jobject jAssetMgr, jbyteArray savedState) {
   GameActivity_register(env);
   jlong nativeCode = loadNativeCode_native(
       env, javaGameActivity, path, funcName, internalDataDir, obbDir,
-      externalDataDir, sdkVersion, jAssetMgr, savedState);
+      externalDataDir, jAssetMgr, savedState);
   return nativeCode;
 }

@@ -123,58 +123,62 @@ typedef struct GameActivity {
  * GameActivityMotionEvent.
  *
  * You can read values directly from this structure, or use helper functions
- * (`GameActivityPointerInfo_getX`, `GameActivityPointerInfo_getY` and
- * `GameActivityPointerInfo_getAxisValue`).
+ * (`GameActivityInputInfo_getX`, `GameActivityInputInfo_getY` and
+ * `GameActivityInputInfo_getAxisValue`).
  *
  * The X axis and Y axis are enabled by default but any other axis that you want
  * to read **must** be enabled first, using
- * `GameActivityPointerInfo_enableAxis`.
+ * `GameActivityInputInfo_enableAxis`.
  *
  * \see GameActivityMotionEvent
  */
-typedef struct GameActivityPointerInfo {
+typedef struct GameActivityInputInfo {
   int32_t id;
   float axisValues[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
   float rawX;
   float rawY;
-} GameActivityPointerInfo;
+} GameActivityInputInfo;
 
 /** \brief Get the current X coordinate of the pointer. */
-inline float GameActivityPointerInfo_getX(
-    GameActivityPointerInfo* pointerInfo) {
+inline float GameActivityInputInfo_getX(
+    GameActivityInputInfo* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
 }
 
 /** \brief Get the current Y coordinate of the pointer. */
-inline float GameActivityPointerInfo_getY(
-    GameActivityPointerInfo* pointerInfo) {
+inline float GameActivityInputInfo_getY(
+    GameActivityInputInfo* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
 }
 
 /**
  * \brief Enable the specified axis, so that its value is reported in the
- * GameActivityPointerInfo structures stored in a motion event.
+ * GameActivityInputInfo structures stored in a motion event.
  *
  * You must enable any axis that you want to read, apart from
  * `AMOTION_EVENT_AXIS_X` and `AMOTION_EVENT_AXIS_Y` that are enabled by
  * default.
+ *
+ * If the axis index is out of range, nothing is done.
  */
-void GameActivityPointerInfo_enableAxis(int32_t axis);
+void GameActivityInputInfo_enableAxis(int32_t axis);
 
 /**
  * \brief Disable the specified axis. Its value won't be reported in the
- * GameActivityPointerInfo structures stored in a motion event anymore.
+ * GameActivityInputInfo structures stored in a motion event anymore.
  *
  * Apart from X and Y, any axis that you want to read **must** be enabled first,
- * using `GameActivityPointerInfo_enableAxis`.
+ * using `GameActivityInputInfo_enableAxis`.
+ *
+ * If the axis index is out of range, nothing is done.
  */
-void GameActivityPointerInfo_disableAxis(int32_t axis);
+void GameActivityInputInfo_disableAxis(int32_t axis);
 
 /**
  * \brief Get the value of the requested axis.
  *
  * Apart from X and Y, any axis that you want to read **must** be enabled first,
- * using `GameActivityPointerInfo_enableAxis`.
+ * using `GameActivityInputInfo_enableAxis`.
  *
  * Find the valid enums for the axis (`AMOTION_EVENT_AXIS_X`,
  * `AMOTION_EVENT_AXIS_Y`, `AMOTION_EVENT_AXIS_PRESSURE`...)
@@ -186,37 +190,13 @@ void GameActivityPointerInfo_disableAxis(int32_t axis);
  * @return The value of the axis, or 0 if the axis is invalid or was not
  * enabled.
  */
-inline float GameActivityPointerInfo_getAxisValue(
-    GameActivityPointerInfo* pointerInfo, int32_t axis) {
+inline float GameActivityInputInfo_getAxisValue(
+    GameActivityInputInfo* pointerInfo, int32_t axis) {
   if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
     return 0;
   }
 
   return pointerInfo->axisValues[axis];
-}
-
-/**
- * \brief Get the original raw X coordinate of this event.
- *
- * For touch events on the screen, this is the original location of the event
- * on the screen, before it had been adjusted for the containing window
- * and views.
- */
-inline float GameActivityPointerInfo_getRawX(
-    GameActivityPointerInfo* pointerInfo) {
-  return pointerInfo->rawX;
-}
-
-/**
- * \brief Get the original raw Y coordinate of this event.
- *
- * For touch events on the screen, this is the original location of the event
- * on the screen, before it had been adjusted for the containing window
- * and views.
- */
-inline float GameActivityPointerInfo_getRawY(
-    GameActivityPointerInfo* pointerInfo) {
-  return pointerInfo->rawY;
 }
 
 /**
@@ -242,7 +222,7 @@ typedef struct GameActivityMotionEvent {
   int32_t edgeFlags;
 
   uint32_t pointerCount;
-  GameActivityPointerInfo* pointers;
+  GameActivityInputInfo* pointers;
 
   float precisionX;
   float precisionY;

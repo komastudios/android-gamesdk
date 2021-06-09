@@ -127,8 +127,7 @@ public class GameActivity
   protected boolean mDestroyed;
 
   protected native long loadNativeCode(String path, String funcname, String internalDataPath,
-      String obbPath, String externalDataPath, int sdkVersion, AssetManager assetMgr,
-      byte[] savedState);
+      String obbPath, String externalDataPath, AssetManager assetMgr, byte[] savedState);
 
   protected native String getDlError();
 
@@ -251,7 +250,7 @@ public class GameActivity
 
     mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
         getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
-        Build.VERSION.SDK_INT, getAssets(), nativeSavedState);
+        getAssets(), nativeSavedState);
 
     if (mNativeHandle == 0) {
       throw new UnsatisfiedLinkError(
