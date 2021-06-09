@@ -510,6 +510,12 @@ message CrashReport {
     CRASH_REASON_UNSPECIFIED = 0;
     // Process was killed by the system low memory killer.
     LOW_MEMORY = 1;
+    // Process was killed because of a memory access violation.
+    SEGMENTATION_FAULT = 2;
+    // Process tried to access an invalid memory address.
+    BUS_ERROR = 3;
+    // Process was killed because of an illegal arithmetic operation.
+    FLOATING_POINT_ERROR = 4;
   }
 
   // The reason for why the crash occurred.
