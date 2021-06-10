@@ -2,10 +2,7 @@ package net.jimblackler.collate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
-import com.google.cloud.datastore.Blob;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -16,7 +13,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -47,55 +43,11 @@ public class Score {
     AtomicReference<Timer> timer = new AtomicReference<>();
 
     if (useDatastore) {
-      ObjectReader objectReader = objectMapper.reader();
-      ObjectReader smileReader = new SmileMapper().reader();
-      Collection<Number> runTimes = new HashSet<>();
-      Collector.datastoreCollect(VERSION, entity -> {
-        Map<String, Object> results1;
-        try {
-          if (entity.contains("resultsSmile")) {
-            Blob resultsSmile = entity.getBlob("resultsSmile");
-            results1 = smileReader.readValue(resultsSmile.toByteArray(), Map.class);
-          } else {
-            results1 = objectReader.readValue(entity.getString("results"), Map.class);
-          }
-        } catch (IOException e) {
-          throw new IllegalStateException(e);
-        }
-
-        String testType = (String) results1.get("test");
-        if (!"management".equals(testType)) {
-          return;
-        }
-
-        Number runTime = (Number) results1.get("runTime");
-        if (!runTimes.add(runTime)) {
-          return;
-        }
-
-        List<List<Map<String, Object>>> tests1 =
-            (List<List<Map<String, Object>>>) results1.get("tests");
-
-        Map<String, Object> buildConfig = (Map<String, Object>) results1.get("buildConfig");
-
-        String versionName = (String) buildConfig.get("VERSION_NAME");
-
-        List<List<Map<String, Object>>> results =
-            (List<List<Map<String, Object>>>) results1.get("results");
-        for (int testNumber = 0; testNumber != results.size(); testNumber++) {
-          List<Map<String, Object>> result = results.get(testNumber);
-          Map<String, Object> paramsIn = new LinkedHashMap<>();
-          paramsIn.put("tests", tests1);
-          paramsIn.put("coordinates", getCoordinates(testNumber, tests1));
-          paramsIn.put("run", versionName);
-          if (!result.isEmpty()) {
-            Map<String, Object> first = result.get(0);
-            first.put("params", paramsIn);
-          }
-          handleResult(result, out, deviceInfos, directory, tests, objectWriter,
-              Boolean.TRUE.equals(results1.get("automatic")));
-        }
-      });
+      Collector.collectDataStoreResult(
+          (results1, result)
+              -> handleResult(result, out, deviceInfos, directory, tests, objectWriter,
+                  Boolean.TRUE.equals(results1.get("automatic"))),
+          VERSION);
     } else {
       Consumer<List<Map<String, Object>>> collect = result -> {
         if (timer.get() != null) {
@@ -134,18 +86,6 @@ public class Score {
     }
     URI uri = writeReport(out, deviceInfos, directory.get(), tests.get());
     System.out.println(uri);
-  }
-
-  private static Collection<Integer> getCoordinates(
-      int testNumber, List<List<Map<String, Object>>> tests) {
-    List<Integer> coordinates = new ArrayList<>();
-    int calc = testNumber;
-    for (int idx = tests.size() - 1; idx >= 0; idx--) {
-      int dimensionSize = tests.get(idx).size();
-      coordinates.add(0, calc % dimensionSize);
-      calc /= dimensionSize;
-    }
-    return coordinates;
   }
 
   private static void handleResult(List<Map<String, Object>> result,
