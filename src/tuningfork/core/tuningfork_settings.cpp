@@ -135,7 +135,7 @@ static bool decodeHistograms(pb_istream_t* stream, const pb_field_t* field,
     }
 }
 
-static TuningFork_ErrorCode DeserializeSettings(
+/*static*/ TuningFork_ErrorCode Settings::DeserializeSettings(
     const ProtobufSerialization& settings_ser, Settings* settings) {
     PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
     pbsettings.aggregation_strategy.annotation_enum_size.funcs.decode =
@@ -175,6 +175,10 @@ static TuningFork_ErrorCode DeserializeSettings(
     settings->loading_annotation_index =
         pbsettings.loading_annotation_index - 1;
     settings->level_annotation_index = pbsettings.level_annotation_index - 1;
+    // Override API key if passed from c_settings.
+    if (settings->c_settings.api_key != nullptr)
+        settings->api_key = settings->c_settings.api_key;
+
     return TUNINGFORK_ERROR_OK;
 }
 

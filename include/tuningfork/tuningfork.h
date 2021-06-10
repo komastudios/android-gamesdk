@@ -49,7 +49,7 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 4
-#define TUNINGFORK_BUGFIX_VERSION 2
+#define TUNINGFORK_BUGFIX_VERSION 3
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
                                    TUNINGFORK_MINOR_VERSION, \
@@ -353,6 +353,10 @@ typedef struct TuningFork_Settings {
      * will not be added and data will be lost.
      */
     TuningFork_MetricLimits max_num_metrics;
+    /**
+     * If non-null, this value overrides the api_key field in the app's tuningfork_settings.bin file.
+     */
+    const char* api_key;
 } TuningFork_Settings;
 
 /**
