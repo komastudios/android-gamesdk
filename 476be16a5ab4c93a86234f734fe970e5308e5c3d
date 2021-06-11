@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b139eadc_5ba44b5a",
+        "filename": "GameController/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-11T14:39:26Z",
+      "side": 1,
+      "message": "This should probably be changed to 21.4.7075529, r22 isn\u0027t in the prebuilts and isn\u0027t compatible yet if specified directly since it lacks the platforms directory.",
+      "range": {
+        "startLine": 23,
+        "startChar": 16,
+        "endLine": 23,
+        "endChar": 28
+      },
+      "revId": "476be16a5ab4c93a86234f734fe970e5308e5c3d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
