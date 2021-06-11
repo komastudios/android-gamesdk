@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d85c1878_d701e5d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-11T14:03:02Z",
+      "side": 1,
+      "message": "Changed the targetSdkVersion 28 for now for GameController.",
+      "revId": "53aea49da6859c23b2be91ab1cf6a0024f2da9bc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
