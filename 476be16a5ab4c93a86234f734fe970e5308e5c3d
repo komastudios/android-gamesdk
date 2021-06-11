@@ -22,6 +22,30 @@
       },
       "revId": "476be16a5ab4c93a86234f734fe970e5308e5c3d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18f4a2b6_131dbf2d",
+        "filename": "GameController/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-11T14:41:40Z",
+      "side": 1,
+      "message": "I even went with a lower version as I\u0027m sure we have it in our prebuilt ndks (it\u0027s the version used for compiling samples), but feel free to bump this back later to a higher version.",
+      "parentUuid": "b139eadc_5ba44b5a",
+      "range": {
+        "startLine": 23,
+        "startChar": 16,
+        "endLine": 23,
+        "endChar": 28
+      },
+      "revId": "476be16a5ab4c93a86234f734fe970e5308e5c3d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
