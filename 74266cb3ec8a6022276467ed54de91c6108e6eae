@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78a29c83_c0f11a01",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1498014
+      },
+      "writtenOn": "2021-06-11T12:35:46Z",
+      "side": 1,
+      "message": "This adds GameController to the libraries of the SDK, much like GameActivity and Text Input.\nYou\u0027ll find the library included in the gamesdk.zip and also ready to be handled by Jetpad, for Jetpack release.",
+      "revId": "74266cb3ec8a6022276467ed54de91c6108e6eae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
