@@ -98,11 +98,16 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
         .setAarLibrary("games-activity", "1.0.0-alpha01")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameInputLibrary = new AndroidArchiveLibrary('game_input', "GameInput")
         .setAarLibrary("games-text-input", "1.0.0-alpha01")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
+
+def gameControllerLibrary = new AndroidArchiveLibrary('game_controller', "GameController")
+        .setAarLibrary("games-controller", "1.0.0-alpha01")
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -177,6 +182,7 @@ def allLibraries = [
         oboeNativeLibrary,
         gameActivityLibrary,
         gameInputLibrary,
+        gameControllerLibrary,
 ]
 
 def getBuildPath() {
