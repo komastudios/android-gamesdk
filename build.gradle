@@ -36,6 +36,22 @@ buildscript {
     }
 }
 
+// The following is needed for sub-projects that have their own gradle script and that are
+// not using the general swappy/tuningfork multi-ndk build logic below and in buildSrc.
+def buildScript = System.getenv("BUILDBOT_SCRIPT")
+if (buildScript) {
+    Properties properties = new Properties()
+
+    if (project.rootProject.file('local.properties').exists()) {
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    }
+    properties.setProperty('sdk.dir', System.getenv("ANDROID_HOME"))
+    properties.setProperty('ndk.dir', System.getenv("ANDROID_NDK_HOME"))
+    properties.setProperty('cmake.dir', System.getenv("BUILDBOT_CMAKE"))
+
+    properties.store(project.rootProject.file('local.properties').newDataOutputStream(), '')
+}
+
 def swappyNativeLibrary = new NativeLibrary('swappy')
         .setAarLibrary("games-frame-pacing", "1.7.0-rc01")
         .addSampleAndroidProject(
@@ -98,11 +114,16 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
         .setAarLibrary("games-activity", "1.0.0-alpha01")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameInputLibrary = new AndroidArchiveLibrary('game_input', "GameInput")
         .setAarLibrary("games-text-input", "1.0.0-alpha01")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
+
+def gameControllerLibrary = new AndroidArchiveLibrary('game_controller', "GameController")
+        .setAarLibrary("games-controller", "1.0.0-alpha01")
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -177,6 +198,7 @@ def allLibraries = [
         oboeNativeLibrary,
         gameActivityLibrary,
         gameInputLibrary,
+        gameControllerLibrary,
 ]
 
 def getBuildPath() {
