@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ada9bfd9_ded4b7d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-14T15:50:16Z",
+      "side": 1,
+      "message": "Re-implementation and fix of Florian\u0027s CL",
+      "revId": "fdbc250443d6dbba2420db62eb74360ebd0f78d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
