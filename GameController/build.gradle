@@ -19,12 +19,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    ndkVersion '22.0.7026061'
+    compileSdkVersion 28
+    ndkVersion '20.0.55.94570'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -81,6 +81,11 @@ def get_test_abi_list() {
 
 def get_properties() {
     Properties properties = new Properties()
-    properties.load(new File(rootDir.absolutePath + '/local.properties').newDataInputStream())
+    if (project.rootProject.file('local.properties').exists()) {
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    }
+    else {
+        properties.setProperty('sdk.dir', System.getenv("ANDROID_HOME"))
+    }
     return properties
 }
