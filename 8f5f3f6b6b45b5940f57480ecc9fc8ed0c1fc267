@@ -16,6 +16,23 @@
       "message": "Trying again because of infra errors",
       "revId": "8f5f3f6b6b45b5940f57480ecc9fc8ed0c1fc267",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8c46534_8c4728d7",
+        "filename": "GameController/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-14T14:20:08Z",
+      "side": 1,
+      "message": "This file won\u0027t be available on buildbot machines. Look at the bender build.gradle file for an example of how they get the SDK directory (bender/bender-base/app/build.gradle).",
+      "revId": "8f5f3f6b6b45b5940f57480ecc9fc8ed0c1fc267",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
