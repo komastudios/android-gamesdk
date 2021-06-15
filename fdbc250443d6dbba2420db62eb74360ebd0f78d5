@@ -33,6 +33,24 @@
       "message": "I think this is going to hit the same issue that Florian\u0027s original change did where it will create an AAR with only the classes.jar but no native libraries? AGP Prefab Publishing can\u0027t actually be turned on in the GameController build.gradle because the Gradle being used is too old. \n\nFor some reason I\u0027m not able to successfully build GameController with these changes to verify my hunch though: it complains \u0027CMake \u00273.6.0\u0027 was not found in PATH or by cmake.dir property\u0027 I\u0027ve tried explicitly setting both to point to android-games-sdk/prebuilts/cmake hierarchies and messing with specifying the \u00273.6.0-rc2\u0027 version in the build.gradle, but nothing I\u0027ve tried seems to make it happy.\n\nI do plan on trying to spend some time this week to tinker with the build system. Like swappy/tuningfork I would like to build the native library across a range of NDK versions, and in c++_shared and c++_static variants. So the goal will probably be to built like swappy/tuningfork, with the added step of compiling the classes.jar and ensuring it ends up in the final .aar.",
       "revId": "fdbc250443d6dbba2420db62eb74360ebd0f78d5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e44e9346_0a66ffcd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-15T14:15:08Z",
+      "side": 1,
+      "message": "Hi Nate,\n\nYes, we\u0027re going to have the same issue.\n\nI am going to try getting this CL passing anyway, so that the GameController is at least being built with one SDK/NDK and no prefab integration. It\u0027s nearly working, I just need to fix the Windows build.\n\nThen if you could take a look at getting the build fully working, that would be great.",
+      "parentUuid": "97814171_c87e962b",
+      "revId": "fdbc250443d6dbba2420db62eb74360ebd0f78d5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
