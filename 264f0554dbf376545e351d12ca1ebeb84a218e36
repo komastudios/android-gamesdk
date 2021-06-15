@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8083365d_a8a355ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-15T14:53:07Z",
+      "side": 1,
+      "message": "Makes sense, LGTM, I\u0027ll follow up with a CL with further changes.",
+      "revId": "264f0554dbf376545e351d12ca1ebeb84a218e36",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
