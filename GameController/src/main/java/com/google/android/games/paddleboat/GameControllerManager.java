@@ -99,16 +99,16 @@ public class GameControllerManager {
         return inputManager;
     }
 
-    public void onPause() {
+    public void onStop() {
         if (gameControllerThread != null) {
-            gameControllerThread.onPause();
+            gameControllerThread.onStop();
         }
     }
 
-    public void onResume() {
+    public void onStart() {
         if (gameControllerThread != null) {
             scanDevices();
-            gameControllerThread.onResume();
+            gameControllerThread.onStart();
         } else {
             gameControllerThread = new GameControllerThread();
             gameControllerThread.setGameControllerManager(this);

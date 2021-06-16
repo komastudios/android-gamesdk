@@ -67,8 +67,8 @@ namespace paddleboat {
         pbData.triggerL2 = 0.0f;
         pbData.triggerR1 = 0.0f;
         pbData.triggerR2 = 0.0f;
-        pbData.virtualX = 0.0f;
-        pbData.virtualY = 0.0f;
+        pbData.virtualPointer.pointerX = 0.0f;
+        pbData.virtualPointer.pointerY = 0.0f;
     }
 
     void resetInfo(Paddleboat_Controller_Info &pbInfo) {

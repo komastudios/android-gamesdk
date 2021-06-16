@@ -34,11 +34,11 @@ public class GameControllerThread extends Thread implements InputManager.InputDe
     public void run () {
         Looper.prepare();
         mHandler = new Handler(Looper.myLooper());
-        onResume();
+        onStart();
         Looper.loop();
     }
 
-    public void onPause() {
+    public void onStop() {
         if (activeInputDeviceListener) {
             Log.d(TAG, "unregisterInputDeviceListener");
             mGameControllerManager.getAppInputManager().unregisterInputDeviceListener(this);
@@ -46,7 +46,7 @@ public class GameControllerThread extends Thread implements InputManager.InputDe
         }
     }
 
-    public void onResume() {
+    public void onStart() {
         if (!activeInputDeviceListener) {
             Log.d(TAG, "registerInputDeviceListener");
             mGameControllerManager.getAppInputManager().registerInputDeviceListener(this, mHandler);
