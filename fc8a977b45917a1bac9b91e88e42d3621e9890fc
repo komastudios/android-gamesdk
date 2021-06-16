@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d10423e0_6ecbd57d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-16T19:57:05Z",
+      "side": 1,
+      "message": "Working on incorporating the GameController feedback from the NDK council review. Splitting up into two CLs to keep it manageable, this is the first. Thanks for taking a look.",
+      "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
