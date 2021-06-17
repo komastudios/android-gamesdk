@@ -1,6 +1,6 @@
 rootProject.name = 'androidgamesdk'
 include ':GameActivity'
-include ':GameInput'
+include ':GameTextInput'
 include ':GameController'
 include ':extras'
 project(':extras').projectDir= new File('src/extras')
