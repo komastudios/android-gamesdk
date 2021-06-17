@@ -1,0 +1,108 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011871881",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1737107?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "71764258_5ac8888d",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-text-input/gametextinput.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-17T09:54:48Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 108
+      },
+      "revId": "efe46a40513f76fce884cea89d6b264c57f8b3c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011871881",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1737107?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b0802d32_570cfc29",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-text-input/gametextinput.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-17T09:54:48Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 106
+      },
+      "revId": "efe46a40513f76fce884cea89d6b264c57f8b3c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011871881",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1737107?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6cf8027d_b5f6b0f0",
+        "filename": "samples/game_text_input/game_text_input_testbed/app/src/main/res/values-night/themes.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-17T09:54:48Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 102
+      },
+      "revId": "efe46a40513f76fce884cea89d6b264c57f8b3c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000011871881",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1737107?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cf198294_5f06b4d7",
+        "filename": "samples/game_text_input/game_text_input_testbed/app/src/main/res/values/themes.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-17T09:54:48Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 102
+      },
+      "revId": "efe46a40513f76fce884cea89d6b264c57f8b3c1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
