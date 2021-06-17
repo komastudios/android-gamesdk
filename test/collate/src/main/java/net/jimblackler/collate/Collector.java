@@ -309,8 +309,9 @@ class Collector {
         .getService()
         .run(Query.newEntityQueryBuilder()
                  .setKind("Benchmark")
-                 .setFilter(StructuredQuery.PropertyFilter.eq("versionName", version))
-                 .setFilter(StructuredQuery.PropertyFilter.eq("testType", "management"))
+                 .setFilter(StructuredQuery.CompositeFilter.and(
+                     StructuredQuery.PropertyFilter.eq("versionName", version),
+                     StructuredQuery.PropertyFilter.eq("testType", "management")))
                  .build())
         .forEachRemaining(entity -> {
           Map<String, Object> results1;
