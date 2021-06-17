@@ -76,6 +76,10 @@ public class CreateTrainingData {
       for (Map.Entry<Long, Map<String, Object>> pair : sorted.entrySet()) {
         long time = pair.getKey();
         Map<String, Object> row = pair.getValue();
+        if (Boolean.TRUE.equals(row.get("paused"))) {
+          continue;
+        }
+
         Map<String, Object> metrics = ReportUtils.rowMetrics(row);
         if (metrics == null) {
           continue;
