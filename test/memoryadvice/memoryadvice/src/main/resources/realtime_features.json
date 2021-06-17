@@ -1,17 +1,7 @@
 [
-  "/baseline/debug/NativeHeapAllocatedSize",
-  "/baseline/meminfo/Active",
-  "/baseline/meminfo/Bounce",
-  "/baseline/meminfo/KernelStack",
-  "/baseline/meminfo/Mapped",
-  "/baseline/meminfo/MemTotal",
-  "/baseline/meminfo/SReclaimable",
-  "/baseline/meminfo/SwapCached",
-  "/baseline/meminfo/WritebackTmp",
-  "/baseline/status/VmPin",
-  "/baseline/status/VmStk",
-  "/baseline/status/VmSwap",
-  "/build/version/SDK_INT",
-  "/sample/debug/Pss",
+  "/baseline/constant/MemoryInfo/totalMem",
+  "/baseline/debug/Pss",
+  "/baseline/meminfo/SwapTotal",
+  "/sample/MemoryInfo/availMem",
   "/sample/proc/oom_score"
 ]
