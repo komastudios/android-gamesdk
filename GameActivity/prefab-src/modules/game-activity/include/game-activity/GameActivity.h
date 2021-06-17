@@ -34,7 +34,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "game-input/gameinput.h"
+#include "game-text-input/gametextinput.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -381,7 +381,7 @@ typedef struct GameActivityCallbacks {
    * Call GameActivity_getTextInputState to get the new state of the soft
    * keyboard.
    */
-  void (*onTextInputEvent)(GameActivity* activity, const GameInputState* state);
+  void (*onTextInputEvent)(GameActivity* activity, const GameTextInputState* state);
 } GameActivityCallbacks;
 
 /**
@@ -496,22 +496,22 @@ enum {
 void GameActivity_showSoftInput(GameActivity* activity, uint32_t flags);
 
 /**
- * Set the text entry state (see documentation of the GameInputState struct
+ * Set the text entry state (see documentation of the GameTextInputState struct
  * in the Game Text Input library reference).
  *
  * Ownership of the state is maintained by the caller.
  */
 void GameActivity_setTextInputState(GameActivity* activity,
-                                    const GameInputState* state);
+                                    const GameTextInputState* state);
 
 /**
  * Get the last-received text entry state (see documentation of the
- * GameInputState struct in the Game Text Input library reference).
+ * GameTextInputState struct in the Game Text Input library reference).
  *
  * Ownership of the returned value is maintained by the GameActivity: do not
  * delete it.
  */
-const GameInputState* GameActivity_getTextInputState(GameActivity* activity);
+const GameTextInputState* GameActivity_getTextInputState(GameActivity* activity);
 
 /**
  * Flags for GameActivity_hideSoftInput; see the Java InputMethodManager

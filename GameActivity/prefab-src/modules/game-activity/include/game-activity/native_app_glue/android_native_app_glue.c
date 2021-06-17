@@ -517,7 +517,7 @@ void android_app_clear_key_up_events(struct android_app* android_app) {
 }
 
 static void onTextInputEvent(GameActivity* activity,
-                             const GameInputState* state) {
+                             const GameTextInputState* state) {
   struct android_app* android_app = (struct android_app*)activity->instance;
   pthread_mutex_lock(&android_app->mutex);
 

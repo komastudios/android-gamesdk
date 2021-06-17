@@ -265,7 +265,7 @@ struct NativeCode : public GameActivity {
     createActivityFunc = _createFunc;
     nativeWindow = NULL;
     mainWorkRead = mainWorkWrite = -1;
-    gameInput = NULL;
+    gameTextInput = NULL;
   }
 
   ~NativeCode() {
@@ -280,7 +280,7 @@ struct NativeCode : public GameActivity {
         env->DeleteGlobalRef(javaAssetManager);
       }
     }
-    GameInput_destroy(gameInput);
+    GameTextInput_destroy(gameTextInput);
     if (looper != NULL && mainWorkRead >= 0) {
       ALooper_removeFd(looper, mainWorkRead);
     }
@@ -331,7 +331,7 @@ struct NativeCode : public GameActivity {
   // AssetManager.
   jobject javaAssetManager;
 
-  GameInput *gameInput;
+  GameTextInput *gameTextInput;
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -358,20 +358,20 @@ extern "C" void GameActivity_showSoftInput(GameActivity *activity,
 }
 
 extern "C" void GameActivity_setTextInputState(GameActivity *activity,
-                                               const GameInputState *state) {
+                                               const GameTextInputState *state) {
   NativeCode *code = static_cast<NativeCode *>(activity);
   // This state is freed in the loop where it is processed.
-  GameInputState *state_copy = (GameInputState *)malloc(sizeof(GameInputState));
-  GameInputState_constructEmpty(state_copy);
-  GameInputState_set(state_copy, state);
+  GameTextInputState *state_copy = (GameTextInputState *)malloc(sizeof(GameTextInputState));
+  GameTextInputState_constructEmpty(state_copy);
+  GameTextInputState_set(state_copy, state);
   write_work(code->mainWorkWrite, CMD_SET_SOFT_INPUT_STATE,
              reinterpret_cast<int64_t>(state_copy), 0);
 }
 
-extern "C" const GameInputState *GameActivity_getTextInputState(
+extern "C" const GameTextInputState *GameActivity_getTextInputState(
     GameActivity *activity) {
   NativeCode *code = static_cast<NativeCode *>(activity);
-  return GameInput_getState(code->gameInput);
+  return GameTextInput_getState(code->gameTextInput);
 }
 
 extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
@@ -425,17 +425,17 @@ static int mainWorkCallback(int fd, int events, void *data) {
       checkAndClearException(code->env, "setWindowFlags");
     } break;
     case CMD_SHOW_SOFT_INPUT: {
-      GameInput_showIme(code->gameInput, work.arg1);
+      GameTextInput_showIme(code->gameTextInput, work.arg1);
     } break;
     case CMD_SET_SOFT_INPUT_STATE: {
-      GameInputState *state = reinterpret_cast<GameInputState *>(work.arg1);
-      GameInput_setState(code->gameInput, state);
-      GameInputState_destruct(state);
+      GameTextInputState *state = reinterpret_cast<GameTextInputState *>(work.arg1);
+      GameTextInput_setState(code->gameTextInput, state);
+      GameTextInputState_destruct(state);
       free(state);
       checkAndClearException(code->env, "setTextInputState");
     } break;
     case CMD_HIDE_SOFT_INPUT: {
-      GameInput_hideIme(code->gameInput, work.arg1);
+      GameTextInput_hideIme(code->gameTextInput, work.arg1);
     } break;
     default:
       ALOGW("Unknown work command: %d", work.cmd);
@@ -550,10 +550,10 @@ static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
   }
   code->createActivityFunc(code, rawSavedState, rawSavedSize);
 
-  code->gameInput = GameInput_init(env);
-  GameInput_setEventCallback(
-      code->gameInput,
-      reinterpret_cast<void (*)(void *, const GameInputState *)>(
+  code->gameTextInput = GameTextInput_init(env);
+  GameTextInput_setEventCallback(
+      code->gameTextInput,
+      reinterpret_cast<void (*)(void *, const GameTextInputState *)>(
           code->callbacks.onTextInputEvent),
       code);
 
@@ -1060,13 +1060,13 @@ static void onTextInput_native(JNIEnv *env, jobject activity, jlong handle,
                                jobject textInputEvent) {
   if (handle == 0) return;
   NativeCode *code = (NativeCode *)handle;
-  GameInput_processEvent(code->gameInput, textInputEvent);
+  GameTextInput_processEvent(code->gameTextInput, textInputEvent);
 }
 
 static void setInputConnection_native(JNIEnv *env, jobject activity,
                                       jlong handle, jobject inputConnection) {
   NativeCode *code = (NativeCode *)handle;
-  GameInput_setInputConnection(code->gameInput, inputConnection);
+  GameTextInput_setInputConnection(code->gameTextInput, inputConnection);
 }
 
 static const JNINativeMethod g_methods[] = {
@@ -1101,10 +1101,10 @@ static const JNINativeMethod g_methods[] = {
      (void *)onKeyDown_native},
     {"onKeyUpNative", "(JLandroid/view/KeyEvent;)V", (void *)onKeyUp_native},
     {"onTextInputEventNative",
-     "(JLcom/google/androidgamesdk/gameinput/State;)V",
+     "(JLcom/google/androidgamesdk/gametextinput/State;)V",
      (void *)onTextInput_native},
     {"setInputConnectionNative",
-     "(JLcom/google/androidgamesdk/gameinput/InputConnection;)V",
+     "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
 };
 static const char *const kGameActivityPathName =

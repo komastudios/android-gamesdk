@@ -117,7 +117,7 @@ def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivi
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameInputLibrary = new AndroidArchiveLibrary('game_input', "GameInput")
+def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
         .setAarLibrary("games-text-input", "1.0.0-alpha01")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
@@ -197,7 +197,7 @@ def allLibraries = [
         memoryAdviceNativeLibrary,
         oboeNativeLibrary,
         gameActivityLibrary,
-        gameInputLibrary,
+        gameTextInputLibrary,
         gameControllerLibrary,
 ]
 

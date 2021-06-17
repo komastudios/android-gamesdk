@@ -38,7 +38,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import com.google.androidgamesdk.gameinput.*;
+import com.google.androidgamesdk.gametextinput.InputConnection;
+import com.google.androidgamesdk.gametextinput.GameTextInput;
+import com.google.androidgamesdk.gametextinput.Listener;
+import com.google.androidgamesdk.gametextinput.Settings;
+import com.google.androidgamesdk.gametextinput.State;
 import dalvik.system.BaseDexClassLoader;
 import java.io.File;
 
@@ -422,9 +426,9 @@ public class GameActivity
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-      // TODO (b/187147952): allow to disable the usage of GameInput in GameActivity.
+      // TODO (b/187147952): allow to disable the usage of GameTextInput in GameActivity.
       if (outAttrs != null) {
-        GameInput.copyEditorInfo(mInputConnection.getEditorInfo(), outAttrs);
+        GameTextInput.copyEditorInfo(mInputConnection.getEditorInfo(), outAttrs);
       }
       return mInputConnection;
     }
