@@ -228,7 +228,8 @@ public class MainActivity extends Activity {
     } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
-    memoryAdvisor = new MemoryAdvisor(this);
+
+    memoryAdvisor = new MemoryAdvisor(this, (Map<String, Object>) params.get("advisorParameters"));
 
     new LogMonitor(line -> {
       if (line.contains("Out of memory")) {
