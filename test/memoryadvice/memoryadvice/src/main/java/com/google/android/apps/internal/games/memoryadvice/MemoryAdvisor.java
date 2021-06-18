@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class MemoryAdvisor {
 
   private final Map<String, Object> deviceProfile;
   private final Map<String, Object> params;
-  private final float predictedOomLimit;
   private final MemoryMonitor memoryMonitor;
   private final Map<String, Object> build;
   private Map<String, Object> baseline;
@@ -58,17 +56,6 @@ public class MemoryAdvisor {
     build = BuildInfo.getBuild(context);
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
-
-    if (Boolean.TRUE.equals(params.get("predictOomLimit"))) {
-      Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
-      try {
-        predictedOomLimit = predictor.predict(getDeviceInfo());
-      } catch (MissingPathException e) {
-        throw new MemoryAdvisorException(e);
-      }
-    } else {
-      predictedOomLimit = -1;
-    }
 
     Map<String, Object> baselineSpec = (Map<String, Object>) metrics.get("baseline");
     baseline = new LinkedHashMap<>();
@@ -126,22 +113,12 @@ public class MemoryAdvisor {
    * in bytes. 0 if no estimate is available.
    */
   public static long availabilityEstimate(Map<String, Object> advice) {
-    Map<String, Object> predictions = (Map<String, Object>) advice.get("predictions");
-    if (predictions == null) {
-      return 0;
+    Map<String, Object> metrics = (Map<String, Object>) advice.get("metrics");
+    Object predictedUsage = metrics.get("predictedAvailable");
+    if (predictedUsage instanceof Number) {
+      return ((Number) predictedUsage).longValue();
     }
-
-    long smallestEstimate = Long.MAX_VALUE;
-
-    Iterator<String> it = predictions.keySet().iterator();
-    if (!it.hasNext()) {
-      return 0;
-    }
-    do {
-      String key = it.next();
-      smallestEstimate = Math.min(smallestEstimate, ((Number) predictions.get(key)).longValue());
-    } while (it.hasNext());
-    return smallestEstimate;
+    return 0L;
   }
 
   /**
@@ -471,53 +448,6 @@ public class MemoryAdvisor {
             }
           }
         }
-
-        Map<String, Object> stressed = (Map<String, Object>) deviceLimit.get("stressed");
-        if (stressed != null) {
-          Map<String, Object> predictionsParams = (Map<String, Object>) params.get("predictions");
-          if (predictionsParams != null) {
-            Number applicationAllocated = (Number) stressed.get("applicationAllocated");
-            if (applicationAllocated != null) {
-              Map<String, Object> predictions = new LinkedHashMap<>();
-              for (String key : predictionsParams.keySet()) {
-                Number metricValue = getValue(metrics, key);
-                if (metricValue == null) {
-                  continue;
-                }
-
-                Number deviceLimitValue = getValue(deviceLimit, key);
-                if (deviceLimitValue == null) {
-                  continue;
-                }
-
-                Number deviceBaselineValue = getValue(deviceBaseline, key);
-                if (deviceBaselineValue == null) {
-                  continue;
-                }
-
-                Number baselineValue = getValue(baseline, key);
-                if (baselineValue == null) {
-                  continue;
-                }
-
-                long delta = metricValue.longValue() - baselineValue.longValue();
-                long deviceDelta = deviceLimitValue.longValue() - deviceBaselineValue.longValue();
-                if (deviceDelta == 0) {
-                  continue;
-                }
-
-                float percentageEstimate = (float) delta / deviceDelta;
-                predictions.put(
-                    key, applicationAllocated.longValue() * (1.0f - percentageEstimate));
-              }
-
-              results.put("predictions", predictions);
-              Map<String, Object> meta = new LinkedHashMap<>();
-              meta.put("duration", System.currentTimeMillis() - time);
-              results.put("meta", meta);
-            }
-          }
-        }
       }
 
       Map<String, Object> allFormulas = (Map<String, Object>) heuristics.get("formulas");
@@ -528,9 +458,6 @@ public class MemoryAdvisor {
             String formula = formulas.get(idx);
             try {
               if (evaluator.evaluate(formula, key1 -> {
-                    if ("predictedOomLimit".equals(key1)) {
-                      return (double) predictedOomLimit;
-                    }
                     Map<String, Object> dictionary;
                     if (key1.startsWith("baseline.")) {
                       key1 = key1.substring("baseline.".length());
@@ -581,9 +508,6 @@ public class MemoryAdvisor {
       deviceInfo.put("deviceProfile", deviceProfile);
     }
     deviceInfo.put("params", params);
-    if (predictedOomLimit != -1) {
-      deviceInfo.put("predictedOomLimit", predictedOomLimit);
-    }
     return deviceInfo;
   }
 

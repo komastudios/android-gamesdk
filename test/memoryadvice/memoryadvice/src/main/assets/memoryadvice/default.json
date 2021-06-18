@@ -48,7 +48,8 @@
       "MemoryInfo": {
         "availMem": true
       },
-      "predictRealtime": true
+      "predictRealtime": true,
+      "availableRealtime": true
     }
   }
 }
