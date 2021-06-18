@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3e0d56c_7aa1cedd",
+        "filename": "src/tuningfork/core/tuningfork_settings.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-06-18T13:06:19Z",
+      "side": 1,
+      "message": "Why is this commented out, not removed?",
+      "revId": "03f94d785bd72e2893f5304efaa7fdb01ebfd913",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
