@@ -16,6 +16,24 @@
       "message": "Why is this commented out, not removed?",
       "revId": "03f94d785bd72e2893f5304efaa7fdb01ebfd913",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b28b05f_f89751b4",
+        "filename": "src/tuningfork/core/tuningfork_settings.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-18T16:29:41Z",
+      "side": 1,
+      "message": "It helps the reader of the cpp file know that the function is static, which you wouldn\u0027t see without looking at the header. I think it\u0027s common practice but maybe it\u0027s old fashioned.",
+      "parentUuid": "b3e0d56c_7aa1cedd",
+      "revId": "03f94d785bd72e2893f5304efaa7fdb01ebfd913",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
