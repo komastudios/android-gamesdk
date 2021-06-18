@@ -78,6 +78,12 @@ struct Settings {
     // Returns TUNINGFORK_ERROR_OK and fills 'settings' if the file could be
     // loaded. Returns TUNINGFORK_ERROR_NO_SETTINGS if the file was not found.
     static TuningFork_ErrorCode FindInApk(Settings* settings);
+
+    // Deserialize settings from a com.google.tuningfork.Settings proto to a
+    // tuningfork::Settings structure. Overriding values from c_settings is
+    // handled here too.
+    static TuningFork_ErrorCode DeserializeSettings(
+        const ProtobufSerialization& settings_ser, Settings* settings);
 };
 
 }  // namespace tuningfork
