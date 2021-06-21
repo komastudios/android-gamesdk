@@ -67,30 +67,4 @@ namespace paddleboat {
         int32_t repeatCount;
         int32_t keyCode;
     } Paddleboat_GameActivityKeyEvent;
-
-    // These utility functions currently take advantage of the key and motion event structures
-    // having identical initial fields.
-    inline int32_t
-    PBGameActivityUtil_getEventDeviceId(const Paddleboat_GameActivityEvent /*eventType*/,
-                                        const void *event,
-                                        const size_t /*eventSize*/) {
-        if (event != nullptr) {
-            const Paddleboat_GameActivityKeyEvent *keyEvent =
-                reinterpret_cast<const Paddleboat_GameActivityKeyEvent *>(event);
-            return keyEvent->deviceId;
-        }
-        return -1;
-    }
-
-    inline int32_t
-    PBGameActivityUtil_getEventSource(const Paddleboat_GameActivityEvent /*eventType*/,
-                                      const void *event,
-                                      const size_t /*eventSize*/) {
-        if (event != nullptr) {
-            const Paddleboat_GameActivityKeyEvent *keyEvent =
-                reinterpret_cast<const Paddleboat_GameActivityKeyEvent *>(event);
-            return keyEvent->source;
-        }
-        return 0;
-    }
 } // namespace paddleboat

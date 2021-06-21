@@ -30,6 +30,80 @@
 // event data to log
 //#define LOG_INPUT_EVENTS
 
+// JNI interface functions
+
+extern "C" {
+
+void Java_com_google_android_games_paddleboat_GameControllerManager_onControllerConnected(
+        JNIEnv *env, jobject gcmObject, jintArray deviceInfoArray,
+        jfloatArray axisMinArray, jfloatArray axisMaxArray,
+        jfloatArray axisFlatArray, jfloatArray axisFuzzArray) {
+    paddleboat::GameControllerDeviceInfo *deviceInfo =
+            paddleboat::GameControllerManager::onConnection();
+    if (deviceInfo != nullptr) {
+        // Copy the array contents into the DeviceInfo array equivalents
+        const jsize infoArraySize = env->GetArrayLength(deviceInfoArray);
+        if ((infoArraySize * sizeof(int32_t)) ==
+            sizeof(paddleboat::GameControllerDeviceInfo::InfoFields)) {
+            env->GetIntArrayRegion(deviceInfoArray, 0, infoArraySize,
+                                   reinterpret_cast<jint *>(deviceInfo->getInfo()));
+        } else {
+            ALOGE("deviceInfoArray/GameControllerDeviceInfo::InfoFields size mismatch");
+        }
+#if defined LOG_INPUT_EVENTS
+        ALOGI("onControllerConnected deviceId %d", deviceInfo->getInfo()->mDeviceId);
+#endif
+
+        // all axis arrays are presumed to be the same size
+        const jsize axisArraySize = env->GetArrayLength(axisMinArray);
+        if ((axisArraySize * sizeof(float)) ==
+            (sizeof(float) * paddleboat::MAX_AXIS_COUNT)) {
+            env->GetFloatArrayRegion(axisMinArray, 0, axisArraySize, deviceInfo->getMinArray());
+            env->GetFloatArrayRegion(axisMaxArray, 0, axisArraySize, deviceInfo->getMaxArray());
+            env->GetFloatArrayRegion(axisFlatArray, 0, axisArraySize,
+                                     deviceInfo->getFlatArray());
+            env->GetFloatArrayRegion(axisFuzzArray, 0, axisArraySize,
+                                     deviceInfo->getFuzzArray());
+        } else {
+            ALOGE("axisArray/GameControllerDeviceInfo::axisArray size mismatch");
+        }
+
+        // Retrieve the device name string
+        const jint deviceId = deviceInfo->getInfo()->mDeviceId;
+        jmethodID getDeviceNameById = env->GetMethodID(
+                paddleboat::GameControllerManager::getGameControllerClass(),
+                "getDeviceNameById",
+                "(I)Ljava/lang/String;");
+        if (getDeviceNameById != NULL) {
+            jstring deviceNameJstring = reinterpret_cast<jstring>(env->CallObjectMethod(
+                    paddleboat::GameControllerManager::getGameControllerObject(),
+                    getDeviceNameById, deviceId));
+            const char *deviceName = env->GetStringUTFChars(deviceNameJstring, NULL);
+            if (deviceName != nullptr) {
+                deviceInfo->setName(deviceName);
+            }
+            env->ReleaseStringUTFChars(deviceNameJstring, deviceName);
+        }
+    }
+}
+
+void Java_com_google_android_games_paddleboat_GameControllerManager_onControllerDisconnected(
+        JNIEnv *env, jobject gcmObject, jint deviceId) {
+    paddleboat::GameControllerManager::onDisconnection(deviceId);
+}
+
+void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseConnected(
+        JNIEnv *env, jobject gcmObject, jint deviceId) {
+    paddleboat::GameControllerManager::onMouseConnection(deviceId);
+}
+
+void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseDisconnected(
+        JNIEnv *env, jobject gcmObject, jint deviceId) {
+    paddleboat::GameControllerManager::onMouseDisconnection(deviceId);
+}
+
+} // extern "C"
+
 namespace paddleboat {
     constexpr const char *CLASSLOADER_CLASS = "java/lang/ClassLoader";
     constexpr const char *CLASSLOADER_GETCLASSLOADER_METHOD_NAME = "getClassLoader";
@@ -41,8 +115,7 @@ namespace paddleboat {
     constexpr const char *GCM_CLASSNAME =
         "com/google/android/games/paddleboat/GameControllerManager";
     constexpr const char *GCM_INIT_METHOD_NAME = "<init>";
-    constexpr const char *GCM_INIT_METHOD_SIGNATURE =
-        "(Landroid/app/Activity;Ljava/lang/String;Z)V";
+    constexpr const char *GCM_INIT_METHOD_SIGNATURE = "(Landroid/content/Context;Z)V";
     constexpr const char *GCM_ONSTOP_METHOD_NAME = "onStop";
     constexpr const char *GCM_ONSTART_METHOD_NAME = "onStart";
     constexpr const char *GCM_GETAPILEVEL_METHOD_NAME = "getApiLevel";
@@ -55,28 +128,39 @@ namespace paddleboat {
 
     constexpr float VIBRATION_INTENSITY_SCALE = 255.0f;
 
+    const JNINativeMethod GCM_NATIVE_METHODS[] = {
+        {"onControllerConnected", "([I[F[F[F[F)V", reinterpret_cast<void*>(
+        Java_com_google_android_games_paddleboat_GameControllerManager_onControllerConnected)},
+        {"onControllerDisconnected", "(I)V", reinterpret_cast<void*>(
+        Java_com_google_android_games_paddleboat_GameControllerManager_onControllerDisconnected)},
+        {"onMouseConnected", "(I)V", reinterpret_cast<void*>(
+        Java_com_google_android_games_paddleboat_GameControllerManager_onMouseConnected)},
+        {"onMouseDisconnected", "(I)V", reinterpret_cast<void*>(
+        Java_com_google_android_games_paddleboat_GameControllerManager_onMouseDisconnected)},
+    };
+
     std::mutex GameControllerManager::sInstanceMutex;
     std::unique_ptr<GameControllerManager> GameControllerManager::sInstance;
 
-    bool GameControllerManager::init(JNIEnv *env, jobject jactivity, const char *libraryName) {
+    Paddleboat_ErrorCode GameControllerManager::init(JNIEnv *env, jobject jcontext) {
         std::lock_guard<std::mutex> lock(sInstanceMutex);
         if (sInstance) {
             ALOGE("Attempted to initialize Paddleboat twice");
-            return false;
+            return PADDLEBOAT_ERROR_ALREADY_INITIALIZED;
         }
 
-        sInstance = std::make_unique<GameControllerManager>(env, jactivity, ConstructorTag{});
+        sInstance = std::make_unique<GameControllerManager>(env, jcontext, ConstructorTag{});
         if (!sInstance->mInitialized) {
             ALOGE("Failed to initialize Paddleboat");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
 
         // Load our GameControllerManager class
-        jclass activityClass = env->GetObjectClass(jactivity);
+        jclass activityClass = env->GetObjectClass(jcontext);
         jmethodID getClassLoaderID = env->GetMethodID(activityClass,
                                                       CLASSLOADER_GETCLASSLOADER_METHOD_NAME,
                                                       CLASSLOADER_GETCLASSLOADER_METHOD_SIG);
-        jobject classLoaderObject = env->CallObjectMethod(jactivity, getClassLoaderID);
+        jobject classLoaderObject = env->CallObjectMethod(jcontext, getClassLoaderID);
         jclass classLoader = env->FindClass(CLASSLOADER_CLASS);
         jmethodID loadClassID = env->GetMethodID(classLoader, CLASSLOADER_LOADCLASS_METHOD_NAME,
                                                  CLASSLOADER_LOADCLASS_METHOD_SIG);
@@ -85,8 +169,17 @@ namespace paddleboat {
                 env->CallObjectMethod(classLoaderObject, loadClassID, gcmClassName));
         if (gcmClass == NULL) {
             ALOGE("Failed to find GameControllerManager class");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
+
+        // Register our native methods, in case we were linked as a static library
+        int rc = env->RegisterNatives(gcmClass, GCM_NATIVE_METHODS,
+            sizeof(GCM_NATIVE_METHODS)/sizeof(JNINativeMethod));
+        if (rc != JNI_OK) {
+            ALOGE("Failed to register native methods. %d", rc);
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
+        }
+
         jclass global_gcmClass = static_cast<jclass>(env->NewGlobalRef(gcmClass));
 
         if (gcmClassName != NULL) {
@@ -99,7 +192,7 @@ namespace paddleboat {
                                                    GCM_INIT_METHOD_SIGNATURE);
         if (gcmInitMethod == NULL) {
             ALOGE("Failed to find GameControllerManager init method");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
 
         jmethodID getApiLevelMethodId = env->GetMethodID(global_gcmClass,
@@ -107,14 +200,14 @@ namespace paddleboat {
                                                          GCM_GETAPILEVEL_METHOD_SIGNATURE);
         if (getApiLevelMethodId == NULL) {
             ALOGE("Failed to find GameControllerManager getApiLevel method");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
         jmethodID setVibrationMethodId = env->GetMethodID(global_gcmClass,
                                                           GCM_SETVIBRATION_METHOD_NAME,
                                                           GCM_SETVIBRATION_METHOD_SIGNATURE);
         if (setVibrationMethodId == NULL) {
             ALOGE("Failed to find GameControllerManager setVibration method");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
 
 #if _DEBUG
@@ -122,23 +215,14 @@ namespace paddleboat {
 #else
         jboolean printControllerInfo = JNI_FALSE;
 #endif
-        jstring libraryNameString = NULL;
-        if (libraryName != nullptr) {
-            libraryNameString = env->NewStringUTF(libraryName);
-        }
-
-        jobject gcmObject = env->NewObject(global_gcmClass, gcmInitMethod, jactivity,
-                                           libraryNameString, printControllerInfo);
+        jobject gcmObject = env->NewObject(global_gcmClass, gcmInitMethod, jcontext,
+                                           printControllerInfo);
         if (gcmObject == NULL) {
             ALOGE("Failed to create GameControllerManager");
-            return false;
+            return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
         }
         jobject global_gcmObject = env->NewGlobalRef(gcmObject);
         env->DeleteLocalRef(gcmObject);
-
-        if (libraryNameString != NULL) {
-            env->DeleteLocalRef(libraryNameString);
-        }
 
         GameControllerManager *gcm = sInstance.get();
         if (gcm) {
@@ -148,13 +232,26 @@ namespace paddleboat {
             gcm->mSetVibrationMethodId = setVibrationMethodId;
         }
 
-        return true;
+        return PADDLEBOAT_NO_ERROR;
     }
 
-    void GameControllerManager::destroyInstance() {
+    void GameControllerManager::destroyInstance(JNIEnv *env) {
         std::lock_guard<std::mutex> lock(sInstanceMutex);
+        sInstance.get()->releaseGlobals(env);
         sInstance.reset();
     }
+
+    void GameControllerManager::releaseGlobals(JNIEnv *env) {
+        if (mGameControllerClass != NULL) {
+            env->DeleteGlobalRef(mGameControllerClass);
+            mGameControllerClass = NULL;
+        }
+        if (mGameControllerObject != NULL) {
+            env->DeleteGlobalRef(mGameControllerObject);
+            mGameControllerObject = NULL;
+        }
+    }
+
 
     GameControllerManager *GameControllerManager::getInstance() {
         std::lock_guard<std::mutex> lock(sInstanceMutex);
@@ -172,10 +269,9 @@ namespace paddleboat {
         return gcm->mGCMClassInitialized;
     }
 
-    GameControllerManager::GameControllerManager(JNIEnv *env, jobject jactivity, ConstructorTag) {
-        mStatusCallback = nullptr;
-        mJNIEnv = env;
-        mActivity = jactivity;
+    GameControllerManager::GameControllerManager(JNIEnv *env, jobject jcontext, ConstructorTag) {
+        mContext = jcontext;
+        mMouseData.timestamp = 0;
         mMouseData.buttonsDown = 0;
         mMouseData.mouseScrollDeltaH = 0;
         mMouseData.mouseScrollDeltaV = 0;
@@ -193,12 +289,6 @@ namespace paddleboat {
     }
 
     GameControllerManager::~GameControllerManager() {
-        if (mGameControllerClass != NULL) {
-            mJNIEnv->DeleteGlobalRef(mGameControllerClass);
-        }
-        if (mGameControllerObject != NULL) {
-            mJNIEnv->DeleteGlobalRef(mGameControllerObject);
-        }
         mInitialized = false;
     }
 
@@ -247,18 +337,53 @@ namespace paddleboat {
         return handledEvent;
     }
 
-    int32_t GameControllerManager::processGameActivityInputEvent(
-            const Paddleboat_GameActivityEvent eventType, const void *event,
+    int32_t GameControllerManager::processGameActivityKeyInputEvent(const void *event,
             const size_t eventSize) {
         int32_t handledEvent = IGNORED_EVENT;
         if (event != nullptr) {
             GameControllerManager *gcm = getInstance();
             if (gcm) {
                 std::lock_guard<std::mutex> lock(gcm->mUpdateMutex);
-                const int32_t eventSource = PBGameActivityUtil_getEventSource(eventType, event,
-                                                                              eventSize);
-                const int32_t eventDeviceId = PBGameActivityUtil_getEventDeviceId(eventType, event,
-                                                                                  eventSize);
+                const Paddleboat_GameActivityKeyEvent *keyEvent =
+                        reinterpret_cast<const Paddleboat_GameActivityKeyEvent *>(event);
+                const int32_t eventSource = keyEvent->source;
+                const int32_t eventDeviceId = keyEvent->deviceId;
+                const int32_t dpadSource = eventSource & AINPUT_SOURCE_DPAD;
+                const int32_t gamepadSource = eventSource & AINPUT_SOURCE_GAMEPAD;
+                const int32_t joystickSource = eventSource & AINPUT_SOURCE_JOYSTICK;
+                if (dpadSource == AINPUT_SOURCE_DPAD || gamepadSource == AINPUT_SOURCE_GAMEPAD ||
+                    joystickSource == AINPUT_SOURCE_JOYSTICK) {
+                    for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
+                        if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
+                            if (gcm->mGameControllers[i].getControllerStatus() ==
+                                PADDLEBOAT_CONTROLLER_ACTIVE) {
+                                const GameControllerDeviceInfo &deviceInfo =
+                                        gcm->mGameControllers[i].getDeviceInfo();
+                                if (deviceInfo.getInfo().mDeviceId == eventDeviceId) {
+                                    handledEvent = gcm->processControllerGameActivityKeyEvent(
+                                            keyEvent, eventSize, gcm->mGameControllers[i]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return handledEvent;
+    }
+
+    int32_t GameControllerManager::processGameActivityMotionInputEvent(const void *event,
+            const size_t eventSize) {
+        int32_t handledEvent = IGNORED_EVENT;
+        if (event != nullptr) {
+            GameControllerManager *gcm = getInstance();
+            if (gcm) {
+                std::lock_guard<std::mutex> lock(gcm->mUpdateMutex);
+                const Paddleboat_GameActivityMotionEvent *motionEvent =
+                        reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
+                const int32_t eventSource = motionEvent->source;
+                const int32_t eventDeviceId = motionEvent->deviceId;
                 const int32_t dpadSource = eventSource & AINPUT_SOURCE_DPAD;
                 const int32_t gamepadSource = eventSource & AINPUT_SOURCE_GAMEPAD;
                 const int32_t joystickSource = eventSource & AINPUT_SOURCE_JOYSTICK;
@@ -272,27 +397,16 @@ namespace paddleboat {
                                 const GameControllerDeviceInfo &deviceInfo =
                                     gcm->mGameControllers[i].getDeviceInfo();
                                 if (deviceInfo.getInfo().mDeviceId == eventDeviceId) {
-                                    if (eventType == PADDLEBOAT_GAMEACTIVITY_EVENT_KEY) {
-                                        const Paddleboat_GameActivityKeyEvent *keyEvent =
-                                            reinterpret_cast<const
-                                            Paddleboat_GameActivityKeyEvent *>(event);
-                                        handledEvent = gcm->processControllerGameActivityKeyEvent(
-                                                keyEvent, eventSize, gcm->mGameControllers[i]);
-                                    } else if (eventType == PADDLEBOAT_GAMEACTIVITY_EVENT_MOTION) {
-                                        const Paddleboat_GameActivityMotionEvent *motionEvent =
-                                            reinterpret_cast<const
-                                            Paddleboat_GameActivityMotionEvent *>(event);
-                                        handledEvent =
-                                        gcm->mGameControllers[i].processGameActivityMotionEvent(
-                                                motionEvent, eventSize);
-                                    }
+                                    handledEvent =
+                                            gcm->mGameControllers[i].processGameActivityMotionEvent(
+                                                    motionEvent, eventSize);
                                     break;
                                 }
                             }
                         }
                     }
                 } else if (mouseSource == AINPUT_SOURCE_MOUSE) {
-                    handledEvent = gcm->processGameActivityMouseEvent(eventType, event, eventSize,
+                    handledEvent = gcm->processGameActivityMouseEvent(event, eventSize,
                                                                       eventDeviceId);
                 }
             }
@@ -377,6 +491,7 @@ namespace paddleboat {
                                 mMouseData.buttonsDown =
                                     static_cast<uint32_t>(AMotionEvent_getButtonState(event));
                                 mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
+                                updateMouseDataTimestamp();
                             }
                             break;
                         }
@@ -403,6 +518,7 @@ namespace paddleboat {
                         // calling application requests the mouse data.
                         mMouseData.mouseScrollDeltaH += static_cast<int32_t>(axisHScroll);
                         mMouseData.mouseScrollDeltaV += static_cast<int32_t>(axisVScroll);
+                        updateMouseDataTimestamp();
                     }
                     handledEvent = HANDLED_EVENT;
                     break;
@@ -413,56 +529,54 @@ namespace paddleboat {
         return handledEvent;
     }
 
-    int32_t GameControllerManager::processGameActivityMouseEvent(
-            const Paddleboat_GameActivityEvent eventType, const void *event,
+    int32_t GameControllerManager::processGameActivityMouseEvent(const void *event,
             const size_t eventSize, const int32_t eventDeviceId) {
         int32_t handledEvent = IGNORED_EVENT;
 
         // Always update the virtual pointer data in the appropriate controller data structures
-        if (eventType == PADDLEBOAT_GAMEACTIVITY_EVENT_MOTION) {
-            const Paddleboat_GameActivityMotionEvent *motionEvent =
-                reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
-            if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
-                const Paddleboat_GameActivityPointerInfo *pointerInfo = motionEvent->pointers;
-                for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
-                    if (mGameControllers[i].getConnectionIndex() >= 0) {
-                        if (mGameControllers[i].getControllerStatus() ==
-                            PADDLEBOAT_CONTROLLER_ACTIVE) {
-                            const Paddleboat_Controller_Info &controllerInfo =
-                                mGameControllers[i].getControllerInfo();
-                            if (controllerInfo.deviceId == eventDeviceId) {
-                                Paddleboat_Controller_Data &controllerData =
-                                    mGameControllers[i].getControllerData();
-                                controllerData.virtualPointer.pointerX =
-                                    pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
-                                controllerData.virtualPointer.pointerY =
-                                    pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
-                                const float axisP =
-                                    pointerInfo->axisValues[AMOTION_EVENT_AXIS_PRESSURE];
+        const Paddleboat_GameActivityMotionEvent *motionEvent =
+            reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
+        if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
+            const Paddleboat_GameActivityPointerInfo *pointerInfo = motionEvent->pointers;
+            for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
+                if (mGameControllers[i].getConnectionIndex() >= 0) {
+                    if (mGameControllers[i].getControllerStatus() ==
+                        PADDLEBOAT_CONTROLLER_ACTIVE) {
+                        const Paddleboat_Controller_Info &controllerInfo =
+                            mGameControllers[i].getControllerInfo();
+                        if (controllerInfo.deviceId == eventDeviceId) {
+                            Paddleboat_Controller_Data &controllerData =
+                                mGameControllers[i].getControllerData();
+                            controllerData.virtualPointer.pointerX =
+                                pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
+                            controllerData.virtualPointer.pointerY =
+                                pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
+                            const float axisP =
+                                pointerInfo->axisValues[AMOTION_EVENT_AXIS_PRESSURE];
 
-                                const bool hasTouchpadButton = ((controllerInfo.controllerFlags &
-                                    PADDLEBOAT_CONTROLLER_FLAG_TOUCHPAD) != 0);
-                                if (hasTouchpadButton) {
-                                    if (axisP > 0.0f) {
-                                        controllerData.buttonsDown |= PADDLEBOAT_BUTTON_TOUCHPAD;
-                                    } else {
-                                        controllerData.buttonsDown &=
-                                            (~PADDLEBOAT_BUTTON_TOUCHPAD);
-                                    }
+                            const bool hasTouchpadButton = ((controllerInfo.controllerFlags &
+                                PADDLEBOAT_CONTROLLER_FLAG_TOUCHPAD) != 0);
+                            if (hasTouchpadButton) {
+                                if (axisP > 0.0f) {
+                                    controllerData.buttonsDown |= PADDLEBOAT_BUTTON_TOUCHPAD;
+                                } else {
+                                    controllerData.buttonsDown &=
+                                        (~PADDLEBOAT_BUTTON_TOUCHPAD);
                                 }
-                                mGameControllers[i].setControllerDataDirty(true);
-
-                                // If this controller is our 'active' virtual mouse,
-                                // update the mouse data
-                                if (mMouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED
-                                    && mMouseControllerIndex == static_cast<int32_t>(i)) {
-                                    mMouseData.mouseX = controllerData.virtualPointer.pointerX;
-                                    mMouseData.mouseY = controllerData.virtualPointer.pointerY;
-                                    mMouseData.buttonsDown = motionEvent->buttonState;
-                                    mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
-                                }
-                                break;
                             }
+                            mGameControllers[i].setControllerDataDirty(true);
+
+                            // If this controller is our 'active' virtual mouse,
+                            // update the mouse data
+                            if (mMouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED
+                                && mMouseControllerIndex == static_cast<int32_t>(i)) {
+                                mMouseData.mouseX = controllerData.virtualPointer.pointerX;
+                                mMouseData.mouseY = controllerData.virtualPointer.pointerY;
+                                mMouseData.buttonsDown = motionEvent->buttonState;
+                                mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
+                                updateMouseDataTimestamp();
+                            }
+                            break;
                         }
                     }
                 }
@@ -472,29 +586,26 @@ namespace paddleboat {
         if (mMouseStatus == PADDLEBOAT_MOUSE_PHYSICAL) {
             for (size_t i = 0; i < MAX_MOUSE_DEVICES; ++i) {
                 if (mMouseDeviceIds[i] == eventDeviceId) {
-                    if (eventType == PADDLEBOAT_GAMEACTIVITY_EVENT_MOTION) {
-                        const Paddleboat_GameActivityMotionEvent *motionEvent =
-                            reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
-                        if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
-                            const Paddleboat_GameActivityPointerInfo *pointerInfo =
-                                motionEvent->pointers;
+                    if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
+                        const Paddleboat_GameActivityPointerInfo *pointerInfo =
+                            motionEvent->pointers;
 
-                            mMouseData.mouseX = pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
-                            mMouseData.mouseY = pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
-                            const int32_t buttonState = motionEvent->buttonState;
-                            mMouseData.buttonsDown = static_cast<uint32_t>(buttonState);
-                            const float axisHScroll =
-                                pointerInfo->axisValues[AMOTION_EVENT_AXIS_HSCROLL];
-                            const float axisVScroll =
-                                pointerInfo->axisValues[AMOTION_EVENT_AXIS_VSCROLL];
-                            // These are treated as cumulative deltas and reset when the
-                            // calling application requests the mouse data.
-                            mMouseData.mouseScrollDeltaH += static_cast<int32_t>(axisHScroll);
-                            mMouseData.mouseScrollDeltaV += static_cast<int32_t>(axisVScroll);
-                        }
-                        handledEvent = HANDLED_EVENT;
-                        break;
+                        mMouseData.mouseX = pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
+                        mMouseData.mouseY = pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
+                        const int32_t buttonState = motionEvent->buttonState;
+                        mMouseData.buttonsDown = static_cast<uint32_t>(buttonState);
+                        const float axisHScroll =
+                            pointerInfo->axisValues[AMOTION_EVENT_AXIS_HSCROLL];
+                        const float axisVScroll =
+                            pointerInfo->axisValues[AMOTION_EVENT_AXIS_VSCROLL];
+                        // These are treated as cumulative deltas and reset when the
+                        // calling application requests the mouse data.
+                        mMouseData.mouseScrollDeltaH += static_cast<int32_t>(axisHScroll);
+                        mMouseData.mouseScrollDeltaV += static_cast<int32_t>(axisVScroll);
+                        updateMouseDataTimestamp();
                     }
+                    handledEvent = HANDLED_EVENT;
+                    break;
                 }
             }
         }
@@ -511,22 +622,22 @@ namespace paddleboat {
         return returnMask;
     }
 
-    void GameControllerManager::update() {
+    void GameControllerManager::update(JNIEnv *env) {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             return;
         }
         if (!gcm->mGCMClassInitialized && gcm->mGameControllerObject != NULL) {
-            gcm->mApiLevel = gcm->mJNIEnv->CallIntMethod(gcm->mGameControllerObject,
+            gcm->mApiLevel = env->CallIntMethod(gcm->mGameControllerObject,
                                                          gcm->mGetApiLevelMethodId);
 
             // Tell the GCM class we are ready to receive information about controllers
             gcm->mGCMClassInitialized = true;
-            jmethodID setNativeReady = gcm->mJNIEnv->GetMethodID(gcm->mGameControllerClass,
+            jmethodID setNativeReady = env->GetMethodID(gcm->mGameControllerClass,
                                                                  GCM_SETNATIVEREADY_METHOD_NAME,
                                                                  VOID_METHOD_SIGNATURE);
             if (setNativeReady != NULL) {
-                gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject, setNativeReady);
+                env->CallVoidMethod(gcm->mGameControllerObject, setNativeReady);
             }
         }
 
@@ -564,7 +675,8 @@ namespace paddleboat {
                             ALOGI("statusCallback PADDLEBOAT_CONTROLLER_JUST_CONNECTED on %d",
                                   static_cast<int>(i));
 #endif
-                            gcm->mStatusCallback(i, PADDLEBOAT_CONTROLLER_JUST_CONNECTED);
+                            gcm->mStatusCallback(i, PADDLEBOAT_CONTROLLER_JUST_CONNECTED,
+                                                 gcm->mStatusCallbackUserData);
                         }
                         gcm->rescanVirtualMouseControllers();
                     } else if (gcm->mGameControllers[i].getControllerStatus() ==
@@ -578,7 +690,8 @@ namespace paddleboat {
                             ALOGI("statusCallback PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED on %d",
                                   static_cast<int>(i));
 #endif
-                            gcm->mStatusCallback(i, PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED);
+                            gcm->mStatusCallback(i, PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED,
+                                                 gcm->mStatusCallbackUserData);
                         }
                         gcm->rescanVirtualMouseControllers();
                     }
@@ -587,9 +700,9 @@ namespace paddleboat {
         }
     }
 
-    bool GameControllerManager::getControllerData(const int32_t controllerIndex,
+    Paddleboat_ErrorCode GameControllerManager::getControllerData(const int32_t controllerIndex,
                                                   Paddleboat_Controller_Data *controllerData) {
-        bool success = false;
+        Paddleboat_ErrorCode errorCode = PADDLEBOAT_NO_ERROR;
         if (controllerData != nullptr) {
             if (controllerIndex >= 0 && controllerIndex < PADDLEBOAT_MAX_CONTROLLERS) {
                 GameControllerManager *gcm = getInstance();
@@ -602,17 +715,24 @@ namespace paddleboat {
                         memcpy(controllerData,
                                &gcm->mGameControllers[controllerIndex].getControllerData(),
                                sizeof(Paddleboat_Controller_Data));
-                        success = true;
+                    } else {
+                        errorCode = PADDLEBOAT_ERROR_NO_CONTROLLER;
                     }
+                } else {
+                    errorCode = PADDLEBOAT_ERROR_NOT_INITIALIZED;
                 }
+            } else {
+                errorCode = PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX;
             }
+        } else {
+            errorCode = PADDLEBOAT_ERROR_INVALID_PARAMETER;
         }
-        return success;
+        return errorCode;
     }
 
-    bool GameControllerManager::getControllerInfo(const int32_t controllerIndex,
+    Paddleboat_ErrorCode GameControllerManager::getControllerInfo(const int32_t controllerIndex,
                                                   Paddleboat_Controller_Info *controllerInfo) {
-        bool success = false;
+        Paddleboat_ErrorCode errorCode = PADDLEBOAT_NO_ERROR;
         if (controllerInfo != nullptr) {
             if (controllerIndex >= 0 && controllerIndex < PADDLEBOAT_MAX_CONTROLLERS) {
                 GameControllerManager *gcm = getInstance();
@@ -622,12 +742,51 @@ namespace paddleboat {
                         memcpy(controllerInfo,
                                &gcm->mGameControllers[controllerIndex].getControllerInfo(),
                                sizeof(Paddleboat_Controller_Info));
-                        success = true;
+                    } else {
+                        errorCode = PADDLEBOAT_ERROR_NO_CONTROLLER;
                     }
+                } else {
+                    errorCode = PADDLEBOAT_ERROR_NOT_INITIALIZED;
                 }
+            } else {
+                errorCode = PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX;
             }
+        } else {
+            errorCode = PADDLEBOAT_ERROR_INVALID_PARAMETER;
         }
-        return success;
+        return errorCode;
+    }
+
+    Paddleboat_ErrorCode GameControllerManager::getControllerName(const int32_t controllerIndex,
+                                           const size_t bufferSize, char *controllerName) {
+        Paddleboat_ErrorCode errorCode = PADDLEBOAT_NO_ERROR;
+        if (controllerName != nullptr) {
+            if (controllerIndex >= 0 && controllerIndex < PADDLEBOAT_MAX_CONTROLLERS) {
+                GameControllerManager *gcm = getInstance();
+                if (gcm) {
+                    if (gcm->mGameControllers[controllerIndex].getConnectionIndex() ==
+                        controllerIndex) {
+                        const GameControllerDeviceInfo& deviceInfo =
+                                gcm->mGameControllers[controllerIndex].getDeviceInfo();
+                        strncpy(controllerName, deviceInfo.getName(), bufferSize);
+                        // Manually zero-terminate if the string was too long to fit
+                        const size_t nameLength = strlen(deviceInfo.getName());
+                        if (nameLength >= bufferSize) {
+                            controllerName[bufferSize - 1] = '\0';
+                        }
+                    } else {
+                        errorCode = PADDLEBOAT_ERROR_NO_CONTROLLER;
+                    }
+                } else {
+                    errorCode = PADDLEBOAT_ERROR_NOT_INITIALIZED;
+                }
+            } else {
+                errorCode = PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX;
+            }
+        } else {
+            errorCode = PADDLEBOAT_ERROR_INVALID_PARAMETER;
+        }
+        return errorCode;
     }
 
     Paddleboat_ControllerStatus
@@ -642,9 +801,11 @@ namespace paddleboat {
         return controllerStatus;
     }
 
-    bool GameControllerManager::setControllerVibrationData(const int32_t controllerIndex,
-        const Paddleboat_Vibration_Data *vibrationData) {
-        bool success = false;
+    Paddleboat_ErrorCode GameControllerManager::setControllerVibrationData(
+            const int32_t controllerIndex, const Paddleboat_Vibration_Data *vibrationData,
+            JNIEnv *env) {
+        Paddleboat_ErrorCode errorCode = PADDLEBOAT_NO_ERROR;
+
         if (vibrationData != nullptr) {
             if (controllerIndex >= 0 && controllerIndex < PADDLEBOAT_MAX_CONTROLLERS) {
                 GameControllerManager *gcm = getInstance();
@@ -652,7 +813,7 @@ namespace paddleboat {
                     if (gcm->mGameControllers[controllerIndex].getConnectionIndex() ==
                         controllerIndex) {
                         const Paddleboat_Controller_Info &controllerInfo =
-                            gcm->mGameControllers[controllerIndex].getControllerInfo();
+                                gcm->mGameControllers[controllerIndex].getControllerInfo();
                         if ((controllerInfo.controllerFlags &
                              PADDLEBOAT_CONTROLLER_FLAG_VIBRATION) != 0) {
                             if (gcm->mGameControllerObject != NULL &&
@@ -662,23 +823,32 @@ namespace paddleboat {
                                 const jint intensityRight = static_cast<jint>(
                                         vibrationData->intensityRight * VIBRATION_INTENSITY_SCALE);
                                 const jint durationLeft =
-                                    static_cast<jint>(vibrationData->durationLeft);
+                                        static_cast<jint>(vibrationData->durationLeft);
                                 const jint durationRight =
-                                    static_cast<jint>(vibrationData->durationRight);
-                                gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject,
+                                        static_cast<jint>(vibrationData->durationRight);
+                                env->CallVoidMethod(gcm->mGameControllerObject,
                                                              gcm->mSetVibrationMethodId,
                                                              controllerInfo.deviceId,
                                                              intensityLeft,
                                                              durationLeft, intensityRight,
                                                              durationRight);
-                                success = true;
                             }
+                        } else {
+                            errorCode = PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED;
                         }
+                    } else {
+                        errorCode = PADDLEBOAT_ERROR_NO_CONTROLLER;
                     }
+                } else {
+                    errorCode = PADDLEBOAT_ERROR_NOT_INITIALIZED;
                 }
+            } else {
+                errorCode = PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX;
             }
+        } else {
+            errorCode = PADDLEBOAT_ERROR_INVALID_PARAMETER;
         }
-        return success;
+        return errorCode;
     }
 
     GameControllerDeviceInfo *GameControllerManager::onConnection() {
@@ -725,8 +895,8 @@ namespace paddleboat {
         }
     }
 
-    bool GameControllerManager::getMouseData(Paddleboat_Mouse_Data *mouseData) {
-        bool success = false;
+    Paddleboat_ErrorCode GameControllerManager::getMouseData(Paddleboat_Mouse_Data *mouseData) {
+        Paddleboat_ErrorCode errorCode = PADDLEBOAT_NO_ERROR;
         if (mouseData != nullptr) {
             GameControllerManager *gcm = getInstance();
             if (gcm) {
@@ -737,11 +907,16 @@ namespace paddleboat {
                     // We reset the scroll wheel(s) values after each read
                     gcm->mMouseData.mouseScrollDeltaH = 0;
                     gcm->mMouseData.mouseScrollDeltaV = 0;
-                    success = true;
+                } else {
+                    errorCode = PADDLEBOAT_ERROR_NO_MOUSE;
                 }
+            } else {
+                errorCode = PADDLEBOAT_ERROR_NOT_INITIALIZED;
             }
+        } else {
+            errorCode = PADDLEBOAT_ERROR_INVALID_PARAMETER;
         }
-        return success;
+        return errorCode;
     }
 
     Paddleboat_MouseStatus GameControllerManager::getMouseStatus() {
@@ -764,7 +939,7 @@ namespace paddleboat {
             if (gcm->mMouseStatus != PADDLEBOAT_MOUSE_PHYSICAL) {
                 gcm->mMouseStatus = PADDLEBOAT_MOUSE_PHYSICAL;
                 if (gcm->mMouseCallback != nullptr) {
-                    gcm->mMouseCallback(gcm->mMouseStatus);
+                    gcm->mMouseCallback(gcm->mMouseStatus, gcm->mMouseCallbackUserData);
                 }
             }
         }
@@ -788,7 +963,7 @@ namespace paddleboat {
                 gcm->mMouseStatus = (gcm->mMouseControllerIndex == INVALID_MOUSE_ID)
                                     ? PADDLEBOAT_MOUSE_NONE : PADDLEBOAT_MOUSE_CONTROLLER_EMULATED;
                 if (gcm->mMouseCallback != nullptr) {
-                    gcm->mMouseCallback(gcm->mMouseStatus);
+                    gcm->mMouseCallback(gcm->mMouseStatus, gcm->mMouseCallbackUserData);
                 }
             }
         }
@@ -809,7 +984,7 @@ namespace paddleboat {
                     if (mMouseStatus == PADDLEBOAT_MOUSE_NONE) {
                         mMouseStatus = PADDLEBOAT_MOUSE_CONTROLLER_EMULATED;
                         if (mMouseCallback != nullptr) {
-                            mMouseCallback(mMouseStatus);
+                            mMouseCallback(mMouseStatus, mMouseCallbackUserData);
                         }
                     }
                     break;
@@ -822,16 +997,17 @@ namespace paddleboat {
             && mMouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED) {
             mMouseStatus = PADDLEBOAT_MOUSE_NONE;
             if (mMouseCallback != nullptr) {
-                mMouseCallback(mMouseStatus);
+                mMouseCallback(mMouseStatus, mMouseCallbackUserData);
             }
         }
     }
 
     void GameControllerManager::setMouseStatusCallback(
-            Paddleboat_MouseStatusCallback statusCallback) {
+            Paddleboat_MouseStatusCallback statusCallback, void *userData) {
         GameControllerManager *gcm = getInstance();
         if (gcm) {
             gcm->mMouseCallback = statusCallback;
+            gcm->mMouseCallbackUserData = userData;
         }
     }
 
@@ -867,10 +1043,11 @@ namespace paddleboat {
     }
 
     void GameControllerManager::setControllerStatusCallback(
-            Paddleboat_ControllerStatusCallback statusCallback) {
+            Paddleboat_ControllerStatusCallback statusCallback, void *userData) {
         GameControllerManager *gcm = getInstance();
         if (gcm) {
             gcm->mStatusCallback = statusCallback;
+            gcm->mStatusCallbackUserData = userData;
         }
     }
 
@@ -883,34 +1060,40 @@ namespace paddleboat {
         return 0;
     }
 
-    void GameControllerManager::onStop() {
+    void GameControllerManager::onStop(JNIEnv *env) {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             return;
         }
         if (gcm->mGameControllerObject != NULL) {
-            jmethodID onPauseID = gcm->mJNIEnv->GetMethodID(gcm->mGameControllerClass,
+            jmethodID onPauseID = env->GetMethodID(gcm->mGameControllerClass,
                                                             GCM_ONSTOP_METHOD_NAME,
                                                             VOID_METHOD_SIGNATURE);
             if (onPauseID != NULL) {
-                gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject, onPauseID);
+                env->CallVoidMethod(gcm->mGameControllerObject, onPauseID);
             }
         }
     }
 
-    void GameControllerManager::onStart() {
+    void GameControllerManager::onStart(JNIEnv *env) {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             return;
         }
         if (gcm->mGameControllerObject != NULL) {
-            jmethodID onResumeID = gcm->mJNIEnv->GetMethodID(gcm->mGameControllerClass,
+            jmethodID onResumeID = env->GetMethodID(gcm->mGameControllerClass,
                                                              GCM_ONSTART_METHOD_NAME,
                                                              VOID_METHOD_SIGNATURE);
             if (onResumeID != NULL) {
-                gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject, onResumeID);
+                env->CallVoidMethod(gcm->mGameControllerObject, onResumeID);
             }
         }
+    }
+
+    void GameControllerManager::updateMouseDataTimestamp() {
+        const auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+        mMouseData.timestamp = static_cast<uint64_t>(timestamp);
     }
 
     void GameControllerManager::addControllerRemapData(const Paddleboat_Remap_Addition_Mode addMode,
@@ -972,78 +1155,5 @@ namespace paddleboat {
         }
         return returnMap;
     }
-}
-
-// JNI interface functions
-
-extern "C" {
-
-void Java_com_google_android_games_paddleboat_GameControllerManager_onControllerConnected(
-        JNIEnv *env, jobject gcmObject, jintArray deviceInfoArray,
-        jfloatArray axisMinArray, jfloatArray axisMaxArray,
-        jfloatArray axisFlatArray, jfloatArray axisFuzzArray) {
-    paddleboat::GameControllerDeviceInfo *deviceInfo =
-        paddleboat::GameControllerManager::onConnection();
-    if (deviceInfo != nullptr) {
-        // Copy the array contents into the DeviceInfo array equivalents
-        const jsize infoArraySize = env->GetArrayLength(deviceInfoArray);
-        if ((infoArraySize * sizeof(int32_t)) ==
-            sizeof(paddleboat::GameControllerDeviceInfo::InfoFields)) {
-            env->GetIntArrayRegion(deviceInfoArray, 0, infoArraySize,
-                                   reinterpret_cast<jint *>(deviceInfo->getInfo()));
-        } else {
-            ALOGE("deviceInfoArray/GameControllerDeviceInfo::InfoFields size mismatch");
-        }
-#if defined LOG_INPUT_EVENTS
-        ALOGI("onControllerConnected deviceId %d", deviceInfo->getInfo()->mDeviceId);
-#endif
-
-        // all axis arrays are presumed to be the same size
-        const jsize axisArraySize = env->GetArrayLength(axisMinArray);
-        if ((axisArraySize * sizeof(float)) ==
-            (sizeof(float) * paddleboat::MAX_AXIS_COUNT)) {
-            env->GetFloatArrayRegion(axisMinArray, 0, axisArraySize, deviceInfo->getMinArray());
-            env->GetFloatArrayRegion(axisMaxArray, 0, axisArraySize, deviceInfo->getMaxArray());
-            env->GetFloatArrayRegion(axisFlatArray, 0, axisArraySize,
-                                     deviceInfo->getFlatArray());
-            env->GetFloatArrayRegion(axisFuzzArray, 0, axisArraySize,
-                                     deviceInfo->getFuzzArray());
-        } else {
-            ALOGE("axisArray/GameControllerDeviceInfo::axisArray size mismatch");
-        }
-
-        // Retrieve the device name string
-        const jint deviceId = deviceInfo->getInfo()->mDeviceId;
-        jmethodID getDeviceNameById = env->GetMethodID(
-                paddleboat::GameControllerManager::getGameControllerClass(),
-                "getDeviceNameById",
-                "(I)Ljava/lang/String;");
-        if (getDeviceNameById != NULL) {
-            jstring deviceNameJstring = reinterpret_cast<jstring>(env->CallObjectMethod(
-                    paddleboat::GameControllerManager::getGameControllerObject(),
-                    getDeviceNameById, deviceId));
-            const char *deviceName = env->GetStringUTFChars(deviceNameJstring, NULL);
-            if (deviceName != nullptr) {
-                deviceInfo->setName(deviceName);
-            }
-            env->ReleaseStringUTFChars(deviceNameJstring, deviceName);
-        }
-    }
-}
-
-void Java_com_google_android_games_paddleboat_GameControllerManager_onControllerDisconnected(
-        JNIEnv *env, jobject gcmObject, jint deviceId) {
-    paddleboat::GameControllerManager::onDisconnection(deviceId);
-}
-
-void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseConnected(
-        JNIEnv *env, jobject gcmObject, jint deviceId) {
-    paddleboat::GameControllerManager::onMouseConnection(deviceId);
-}
-
-void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseDisconnected(
-        JNIEnv *env, jobject gcmObject, jint deviceId) {
-    paddleboat::GameControllerManager::onMouseDisconnection(deviceId);
-}
-
 } // namespace paddleboat
+

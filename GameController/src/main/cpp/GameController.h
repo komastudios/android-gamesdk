@@ -116,13 +116,7 @@ namespace paddleboat {
 
         bool getControllerDataDirty() const { return mControllerDataDirty; }
 
-        void setControllerDataDirty(const bool dirty) {
-            mControllerDataDirty = dirty;
-            // increment the data serial anytime we clear the dirty flag
-            if (!dirty) {
-                ++mControllerData.updateSerial;
-            }
-        }
+        void setControllerDataDirty(const bool dirty);
 
         void resetControllerData();
 
