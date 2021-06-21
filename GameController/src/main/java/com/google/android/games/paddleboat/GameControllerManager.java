@@ -50,17 +50,7 @@ public class GameControllerManager {
     private ArrayList<GameControllerInfo> gameControllers;
     private GameControllerThread gameControllerThread;
 
-    public GameControllerManager(Activity appActivity, String libraryName,
-        boolean appPrintControllerInfo) {
-        if (libraryName == null) {
-            // If we aren't passed a shared library name, we assume that our application is
-            // using the libpaddleboat.so shared library instead of statically linking
-            // paddleboat into their own shared library
-            System.loadLibrary("paddleboat");
-        } else {
-            System.loadLibrary(libraryName);
-        }
-
+    public GameControllerManager(Context appContext, boolean appPrintControllerInfo) {
         if (appPrintControllerInfo) {
             Log.d(TAG, "device Info:" +
                     "\n  BRAND: " + Build.BRAND +
@@ -72,7 +62,7 @@ public class GameControllerManager {
         }
 
         nativeReady = false;
-        inputManager = (InputManager) appActivity.getSystemService(Context.INPUT_SERVICE);
+        inputManager = (InputManager) appContext.getSystemService(Context.INPUT_SERVICE);
         printControllerInfo = appPrintControllerInfo;
         mouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
         pendingControllerDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
@@ -337,6 +327,32 @@ public class GameControllerManager {
     }
 
     public void onInputDeviceChanged(int deviceId) {
+        /* Handle the case where an input device changes to start reporting itself
+        as a game controller. If we weren't previously tracking it as a game controller,
+        make sure we run the controller connection flow to notify the client.
+         */
+        boolean isGameController = isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK);
+        if (isGameController) {
+            boolean foundDeviceId = false;
+            for (int pendingDeviceId : pendingControllerDeviceIds) {
+                if (pendingDeviceId == deviceId) {
+                    foundDeviceId = true;
+                    break;
+                }
+            }
+            if (!foundDeviceId) {
+                for (GameControllerInfo gameController : gameControllers) {
+                    if (gameController.GetGameControllerDeviceId() == deviceId) {
+                        foundDeviceId = true;
+                        break;
+                    }
+                }
+            }
+            if (!foundDeviceId) {
+                processControllerAddition(deviceId);
+            }
+        }
+
     }
 
     public int getApiLevel() {

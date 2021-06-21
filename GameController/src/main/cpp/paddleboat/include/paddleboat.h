@@ -45,6 +45,56 @@ extern "C" {
 #define PADDLEBOAT_MAX_CONTROLLERS 8
 
 /**
+ * @brief Paddleboat error code results.
+*/
+enum Paddleboat_ErrorCode {
+    /**
+     * @brief No error. Function call was successful.
+    */
+    PADDLEBOAT_NO_ERROR = 0,
+    /**
+     * @brief ::Paddleboat_init was called a second time without a call to ::Paddleboat_destroy
+     * in between.
+    */
+    PADDLEBOAT_ERROR_ALREADY_INITIALIZED = -2000,
+    /**
+     * @brief Paddleboat was not successfully initialized. Either ::Paddleboat_init was not
+     * called or returned an error.
+    */
+    PADDLEBOAT_ERROR_NOT_INITIALIZED = -2001,
+    /**
+     * @brief Paddleboat could not be successfully initialized. Instantiation
+     * of the GameControllerManager class failed.
+    */
+    PADDLEBOAT_ERROR_INIT_GCM_FAILURE = -2002,
+    /**
+     * @brief Invalid controller index specified. Valid index range is from 0
+     * to PADDLEBOAT_MAX_CONTROLLERS - 1
+    */
+    PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX = -2003,
+    /**
+     * @brief No controller is connected at the specified controller index.
+    */
+    PADDLEBOAT_ERROR_NO_CONTROLLER = -2004,
+    /**
+     * @brief No virtual or physical mouse device is connected.
+    */
+    PADDLEBOAT_ERROR_NO_MOUSE = -2005,
+    /**
+     * @brief The feature is not supported by the specified controller.
+     * Example: Calling ::Paddleboat_setControllerVibrationData on a controller
+     * that does not have the `PADDLEBOAT_CONTROLLER_FLAG_VIBRATION` bit
+     * set in `Paddleboat_Controller_Info.controllerFlags`.
+    */
+    PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED = -2006,
+    /**
+     * @brief An invalid parameter was specified. This usually means NULL or nullptr
+     * was passed in a parameter that requires a valid pointer.
+    */
+    PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007
+};
+
+/**
  * @brief Paddleboat controller buttons defined as bitmask values.
  * AND against `Paddleboat_Controller_Data.buttonsDown` to check for button status.
 */
@@ -334,15 +384,6 @@ enum Paddleboat_ControllerButtonLayout {
 };
 
 /**
- * @brief The type of GameActivity event structure being
- * passed to ::Paddleboat_processGameActivityInputEvent
-*/
-enum Paddleboat_GameActivityEvent {
-    PADDLEBOAT_GAMEACTIVITY_EVENT_KEY = 0, ///< Event is a `GameActivityKeyEvent`
-    PADDLEBOAT_GAMEACTIVITY_EVENT_MOTION ///< Event is a `GameActivityMotionEvent`
-};
-
-/**
  * @brief The status of the mouse device
 */
 enum Paddleboat_MouseStatus {
@@ -393,12 +434,30 @@ typedef struct Paddleboat_Controller_Thumbstick {
 } Paddleboat_Controller_Thumbstick;
 
 /**
+ * @brief A structure that contains axis precision data for a thumbstick in the X and Y axis.
+ * Value ranges from 0.0 to 1.0.
+ * Flat is the extent of a center flat (deadzone) area of a thumbstick axis
+ * Fuzz is the error tolerance (deviation) of a thumbstick axis
+ */
+typedef struct Paddleboat_Controller_Thumbstick_Precision {
+    /** @brief X axis flat value for the thumbstick */
+    float stickFlatX;
+    /** @brief Y axis flat value for the thumbstick */
+    float stickFlatY;
+    /** @brief X axis fuzz value for the thumbstick */
+    float stickFuzzX;
+    /** @brief Y axis fuzz value for the thumbstick */
+    float stickFuzzY;
+} Paddleboat_Controller_Thumbstick_Precision;
+
+/**
  * @brief A structure that contains the current data
  * for a controller's inputs and sensors.
  */
 typedef struct Paddleboat_Controller_Data {
-    /** @brief Serial value that increments when new data is read */
-    uint32_t updateSerial;
+    /** @brief Timestamp of most recent controller data update, timestamp is
+     * microseconds elapsed since clock epoch. */
+    uint64_t timestamp;
     /** @brief Bit-per-button bitfield array */
     uint32_t buttonsDown;
     /** @brief Left analog thumbstick axis data */
@@ -428,8 +487,6 @@ typedef struct Paddleboat_Controller_Data {
  * are populated by the value of the corresponding fields from InputDevice.
  */
 typedef struct Paddleboat_Controller_Info {
-    /** @brief Name string, maps to InputDevice.getName() */
-    const char *controllerName;
     /** @brief Controller feature flag bits */
     uint32_t controllerFlags;
     /** @brief Controller number, maps to InputDevice.getControllerNumber() */
@@ -440,16 +497,19 @@ typedef struct Paddleboat_Controller_Info {
     int32_t productId;
     /** @brief Device ID, maps to InputDevice.getId() */
     int32_t deviceId;
-    /** @brief Extent of a center flat (deadzone) area of the thumbsticks */
-    float stickFlat;
-    /** @brief Error tolerance (deviation) values of the thumbsticks */
-    float stickFuzz;
+    /** @brief the flat and fuzz precision values of the left thumbstick */
+    Paddleboat_Controller_Thumbstick_Precision leftStickPrecision;
+    /** @brief the flat and fuzz precision values of the right thumbstick */
+    Paddleboat_Controller_Thumbstick_Precision rightStickPrecision;
 } Paddleboat_Controller_Info;
 
 /**
  * @brief A structure that contains input data for the mouse device.
  */
 typedef struct Paddleboat_Mouse_Data {
+    /** @brief Timestamp of most recent mouse data update, timestamp is
+     * microseconds elapsed since clock epoch. */
+    uint64_t timestamp;
     /** @brief Bit-per-button bitfield array of mouse button status. */
     uint32_t buttonsDown;
      /** @brief Number of horizontal mouse wheel movements since previous
@@ -528,34 +588,38 @@ typedef struct Paddleboat_Controller_Mapping_Data {
  * @param controllerIndex Index of the controller that has registered a status change,
  * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
  * @param controllerStatus New status of the controller.
+ * @param userData The value of the userData parameter passed
+ * to ::Paddleboat_setControllerStatusCallback
  *
  * Function will be called on the same thread that calls ::Paddleboat_update.
  */
 typedef void (*Paddleboat_ControllerStatusCallback)(const int32_t controllerIndex,
-    const Paddleboat_ControllerStatus controllerStatus);
+    const Paddleboat_ControllerStatus controllerStatus, void *userData);
 
 /**
  * @brief Signature of a function that can be passed to
  * ::Paddleboat_setMouseStatusCallback to receive information about mouse
  * device status changes.
  * @param mouseStatus Current status of the mouse.
+ * @param userData The value of the userData parameter passed
+ * to ::Paddleboat_setMouseStatusCallback
  *
  * Function will be called on the same thread that calls ::Paddleboat_update.
  */
-typedef void (*Paddleboat_MouseStatusCallback)(const Paddleboat_MouseStatus mouseStatus);
+typedef void (*Paddleboat_MouseStatusCallback)(const Paddleboat_MouseStatus mouseStatus,
+        void *userData);
 
 /**
- * @brief Initialize Paddleboat, constructing internal resources via JNI.
- * @param env The JNI environment where Paddleboat is to be used.
- * @param jactivity The activity used by the game.
- * @param libraryName If Paddleboat is linked as a static library, this must be the name
- * of the shared library which includes the Paddleboat shared library. Omit the 'lib'
- * prefix and '.so' suffix. i.e. for libgame.so, pass "game".
- * If including the libpaddleboat.so shared library, libraryName should be NULL or nullptr.
- * @return false if Paddleboat failed to initialize.
+ * @brief Initialize Paddleboat, constructing internal resources via JNI. This may be called
+ * after calling ::Paddleboat_destroy to reinitialize the library.
+ * @param env The JNIEnv attached to the thread calling the function.
+ * @param jcontext A Context derived object used by the game. This can be an Activity derived
+ * class.
+ * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code relating to
+ * initialization failure.
  * @see Paddleboat_destroy
  */
-bool Paddleboat_init(JNIEnv *env, jobject jactivity, const char *libraryName);
+Paddleboat_ErrorCode Paddleboat_init(JNIEnv *env, jobject jcontext);
 
 /**
  * @brief Check if Paddleboat was successfully initialized.
@@ -565,19 +629,22 @@ bool Paddleboat_isInitialized();
 
 /**
  * @brief Destroy resources that Paddleboat has created.
+ * @param env The JNIEnv attached to the thread calling the function.
  * @see Paddleboat_init
  */
-void Paddleboat_destroy();
+void Paddleboat_destroy(JNIEnv *env);
 
 /**
  * @brief Inform Paddleboat that a stop event was sent to the application.
+ * @param env The JNIEnv attached to the thread calling the function.
  */
-void Paddleboat_onStop();
+void Paddleboat_onStop(JNIEnv *env);
 
 /**
  * @brief Inform Paddleboat that a start event was sent to the application.
+ * @param env The JNIEnv attached to the thread calling the function.
  */
-void Paddleboat_onStart();
+void Paddleboat_onStart(JNIEnv *env);
 
 /**
  * @brief Process an input event to see if it is from a device being
@@ -588,23 +655,26 @@ void Paddleboat_onStart();
 int32_t Paddleboat_processInputEvent(const AInputEvent *event);
 
 /**
- * @brief Process a Game Activity input event to see if it is from a
+ * @brief Process a GameActivityKeyEvent input event to see if it is from a
  * device being managed by Paddleboat. At least once per game frame, the
- * game should iterate through reported GameActivityKeyEvent and GameActivityMotion
- * events and send them to  Paddleboat_processGameActivityInputEvent for
- * evaluation.
- * @param eventType the type of Game Activity event being passed in the
- * event param. PADDLEBOAT_GAMEACTIVITY_EVENT_KEY means a
- * GameActivityKeyEvent is being passed.
- * PADDLEBOAT_GAMEACTIVITY_EVENT_MOTION means a GameActivityMotionEvent
- * is being passed.
- * @param event the Game Activity input event received by the application.
- * @param eventSize the size of the Game Activity event structing being
- * passed in bytes.
+ * game should iterate through reported GameActivityKeyEvents and pass them to
+ * ::Paddleboat_processGameActivityKeyInputEvent for evaluation.
+ * @param event the GameActivityKeyEvent input event received by the application.
+ * @param eventSize the size of the GameActivityKeyEvent struct being passed in bytes.
  * @return 0 if the event was ignored, 1 if the event was processed/consumed by Paddleboat.
  */
-int32_t Paddleboat_processGameActivityInputEvent(const Paddleboat_GameActivityEvent eventType,
-                                                 const void *event, const size_t eventSize);
+int32_t Paddleboat_processGameActivityKeyInputEvent(const void *event, const size_t eventSize);
+
+/**
+ * @brief Process a GameActivityMotionEvent input event to see if it is from a
+ * device being managed by Paddleboat. At least once per game frame, the
+ * game should iterate through reported GameActivityMotionEvents and pass them to
+ * ::Paddleboat_processGameActivityMotionInputEvent for evaluation.
+ * @param event the GameActivityMotionEvent input event received by the application.
+ * @param eventSize the size of the GameActivityMotionEvent struct being passed in bytes.
+ * @return 0 if the event was ignored, 1 if the event was processed/consumed by Paddleboat.
+ */
+int32_t Paddleboat_processGameActivityMotionInputEvent(const void *event, const size_t eventSize);
 
 /**
  * @brief Retrieve the active axis ids being used by connected devices. This can be used
@@ -614,6 +684,14 @@ int32_t Paddleboat_processGameActivityInputEvent(const Paddleboat_GameActivityEv
  * during the current application session.
  */
 uint64_t Paddleboat_getActiveAxisMask();
+
+/**
+ * @brief Get whether Paddleboat consumes AKEYCODE_BACK key events from devices being
+ * managed by Paddleboat. The default at initialization is true.
+ * @return If true, Paddleboat will consume AKEYCODE_BACK key events, if false
+ * it will pass them through.
+ */
+bool Paddleboat_getBackButtonConsumed();
 
 /**
  * @brief Set whether Paddleboat consumes AKEYCODE_BACK key events from devices being
@@ -630,26 +708,33 @@ void Paddleboat_setBackButtonConsumed(bool consumeBackButton);
  * status. This is used to inform of controller connections and disconnections.
  * @param statusCallback function pointer to the controllers status change callback,
  * passing NULL or nullptr will remove any currently registered callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that will be
+ * passed as a parameter to the status callback. A reference to this pointer will be retained
+ * internally until changed by a future call to ::Paddleboat_setControllerStatusCallback
  */
-void Paddleboat_setControllerStatusCallback(Paddleboat_ControllerStatusCallback statusCallback);
+void Paddleboat_setControllerStatusCallback(Paddleboat_ControllerStatusCallback statusCallback,
+                                            void *userData);
 
 /**
  * @brief Set a callback to be called when the mouse status changes. This is used
  * to inform of physical or virual mouse device connections and disconnections.
  * @param statusCallback function pointer to the controllers status change callback,
  * passing NULL or nullptr will remove any currently registered callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that will be
+ * passed as a parameter to the status callback. A reference to this pointer will be retained
+ * internally until changed by a future call to ::Paddleboat_setMouseStatusCallback
  */
-void Paddleboat_setMouseStatusCallback(Paddleboat_MouseStatusCallback statusCallback);
+void Paddleboat_setMouseStatusCallback(Paddleboat_MouseStatusCallback statusCallback,
+                                       void *userData);
 
 /**
  * @brief Retrieve the current controller data from the controller with the specified index.
  * @param controllerIndex The index of the controller to read from, must be between
  * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
  * @param[out] controllerData a pointer to the controller data struct to populate.
- * @return true if the data was read, false if there was no connected controller
- * at the specified index.
+ * @return `PADDLEBOAT_NO_ERROR` if data was successfully read.
  */
-bool Paddleboat_getControllerData(const int32_t controllerIndex,
+Paddleboat_ErrorCode Paddleboat_getControllerData(const int32_t controllerIndex,
                                   Paddleboat_Controller_Data *controllerData);
 
 /**
@@ -660,9 +745,22 @@ bool Paddleboat_getControllerData(const int32_t controllerIndex,
  * @return true if the data was read, false if there was no connected controller
  * at the specified index.
  */
-bool Paddleboat_getControllerInfo(const int32_t controllerIndex,
+Paddleboat_ErrorCode Paddleboat_getControllerInfo(const int32_t controllerIndex,
                                   Paddleboat_Controller_Info *controllerInfo);
 
+/**
+ * @brief Retrieve the current controller name from the controller with the specified index.
+ * This name is retrieved from InputDevice.getName().
+ * @param controllerIndex The index of the controller to read from, must be between
+ * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
+ * @param bufferSize The capacity in bytes of the string buffer passed in controllerName
+ * @param[out] controllerName A pointer to a buffer that will be populated with the name string.
+ * The name string is a C string in UTF-8 format. If the length of the string is greater than
+ * bufferSize the string will be truncated to fit.
+ * @return `PADDLEBOAT_NO_ERROR` if data was successfully read.
+ */
+Paddleboat_ErrorCode Paddleboat_getControllerName(const int32_t controllerIndex,
+                                                  const size_t bufferSize, char *controllerName);
 /**
  * @brief Retrieve the current controller device info from the controller with the specified index.
  * @param controllerIndex The index of the controller to read from, must be between
@@ -680,17 +778,19 @@ Paddleboat_ControllerStatus Paddleboat_getControllerStatus(const int32_t control
  * range is from 0.0 to 1.0. Intensity of 0.0 will turn off vibration if it is active. Duration
  * is specified in milliseconds. The pointer passed in vibrationData is not retained and does not
  * need to persist after function return.
+ * @param env The JNIEnv attached to the thread calling the function.
  * @return true if the vibration data was set, false if there was no connected controller or the
  * connected controller does not support vibration.
  */
-bool Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
-                                           const Paddleboat_Vibration_Data *vibrationData);
+Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
+                                           const Paddleboat_Vibration_Data *vibrationData,
+                                           JNIEnv *env);
 /**
  * @brief Retrieve the current mouse data.
  * @param[out] mouseData pointer to the mouse data struct to populate.
  * @return true if the data was read, false if there was no connected mouse device.
  */
-bool Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData);
+Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData);
 
 /**
  * @brief Retrieve the current controller device info from the controller with the specified index.
@@ -730,8 +830,9 @@ int32_t Paddleboat_getControllerRemapTableData(const int32_t destRemapTableEntry
  * callbacks, those callbacks will fire on the same thread that called Paddleboat_update.
  * This function should be called once per game frame. It is recommended to call Paddleboat_update
  * before sending any new input events or reading controller inputs for a particular game frame.
+ * @param env The JNIEnv attached to the thread calling the function.
  */
-void Paddleboat_update();
+void Paddleboat_update(JNIEnv *env);
 
 /**
  * @brief An function that returns the last keycode seen in a key event

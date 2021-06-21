@@ -17,6 +17,7 @@
 #include "GameController.h"
 #include "GameControllerInternalConstants.h"
 #include <android/input.h>
+#include <chrono>
 #include <cstdlib>
 #include <math.h>
 #include <memory>
@@ -57,7 +58,7 @@ namespace paddleboat {
     constexpr float AXIS_BUTTON_THRESHOLD = 0.1f;
 
     void resetData(Paddleboat_Controller_Data &pbData) {
-        pbData.updateSerial = 0;
+        pbData.timestamp = 0;
         pbData.buttonsDown = 0;
         pbData.leftStick.stickX = 0.0f;
         pbData.leftStick.stickY = 0.0f;
@@ -72,14 +73,19 @@ namespace paddleboat {
     }
 
     void resetInfo(Paddleboat_Controller_Info &pbInfo) {
-        pbInfo.controllerName = nullptr;
         pbInfo.controllerNumber = -1;
         pbInfo.controllerFlags = 0;
         pbInfo.vendorId = 0;
         pbInfo.productId = 0;
         pbInfo.deviceId = -1;
-        pbInfo.stickFlat = 0.0f;
-        pbInfo.stickFuzz = 0.0f;
+        pbInfo.leftStickPrecision.stickFlatX = 0.0f;
+        pbInfo.leftStickPrecision.stickFlatY = 0.0f;
+        pbInfo.leftStickPrecision.stickFuzzX = 0.0f;
+        pbInfo.leftStickPrecision.stickFuzzY = 0.0f;
+        pbInfo.rightStickPrecision.stickFlatX = 0.0f;
+        pbInfo.rightStickPrecision.stickFlatY = 0.0f;
+        pbInfo.rightStickPrecision.stickFuzzX = 0.0f;
+        pbInfo.rightStickPrecision.stickFuzzY = 0.0f;
     }
 
     GameController::GameController() :
@@ -103,7 +109,6 @@ namespace paddleboat {
         uint64_t axisLow = static_cast<uint64_t>(infoFields.mAxisBitsLow);
         uint64_t axisHigh = static_cast<uint64_t>(infoFields.mAxisBitsHigh);
         mControllerAxisMask = axisLow | (axisHigh << 32ULL);
-        mControllerInfo.controllerName = mDeviceInfo.getName();
         mControllerInfo.controllerFlags = infoFields.mControllerFlags;
         mControllerInfo.controllerNumber = infoFields.mControllerNumber;
         mControllerInfo.deviceId = infoFields.mDeviceId;
@@ -157,19 +162,55 @@ namespace paddleboat {
     }
 
     void GameController::adjustAxisConstants() {
-        // Both sticks are assumed to have equal axis parameters
         if (mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisIndex >= 0) {
             const bool stickAxisAdjust = ((mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisFlags &
                                            GAMECONTROLLER_AXIS_FLAG_APPLY_ADJUSTMENTS) != 0);
-            mControllerInfo.stickFlat =
+
+            mControllerInfo.leftStickPrecision.stickFlatX =
                 mDeviceInfo.getFlatArray()[mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisIndex];
-            mControllerInfo.stickFuzz =
+            mControllerInfo.leftStickPrecision.stickFlatY =
+                    mDeviceInfo.getFlatArray()[mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_Y].axisIndex];
+            mControllerInfo.leftStickPrecision.stickFuzzX =
                 mDeviceInfo.getFuzzArray()[mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisIndex];
+            mControllerInfo.leftStickPrecision.stickFuzzY =
+                    mDeviceInfo.getFuzzArray()[mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_Y].axisIndex];
             if (stickAxisAdjust) {
                 // We are adjusting the raw axis values, so we also adjust the 'flat' and 'fuzz'
                 // values for the sticks
-                mControllerInfo.stickFlat *= mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisMultiplier;
-                mControllerInfo.stickFuzz *= mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisMultiplier;
+                mControllerInfo.leftStickPrecision.stickFlatX *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisMultiplier;
+                mControllerInfo.leftStickPrecision.stickFlatY *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_Y].axisMultiplier;
+                mControllerInfo.leftStickPrecision.stickFuzzX *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_X].axisMultiplier;
+                mControllerInfo.leftStickPrecision.stickFuzzY *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_LSTICK_Y].axisMultiplier;
+            }
+        }
+
+        if (mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisIndex >= 0) {
+            const bool stickAxisAdjust = ((mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisFlags &
+                                           GAMECONTROLLER_AXIS_FLAG_APPLY_ADJUSTMENTS) != 0);
+
+            mControllerInfo.rightStickPrecision.stickFlatX =
+                    mDeviceInfo.getFlatArray()[mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisIndex];
+            mControllerInfo.rightStickPrecision.stickFlatY =
+                    mDeviceInfo.getFlatArray()[mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_Y].axisIndex];
+            mControllerInfo.rightStickPrecision.stickFuzzX =
+                    mDeviceInfo.getFuzzArray()[mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisIndex];
+            mControllerInfo.rightStickPrecision.stickFuzzY =
+                    mDeviceInfo.getFuzzArray()[mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_Y].axisIndex];
+            if (stickAxisAdjust) {
+                // We are adjusting the raw axis values, so we also adjust the 'flat' and 'fuzz'
+                // values for the sticks
+                mControllerInfo.rightStickPrecision.stickFlatX *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisMultiplier;
+                mControllerInfo.rightStickPrecision.stickFlatY *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_Y].axisMultiplier;
+                mControllerInfo.rightStickPrecision.stickFuzzX *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_X].axisMultiplier;
+                mControllerInfo.rightStickPrecision.stickFuzzY *=
+                        mAxisInfo[GAMECONTROLLER_AXIS_RSTICK_Y].axisMultiplier;
             }
         }
     }
@@ -360,4 +401,15 @@ namespace paddleboat {
         }
         return handledEvent;
     }
+
+    void GameController::setControllerDataDirty(const bool dirty) {
+        mControllerDataDirty = dirty;
+        if (dirty) {
+            // update the timestamp any time we mark dirty
+            const auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(
+                    std::chrono::steady_clock::now().time_since_epoch()).count();
+            mControllerData.timestamp = static_cast<uint64_t>(timestamp);
+        }
+    }
+
 } // namespace paddleboat
