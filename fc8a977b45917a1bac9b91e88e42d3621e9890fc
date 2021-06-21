@@ -16,6 +16,40 @@
       "message": "Working on incorporating the GameController feedback from the NDK council review. Splitting up into two CLs to keep it manageable, this is the first. Thanks for taking a look.",
       "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "871fc2be_34a268ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-21T09:04:51Z",
+      "side": 1,
+      "message": "LGTM, just one small comment",
+      "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f40e0fc9_ebef5bbd",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-21T09:04:51Z",
+      "side": 1,
+      "message": "Comment on ownership of this string?",
+      "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
