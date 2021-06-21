@@ -9,6 +9,10 @@
 
 .temp
 .externalNativeBuild
+.cxx
+.project
+.settings
+.vscode
 
 # IntelliJ/Android Studio outputs or settings:
 **/.idea

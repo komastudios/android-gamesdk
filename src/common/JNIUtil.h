@@ -25,8 +25,8 @@
 
 #include "Log.h"
 
-// This data comes from a binary resource linked to the lirary.
-// It conatins Java classes compressed into DEX format for dynamic loading.
+// This data comes from a binary resource linked to the library.
+// It contains Java classes compressed into DEX format for dynamic loading.
 extern const char _binary_classes_dex_start;
 extern const char _binary_classes_dex_end;
 
@@ -97,7 +97,7 @@ static jclass loadClass(JNIEnv* env, jobject activity, const char* name,
                         JNINativeMethod* nativeMethods,
                         size_t nativeMethodsSize) {
     /*
-     *   1. Get a classloder from actvity
+     *   1. Get a classloader from actvity
      *   2. Try to create the requested class from the activty classloader
      *   3. If step 2 not successful then get a classloder for dex bytes (in
      * memory or file)
