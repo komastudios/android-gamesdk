@@ -1,0 +1,134 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012007373",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "06484e77_b09b663e",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-21T22:47:11Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 166,
+        "endChar": 170
+      },
+      "revId": "03c663125abfaa9214bd0bb861ebd519de3881e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012007373",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3478ea3a_3a8bf190",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-21T22:47:11Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 167,
+        "startChar": 0,
+        "endLine": 167,
+        "endChar": 167
+      },
+      "revId": "03c663125abfaa9214bd0bb861ebd519de3881e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012007373",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9829da0b_2d32ee0b",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-21T22:47:11Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 168,
+        "startChar": 0,
+        "endLine": 168,
+        "endChar": 151
+      },
+      "revId": "03c663125abfaa9214bd0bb861ebd519de3881e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012007373",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ad577026_5264e75e",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-21T22:47:11Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 157
+      },
+      "revId": "03c663125abfaa9214bd0bb861ebd519de3881e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012007373",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a40a08b2_1b816366",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-21T22:47:11Z",
+      "side": 1,
+      "message": "Prefer to use appContext.getSystemService(InputManager.class) instead to avoid the cast.",
+      "range": {
+        "startLine": 65,
+        "startChar": 23,
+        "endLine": 65,
+        "endChar": 66
+      },
+      "revId": "03c663125abfaa9214bd0bb861ebd519de3881e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
