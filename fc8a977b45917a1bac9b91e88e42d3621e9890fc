@@ -50,6 +50,24 @@
       "message": "Comment on ownership of this string?",
       "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63b68fd4_68d191f7",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-21T13:09:55Z",
+      "side": 1,
+      "message": "This field is being removed in the next CL and the name will be retrieved using a Paddleboat_getControllerName function.",
+      "parentUuid": "f40e0fc9_ebef5bbd",
+      "revId": "fc8a977b45917a1bac9b91e88e42d3621e9890fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
