@@ -43,8 +43,8 @@ namespace paddleboat {
     constexpr const char *GCM_INIT_METHOD_NAME = "<init>";
     constexpr const char *GCM_INIT_METHOD_SIGNATURE =
         "(Landroid/app/Activity;Ljava/lang/String;Z)V";
-    constexpr const char *GCM_ONPAUSE_METHOD_NAME = "onPause";
-    constexpr const char *GCM_ONRESUME_METHOD_NAME = "onResume";
+    constexpr const char *GCM_ONSTOP_METHOD_NAME = "onStop";
+    constexpr const char *GCM_ONSTART_METHOD_NAME = "onStart";
     constexpr const char *GCM_GETAPILEVEL_METHOD_NAME = "getApiLevel";
     constexpr const char *GCM_GETAPILEVEL_METHOD_SIGNATURE = "()I";
     constexpr const char *GCM_SETNATIVEREADY_METHOD_NAME = "setNativeReady";
@@ -161,7 +161,7 @@ namespace paddleboat {
         return sInstance.get();
     }
 
-    bool GameControllerManager::isEnabled() {
+    bool GameControllerManager::isInitialized() {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             // This is a case of error.
@@ -349,10 +349,10 @@ namespace paddleboat {
                         if (controllerInfo.deviceId == eventDeviceId) {
                             Paddleboat_Controller_Data &controllerData =
                                 mGameControllers[i].getControllerData();
-                            controllerData.virtualX = AMotionEvent_getAxisValue(event,
-                                AMOTION_EVENT_AXIS_X, 0);
-                            controllerData.virtualY = AMotionEvent_getAxisValue(event,
-                                AMOTION_EVENT_AXIS_Y, 0);
+                            controllerData.virtualPointer.pointerX =
+                                    AMotionEvent_getAxisValue(event, AMOTION_EVENT_AXIS_X, 0);
+                            controllerData.virtualPointer.pointerY =
+                                    AMotionEvent_getAxisValue(event, AMOTION_EVENT_AXIS_Y, 0);
                             const float axisP = AMotionEvent_getAxisValue(event,
                                 AMOTION_EVENT_AXIS_PRESSURE, 0);
 
@@ -372,8 +372,8 @@ namespace paddleboat {
                             // update the mouse data
                             if (mMouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED
                                 && mMouseControllerIndex == static_cast<int32_t>(i)) {
-                                mMouseData.mouseX = controllerData.virtualX;
-                                mMouseData.mouseY = controllerData.virtualY;
+                                mMouseData.mouseX = controllerData.virtualPointer.pointerX;
+                                mMouseData.mouseY = controllerData.virtualPointer.pointerY;
                                 mMouseData.buttonsDown =
                                     static_cast<uint32_t>(AMotionEvent_getButtonState(event));
                                 mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
@@ -433,9 +433,9 @@ namespace paddleboat {
                             if (controllerInfo.deviceId == eventDeviceId) {
                                 Paddleboat_Controller_Data &controllerData =
                                     mGameControllers[i].getControllerData();
-                                controllerData.virtualX =
+                                controllerData.virtualPointer.pointerX =
                                     pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
-                                controllerData.virtualY =
+                                controllerData.virtualPointer.pointerY =
                                     pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
                                 const float axisP =
                                     pointerInfo->axisValues[AMOTION_EVENT_AXIS_PRESSURE];
@@ -456,8 +456,8 @@ namespace paddleboat {
                                 // update the mouse data
                                 if (mMouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED
                                     && mMouseControllerIndex == static_cast<int32_t>(i)) {
-                                    mMouseData.mouseX = controllerData.virtualX;
-                                    mMouseData.mouseY = controllerData.virtualY;
+                                    mMouseData.mouseX = controllerData.virtualPointer.pointerX;
+                                    mMouseData.mouseY = controllerData.virtualPointer.pointerY;
                                     mMouseData.buttonsDown = motionEvent->buttonState;
                                     mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
                                 }
@@ -681,13 +681,6 @@ namespace paddleboat {
         return success;
     }
 
-    bool GameControllerManager::setControllerLight(const int32_t controllerIndex,
-                                                   const Paddleboat_LightType lightType,
-                                                   const uint32_t lightData) {
-        bool success = false;
-        return success;
-    }
-
     GameControllerDeviceInfo *GameControllerManager::onConnection() {
         GameControllerDeviceInfo *deviceInfo = nullptr;
         GameControllerManager *gcm = getInstance();
@@ -890,14 +883,14 @@ namespace paddleboat {
         return 0;
     }
 
-    void GameControllerManager::onPause() {
+    void GameControllerManager::onStop() {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             return;
         }
         if (gcm->mGameControllerObject != NULL) {
             jmethodID onPauseID = gcm->mJNIEnv->GetMethodID(gcm->mGameControllerClass,
-                                                            GCM_ONPAUSE_METHOD_NAME,
+                                                            GCM_ONSTOP_METHOD_NAME,
                                                             VOID_METHOD_SIGNATURE);
             if (onPauseID != NULL) {
                 gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject, onPauseID);
@@ -905,14 +898,14 @@ namespace paddleboat {
         }
     }
 
-    void GameControllerManager::onResume() {
+    void GameControllerManager::onStart() {
         GameControllerManager *gcm = getInstance();
         if (!gcm) {
             return;
         }
         if (gcm->mGameControllerObject != NULL) {
             jmethodID onResumeID = gcm->mJNIEnv->GetMethodID(gcm->mGameControllerClass,
-                                                             GCM_ONRESUME_METHOD_NAME,
+                                                             GCM_ONSTART_METHOD_NAME,
                                                              VOID_METHOD_SIGNATURE);
             if (onResumeID != NULL) {
                 gcm->mJNIEnv->CallVoidMethod(gcm->mGameControllerObject, onResumeID);

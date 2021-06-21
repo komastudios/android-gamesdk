@@ -46,7 +46,7 @@ namespace paddleboat {
 
         static void destroyInstance();
 
-        static bool isEnabled();
+        static bool isInitialized();
 
         // Get/Set whether AKEYCODE_BACK is 'eaten' or allowed to pass through to the system
         // This can be used to block the OS backing out of the game, or allowing it if the
@@ -61,9 +61,9 @@ namespace paddleboat {
         static void setMouseStatusCallback(
                 Paddleboat_MouseStatusCallback statusCallback);
 
-        static void onPause();
+        static void onStop();
 
-        static void onResume();
+        static void onStart();
 
         static void update();
 
@@ -77,10 +77,6 @@ namespace paddleboat {
 
         static bool setControllerVibrationData(const int32_t controllerIndex,
                                                const Paddleboat_Vibration_Data *vibrationData);
-
-        static bool
-        setControllerLight(const int32_t controllerIndex, const Paddleboat_LightType lightType,
-                           const uint32_t lightData);
 
         static bool getMouseData(Paddleboat_Mouse_Data *mouseData);
 

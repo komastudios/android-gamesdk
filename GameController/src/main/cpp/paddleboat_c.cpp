@@ -21,8 +21,26 @@ using namespace paddleboat;
 
 extern "C" {
 
-// Internal init function. Do not call directly.
-bool Paddleboat_init_internal(JNIEnv *env, jobject jactivity, const char *libraryName) {
+// Internal macros to track Paddleboat version, do not use directly.
+#define PADDLEBOAT_MAJOR_VERSION 1
+#define PADDLEBOAT_MINOR_VERSION 0
+#define PADDLEBOAT_BUGFIX_VERSION 0
+
+#define PADDLEBOAT_PACKED_VERSION ((PADDLEBOAT_MAJOR_VERSION<<24)| \
+    (PADDLEBOAT_MINOR_VERSION<<16) | (PADDLEBOAT_BUGFIX_VERSION))
+
+#define PADDLEBOAT_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
+    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
+#define PADDLEBOAT_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
+    PADDLEBOAT_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
+#define PADDLEBOAT_VERSION_SYMBOL                                           \
+    PADDLEBOAT_VERSION_CONCAT(PADDLEBOAT_version, PADDLEBOAT_MAJOR_VERSION, \
+                              PADDLEBOAT_MINOR_VERSION, PADDLEBOAT_BUGFIX_VERSION)
+
+void PADDLEBOAT_VERSION_SYMBOL();
+
+bool Paddleboat_init(JNIEnv *env, jobject jactivity, const char *libraryName) {
+    PADDLEBOAT_VERSION_SYMBOL();
     bool success = GameControllerManager::init(env, jactivity, libraryName);
     if (success) {
         GameControllerManager::update();
@@ -30,20 +48,20 @@ bool Paddleboat_init_internal(JNIEnv *env, jobject jactivity, const char *librar
     return success;
 }
 
-bool Paddleboat_isEnabled() {
-    return GameControllerManager::isEnabled();
+bool Paddleboat_isInitialized() {
+    return GameControllerManager::isInitialized();
 }
 
 void Paddleboat_destroy() {
     GameControllerManager::destroyInstance();
 }
 
-void Paddleboat_onPause() {
-    GameControllerManager::onPause();
+void Paddleboat_onStop() {
+    GameControllerManager::onStop();
 }
 
-void Paddleboat_onResume() {
-    GameControllerManager::onResume();
+void Paddleboat_onStart() {
+    GameControllerManager::onStart();
 }
 
 int32_t Paddleboat_processInputEvent(const AInputEvent *event) {
@@ -90,12 +108,6 @@ Paddleboat_ControllerStatus Paddleboat_getControllerStatus(const int32_t control
 bool Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
                                            const Paddleboat_Vibration_Data *vibrationData) {
     return GameControllerManager::setControllerVibrationData(controllerIndex, vibrationData);
-}
-
-bool
-Paddleboat_setControllerLight(const int32_t controllerIndex, const Paddleboat_LightType lightType,
-                              const uint32_t lightData) {
-    return GameControllerManager::setControllerLight(controllerIndex, lightType, lightData);
 }
 
 bool Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData) {
