@@ -31,8 +31,14 @@ TuningForkLogEvent TestEndToEndWithLoadingGroups(
     tf::SerializedAnnotation loading_annotation = {1, 2, 3};
     Annotation ann;
     tf::LoadingHandle group_handle = 0;
-    tf::StartLoadingGroup(nullptr, group_annotation,
-                          use_stop ? &group_handle : nullptr);
+    TuningFork_LoadingTimeMetadata metadata{};
+    EXPECT_EQ(tf::StartLoadingGroup(nullptr, group_annotation,
+                                    use_stop ? &group_handle : nullptr),
+              TUNINGFORK_ERROR_INVALID_LOADING_STATE);
+    metadata.state = TuningFork_LoadingTimeMetadata::HOT_START;
+    EXPECT_EQ(tf::StartLoadingGroup(&metadata, group_annotation,
+                                    use_stop ? &group_handle : nullptr),
+              TUNINGFORK_ERROR_OK);
     tf::LoadingHandle loading_handle;
     tf::StartRecordingLoadingTime(
         {tf::LoadingTimeMetadata::LoadingState::WARM_START,
@@ -71,7 +77,8 @@ TuningForkLogEvent ExpectedResultWithLoadingGroups(bool use_stop,
               "loading_metadata":{
                 "group_id": )TF" +
                        any_string + R"TF(,
-                "source":9
+                "source":9,
+                "state":4
               }
             })TF";
     // An event in the first batch of events because of the StopRecordingGroup

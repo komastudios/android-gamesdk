@@ -73,7 +73,8 @@ static std::string AbandonedLoadingEvent(int type, const std::string& duration,
             "loading_metadata": {
               "group_id": )TF"
             << any_string << R"TF(,
-              "source": 9
+              "source": 9,
+              "state": 1
             }
           }]
         }
@@ -137,7 +138,14 @@ TuningForkLogEvent TestEndToEndWithAbandonedLoadingTimes(bool add_group) {
     TuningForkTest test(settings, milliseconds(10));
     tf::SerializedAnnotation loading_annotation = {1, 2, 3};
     Annotation ann;
-    if (add_group) tf::StartLoadingGroup(nullptr, nullptr, nullptr);
+    if (add_group) {
+        EXPECT_EQ(tf::StartLoadingGroup(nullptr, nullptr, nullptr),
+                  TUNINGFORK_ERROR_INVALID_LOADING_STATE);
+        TuningFork_LoadingTimeMetadata group_metadata{};
+        group_metadata.state = TuningFork_LoadingTimeMetadata::FIRST_RUN;
+        EXPECT_EQ(tf::StartLoadingGroup(&group_metadata, nullptr, nullptr),
+                  TUNINGFORK_ERROR_OK);
+    }
     tf::LoadingHandle loading_handle;
     tf::StartRecordingLoadingTime(
         {tf::LoadingTimeMetadata::LoadingState::WARM_START,
