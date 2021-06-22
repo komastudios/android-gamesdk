@@ -20,8 +20,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory>
+#include <vector>
+#include <algorithm>
 
 #define LOG_TAG "GameTextInput"
+
+static constexpr int32_t DEFAULT_MAX_STRING_SIZE = 1<<16;
 
 // Cache of field ids in the Java GameTextInputState class
 struct StateClassInfo {
@@ -35,24 +39,28 @@ struct StateClassInfo {
 // Main GameTextInput object.
 struct GameTextInput {
  public:
-  GameTextInput(JNIEnv *env);
+  GameTextInput(JNIEnv *env, uint32_t max_string_size);
   ~GameTextInput();
   void setState(const GameTextInputState& state);
-  const GameTextInputState& getState() const { return gameTextInputState_;}
+  const GameTextInputState& getState() const { return currentState_;}
   void setInputConnection(jobject inputConnection);
   void processEvent(jobject textInputEvent);
   void showIme(uint32_t flags);
   void hideIme(uint32_t flags);
   void setEventCallback(GameTextInputEventCallback callback, void *context);
-  jobject stateToJava(const GameTextInputState *state) const;
-  GameTextInputState stateFromJava(jobject textInputEvent) const;
+  jobject stateToJava(const GameTextInputState &state) const;
+  void stateFromJava(jobject textInputEvent, GameTextInputGetStateCallback callback,
+                     void* context) const;
  private:
+  // Copy string and set other fields
+  void setStateInner(const GameTextInputState& state);
+  static void processCallback(void* context, const GameTextInputState* state);
   JNIEnv *env_;
-  // Needed because we can't find the class on a non-Java thread
-  jclass gameTextInputStateClass_;
-  // The latest text input update
-  GameTextInputState gameTextInputState_;
-  // An instance of gametextinput.InputConnection
+  // Cached at initialization from com/google/androidgamesdk/gametextinput/State.
+  jclass stateJavaClass_;
+  // The latest text input update.
+  GameTextInputState currentState_;
+  // An instance of gametextinput.InputConnection.
   jclass inputConnectionClass_;
   jobject inputConnection_;
   jmethodID inputConnectionSetStateMethod_;
@@ -60,20 +68,11 @@ struct GameTextInput {
   void (*eventCallback_)(void *context, const struct GameTextInputState * state);
   void *eventCallbackContext_;
   StateClassInfo stateClassInfo_;
+  // Constant-sized buffer used to store state text.
+  std::vector<char> stateStringBuffer_;
 };
 
 std::unique_ptr<GameTextInput> s_gameTextInput;
-
-// Copy UTF-8 string.
-// len is the byte length, not including the final null char.
-static char *string_copy(const char *c, size_t len) {
-  if (c == nullptr) return nullptr;
-  char *ret = (char *)malloc(len + 1);  // Include null
-  memcpy(ret, c, len);
-  ret[len] = 0;  // Add a null at the end, rather than assuming that the input
-                 // is null-termninated.
-  return ret;
-}
 
 extern "C" {
 
@@ -81,51 +80,32 @@ extern "C" {
 /// GameTextInputState C Functions
 ///////////////////////////////////////////////////////////
 
-void GameTextInputState_constructEmpty(GameTextInputState *s) { *s = {}; }
-
-void GameTextInputState_construct(GameTextInputState *s, const char *t,
-                                         int32_t l, int s0, int s1, int c0,
-                                         int c1) {
-  s->text_UTF8 = string_copy(t, l);
-  s->text_length = l;
-  s->selection = {s0, s1};
-  s->composingRegion = {c0, c1};
-  s->dealloc = free;
-}
-void GameTextInputState_destruct(GameTextInputState *s) {
-  if (s->text_UTF8 && s->dealloc) s->dealloc((void *)s->text_UTF8);
-}
-void GameTextInputState_set(GameTextInputState *s,
-                                   const GameTextInputState *rhs) {
-  GameTextInputState_destruct(s);
-  GameTextInputState_construct(
-      s, rhs->text_UTF8, rhs->text_length, rhs->selection.start,
-      rhs->selection.end, rhs->composingRegion.start, rhs->composingRegion.end);
-}
-
 // Convert to a Java structure.
-jobject GameTextInputState_toJava(const GameTextInput* gameTextInput,
+jobject currentState_toJava(const GameTextInput* gameTextInput,
                                   const GameTextInputState *state) {
-  return gameTextInput->stateToJava(state);
+  if (state==nullptr) return NULL;
+  return gameTextInput->stateToJava(*state);
 }
 
 // Convert from Java structure.
-GameTextInputState GameTextInputState_fromJava(const GameTextInput* gameTextInput,
-                                               jobject textInputEvent) {
-  return gameTextInput->stateFromJava(textInputEvent);
+void currentState_fromJava(const GameTextInput* gameTextInput,
+                                               jobject textInputEvent,
+                                               GameTextInputGetStateCallback callback,
+                                               void* context) {
+  gameTextInput->stateFromJava(textInputEvent, callback, context);
 }
 
 ///////////////////////////////////////////////////////////
 /// GameTextInput C Functions
 ///////////////////////////////////////////////////////////
 
-struct GameTextInput *GameTextInput_init(JNIEnv *env) {
+struct GameTextInput *GameTextInput_init(JNIEnv *env, uint32_t max_string_size) {
   if (s_gameTextInput.get()!=nullptr) {
       __android_log_print(ANDROID_LOG_WARN, LOG_TAG,
                  "Warning: called GameTextInput_init twice without calling GameTextInput_destroy");
       return s_gameTextInput.get();
   }
-  s_gameTextInput = std::make_unique<GameTextInput>(env);
+  s_gameTextInput = std::make_unique<GameTextInput>(env, max_string_size);
   return s_gameTextInput.get();
 }
 
@@ -139,8 +119,9 @@ void GameTextInput_setState(GameTextInput *input, const GameTextInputState *stat
   input->setState(*state);
 }
 
-const GameTextInputState *GameTextInput_getState(GameTextInput *input) {
-  return &input->getState();
+void GameTextInput_getState(GameTextInput *input, GameTextInputGetStateCallback callback,
+                            void* context) {
+  callback(context, &input->getState());
 }
 
 void GameTextInput_setInputConnection(GameTextInput *input, jobject inputConnection) {
@@ -170,8 +151,9 @@ void GameTextInput_setEventCallback(struct GameTextInput *input,
 /// GameTextInput C++ class Implementation
 ///////////////////////////////////////////////////////////
 
-GameTextInput::GameTextInput(JNIEnv* env) : env_(env), gameTextInputState_ {} {
-  gameTextInputStateClass_ = (jclass)env_->NewGlobalRef(
+GameTextInput::GameTextInput(JNIEnv* env, uint32_t max_string_size) : env_(env), currentState_ {},
+    stateStringBuffer_(max_string_size==0?DEFAULT_MAX_STRING_SIZE:max_string_size) {
+  stateJavaClass_ = (jclass)env_->NewGlobalRef(
       env_->FindClass("com/google/androidgamesdk/gametextinput/State"));
   inputConnectionClass_ = (jclass)env_->NewGlobalRef(
       env_->FindClass("com/google/androidgamesdk/gametextinput/InputConnection"));
@@ -184,23 +166,23 @@ GameTextInput::GameTextInput(JNIEnv* env) : env_(env), gameTextInputState_ {} {
       inputConnectionClass_, "setSoftKeyboardActive", "(ZI)V");
 
   stateClassInfo_.text =
-      env_->GetFieldID(gameTextInputStateClass_, "text", "Ljava/lang/String;");
+      env_->GetFieldID(stateJavaClass_, "text", "Ljava/lang/String;");
   stateClassInfo_.selectionStart =
-      env_->GetFieldID(gameTextInputStateClass_, "selectionStart", "I");
+      env_->GetFieldID(stateJavaClass_, "selectionStart", "I");
   stateClassInfo_.selectionEnd =
-      env_->GetFieldID(gameTextInputStateClass_, "selectionEnd", "I");
+      env_->GetFieldID(stateJavaClass_, "selectionEnd", "I");
   stateClassInfo_.composingRegionStart =
-      env_->GetFieldID(gameTextInputStateClass_, "composingRegionStart", "I");
+      env_->GetFieldID(stateJavaClass_, "composingRegionStart", "I");
   stateClassInfo_.composingRegionEnd =
-      env_->GetFieldID(gameTextInputStateClass_, "composingRegionEnd", "I");
+      env_->GetFieldID(stateJavaClass_, "composingRegionEnd", "I");
 
   return s_gameTextInput.get();
 }
 
 GameTextInput::~GameTextInput() {
-  if (gameTextInputStateClass_ != NULL) {
-    env_->DeleteGlobalRef(gameTextInputStateClass_);
-    gameTextInputStateClass_ = NULL;
+  if (stateJavaClass_ != NULL) {
+    env_->DeleteGlobalRef(stateJavaClass_);
+    stateJavaClass_ = NULL;
   }
   if (inputConnectionClass_ != NULL) {
     env_->DeleteGlobalRef(inputConnectionClass_);
@@ -210,17 +192,32 @@ GameTextInput::~GameTextInput() {
     env_->DeleteGlobalRef(inputConnection_);
     inputConnection_ = NULL;
   }
-  GameTextInputState_destruct(&gameTextInputState_);
 }
 
 void GameTextInput::setState(const GameTextInputState& state) {
   if (inputConnection_ == nullptr) return;
-  jobject jstate =
-      GameTextInputState_toJava(this, &state);
+  jobject jstate = stateToJava(state);
   env_->CallVoidMethod(inputConnection_,
                              inputConnectionSetStateMethod_, jstate);
   env_->DeleteLocalRef(jstate);
-  GameTextInputState_set(&gameTextInputState_, &state);
+  setStateInner(state);
+}
+
+void GameTextInput::setStateInner(const GameTextInputState& state) {
+  // Check if we're setting using our own string (other parts may be different)
+  if (state.text_UTF8==currentState_.text_UTF8) {
+    currentState_ = state;
+    return;
+  }
+  // Otherwise, copy across the string.
+  auto bytes_needed = std::min(static_cast<uint32_t>(state.text_length+1),
+                               static_cast<uint32_t>(stateStringBuffer_.size()));
+  currentState_.text_UTF8 = stateStringBuffer_.data();
+  std::copy(state.text_UTF8, state.text_UTF8 + bytes_needed - 1, stateStringBuffer_.data());
+  currentState_.text_length = state.text_length;
+  currentState_.selection = state.selection;
+  currentState_.composingRegion = state.composingRegion;
+  stateStringBuffer_[bytes_needed-1] = 0;
 }
 
 void GameTextInput::setInputConnection(jobject inputConnection) {
@@ -230,11 +227,16 @@ void GameTextInput::setInputConnection(jobject inputConnection) {
   inputConnection_ = env_->NewGlobalRef(inputConnection);
 }
 
+/*static*/ void GameTextInput::processCallback(void* context, const GameTextInputState* state) {
+  auto thiz = static_cast<GameTextInput*>(context);
+  if (state!=nullptr)
+      thiz->setStateInner(*state);
+}
+
 void GameTextInput::processEvent(jobject textInputEvent) {
-  GameTextInputState_destruct(&gameTextInputState_);
-  gameTextInputState_ = GameTextInputState_fromJava(this, textInputEvent);
+  stateFromJava(textInputEvent, processCallback, this);
   if (eventCallback_) {
-    eventCallback_(eventCallbackContext_, &gameTextInputState_);
+    eventCallback_(eventCallbackContext_, &currentState_);
   }
 }
 
@@ -255,18 +257,18 @@ void GameTextInput::hideIme(uint32_t flags) {
                        setSoftKeyboardActiveMethod_, false, flags);
 }
 
-jobject GameTextInput::stateToJava(const GameTextInputState *state) const {
+jobject GameTextInput::stateToJava(const GameTextInputState &state) const {
   static jmethodID constructor = nullptr;
   if (constructor == nullptr) {
     constructor =
-        env_->GetMethodID(gameTextInputStateClass_, "<init>", "(Ljava/lang/String;IIII)V");
+        env_->GetMethodID(stateJavaClass_, "<init>", "(Ljava/lang/String;IIII)V");
     if (constructor == nullptr) {
       __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,
                           "Can't find gametextinput.State constructor");
       return nullptr;
     }
   }
-  const char *text = state->text_UTF8;
+  const char *text = state.text_UTF8;
   if (text == nullptr) {
     static char empty_string[] = "";
     text = empty_string;
@@ -275,14 +277,15 @@ jobject GameTextInput::stateToJava(const GameTextInputState *state) const {
   // https://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8
   jstring jtext = env_->NewStringUTF(text);
   jobject jobj =
-      env_->NewObject(gameTextInputStateClass_, constructor, jtext, state->selection.start,
-                     state->selection.end, state->composingRegion.start,
-                     state->composingRegion.end);
+      env_->NewObject(stateJavaClass_, constructor, jtext, state.selection.start,
+                     state.selection.end, state.composingRegion.start,
+                     state.composingRegion.end);
   env_->DeleteLocalRef(jtext);
   return jobj;
 }
 
-GameTextInputState GameTextInput::stateFromJava(jobject textInputEvent) const {
+void GameTextInput::stateFromJava(jobject textInputEvent, GameTextInputGetStateCallback callback,
+    void* context) const {
   jstring text =
       (jstring)env_->GetObjectField(textInputEvent, stateClassInfo_.text);
   // Note this is 'modified' UTF-8, not true UTF-8. It has no NULLs in it,
@@ -300,12 +303,12 @@ GameTextInputState GameTextInput::stateFromJava(jobject textInputEvent) const {
       env_->GetIntField(textInputEvent, stateClassInfo_.composingRegionStart);
   int composingRegionEnd =
       env_->GetIntField(textInputEvent, stateClassInfo_.composingRegionEnd);
-  GameTextInputState state;
-  GameTextInputState_construct(&state, text_chars, text_len, selectionStart,
-                           selectionEnd, composingRegionStart,
-                           composingRegionEnd);
+  GameTextInputState state {
+    text_chars, text_len,
+    {selectionStart, selectionEnd},
+    {composingRegionStart, composingRegionEnd}
+  };
+  callback(context, &state);
   env_->ReleaseStringUTFChars(text, text_chars);
   env_->DeleteLocalRef(text);
-
-  return state;
 }

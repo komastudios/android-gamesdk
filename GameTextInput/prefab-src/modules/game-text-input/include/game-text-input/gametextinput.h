@@ -23,6 +23,7 @@
 #pragma once
 
 #include <jni.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,11 +71,10 @@ typedef struct GameTextInputState {
    * A composing region defined on the text.
    */
   GameTextInputSpan composingRegion;
-  /**
-   * Deallocator for text_UTF8 string
-   */
-  void (*dealloc)(void *);
 } GameTextInputState;
+
+// A callback during which the state will contain valid text.
+typedef void (*GameTextInputGetStateCallback)(void* context, const struct GameTextInputState* state);
 
 /**
  * Opaque handle to the GameTextInput API.
@@ -86,9 +86,11 @@ typedef struct GameTextInput GameTextInput;
  * If called twice without GameTextInput_destroy being called, the same pointer will be returned
  * and a warning will be issued.
  * @param env A JNI env valid on the calling thread.
+ * @param max_string_size The maximum length of a string that can be edited. If zero, the maximum
+ * defaults to 65536 bytes. A buffer of this size is allocated at initialization.
  * @return A handle to the library.
  */
-GameTextInput *GameTextInput_init(JNIEnv *env);
+GameTextInput *GameTextInput_init(JNIEnv *env, uint32_t max_string_size);
 
 /**
  * When using GameTextInput, you need to create a gametextinput.InputConnection on the Java side
@@ -99,6 +101,16 @@ GameTextInput *GameTextInput_init(JNIEnv *env);
  * @param inputConnection A gametextinput.InputConnection object.
  */
 void GameTextInput_setInputConnection(GameTextInput *input, jobject inputConnection);
+
+/**
+ * Unless using GameActivity, it is required to call this function from your Java
+ * gametextinput.Listener.stateChanged method to convert eventState and trigger any event callbacks.
+ * When using GameActivity, this does not need to be called as event processing is handled by
+ * the Activity.
+ * @param input A valid GameTextInput library handle.
+ * @param eventState A Java gametextinput.State object.
+ */
+void GameTextInput_processEvent(GameTextInput *input, jobject eventState);
 
 /**
  * Free any resources owned by the GameTextInput library.
@@ -141,18 +153,22 @@ enum HideImeFlags {
 void GameTextInput_hideIme(GameTextInput *input, uint32_t flags);
 
 /**
- * Get the current GameTextInput state. The state is modified by changes in the IME
- * and calls to GameTextInput_setState.
+ * Call a callback with the current GameTextInput state, which may have been modified by changes in
+ * the IME and calls to GameTextInput_setState.
+ * We use a callback rather than returning the state in order to simplify ownership of
+ * text_UTF8 strings. These strings are only valid during the calling of the callback.
  * @param input A valid GameTextInput library handle.
- * @return The current maintained GameTextInputState or NULL if there is none.
+ * @param callback A function that will be called with valid state.
+ * @param context Context used by the callback.
  */
-// TODO (b/191737302): this function will be re-architected in the next CL
-const GameTextInputState *GameTextInput_getState(GameTextInput *input);
+void GameTextInput_getState(GameTextInput *input, GameTextInputGetStateCallback callback,
+                            void* context);
 
 /**
  * Set the current GameTextInput state. This state is reflected to any active IME.
  * @param input A valid GameTextInput library handle.
- * @param state The state to set. Ownership is maintained by the caller.
+ * @param state The state to set. Ownership is maintained by the caller and must remain valid for
+ * the duration of the call.
  */
 void GameTextInput_setState(GameTextInput *input, const GameTextInputState *state);
 
@@ -176,20 +192,9 @@ void GameTextInput_setEventCallback(GameTextInput *input,
                                     void *context);
 
 /**
- * Utility function. Call this function from your Java gametextinput.Listener.stateChanged method to
- * automatically convert eventState and trigger the callback defined above. When using GameActivity,
- * this does not need to be called as event processing is handled by the Activity.
- * @param input A valid GameTextInput library handle.
- * @param eventState A Java gametextinput.State object.
- */
-void GameTextInput_processEvent(GameTextInput *input, jobject eventState);
-
-/**
  * Convert a GameTextInputState struct to a Java gametextinput.State object.
  * Don't forget to delete the returned Java local ref when you're done.
  * @param env A JNI env valid on the calling thread.
- * @param stateClass A Java class obtained using
- * FindClass("com/google/androidgamesdk/gametextinput/State") or equivalent.
  * @param state Input state to convert.
  * @return A Java object of class gametextinput.State. The caller is required to delete this local
  * reference.
@@ -199,49 +204,13 @@ jobject GameTextInputState_toJava(const GameTextInput* gameTextInput,
 
 /**
  * Convert from a Java gametextinput.State object into a C GameTextInputState struct.
- * The caller is responsible for calling GameTextInputState_destruct on the returned
- * value.
  * @param env A JNI env valid on the calling thread.
  * @param state A Java gametextinput.State object.
- * @return The converted GameTextInputState struct, now owned by the caller.
+ * @param callback A function called with the C struct, valid for the duration of the call.
+ * @param context Context passed to the callback.
  */
-GameTextInputState GameTextInputState_fromJava(const GameTextInput* gameTextInput, jobject state);
-
-/**
- * Fill in the state with empty values.
- * @param state A struct owned by the caller.
- */
-void GameTextInputState_constructEmpty(GameTextInputState *state);
-
-/**
- * Fill in the state with the values passed-in. Ownership of text_UTF8 is
- * maintained by the caller.
- * @param state A struct owned by the caller.
- * @param text_UTF8 A modified UTF8 character array owned by the caller.
- * @param text_length The length of text_UTF8.
- * @param selection_start
- * @param selection_end
- * @param composing_region_start
- * @param composing_region_end
- */
-void GameTextInputState_construct(GameTextInputState *state, const char *text_UTF8,
-                              int32_t text_length, int selection_start,
-                              int selection_end, int composing_region_start,
-                              int composing_region_end);
-
-/**
- * Free any memory owned by the state.
- * @param state A struct owned by the caller.
- */
-void GameTextInputState_destruct(GameTextInputState *state);
-
-/**
- * Copy from rhs to state. Ownership of rhs and its internals is maintained by
- * the caller.
- * @param state
- * @param rhs
- */
-void GameTextInputState_clone(GameTextInputState *state, const GameTextInputState *rhs);
+void GameTextInputState_fromJava(const GameTextInput* gameTextInput, jobject state,
+                                 GameTextInputGetStateCallback callback, void* context);
 
 #ifdef __cplusplus
 }
