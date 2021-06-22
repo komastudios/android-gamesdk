@@ -37,6 +37,7 @@
 
 #include <memory>
 #include <string>
+#include <mutex>
 
 // TODO(b/187147166): these functions were extracted from the Game SDK
 // (gamesdk/src/common/system_utils.h). system_utils.h/cpp should be used instead.
@@ -85,7 +86,18 @@ int GetSystemPropAsInt(const char *key, int default_value = 0) {
   return prop == "" ? default_value : strtoll(prop.c_str(), nullptr, 10);
 }
 
-}  // namespace
+struct OwnedGameTextInputState {
+  OwnedGameTextInputState& operator=(const GameTextInputState& rhs) {
+    inner = rhs;
+    owned_string = std::string(rhs.text_UTF8, rhs.text_length);
+    inner.text_UTF8 = owned_string.data();
+    return *this;
+  }
+  GameTextInputState inner;
+  std::string owned_string;
+};
+
+}  // anonymous namespace
 
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);
 #define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__);
@@ -332,6 +344,9 @@ struct NativeCode : public GameActivity {
   jobject javaAssetManager;
 
   GameTextInput *gameTextInput;
+  // Set by users in GameActivity_setTextInputState, then passed to GameTextInput.
+  OwnedGameTextInputState gameTextInputState;
+  std::mutex gameTextInputStateMutex;
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -360,18 +375,16 @@ extern "C" void GameActivity_showSoftInput(GameActivity *activity,
 extern "C" void GameActivity_setTextInputState(GameActivity *activity,
                                                const GameTextInputState *state) {
   NativeCode *code = static_cast<NativeCode *>(activity);
-  // This state is freed in the loop where it is processed.
-  GameTextInputState *state_copy = (GameTextInputState *)malloc(sizeof(GameTextInputState));
-  GameTextInputState_constructEmpty(state_copy);
-  GameTextInputState_set(state_copy, state);
-  write_work(code->mainWorkWrite, CMD_SET_SOFT_INPUT_STATE,
-             reinterpret_cast<int64_t>(state_copy), 0);
+  std::lock_guard<std::mutex> lock(code->gameTextInputStateMutex);
+  code->gameTextInputState = *state;
+  write_work(code->mainWorkWrite, CMD_SET_SOFT_INPUT_STATE);
 }
 
-extern "C" const GameTextInputState *GameActivity_getTextInputState(
-    GameActivity *activity) {
+extern "C" void GameActivity_getTextInputState(GameActivity *activity,
+                                               GameTextInputGetStateCallback callback,
+                                               void* context) {
   NativeCode *code = static_cast<NativeCode *>(activity);
-  return GameTextInput_getState(code->gameTextInput);
+  return GameTextInput_getState(code->gameTextInput, callback, context);
 }
 
 extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
@@ -428,10 +441,8 @@ static int mainWorkCallback(int fd, int events, void *data) {
       GameTextInput_showIme(code->gameTextInput, work.arg1);
     } break;
     case CMD_SET_SOFT_INPUT_STATE: {
-      GameTextInputState *state = reinterpret_cast<GameTextInputState *>(work.arg1);
-      GameTextInput_setState(code->gameTextInput, state);
-      GameTextInputState_destruct(state);
-      free(state);
+      std::lock_guard<std::mutex> lock(code->gameTextInputStateMutex);
+      GameTextInput_setState(code->gameTextInput, &code->gameTextInputState.inner);
       checkAndClearException(code->env, "setTextInputState");
     } break;
     case CMD_HIDE_SOFT_INPUT: {
@@ -550,10 +561,10 @@ static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
   }
   code->createActivityFunc(code, rawSavedState, rawSavedSize);
 
-  code->gameTextInput = GameTextInput_init(env);
+  code->gameTextInput = GameTextInput_init(env, 0);
   GameTextInput_setEventCallback(
       code->gameTextInput,
-      reinterpret_cast<void (*)(void *, const GameTextInputState *)>(
+      reinterpret_cast<GameTextInputEventCallback>(
           code->callbacks.onTextInputEvent),
       code);
 

@@ -508,10 +508,10 @@ void GameActivity_setTextInputState(GameActivity* activity,
  * Get the last-received text entry state (see documentation of the
  * GameTextInputState struct in the Game Text Input library reference).
  *
- * Ownership of the returned value is maintained by the GameActivity: do not
- * delete it.
  */
-const GameTextInputState* GameActivity_getTextInputState(GameActivity* activity);
+void GameActivity_getTextInputState(GameActivity *activity,
+                                    GameTextInputGetStateCallback callback,
+                                    void* context);
 
 /**
  * Flags for GameActivity_hideSoftInput; see the Java InputMethodManager
@@ -539,7 +539,7 @@ enum {
 void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 /** @} */

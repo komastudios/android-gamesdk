@@ -23,7 +23,7 @@
 #pragma once
 
 #include <jni.h>
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
