@@ -44,7 +44,7 @@ static void onEvent(void *context, const GameTextInputState *state) {
 extern "C" JNIEXPORT void JNICALL
 Java_com_gametextinput_testbed_MainActivity_onCreated(JNIEnv *env, jobject thiz) {
   ALOGD("Calling GameTextInput_init...");
-  gameTextInput = GameTextInput_init(env);
+  gameTextInput = GameTextInput_init(env, 0);
   activity = env->NewGlobalRef(thiz);
   ALOGD("activity is %p...", thiz);
   jclass activityClass = env->FindClass("com/gametextinput/testbed/MainActivity");
@@ -84,27 +84,19 @@ Java_com_gametextinput_testbed_MainActivity_hideIme(JNIEnv *env, jobject thiz) {
 extern "C" JNIEXPORT void JNICALL
 Java_com_gametextinput_testbed_MainActivity_sendSelectionToStart(JNIEnv *env,
                                                              jobject thiz) {
-  const GameTextInputState *state = GameTextInput_getState(gameTextInput);
-  GameTextInputState *state_copy = (GameTextInputState *)malloc(sizeof(GameTextInputState));
-  GameTextInputState_constructEmpty(state_copy);
-  GameTextInputState_set(state_copy, state);
-
-  state_copy->selection = {0, 0};
-
-  GameTextInput_setState(gameTextInput, state_copy);
-  free(state_copy);
+  GameTextInput_getState(gameTextInput, [](void* context, const GameTextInputState* state) {
+    GameTextInputState state_copy = *state;
+    state_copy.selection = {0, 0};
+    GameTextInput_setState(static_cast<GameTextInput*>(context), &state_copy);
+    }, (void*)gameTextInput);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_gametextinput_testbed_MainActivity_sendSelectionToEnd(JNIEnv *env,
                                                            jobject thiz) {
-  const GameTextInputState *state = GameTextInput_getState(gameTextInput);
-  GameTextInputState *state_copy = (GameTextInputState *)malloc(sizeof(GameTextInputState));
-  GameTextInputState_constructEmpty(state_copy);
-  GameTextInputState_set(state_copy, state);
-
-  state_copy->selection = {(int)state->text_length, (int)state->text_length};
-
-  GameTextInput_setState(gameTextInput, state_copy);
-  free(state_copy);
+  GameTextInput_getState(gameTextInput, [](void* context, const GameTextInputState* state) {
+    GameTextInputState state_copy = *state;
+    state_copy.selection = {(int)state->text_length, (int)state->text_length};
+    GameTextInput_setState(static_cast<GameTextInput*>(context), &state_copy);
+  }, (void*)gameTextInput);
 }
