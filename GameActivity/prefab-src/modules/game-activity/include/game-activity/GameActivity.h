@@ -33,6 +33,7 @@
 #include <jni.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <stdbool.h>
 
 #include "game-text-input/gametextinput.h"
 
@@ -123,37 +124,37 @@ typedef struct GameActivity {
  * GameActivityMotionEvent.
  *
  * You can read values directly from this structure, or use helper functions
- * (`GameActivityInputInfo_getX`, `GameActivityInputInfo_getY` and
- * `GameActivityInputInfo_getAxisValue`).
+ * (`GameActivityPointerAxes_getX`, `GameActivityPointerAxes_getY` and
+ * `GameActivityPointerAxes_getAxisValue`).
  *
  * The X axis and Y axis are enabled by default but any other axis that you want
  * to read **must** be enabled first, using
- * `GameActivityInputInfo_enableAxis`.
+ * `GameActivityPointerAxes_enableAxis`.
  *
  * \see GameActivityMotionEvent
  */
-typedef struct GameActivityInputInfo {
+typedef struct GameActivityPointerAxes {
   int32_t id;
   float axisValues[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
   float rawX;
   float rawY;
-} GameActivityInputInfo;
+} GameActivityPointerAxes;
 
 /** \brief Get the current X coordinate of the pointer. */
-inline float GameActivityInputInfo_getX(
-    GameActivityInputInfo* pointerInfo) {
+inline float GameActivityPointerAxes_getX(
+    GameActivityPointerAxes* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
 }
 
 /** \brief Get the current Y coordinate of the pointer. */
-inline float GameActivityInputInfo_getY(
-    GameActivityInputInfo* pointerInfo) {
+inline float GameActivityPointerAxes_getY(
+    GameActivityPointerAxes* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
 }
 
 /**
  * \brief Enable the specified axis, so that its value is reported in the
- * GameActivityInputInfo structures stored in a motion event.
+ * GameActivityPointerAxes structures stored in a motion event.
  *
  * You must enable any axis that you want to read, apart from
  * `AMOTION_EVENT_AXIS_X` and `AMOTION_EVENT_AXIS_Y` that are enabled by
@@ -161,24 +162,24 @@ inline float GameActivityInputInfo_getY(
  *
  * If the axis index is out of range, nothing is done.
  */
-void GameActivityInputInfo_enableAxis(int32_t axis);
+void GameActivityPointerAxes_enableAxis(int32_t axis);
 
 /**
  * \brief Disable the specified axis. Its value won't be reported in the
- * GameActivityInputInfo structures stored in a motion event anymore.
+ * GameActivityPointerAxes structures stored in a motion event anymore.
  *
  * Apart from X and Y, any axis that you want to read **must** be enabled first,
- * using `GameActivityInputInfo_enableAxis`.
+ * using `GameActivityPointerAxes_enableAxis`.
  *
  * If the axis index is out of range, nothing is done.
  */
-void GameActivityInputInfo_disableAxis(int32_t axis);
+void GameActivityPointerAxes_disableAxis(int32_t axis);
 
 /**
  * \brief Get the value of the requested axis.
  *
  * Apart from X and Y, any axis that you want to read **must** be enabled first,
- * using `GameActivityInputInfo_enableAxis`.
+ * using `GameActivityPointerAxes_enableAxis`.
  *
  * Find the valid enums for the axis (`AMOTION_EVENT_AXIS_X`,
  * `AMOTION_EVENT_AXIS_Y`, `AMOTION_EVENT_AXIS_PRESSURE`...)
@@ -190,8 +191,8 @@ void GameActivityInputInfo_disableAxis(int32_t axis);
  * @return The value of the axis, or 0 if the axis is invalid or was not
  * enabled.
  */
-inline float GameActivityInputInfo_getAxisValue(
-    GameActivityInputInfo* pointerInfo, int32_t axis) {
+inline float GameActivityPointerAxes_getAxisValue(
+    GameActivityPointerAxes* pointerInfo, int32_t axis) {
   if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
     return 0;
   }
@@ -222,7 +223,7 @@ typedef struct GameActivityMotionEvent {
   int32_t edgeFlags;
 
   uint32_t pointerCount;
-  GameActivityInputInfo* pointers;
+  GameActivityPointerAxes* pointers;
 
   float precisionX;
   float precisionY;
@@ -302,7 +303,7 @@ typedef struct GameActivityCallbacks {
    * Focus has changed in this GameActivity's window.  This is often used,
    * for example, to pause a game when it loses input focus.
    */
-  void (*onWindowFocusChanged)(GameActivity* activity, int hasFocus);
+  void (*onWindowFocusChanged)(GameActivity* activity, bool hasFocus);
 
   /**
    * The drawing window for this native activity has been created.  You
@@ -315,7 +316,8 @@ typedef struct GameActivityCallbacks {
    * retrieve the new size from the window and ensure that your rendering in
    * it now matches.
    */
-  void (*onNativeWindowResized)(GameActivity* activity, ANativeWindow* window);
+  void (*onNativeWindowResized)(GameActivity* activity, ANativeWindow* window, int32_t newWidth,
+                                int32_t newHeight);
 
   /**
    * The drawing window for this native activity needs to be redrawn.  To avoid
@@ -338,11 +340,6 @@ typedef struct GameActivityCallbacks {
                                   ANativeWindow* window);
 
   /**
-   * The rectangle in the window in which content should be placed has changed.
-   */
-  void (*onContentRectChanged)(GameActivity* activity, const ARect* rect);
-
-  /**
    * The current device AConfiguration has changed.  The new configuration can
    * be retrieved from assetManager.
    */
@@ -353,33 +350,29 @@ typedef struct GameActivityCallbacks {
    * resources you do not need, to help the system avoid killing more
    * important processes.
    */
-  void (*onLowMemory)(GameActivity* activity);
+  void (*onTrimMemory)(GameActivity* activity, int level);
 
   /**
    * Callback called for every MotionEvent done on the GameActivity SurfaceView.
-   * After `event` was handled by the application/game code, it must be released
-   * using `GameActivityMotionEvent_release`.
+   * Ownership of `event` is maintained by the library and it is only valid during the callback.
    */
-  void (*onTouchEvent)(GameActivity* activity, GameActivityMotionEvent* event);
+  void (*onTouchEvent)(GameActivity* activity, const GameActivityMotionEvent* event);
 
   /**
    * Callback called for every key down event on the GameActivity SurfaceView.
-   * After `event` was handled by the application/game code, it must be released
-   * using `GameActivityKeyEvent_release`.
+   * Ownership of `event` is maintained by the library and it is only valid during the callback.
    */
-  void (*onKeyDown)(GameActivity* activity, GameActivityKeyEvent* event);
+  void (*onKeyDown)(GameActivity* activity, const GameActivityKeyEvent* event);
 
   /**
    * Callback called for every key up event on the GameActivity SurfaceView.
-   * After `event` was handled by the application/game code, it must be released
-   * using `GameActivityKeyEvent_release`.
+   * Ownership of `event` is maintained by the library and it is only valid during the callback.
    */
-  void (*onKeyUp)(GameActivity* activity, GameActivityKeyEvent* event);
+  void (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
 
   /**
    * Callback called for every soft-keyboard text input event.
-   * Call GameActivity_getTextInputState to get the new state of the soft
-   * keyboard.
+   * Ownership of `state` is maintained by the library and it is only valid during the callback.
    */
   void (*onTextInputEvent)(GameActivity* activity, const GameTextInputState* state);
 } GameActivityCallbacks;
@@ -450,14 +443,6 @@ extern GameActivity_createFunc GameActivity_onCreate;
  * where the Java finish call will take place.
  */
 void GameActivity_finish(GameActivity* activity);
-
-/**
- * Change the window format of the given activity.  Calls
- * getWindow().setFormat() of the given activity.  Note that this method can be
- * called from *any* thread; it will send a message to the main thread of the
- * process where the Java finish call will take place.
- */
-void GameActivity_setWindowFormat(GameActivity* activity, int32_t format);
 
 /**
  * Change the window flags of the given activity.  Calls getWindow().setFlags()

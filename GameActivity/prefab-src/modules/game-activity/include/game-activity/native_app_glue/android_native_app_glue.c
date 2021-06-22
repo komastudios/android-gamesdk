@@ -367,9 +367,9 @@ static void onConfigurationChanged(GameActivity* activity) {
   android_app_write_cmd(android_app, APP_CMD_CONFIG_CHANGED);
 }
 
-static void onLowMemory(GameActivity* activity) {
+static void onTrimMemory(GameActivity* activity, int level) {
   struct android_app* android_app = (struct android_app*)activity->instance;
-  LOGV("LowMemory: %p\n", activity);
+  LOGV("TrimMemory: %p %d\n", activity, level);
   android_app_write_cmd(android_app, APP_CMD_LOW_MEMORY);
 }
 
@@ -540,7 +540,7 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
   activity->callbacks->onKeyUp = onKeyUp;
   activity->callbacks->onTextInputEvent = onTextInputEvent;
   activity->callbacks->onConfigurationChanged = onConfigurationChanged;
-  activity->callbacks->onLowMemory = onLowMemory;
+  activity->callbacks->onTrimMemory = onTrimMemory;
   activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
   activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
   activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
