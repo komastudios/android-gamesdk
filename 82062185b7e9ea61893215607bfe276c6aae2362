@@ -53,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c87a011_8bb0c8c7",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-23T15:00:00Z",
+      "side": 1,
+      "message": "Yes, that would work but if you think it\u0027s too much for this release, don\u0027t worry.",
+      "parentUuid": "07cd944f_16460894",
+      "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "13e5190a_0cb09496",
@@ -88,6 +106,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e52c4ef9_3b900816",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-23T15:00:00Z",
+      "side": 1,
+      "message": "Ok, let\u0027s leave it be.",
+      "parentUuid": "2fa7f523_0e6e9537",
+      "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "02216f5d_ec316b75",
@@ -101,6 +137,24 @@
       "writtenOn": "2021-06-23T08:47:52Z",
       "side": 1,
       "message": "Ditto, why does it need to be a void*?",
+      "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b614d134_4bbf4789",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 677,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-23T15:00:00Z",
+      "side": 1,
+      "message": "Ok, let\u0027s leave it be.",
+      "parentUuid": "02216f5d_ec316b75",
       "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
