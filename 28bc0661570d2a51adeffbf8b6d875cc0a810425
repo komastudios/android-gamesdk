@@ -16,6 +16,24 @@
       "message": "How many of these do anything after the window has been created? We probably don\u0027t need all of them.",
       "revId": "28bc0661570d2a51adeffbf8b6d875cc0a810425",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c62b329a_13cd4133",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-06-23T12:02:45Z",
+      "side": 1,
+      "message": "Two of them FLAG_LAYOUT_IN_SCREEN and FLAG_LAYOUT_INSET_DECOR must be set before the Window is created, according to the doc https://developer.android.com/reference/android/view/Window#setFlags(int,%20int) \n\nI added a note about it in the function comment. Do you think we need to add a note to the documentation of the constants or remove them from the enum?",
+      "parentUuid": "40c1711a_def5d4fc",
+      "revId": "28bc0661570d2a51adeffbf8b6d875cc0a810425",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
