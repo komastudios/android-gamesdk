@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7143d720_6543fd3a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-23T17:34:46Z",
+      "side": 1,
+      "message": "This had already got +2 and presubmit pass, so pushing to submit",
+      "revId": "cedf8170de053791784dbe81cbeda64ce71d9062",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
