@@ -142,13 +142,13 @@ typedef struct GameActivityPointerAxes {
 
 /** \brief Get the current X coordinate of the pointer. */
 inline float GameActivityPointerAxes_getX(
-    GameActivityPointerAxes* pointerInfo) {
+    const GameActivityPointerAxes* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
 }
 
 /** \brief Get the current Y coordinate of the pointer. */
 inline float GameActivityPointerAxes_getY(
-    GameActivityPointerAxes* pointerInfo) {
+    const GameActivityPointerAxes* pointerInfo) {
   return pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
 }
 
@@ -201,6 +201,11 @@ inline float GameActivityPointerAxes_getAxisValue(
 }
 
 /**
+ * The maximum number of pointers returned inside a motion event.
+ */
+#define GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT 8
+
+/**
  * \brief Describe a motion event that happened on the GameActivity SurfaceView.
  *
  * This is 1:1 mapping to the information contained in a Java `MotionEvent`
@@ -223,7 +228,7 @@ typedef struct GameActivityMotionEvent {
   int32_t edgeFlags;
 
   uint32_t pointerCount;
-  GameActivityPointerAxes* pointers;
+  GameActivityPointerAxes pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
 
   float precisionX;
   float precisionY;
@@ -252,6 +257,12 @@ typedef struct GameActivityKeyEvent {
 } GameActivityKeyEvent;
 
 /**
+ * A function the user should call from their callback with the data, its length and the library-
+ * supplied context.
+ */
+typedef void (*SaveInstanceStateRecallback)(const char* bytes, int len, void* context);
+
+/**
  * These are the callbacks the framework makes into a native application.
  * All of these callbacks happen on the main thread of the application.
  * By default, all callbacks are NULL; set to a pointer to your own function
@@ -271,15 +282,14 @@ typedef struct GameActivityCallbacks {
   void (*onResume)(GameActivity* activity);
 
   /**
-   * Framework is asking GameActivity to save its current instance state.
-   * See Java documentation for Activity.onSaveInstanceState() for more
-   * information.  The returned pointer needs to be created with malloc();
-   * the framework will call free() on it for you.  You also must fill in
-   * outSize with the number of bytes in the allocation.  Note that the
-   * saved state will be persisted, so it can not contain any active
-   * entities (pointers to memory, file descriptors, etc).
+   * The framework is asking GameActivity to save its current instance state.
+   * See the Java documentation for Activity.onSaveInstanceState() for more
+   * information. The user should call the recallback with their data, its length and the provided
+   * context; they retain ownership of the data. Note that the saved state will be persisted, so it
+   * can not contain any active entities (pointers to memory, file descriptors, etc).
    */
-  void* (*onSaveInstanceState)(GameActivity* activity, size_t* outSize);
+  void* (*onSaveInstanceState)(GameActivity* activity, SaveInstanceStateRecallback recallback,
+                               void* context);
 
   /**
    * GameActivity has paused.  See Java documentation for Activity.onPause()
@@ -384,18 +394,10 @@ typedef struct GameActivityCallbacks {
  * a callback to consume the received events.
  * This function can be used if you re-implement events handling in your own
  * activity.
+ * Ownership of out_event is maintained by the caller.
  */
-GameActivityMotionEvent* GameActivityMotionEvent_fromJava(JNIEnv* env,
-                                                          jobject motionEvent);
-
-/**
- * \brief Free the specified event, deallocating it from memory.
- *
- * Call this function once the application/game is done handling the event.
- * After this is called, any reference to the event is invalid and must be
- * dropped.
- */
-void GameActivityMotionEvent_release(GameActivityMotionEvent* event);
+void GameActivityMotionEvent_fromJava(JNIEnv* env, jobject motionEvent,
+                                      GameActivityMotionEvent* out_event);
 
 /**
  * \brief Convert a Java `KeyEvent` to a `GameActivityKeyEvent`.
@@ -404,18 +406,10 @@ void GameActivityMotionEvent_release(GameActivityMotionEvent* event);
  * to set a callback to consume the received events.
  * This function can be used if you re-implement events handling in your own
  * activity.
+ * Ownership of out_event is maintained by the caller.
  */
-GameActivityKeyEvent* GameActivityKeyEvent_fromJava(JNIEnv* env,
-                                                    jobject motionEvent);
-
-/**
- * \brief Free the specified event, deallocating it from memory.
- *
- * Call this function once the application/game is done handling the event.
- * After this is called, any reference to the event is invalid and must be
- * dropped.
- */
-void GameActivityKeyEvent_release(GameActivityKeyEvent* event);
+void GameActivityKeyEvent_fromJava(JNIEnv* env, jobject motionEvent,
+                                   GameActivityKeyEvent* out_event);
 
 /**
  * This is the function that must be in the native code to instantiate the

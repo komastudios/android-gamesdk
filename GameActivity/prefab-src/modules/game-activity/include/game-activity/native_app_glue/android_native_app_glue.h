@@ -170,36 +170,40 @@ struct android_app {
    */
   int destroyRequested;
 
-  /**
-   * Pointer to a read-only array of pointers to GameActivityMotionEvent,
-   * of size `motionEventsCount`.
-   */
-  GameActivityMotionEvent** motionEvents;
+#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 4
 
   /**
-   * The number of motion events in `motionEvents`.
+   * Pointer to a read-only array of pointers to GameActivityMotionEvent.
+   * Only the first motionEventsCount events are valid.
+   */
+  GameActivityMotionEvent motionEvents[NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS];
+
+  /**
+   * The number of valid motion events in `motionEvents`.
    */
   uint64_t motionEventsCount;
 
-  /**
-   * Pointer to a read-only array of pointers to GameActivityKeyEvent,
-   * of size `keyUpEventsCount`.
-   */
-  GameActivityKeyEvent** keyUpEvents;
+#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 4
 
   /**
-   * The number of "Key Up" events in `keyUpEvents`.
+   * Pointer to a read-only array of pointers to GameActivityKeyEvent.
+   * Only the first keyUpEventsCount events are valid.
+   */
+  GameActivityKeyEvent keyUpEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
+
+  /**
+   * The number of valid "Key Up" events in `keyUpEvents`.
    */
   uint64_t keyUpEventsCount;
 
   /**
-   * Pointer to a read-only array of pointers GameActivityKeyEvent,
-   * of size `keyDownEventsCount`.
+   * Pointer to a read-only array of pointers GameActivityKeyEvent.
+   * Only the first keyDownEventsCount events are valid.
    */
-  GameActivityKeyEvent** keyDownEvents;
+  GameActivityKeyEvent keyDownEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
 
   /**
-   * The number of "Key Down" events in `keyDownEvents`.
+   * The number of valid "Key Down" events in `keyDownEvents`.
    */
   uint64_t keyDownEventsCount;
 

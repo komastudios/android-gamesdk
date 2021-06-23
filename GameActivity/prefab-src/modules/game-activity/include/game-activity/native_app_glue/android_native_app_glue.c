@@ -392,68 +392,38 @@ static void onNativeWindowDestroyed(GameActivity* activity,
 }
 
 static void onTouchEvent(GameActivity* activity,
-                         GameActivityMotionEvent* event) {
+                         const GameActivityMotionEvent* event) {
   struct android_app* android_app = (struct android_app*)activity->instance;
   pthread_mutex_lock(&android_app->mutex);
 
-  if (android_app->motionEvents == NULL) {
-    android_app->motionEvents =
-        (GameActivityMotionEvent**)malloc(1 * sizeof(GameActivityMotionEvent*));
-    if (android_app->motionEvents) {
-      android_app->motionEvents[0] = event;
-      android_app->motionEventsCount = 1;
-    }
-  } else {
-    GameActivityMotionEvent** newMotionEvents =
-        (GameActivityMotionEvent**)realloc(
-            android_app->motionEvents, (android_app->motionEventsCount + 1) *
-                                           sizeof(GameActivityMotionEvent*));
-    if (newMotionEvents) {
-      android_app->motionEvents = newMotionEvents;
-      android_app->motionEvents[android_app->motionEventsCount] = event;
-      android_app->motionEventsCount++;
-    }
+  // Add to the list of active motion events
+  if (android_app->motionEventsCount < NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS) {
+    int new_ix = android_app->motionEventsCount;
+    memcpy(&android_app->motionEvents[new_ix], event, sizeof(GameActivityMotionEvent));
+    ++android_app->motionEventsCount;
   }
-
   pthread_mutex_unlock(&android_app->mutex);
 }
 
 void android_app_clear_motion_events(struct android_app* android_app) {
   pthread_mutex_lock(&android_app->mutex);
 
-  if (!android_app->motionEvents) return;
-
-  for (uint64_t i = 0; i < android_app->motionEventsCount; ++i) {
-    GameActivityMotionEvent_release(android_app->motionEvents[i]);
+  if (android_app->motionEventsCount != 0) {
+    android_app->motionEventsCount = 0;
   }
-
-  android_app->motionEventsCount = 0;
-  free(android_app->motionEvents);
-  android_app->motionEvents = NULL;
 
   pthread_mutex_unlock(&android_app->mutex);
 }
 
-static void onKeyDown(GameActivity* activity, GameActivityKeyEvent* event) {
+static void onKeyDown(GameActivity* activity, const GameActivityKeyEvent* event) {
   struct android_app* android_app = (struct android_app*)activity->instance;
   pthread_mutex_lock(&android_app->mutex);
 
-  if (android_app->keyDownEvents == NULL) {
-    android_app->keyDownEvents =
-        (GameActivityKeyEvent**)malloc(1 * sizeof(GameActivityKeyEvent*));
-    if (android_app->keyDownEvents) {
-      android_app->keyDownEvents[0] = event;
-      android_app->keyDownEventsCount = 1;
-    }
-  } else {
-    GameActivityKeyEvent** newKeyDownEvents = (GameActivityKeyEvent**)realloc(
-        android_app->keyDownEvents,
-        (android_app->keyDownEventsCount + 1) * sizeof(GameActivityKeyEvent*));
-    if (newKeyDownEvents) {
-      android_app->keyDownEvents = newKeyDownEvents;
-      android_app->keyDownEvents[android_app->keyDownEventsCount] = event;
-      android_app->keyDownEventsCount++;
-    }
+  // Add to the list of active key down events
+  if (android_app->keyDownEventsCount < NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS) {
+    int new_ix = android_app->keyDownEventsCount;
+    memcpy(&android_app->keyDownEvents[new_ix], event, sizeof(GameActivityKeyEvent));
+    ++android_app->keyDownEventsCount;
   }
 
   pthread_mutex_unlock(&android_app->mutex);
@@ -462,39 +432,22 @@ static void onKeyDown(GameActivity* activity, GameActivityKeyEvent* event) {
 void android_app_clear_key_down_events(struct android_app* android_app) {
   pthread_mutex_lock(&android_app->mutex);
 
-  if (!android_app->keyDownEvents) return;
-
-  for (uint64_t i = 0; i < android_app->keyDownEventsCount; ++i) {
-    GameActivityKeyEvent_release(android_app->keyDownEvents[i]);
+  if (android_app->keyDownEventsCount != 0) {
+    android_app->keyDownEventsCount = 0;
   }
-
-  android_app->keyDownEventsCount = 0;
-  free(android_app->keyDownEvents);
-  android_app->keyDownEvents = NULL;
 
   pthread_mutex_unlock(&android_app->mutex);
 }
 
-static void onKeyUp(GameActivity* activity, GameActivityKeyEvent* event) {
+static void onKeyUp(GameActivity* activity, const GameActivityKeyEvent* event) {
   struct android_app* android_app = (struct android_app*)activity->instance;
   pthread_mutex_lock(&android_app->mutex);
 
-  if (android_app->keyUpEvents == NULL) {
-    android_app->keyUpEvents =
-        (GameActivityKeyEvent**)malloc(1 * sizeof(GameActivityKeyEvent*));
-    if (android_app->keyUpEvents) {
-      android_app->keyUpEvents[0] = event;
-      android_app->keyUpEventsCount = 1;
-    }
-  } else {
-    GameActivityKeyEvent** newKeyUpEvents = (GameActivityKeyEvent**)realloc(
-        android_app->keyUpEvents,
-        (android_app->keyUpEventsCount + 1) * sizeof(GameActivityKeyEvent*));
-    if (newKeyUpEvents) {
-      android_app->keyUpEvents = newKeyUpEvents;
-      android_app->keyUpEvents[android_app->keyUpEventsCount] = event;
-      android_app->keyUpEventsCount++;
-    }
+  // Add to the list of active key up events
+  if (android_app->keyUpEventsCount < NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS) {
+    int new_ix = android_app->keyUpEventsCount;
+    memcpy(&android_app->keyUpEvents[new_ix], event, sizeof(GameActivityKeyEvent));
+    ++android_app->keyUpEventsCount;
   }
 
   pthread_mutex_unlock(&android_app->mutex);
@@ -503,15 +456,9 @@ static void onKeyUp(GameActivity* activity, GameActivityKeyEvent* event) {
 void android_app_clear_key_up_events(struct android_app* android_app) {
   pthread_mutex_lock(&android_app->mutex);
 
-  if (!android_app->keyUpEvents) return;
-
-  for (uint64_t i = 0; i < android_app->keyUpEventsCount; ++i) {
-    GameActivityKeyEvent_release(android_app->keyUpEvents[i]);
+  if (android_app->keyUpEventsCount != 0) {
+    android_app->keyUpEventsCount = 0;
   }
-
-  android_app->keyUpEventsCount = 0;
-  free(android_app->keyUpEvents);
-  android_app->keyUpEvents = NULL;
 
   pthread_mutex_unlock(&android_app->mutex);
 }
