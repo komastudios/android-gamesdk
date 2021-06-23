@@ -39,78 +39,92 @@ extern "C" {
 
 void PADDLEBOAT_VERSION_SYMBOL();
 
-bool Paddleboat_init(JNIEnv *env, jobject jactivity, const char *libraryName) {
+Paddleboat_ErrorCode Paddleboat_init(JNIEnv *env, jobject jcontext) {
     PADDLEBOAT_VERSION_SYMBOL();
-    bool success = GameControllerManager::init(env, jactivity, libraryName);
-    if (success) {
-        GameControllerManager::update();
+    Paddleboat_ErrorCode errorCode = GameControllerManager::init(env, jcontext);
+    if (errorCode == PADDLEBOAT_NO_ERROR) {
+        GameControllerManager::update(env);
     }
-    return success;
+    return errorCode;
 }
 
 bool Paddleboat_isInitialized() {
     return GameControllerManager::isInitialized();
 }
 
-void Paddleboat_destroy() {
-    GameControllerManager::destroyInstance();
+void Paddleboat_destroy(JNIEnv *env) {
+    GameControllerManager::destroyInstance(env);
 }
 
-void Paddleboat_onStop() {
-    GameControllerManager::onStop();
+void Paddleboat_onStop(JNIEnv *env) {
+    GameControllerManager::onStop(env);
 }
 
-void Paddleboat_onStart() {
-    GameControllerManager::onStart();
+void Paddleboat_onStart(JNIEnv *env) {
+    GameControllerManager::onStart(env);
 }
 
 int32_t Paddleboat_processInputEvent(const AInputEvent *event) {
     return GameControllerManager::processInputEvent(event);
 }
 
-int32_t Paddleboat_processGameActivityInputEvent(const Paddleboat_GameActivityEvent eventType,
-                                                 const void *event,
-                                                 const size_t eventSize) {
-    return GameControllerManager::processGameActivityInputEvent(eventType, event, eventSize);
+int32_t Paddleboat_processGameActivityKeyInputEvent(const void *event, const size_t eventSize) {
+    return GameControllerManager::processGameActivityKeyInputEvent(event, eventSize);
+}
+
+int32_t Paddleboat_processGameActivityMotionInputEvent(const void *event, const size_t eventSize) {
+    return GameControllerManager::processGameActivityMotionInputEvent(event, eventSize);
 }
 
 uint64_t Paddleboat_getActiveAxisMask() {
     return GameControllerManager::getActiveAxisMask();
 }
 
+bool Paddleboat_getBackButtonConsumed() {
+    return GameControllerManager::getBackButtonConsumed();
+}
+
 void Paddleboat_setBackButtonConsumed(bool consumeBackButton) {
     GameControllerManager::setBackButtonConsumed(consumeBackButton);
 }
 
-void Paddleboat_setControllerStatusCallback(Paddleboat_ControllerStatusCallback statusCallback) {
-    GameControllerManager::setControllerStatusCallback(statusCallback);
+void Paddleboat_setControllerStatusCallback(Paddleboat_ControllerStatusCallback statusCallback,
+                                            void *userData) {
+    GameControllerManager::setControllerStatusCallback(statusCallback, userData);
 }
 
-void Paddleboat_setMouseStatusCallback(Paddleboat_MouseStatusCallback statusCallback) {
-    GameControllerManager::setMouseStatusCallback(statusCallback);
+void Paddleboat_setMouseStatusCallback(Paddleboat_MouseStatusCallback statusCallback,
+                                       void *userData) {
+    GameControllerManager::setMouseStatusCallback(statusCallback, userData);
 }
 
 
-bool Paddleboat_getControllerData(const int32_t controllerIndex,
+Paddleboat_ErrorCode Paddleboat_getControllerData(const int32_t controllerIndex,
                                   Paddleboat_Controller_Data *controllerData) {
     return GameControllerManager::getControllerData(controllerIndex, controllerData);
 }
 
-bool Paddleboat_getControllerInfo(const int32_t controllerIndex,
+Paddleboat_ErrorCode Paddleboat_getControllerInfo(const int32_t controllerIndex,
                                   Paddleboat_Controller_Info *controllerInfo) {
     return GameControllerManager::getControllerInfo(controllerIndex, controllerInfo);
+}
+
+Paddleboat_ErrorCode Paddleboat_getControllerName(const int32_t controllerIndex,
+                                                  const size_t bufferSize, char *controllerName) {
+    return GameControllerManager::getControllerName(controllerIndex, bufferSize, controllerName);
 }
 
 Paddleboat_ControllerStatus Paddleboat_getControllerStatus(const int32_t controllerIndex) {
     return GameControllerManager::getControllerStatus(controllerIndex);
 }
 
-bool Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
-                                           const Paddleboat_Vibration_Data *vibrationData) {
-    return GameControllerManager::setControllerVibrationData(controllerIndex, vibrationData);
+Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
+                                           const Paddleboat_Vibration_Data *vibrationData,
+                                           JNIEnv *env) {
+    return GameControllerManager::setControllerVibrationData(controllerIndex, vibrationData, env);
 }
 
-bool Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData) {
+Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData) {
     return GameControllerManager::getMouseData(mouseData);
 }
 
@@ -130,8 +144,8 @@ int32_t Paddleboat_getControllerRemapTableData(const int32_t destRemapTableEntry
                                                               mappingData);
 }
 
-void Paddleboat_update() {
-    GameControllerManager::update();
+void Paddleboat_update(JNIEnv *env) {
+    GameControllerManager::update(env);
 }
 
 int32_t Paddleboat_getLastKeycode() {
