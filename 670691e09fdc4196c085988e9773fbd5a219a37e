@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012117786",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1742525?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b5eb203f_291edb40",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-06-23T15:20:08Z",
+      "side": 1,
+      "message": "Prefer to use appContext.getSystemService(InputManager.class) instead to avoid the cast.",
+      "range": {
+        "startLine": 65,
+        "startChar": 23,
+        "endLine": 65,
+        "endChar": 66
+      },
+      "revId": "670691e09fdc4196c085988e9773fbd5a219a37e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
