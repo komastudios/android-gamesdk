@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "07cd944f_16460894",
+        "filename": "GameController/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-23T14:51:46Z",
+      "side": 1,
+      "message": "Hmm. Putting the load logic in the constructor would seem to complicate the error reporting. But it\u0027s a good point on the constructor happening early. Perhaps move the constructor down until after the class load/create is complete so it only happens if all that is successful?",
+      "parentUuid": "38bf2f69_2bad46db",
+      "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "13e5190a_0cb09496",
         "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
         "patchSetId": 2
@@ -48,6 +66,24 @@
       "writtenOn": "2021-06-23T08:47:52Z",
       "side": 1,
       "message": "Can we make this take a pointer to a GameActivityKeyEvent struct rather than a void*?",
+      "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fa7f523_0e6e9537",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-23T14:51:46Z",
+      "side": 1,
+      "message": "I think we still have the problem of: where does the GameActivityKeyEvent struct definition come from? My understanding is the style guide precludes forward definitions? I have the mirror struct internally, but can\u0027t expose that or it will collide with an actual GameActivity.h include.",
+      "parentUuid": "13e5190a_0cb09496",
       "revId": "82062185b7e9ea61893215607bfe276c6aae2362",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
