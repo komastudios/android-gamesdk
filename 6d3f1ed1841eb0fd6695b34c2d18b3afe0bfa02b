@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f26f54a4_292e5e22",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-24T09:38:39Z",
+      "side": 1,
+      "message": "We only build a few of the SDK/NDK combinations for paddleboat because of the minimum SDK and NDK level requirements, but we are still generating all the folders and json files, so that was confusing me, but I think we\u0027re good here once the changes below are made. I\u0027ll follow up in a separate CL to not generate those unneeded folders and files.",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2c27756_9d13c09f",
+        "filename": "GameController/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-24T09:38:39Z",
+      "side": 1,
+      "message": "3.4.1 is the version we have in our prebuilts dir, which will be used on the build boxes and by default if there is no local cmake install.",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad67e217_47a55ab3",
+        "filename": "build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 810,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-24T09:38:39Z",
+      "side": 1,
+      "message": "Please split into 2 lines",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10a02914_349125fc",
+        "filename": "build.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-24T09:38:39Z",
+      "side": 1,
+      "message": "game_controller -\u003e paddleboat",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ecec1c7_7ec6e733",
+        "filename": "build.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-06-24T09:38:39Z",
+      "side": 1,
+      "message": "game_controller -\u003e paddleboat",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
