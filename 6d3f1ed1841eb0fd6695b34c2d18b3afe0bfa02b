@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c890c51_272b3614",
+        "filename": "GameController/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-24T13:20:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2c27756_9d13c09f",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ad67e217_47a55ab3",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-06-24T09:38:39Z",
       "side": 1,
       "message": "Please split into 2 lines",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fac6059a_fb377bb9",
+        "filename": "build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 810,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-24T13:20:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad67e217_47a55ab3",
       "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa326861_55fb95c8",
+        "filename": "build.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-24T13:20:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10a02914_349125fc",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ecec1c7_7ec6e733",
@@ -82,6 +136,24 @@
       "writtenOn": "2021-06-24T09:38:39Z",
       "side": 1,
       "message": "game_controller -\u003e paddleboat",
+      "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5b21155_2d55ea78",
+        "filename": "build.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-06-24T13:20:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ecec1c7_7ec6e733",
       "revId": "6d3f1ed1841eb0fd6695b34c2d18b3afe0bfa02b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
