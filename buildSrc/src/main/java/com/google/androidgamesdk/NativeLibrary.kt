@@ -13,6 +13,8 @@ data class NativeLibrary(
         private set
     var aarVersion: String = "0.0.0"
         private set
+    var hybridProjectDir: String = ""
+        private set
     var sampleAndroidProjects: ArrayList<ExternalAndroidProject> = ArrayList()
         private set
     var sampleExtraFolderPaths: ArrayList<SampleFolder> = ArrayList()
@@ -22,6 +24,8 @@ data class NativeLibrary(
     var minimumNdkVersion: Int? = null
         private set
     var supportedStlVersions: List<String>? = null
+        private set
+    var isHybridLibrary = false
         private set
     var isThirdParty = false
         private set
@@ -51,6 +55,19 @@ data class NativeLibrary(
         sampleExtraFolderPaths.add(sampleFolder)
         return this
     }
+
+    fun setHybridProjectDir(
+        projectDir: String
+    ) : NativeLibrary {
+        this.hybridProjectDir = projectDir
+        return this
+    }
+
+    fun setHybridLibrary(): NativeLibrary {
+        this.isHybridLibrary = true
+        return this
+    }
+    /* End hybrid project setters */
 
     fun setMinimumAndroidApiLevel(
         minimumAndroidApiLevel: Int?
@@ -97,3 +114,4 @@ data class NativeLibrary(
         }
     }
 }
+
