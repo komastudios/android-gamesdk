@@ -113,17 +113,22 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "1.0.0-alpha01")
+        .setAarLibrary("games-activity", "1.0.0-beta01")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
-        .setAarLibrary("games-text-input", "1.0.0-alpha01")
+        .setAarLibrary("games-text-input", "1.0.0-beta01")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameControllerLibrary = new AndroidArchiveLibrary('game_controller', "GameController")
-        .setAarLibrary("games-controller", "1.0.0-alpha01")
+def gameControllerLibrary = new NativeLibrary('paddleboat')
+        .setAarLibrary("games-controller", "1.0.0-beta01")
+        .setHybridLibrary()
+        .setHybridProjectDir("GameController")
+        .setMinimumAndroidApiLevel(28)
+        .setMinimumNdkVersion(20)
+        .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -191,6 +196,7 @@ allprojects {
 
 // All the libraries that are part of the Game SDK. These can be native libraries (which we can
 // package in a zip, or in an AAR) or "Android libraries" (which are built by default in an AAR).
+
 def allLibraries = [
         swappyNativeLibrary,
         tuningForkNativeLibrary,
@@ -265,6 +271,17 @@ task cleanPath(type: Delete) {
     delete getPackagePath()
     delete getTempPath()
     delete getBuildPath()
+}
+
+/**
+ * Take the classes.jar from a hybrid library and copy it to the
+ * Prefab AAR being generated
+ */
+def copyHybridClassesToPrefabAar(buildInfo, outFolder, library) {
+    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
+    def buildFolder = joinPath(getPackagePath(), outFolder)
+    def aarPrefabPatcher = new AarPrefabPatcher()
+    aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
 }
 
 /**
@@ -652,6 +669,12 @@ Collection<NativeLibrary> filterNativeLibraries(allLibraries) {
     }
 }
 
+Collection<NativeLibrary> filterLibrariesByHybridStatus(allLibraries, isHybrid) {
+    return filterLibraries(allLibraries).findAll { library ->
+        library.isHybridLibrary == isHybrid
+    }
+}
+
 Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
     return filterLibraries(allLibraries).findAll { library ->
         library instanceof AndroidArchiveLibrary
@@ -710,6 +733,7 @@ tasks.withType(BuildTask) {
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -758,6 +782,7 @@ task buildAar {
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -780,7 +805,11 @@ task buildAar {
         // Build native libraries, and add them to the AAR
         buildNativeLibrariesForAar(nativeLibraries, getBuildType()).each { buildInfo ->
             nativeLibraries.forEach {
-                library -> copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
+                library ->
+                    copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
+                    if (library.isHybridLibrary()) {
+                        copyHybridClassesToPrefabAar(buildInfo, getPackageName(), library)
+                    }
             }
         }
     }
