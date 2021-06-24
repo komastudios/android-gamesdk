@@ -19,25 +19,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 28
-    ndkVersion '20.0.55.94570'
 
     defaultConfig {
         minSdkVersion 16
+        compileSdkVersion 28
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++17"
-                arguments "-DANDROID_SDK_ROOT=" + get_android_sdk_root().toString()
-                arguments "-DTEST_ABIS=" + get_test_abi_list().toString()
-                arguments "-DRUN_CPP_TESTS=" + get_run_cpp_tests().toString()
-            }
-        }
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -52,40 +41,4 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    externalNativeBuild {
-        cmake {
-            path 'src/main/cpp/CMakeLists.txt'
-        }
-    }
-}
-
-dependencies {
-
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-}
-
-def get_android_sdk_root() {
-    return get_properties().getProperty('sdk.dir', '').toString()
-}
-
-def get_run_cpp_tests() {
-    return get_properties().getProperty('run_cpp_tests', 'false').toBoolean()
-}
-
-def get_test_abi_list() {
-    return get_properties().getProperty('test_abis', 'armeabi-v7a;arm64-v8a').toString()
-}
-
-def get_properties() {
-    Properties properties = new Properties()
-    if (project.rootProject.file('local.properties').exists()) {
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    }
-    else {
-        properties.setProperty('sdk.dir', System.getenv("ANDROID_HOME"))
-    }
-    return properties
 }

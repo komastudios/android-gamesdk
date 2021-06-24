@@ -14,39 +14,31 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.4.1)
-
-project(paddleboat)
+cmake_minimum_required(VERSION 3.6)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/paddleboat/include)
 
-add_library(paddleboat STATIC
-        InternalControllerTable.cpp
-        GameController.cpp
-        GameControllerDeviceInfo.cpp
-        GameControllerLog.cpp
-        GameControllerManager.cpp
-        GameControllerMappingUtils.cpp
-        paddleboat_c.cpp)
+set( PADDLEBOAT_SRCS
+  InternalControllerTable.cpp
+  GameController.cpp
+  GameControllerDeviceInfo.cpp
+  GameControllerLog.cpp
+  GameControllerManager.cpp
+  GameControllerMappingUtils.cpp
+  paddleboat_c.cpp)
 
-target_include_directories(paddleboat PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/paddleboat/include)
+set( CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Os -fno-exceptions -fno-rtti" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
 
-target_compile_options(paddleboat
-        PRIVATE
-        -std=c++17
-        -Wall
-        -Wextra-semi
-        -Wshadow
-        -Wshadow-field
-        -O0
-        "$<$<CONFIG:DEBUG>:-Werror>")
+add_library(paddleboat_static STATIC ${PADDLEBOAT_SRCS})
+
+set_target_properties( paddleboat_static PROPERTIES
+     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build )
+
+add_library(paddleboat SHARED paddleboat_c.cpp)
 
 target_link_libraries(paddleboat
-        android
-        atomic
-        log)
-
-set(TEST_SRC_DIR ../../test/cpp)
-include(../../test/cpp/CMakeLists.txt)
+  paddleboat_static
+  android
+  atomic
+  log)
