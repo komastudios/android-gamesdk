@@ -18,4 +18,9 @@ class AarPrefabPatcher {
         zipParameters.rootFolderNameInZip = "prefab"
         aarZipFile.addFolder(prefabFolderFile, zipParameters)
     }
+
+    fun extractAarClasses(aarPath: String, prefabFolderPath: String) {
+        val aarZipFile = ZipFile(aarPath)
+        aarZipFile.extractFile("classes.jar", prefabFolderPath);
+    }
 }
