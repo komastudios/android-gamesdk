@@ -351,7 +351,9 @@ class Collector {
             paramsIn.put("run", versionName);
             if (!result.isEmpty()) {
               Map<String, Object> first = result.get(0);
-              first.put("params", paramsIn);
+              if (first != null) {
+                first.put("params", paramsIn);
+              }
             }
             consumer.accept(results1, result);
           }
