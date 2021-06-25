@@ -44,7 +44,7 @@ typedef struct GameTextInputSpan {
 /**
  * Values with special meaning in a GameTextInputSpan.
  */
-enum { SPAN_UNDEFINED = -1 };
+enum GameTextInputSpanFlag { SPAN_UNDEFINED = -1 };
 
 /**
  * This struct holds the state of an editable section of text.
@@ -73,7 +73,11 @@ typedef struct GameTextInputState {
   GameTextInputSpan composingRegion;
 } GameTextInputState;
 
-// A callback during which the state will contain valid text.
+/**
+ * A callback called by GameTextInput_getState.
+ * @param context User-defined context.
+ * @param state State, owned by the library, that will be valid for the duration of the callback.
+ */
 typedef void (*GameTextInputGetStateCallback)(void* context,
                                               const struct GameTextInputState* state);
 
@@ -120,6 +124,9 @@ void GameTextInput_processEvent(GameTextInput *input, jobject eventState);
  */
 void GameTextInput_destroy(GameTextInput *input);
 
+/**
+ * Flags to be passed to GameTextInput_showIme.
+ */
 enum ShowImeFlags {
   SHOW_IME_UNDEFINED = 0,     // Default value.
   SHOW_IMPLICIT = 1, // Indicates that the user has forced the input method open so it should not be
@@ -137,6 +144,9 @@ enum ShowImeFlags {
  */
 void GameTextInput_showIme(GameTextInput *input, uint32_t flags);
 
+/**
+ * Flags to be passed to GameTextInput_hideIme.
+ */
 enum HideImeFlags {
   HIDE_IME_UNDEFINED = 0,          // Default value.
   HIDE_IMPLICIT_ONLY = 1, // Indicates that the soft input window should only be hidden if it was
@@ -195,22 +205,22 @@ void GameTextInput_setEventCallback(GameTextInput *input,
 /**
  * Convert a GameTextInputState struct to a Java gametextinput.State object.
  * Don't forget to delete the returned Java local ref when you're done.
- * @param env A JNI env valid on the calling thread.
+ * @param input A valid GameTextInput library handle.
  * @param state Input state to convert.
  * @return A Java object of class gametextinput.State. The caller is required to delete this local
  * reference.
  */
-jobject GameTextInputState_toJava(const GameTextInput* gameTextInput,
+jobject GameTextInputState_toJava(const GameTextInput* input,
                                   const GameTextInputState *state);
 
 /**
  * Convert from a Java gametextinput.State object into a C GameTextInputState struct.
- * @param env A JNI env valid on the calling thread.
+ * @param input A valid GameTextInput library handle.
  * @param state A Java gametextinput.State object.
  * @param callback A function called with the C struct, valid for the duration of the call.
  * @param context Context passed to the callback.
  */
-void GameTextInputState_fromJava(const GameTextInput* gameTextInput, jobject state,
+void GameTextInputState_fromJava(const GameTextInput* input, jobject state,
                                  GameTextInputGetStateCallback callback, void* context);
 
 #ifdef __cplusplus

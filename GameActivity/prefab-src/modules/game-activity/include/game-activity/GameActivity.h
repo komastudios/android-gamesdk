@@ -442,7 +442,7 @@ void GameActivity_finish(GameActivity* activity);
  * Flags for GameActivity_setWindowFlags,
  * as per the Java API at android.view.WindowManager.LayoutParams.
  */
-enum {
+enum GameActivitySetWindowFlags {
     /**
      * As long as this window is visible to the user, allow the lock
      * screen to activate while the screen is on.  This can be used
@@ -641,7 +641,7 @@ void GameActivity_setWindowFlags(GameActivity* activity, uint32_t addFlags,
  * Flags for GameActivity_showSoftInput; see the Java InputMethodManager
  * API for documentation.
  */
-enum {
+enum GameActivityShowSoftInputFlags {
   /**
    * Implicit request to show the input window, not as the result
    * of a direct request by the user.
@@ -686,7 +686,7 @@ void GameActivity_getTextInputState(GameActivity *activity,
  * Flags for GameActivity_hideSoftInput; see the Java InputMethodManager
  * API for documentation.
  */
-enum {
+enum GameActivityHideSoftInputFlags {
   /**
    * The soft input window should only be hidden if it was not
    * explicitly shown by the user.

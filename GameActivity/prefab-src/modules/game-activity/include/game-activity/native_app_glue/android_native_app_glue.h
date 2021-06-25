@@ -237,7 +237,11 @@ struct android_app {
   /** @endcond */
 };
 
-enum {
+/**
+ * Looper ID of commands coming from the app's main thread, an AInputQueue or
+ * user-defined sources.
+ */
+enum NativeAppGlueLooperId {
   /**
    * Looper data ID of commands coming from the app's main thread, which
    * is returned as an identifier from ALooper_pollOnce().  The data for this
@@ -259,7 +263,10 @@ enum {
   LOOPER_ID_USER = 3,
 };
 
-enum {
+/**
+ * Commands passed from the application's main Java thread to the game's thread.
+ */
+enum NativeAppGlueAppCmd {
   /**
    * Unused. Reserved for future use when usage of AInputQueue will be
    * supported.
