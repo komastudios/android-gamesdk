@@ -25,6 +25,9 @@ public class ReportUtils {
 
   static Map<String, Object> getDeviceInfo(Iterable<Map<String, Object>> result) {
     for (Map<String, Object> line : result) {
+      if (line == null) {
+        continue;
+      }
       Map<String, Object> deviceInfo = (Map<String, Object>) line.get("deviceInfo");
       if (deviceInfo != null) {
         return deviceInfo;
