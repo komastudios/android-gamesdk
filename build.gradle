@@ -258,9 +258,11 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
         runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
         runNinja(project, toolchain, workingFolder)
 
-        def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
-        jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
-                ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        if (!builtLibraries.isEmpty()) {
+            def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
+            jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
+                    ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        }
     }
 
     return [arch: buildOptions.arch, buildKey: buildKey]
