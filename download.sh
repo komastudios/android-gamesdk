@@ -5,7 +5,7 @@ echo
 cd ..
 set -e # Exit on error
 #Fetch NDKs available
-ndks=`grep -oP 'prebuilts/ndk[^\"]+' .repo/manifest.xml | sort -u`
+ndks=`grep -oP 'prebuilts/ndk[^\"]+' .repo/manifests/default.xml | sort -u`
 #Let user choose one
 echo NDKs available:
 oldIFS=$IFS
@@ -24,7 +24,7 @@ do
   echo Finished downloading $opt
 done
 #Fetch SDKs available
-ndks=`grep -oP 'prebuilts/sdk[^\"]+' .repo/manifest.xml | sort -u`
+ndks=`grep -oP 'prebuilts/sdk[^\"]+' .repo/manifests/default.xml | sort -u`
 #Let user choose one
 echo SDKs available:
 oldIFS=$IFS
