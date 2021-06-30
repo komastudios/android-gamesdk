@@ -16,6 +16,24 @@
       "message": "I guess this adds pip to our dependencies too?",
       "revId": "64893cfe34720663afe99ae3ef50f030a9ddcd29",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecc64e15_be9c44ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-06-30T09:39:35Z",
+      "side": 1,
+      "message": "It does, and it\u0027s not standard for the buildbot distro. Let\u0027s see how much of a problem this is in reality and I\u0027ll send a new CL to complement this one if needed.",
+      "parentUuid": "ae0c1614_331730c2",
+      "revId": "64893cfe34720663afe99ae3ef50f030a9ddcd29",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
