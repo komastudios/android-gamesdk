@@ -296,6 +296,13 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         sfOffsetView.setText(String.format(Locale.US, "SF Offset: %.1f ms", sfVsyncOffsetNanos
                 / (float) ONE_MS_IN_NS));
 
+        try {
+            this.setTitle("BouncyBall v" + getApplicationContext().getPackageManager()
+                .getPackageInfo(getPackageName(), 0).versionName + " (" + String.valueOf(nGetSwappyVersion()) + ")");
+        } catch(Exception e) {
+            // Ignore
+        }
+
         // Initialize the native renderer
 
         nInit();
@@ -561,6 +568,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native float nGetPipelineFrameTimeNS();
     public native float nGetPipelineFrameTimeStdDevNS();
     public native int nGetSwappyStats(int stat, int bin);
+    public native long nGetSwappyVersion();
 
     private MenuItem mInfoOverlayButton;
 

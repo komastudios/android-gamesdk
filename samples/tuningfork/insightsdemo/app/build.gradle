@@ -4,13 +4,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    ndkVersion "20.0.5594570"
+    ndkVersion "21.2.6472646"
     defaultConfig {
         applicationId "com.tuningfork.insightsdemo"
         minSdkVersion 29
         targetSdkVersion 29
-        versionCode 29
-        versionName "1.0"
+        versionCode 30
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
