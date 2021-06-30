@@ -153,13 +153,21 @@ task prepare_proto_before {
         // Install protobuf-3.0.0 prerequisites
         exec {
             setEnvironment env
-            commandLine "python", "-m", "pip", "install", "-r", "requirements.txt"
+            commandLine "curl", "-v", "-O", "http://bootstrap.pypa.io/pip/3.4/get-pip.py"
+        }
+        exec {
+            setEnvironment env
+            commandLine "python3", "get-pip.py", "--user"
+        }
+        exec {
+            setEnvironment env
+            commandLine "python3", "-m", "pip", "install", "--user", "-r", "requirements.txt"
         }
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
             setEnvironment env
-            commandLine "python", "setup.py", "install", "--user"
+            commandLine "python3", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
