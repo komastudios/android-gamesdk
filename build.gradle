@@ -53,7 +53,7 @@ if (buildScript) {
 }
 
 def swappyNativeLibrary = new NativeLibrary('swappy')
-        .setAarLibrary("games-frame-pacing", "1.7.0")
+        .setAarLibrary("games-frame-pacing", "1.9.0")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -72,7 +72,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy')
         )
 
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
-        .setAarLibrary("games-performance-tuner", "1.1.0")
+        .setAarLibrary("games-performance-tuner", "1.4.3")
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -103,27 +103,27 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice')
-        .setAarLibrary("games-memory-advice", "1.0.0-rc01")
+        .setAarLibrary("games-memory-advice", "1.0.0")
 
 def oboeNativeLibrary = new NativeLibrary('oboe')
-        .setAarLibrary("games-oboe", "1.0.0-rc01")
+        .setAarLibrary("games-oboe", "1.0.0")
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "1.0.0-beta01")
+        .setAarLibrary("games-activity", "1.0.0")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
-        .setAarLibrary("games-text-input", "1.0.0-beta01")
+        .setAarLibrary("games-text-input", "1.0.0")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameControllerLibrary = new NativeLibrary('paddleboat')
-        .setAarLibrary("games-controller", "1.0.0-beta01")
+        .setAarLibrary("games-controller", "1.0.0")
         .setHybridLibrary()
         .setHybridProjectDir("GameController")
         .setMinimumAndroidApiLevel(28)
