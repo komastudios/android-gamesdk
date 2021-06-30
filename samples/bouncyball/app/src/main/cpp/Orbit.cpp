@@ -238,4 +238,12 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nGetSwappyStats(JNIEnv * /* env *
     return value;
 }
 
+JNIEXPORT jlong JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nGetSwappyVersion(JNIEnv * /* env */,
+                                                                 jobject /* this */) {
+    return SWAPPY_MAJOR_VERSION*10000L
+      + SWAPPY_MINOR_VERSION*100L
+      + SWAPPY_BUGFIX_VERSION;
+}
+
 } // extern "C"
