@@ -147,8 +147,10 @@ def getEnvironment() {
 
 task prepare_proto_before {
     def protocBinDir = protobufInstallDir() + "/bin"
+    def sixDir = "$projectDir/../external/six"
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
+    env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
     doLast {
         // Install protobuf-3.0.0 prerequisites
         exec {
