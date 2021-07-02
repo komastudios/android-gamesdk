@@ -39,6 +39,30 @@
       },
       "revId": "2eaa3b81d1a2211178c6534fc9ff27ed01a87fd1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0e23c83_107cf995",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-02T11:42:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "747dacd4_cd1861a2",
+      "range": {
+        "startLine": 259,
+        "startChar": 8,
+        "endLine": 259,
+        "endChar": 51
+      },
+      "revId": "2eaa3b81d1a2211178c6534fc9ff27ed01a87fd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
