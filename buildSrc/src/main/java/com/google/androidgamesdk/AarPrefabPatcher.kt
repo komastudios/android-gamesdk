@@ -1,6 +1,8 @@
 package com.google.androidgamesdk
 
+import com.google.androidgamesdk.OsSpecificTools.Companion.joinPath
 import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.FileHeader
 import net.lingala.zip4j.model.ZipParameters
 import java.io.File
 
@@ -10,6 +12,10 @@ import java.io.File
  */
 class AarPrefabPatcher {
     fun injectPrefabFolder(aarPath: String, prefabFolderPath: String) {
+        // Remove the game controller classes and put the new classes.jar
+        // back in the .aar
+        removeGameControllerClasses(aarPath, "com/google/android/")
+
         val aarZipFile = ZipFile(aarPath)
 
         val prefabFolderFile = File(prefabFolderPath)
@@ -19,8 +25,52 @@ class AarPrefabPatcher {
         aarZipFile.addFolder(prefabFolderFile, zipParameters)
     }
 
-    fun extractAarClasses(aarPath: String, prefabFolderPath: String) {
-        val aarZipFile = ZipFile(aarPath)
-        aarZipFile.extractFile("classes.jar", prefabFolderPath);
+    fun extractAarClasses(aarPath: String, prefabFolderPath: String, doRemove: Boolean) {
+        val jarName = "classes.jar"
+        val jarPath = joinPath(prefabFolderPath, jarName)
+
+        val checkExists = File(jarPath)
+        if (!checkExists.exists()) {
+            val aarZipFile = ZipFile(aarPath)
+            aarZipFile.extractFile(jarName, prefabFolderPath)
+            aarZipFile.removeFile(jarName)
+            // Remove the non game controller classes and
+            // put the modified classes.jar back in the .aar
+            if (doRemove) {
+                removeClasses(aarZipFile, jarPath, "com/google/androidgamesdk/")
+            }
+        }
+    }
+
+    fun removeGameControllerClasses(aarPath: String, directoryToRemove: String) {
+        val temporaryDirectory =
+            createTempDir("gamesdk-remove-classes")
+        var aarZipFile = ZipFile(aarPath)
+        val jarName = "classes.jar"
+        var jarPath = joinPath(temporaryDirectory.absolutePath, jarName)
+        aarZipFile.extractFile(jarName, temporaryDirectory.absolutePath)
+        aarZipFile.removeFile(jarName)
+        removeClasses(aarZipFile, jarPath, directoryToRemove)
+    }
+
+    fun removeClasses(aarZipFile: ZipFile, jarPath: String, directoryToRemove: String) {
+        var jarZipFile = ZipFile(jarPath)
+
+        val fileHeaders = jarZipFile.getFileHeaders();
+        val removeList = mutableListOf<String>()
+        for (fileHeader in fileHeaders) {
+            val fileName = fileHeader.getFileName()
+            if (fileName.startsWith(directoryToRemove)) {
+                removeList.add(fileName)
+            }
+        }
+
+        for (removeFileName in removeList) {
+            jarZipFile.removeFile(removeFileName)
+        }
+
+        val zipParameters = ZipParameters()
+        zipParameters.isIncludeRootFolder = false
+        aarZipFile.addFile(jarPath, zipParameters)
     }
 }

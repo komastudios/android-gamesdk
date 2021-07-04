@@ -27,7 +27,8 @@ set( PADDLEBOAT_SRCS
   GameControllerMappingUtils.cpp
   paddleboat_c.cpp)
 
-set( CMAKE_CXX_FLAGS "-std=c++17 -Wall -Werror -Os -fno-exceptions -fno-rtti" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror -Os")
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
 
 add_library(paddleboat_static STATIC ${PADDLEBOAT_SRCS})
