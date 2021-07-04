@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012779870",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1754531?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "015da70e_18290de9",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/AarPrefabPatcher.kt",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-04T21:46:16Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 39,
+        "startChar": 57,
+        "endLine": 39,
+        "endChar": 58
+      },
+      "revId": "4c031bc34c1a1cbc436072a907e111c4451a801c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
