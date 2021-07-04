@@ -126,7 +126,7 @@ def gameControllerLibrary = new NativeLibrary('paddleboat')
         .setAarLibrary("games-controller", "1.0.0-beta01")
         .setHybridLibrary()
         .setHybridProjectDir("GameController")
-        .setMinimumAndroidApiLevel(28)
+        .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(20)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
@@ -147,11 +147,14 @@ def getEnvironment() {
 
 task prepare_proto_before {
     def protocBinDir = protobufInstallDir() + "/bin"
-    def sixDir = "$projectDir/../external/six"
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
-    env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
     doLast {
+        // Install protobuf-3.0.0 prerequisites
+        exec {
+            setEnvironment env
+            commandLine "python", "-m", "pip", "install", "-r", "requirements.txt"
+        }
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
@@ -258,11 +261,13 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
         def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
 
         runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
-        runNinja(project, toolchain, workingFolder)
 
-        def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
-        jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
-                ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        if (!builtLibraries.isEmpty()) {
+            runNinja(project, toolchain, workingFolder)
+            def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
+            jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
+                    ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        }
     }
 
     return [arch: buildOptions.arch, buildKey: buildKey]
@@ -279,11 +284,11 @@ task cleanPath(type: Delete) {
  * Take the classes.jar from a hybrid library and copy it to the
  * Prefab AAR being generated
  */
-def copyHybridClassesToPrefabAar(buildInfo, outFolder, library) {
+def copyHybridClassesFromAar(outFolder, library, doRemove) {
     def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
-    aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
+    aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder, doRemove)
 }
 
 /**
@@ -292,6 +297,13 @@ def copyHybridClassesToPrefabAar(buildInfo, outFolder, library) {
 def copyNativeLibraryToPrefabAar(buildInfo, outFolder, library) {
     def libraryName = library.nativeLibraryName
     def prefabName = library.aarLibraryName
+    def prefabVersion = "1.0.0"
+    def versionIndex = library.aarVersion.indexOf('-')
+    if (versionIndex == -1) {
+        prefabVersion = library.aarVersion
+    } else {
+        prefabVersion = library.aarVersion.substring(0, versionIndex)
+    }
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
@@ -376,7 +388,7 @@ def copyNativeLibraryToPrefabAar(buildInfo, outFolder, library) {
     }
     // 5. Create the json files
     def jsonPrefabDescription = new File(joinPath(buildFolder, 'prefab', 'prefab.json'))
-    jsonPrefabDescription.text = '{"name":"' + prefabName + '","schema_version":1,"dependencies":[],"version":"1.3.0"}'
+    jsonPrefabDescription.text = '{"name":"' + prefabName + '","schema_version":1,"dependencies":[],"version":"' + prefabVersion + '"}'
     if (buildSharedLibrary) {
         def jsonModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName, 'module.json'))
         jsonModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
@@ -767,6 +779,16 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
             copyNativeLibs(it, packageName, nativeLibraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
+        // We need to copy the classes.jar out of a hybrid library and make sure
+        // it only has the relevant classes
+        nativeLibraries.each { nativeLibrary ->
+            if (nativeLibrary.isHybridLibrary()) {
+                // Put classes.jar in 'libs' root
+                def outFolder = joinPath(packageName, "libs")
+                copyHybridClassesFromAar(outFolder, nativeLibrary, true)
+            }
+
+        }
         copyNativeLibrariesIncludes(packageName, nativeLibraries)
         copyDocs(packageName)
         if (shouldIncludeSampleSources()) {
@@ -810,7 +832,7 @@ task buildAar {
                 library ->
                     copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
                     if (library.isHybridLibrary()) {
-                        copyHybridClassesToPrefabAar(buildInfo, getPackageName(), library)
+                        copyHybridClassesFromAar(getPackageName(), library, true)
                     }
             }
         }
