@@ -181,7 +181,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
 
     if ('mapTester' in metrics) {
       annotations.push(
-          {series: 'nativeAllocated', x: time, shortText: 'M', text: 'M'});
+          {series: 'applicationAllocated', x: time, shortText: 'M', text: 'M'});
     }
     if (advice && 'warnings' in advice) {
       const warnings = advice.warnings;
