@@ -15,7 +15,7 @@ class Allocator {
  public:
   Allocator() = default;
   ~Allocator() = default;
-  bool Allocate(size_t to_allocate);
+  bool Allocate(uint64_t to_allocate);
   void Release();
   void ReleasePartial(size_t bytes);
 };
