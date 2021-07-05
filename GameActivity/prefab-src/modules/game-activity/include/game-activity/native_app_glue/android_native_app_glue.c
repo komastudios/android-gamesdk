@@ -325,7 +325,9 @@ static void onResume(GameActivity* activity) {
                                  APP_CMD_RESUME);
 }
 
-static void* onSaveInstanceState(GameActivity* activity, size_t* outLen) {
+static void onSaveInstanceState(GameActivity* activity,
+                                SaveInstanceStateRecallback recallback,
+                                void* context) {
   struct android_app* android_app = (struct android_app*)activity->instance;
   void* savedState = NULL;
 
@@ -338,15 +340,15 @@ static void* onSaveInstanceState(GameActivity* activity, size_t* outLen) {
   }
 
   if (android_app->savedState != NULL) {
-    savedState = android_app->savedState;
-    *outLen = android_app->savedStateSize;
+    // Tell the Java side about our state.
+    recallback(android_app->savedState, android_app->savedStateSize, context);
+    // Now we can free it.
+    free(android_app->savedState);
     android_app->savedState = NULL;
     android_app->savedStateSize = 0;
   }
 
   pthread_mutex_unlock(&android_app->mutex);
-
-  return savedState;
 }
 
 static void onPause(GameActivity* activity) {
