@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7db8a244_e43b6b73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-05T09:13:55Z",
+      "side": 1,
+      "message": "Bypassing presubmit because of unrelated windows breakages",
+      "revId": "1a17a3c6e031575757a2a878e975fd158f691fdb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
