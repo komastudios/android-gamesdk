@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f83acad9_def0106d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-05T14:03:35Z",
+      "side": 1,
+      "message": "In the GameController CMakeLists.txt file, change\nset( CMAKE_CXX_FLAGS \"-std\u003dc++17 -Wall -Werror -Os -fno-exceptions -fno-rtti\" )\nto\nset( CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} -std\u003dc++17 -Wall -Werror -Os -fno-exceptions -fno-rtti\" )\nin order to get NDK\u003c20 working.",
+      "revId": "5bfd5af57454fb1ef1bc1541a813a3eecac38372",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
