@@ -29,6 +29,7 @@ namespace paddleboat {
 
     // The following should mirror GameActivity.h
 #define PADDLEBOAT_GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT 48
+#define PADDLEBOAT_MAX_NUM_POINTERS_IN_MOTION_EVENT 8
 
     typedef struct Paddleboat_GameActivityPointerInfo {
         int32_t id;
@@ -50,7 +51,7 @@ namespace paddleboat {
         int32_t classification;
         int32_t edgeFlags;
         uint32_t pointerCount;
-        Paddleboat_GameActivityPointerInfo *pointers;
+        Paddleboat_GameActivityPointerInfo pointers[PADDLEBOAT_MAX_NUM_POINTERS_IN_MOTION_EVENT];
         float precisionX;
         float precisionY;
     } Paddleboat_GameActivityMotionEvent;

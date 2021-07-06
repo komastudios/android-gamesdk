@@ -536,7 +536,7 @@ namespace paddleboat {
         // Always update the virtual pointer data in the appropriate controller data structures
         const Paddleboat_GameActivityMotionEvent *motionEvent =
             reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
-        if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
+        if (motionEvent->pointerCount > 0) {
             const Paddleboat_GameActivityPointerInfo *pointerInfo = motionEvent->pointers;
             for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
                 if (mGameControllers[i].getConnectionIndex() >= 0) {
@@ -586,7 +586,7 @@ namespace paddleboat {
         if (mMouseStatus == PADDLEBOAT_MOUSE_PHYSICAL) {
             for (size_t i = 0; i < MAX_MOUSE_DEVICES; ++i) {
                 if (mMouseDeviceIds[i] == eventDeviceId) {
-                    if (motionEvent->pointerCount > 0 && motionEvent->pointers != nullptr) {
+                    if (motionEvent->pointerCount > 0) {
                         const Paddleboat_GameActivityPointerInfo *pointerInfo =
                             motionEvent->pointers;
 
