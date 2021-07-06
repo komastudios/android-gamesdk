@@ -288,7 +288,7 @@ typedef struct GameActivityCallbacks {
    * context; they retain ownership of the data. Note that the saved state will be persisted, so it
    * can not contain any active entities (pointers to memory, file descriptors, etc).
    */
-  void* (*onSaveInstanceState)(GameActivity* activity, SaveInstanceStateRecallback recallback,
+  void (*onSaveInstanceState)(GameActivity* activity, SaveInstanceStateRecallback recallback,
                                void* context);
 
   /**
