@@ -44,6 +44,7 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
         setContentView(R.layout.activity_cube);
         settingsLayout = findViewById(R.id.settingsLayout);
 
+        setupVersionInfo();
         setupGpuWorkSeekBar();
         setupCpuWorkSeekBar();
 
@@ -103,6 +104,13 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
             updateCpuWork(Integer.parseInt(cpuWorkStr));
             Log.d(APP_NAME, "CPU work changed by intent. cpu_workload: " + cpuWorkStr);
         }
+    }
+
+    private void setupVersionInfo() {
+        TextView versionInfoText = findViewById(R.id.textViewVersionInfo);
+
+        versionInfoText.setText(String.format("Cube v%s", BuildConfig.VERSION_NAME));
+        versionInfoText.setTextSize(20);
     }
 
     private void setupGpuWorkSeekBar() {

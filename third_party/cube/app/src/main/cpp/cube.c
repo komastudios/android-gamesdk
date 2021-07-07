@@ -4103,7 +4103,8 @@ struct demo demo_;
 
 void update_gpu_workload(int32_t new_workload) {
     demo_.gpu_workload = new_workload;
-    demo_.draw_cmd_dirty = true;
+    // We don't need to update the draw commands since gpu_workload is uploaded as a uniform
+    // every frame.
 }
 
 void update_cpu_workload(int32_t new_workload) {

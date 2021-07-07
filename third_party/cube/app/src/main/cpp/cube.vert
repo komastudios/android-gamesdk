@@ -21,10 +21,15 @@
 #version 400
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+
+precision highp int;
+precision highp float;
+
 layout(std140, binding = 0) uniform buf {
         mat4 MVP;
         vec4 position[12*3];
         vec4 attr[12*3];
+        int gpu_workload;
 } ubuf;
 
 layout (location = 0) out vec4 texcoord;
