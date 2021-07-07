@@ -1,0 +1,108 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876581",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c1847a55_512439bf",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T15:17:57Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 325,
+        "startChar": 39,
+        "endLine": 325,
+        "endChar": 40
+      },
+      "revId": "68e5c2f3f51f57e9eeb93645c39704d41977c9bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876581",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4d492166_271e7cae",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T15:17:57Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 603,
+        "startChar": 24,
+        "endLine": 603,
+        "endChar": 25
+      },
+      "revId": "68e5c2f3f51f57e9eeb93645c39704d41977c9bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876581",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "27dd4d08_2e091837",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 657,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T15:17:57Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 657,
+        "startChar": 94,
+        "endLine": 657,
+        "endChar": 95
+      },
+      "revId": "68e5c2f3f51f57e9eeb93645c39704d41977c9bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876581",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e0784dcb_101900e1",
+        "filename": "samples/game_controller/common/input_util.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T15:17:57Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 111
+      },
+      "revId": "68e5c2f3f51f57e9eeb93645c39704d41977c9bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
