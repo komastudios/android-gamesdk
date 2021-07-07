@@ -1,0 +1,1250 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "abb0918a_42733957",
+        "filename": "samples/game_controller/common/JNIUtil.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 29,
+        "endChar": 64
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7ac6580b_6ff76850",
+        "filename": "samples/game_controller/common/JNIUtil.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 132
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "869ed30f_857414d9",
+        "filename": "samples/game_controller/common/JNIUtil.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 103
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "273825a3_181c9a56",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6341c0cf_24a14083",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 203,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fe4c7192_a8503618",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 204,
+        "startChar": 0,
+        "endLine": 204,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "068a42a0_afe030da",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 205,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3410f93c_44fe2024",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 206,
+        "startChar": 0,
+        "endLine": 206,
+        "endChar": 117
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0fefd907_3757a8ad",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 117
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7057e470_c9017e6d",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 117
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5df7c159_6f89bcb6",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 209,
+        "startChar": 0,
+        "endLine": 209,
+        "endChar": 117
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d73c44a2_863cf62c",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "799ae826_4498100a",
+        "filename": "samples/game_controller/common/controllerui_data.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 211,
+        "startChar": 0,
+        "endLine": 211,
+        "endChar": 116
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0569a9be_3b543a31",
+        "filename": "samples/game_controller/common/controllerui_data.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 105
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "401e6a94_74bb9942",
+          "description": "Change to \"samples/game_controller/common/controllerui_util.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/common/controllerui_util.cpp",
+              "range": {
+                "startLine": 31,
+                "startChar": 13,
+                "endLine": 31,
+                "endChar": 19
+              },
+              "replacement": "Texture"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "3d65fdde_11d9ec44",
+        "filename": "samples/game_controller/common/controllerui_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"Texure\" -- should it be \"Texture\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 31,
+        "startChar": 13,
+        "endLine": 31,
+        "endChar": 19
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "d21cc3c0_716c36bf",
+          "description": "Change to \"samples/game_controller/common/controllerui_util.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/common/controllerui_util.cpp",
+              "range": {
+                "startLine": 44,
+                "startChar": 50,
+                "endLine": 44,
+                "endChar": 56
+              },
+              "replacement": "Texture"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "67d50a8b_0a8e43b2",
+        "filename": "samples/game_controller/common/controllerui_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"Texure\" -- should it be \"Texture\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 44,
+        "startChar": 50,
+        "endLine": 44,
+        "endChar": 56
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "28451d96_ecf5461f",
+        "filename": "samples/game_controller/common/controllerui_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "185f3611_74992a96",
+          "description": "Change to \"samples/game_controller/common/controllerui_util.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/common/controllerui_util.cpp",
+              "range": {
+                "startLine": 58,
+                "startChar": 55,
+                "endLine": 58,
+                "endChar": 61
+              },
+              "replacement": "Texture"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "d6c56d3f_2dcbd43f",
+        "filename": "samples/game_controller/common/controllerui_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"Texure\" -- should it be \"Texture\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 58,
+        "startChar": 55,
+        "endLine": 58,
+        "endChar": 61
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "8213b834_6c3b0ee1",
+          "description": "Change to \"samples/game_controller/common/controllerui_util.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/common/controllerui_util.cpp",
+              "range": {
+                "startLine": 66,
+                "startChar": 49,
+                "endLine": 66,
+                "endChar": 55
+              },
+              "replacement": "Texture"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "d24fef73_d3e924fb",
+        "filename": "samples/game_controller/common/controllerui_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"Texure\" -- should it be \"Texture\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 66,
+        "startChar": 49,
+        "endLine": 66,
+        "endChar": 55
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "78763511_d3e13c67",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 325,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0c92b6d5_ca3be0db",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 460,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 460,
+        "startChar": 0,
+        "endLine": 460,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "48657e79_136f1e4b",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 555,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 555,
+        "startChar": 0,
+        "endLine": 555,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "73356808_475e83d6",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 602,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 602,
+        "startChar": 0,
+        "endLine": 602,
+        "endChar": 109
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "15f260f9_e30910d8",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 653,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 653,
+        "startChar": 0,
+        "endLine": 653,
+        "endChar": 102
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e497885b_bc8ca11d",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 655,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 655,
+        "startChar": 0,
+        "endLine": 655,
+        "endChar": 102
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6474472c_e2d12c2f",
+        "filename": "samples/game_controller/common/demo_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 672,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 672,
+        "startChar": 0,
+        "endLine": 672,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7d56bd5b_c488d048",
+        "filename": "samples/game_controller/common/demo_scene.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 116,
+        "endChar": 174
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "679270e1_57f2e884",
+        "filename": "samples/game_controller/common/demo_scene.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 118,
+        "endChar": 186
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cdefad2b_81129df3",
+        "filename": "samples/game_controller/common/demo_scene.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 120,
+        "startChar": 0,
+        "endLine": 120,
+        "endChar": 170
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4fc6e448_6bc0c304",
+        "filename": "samples/game_controller/common/demo_scene.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 122,
+        "endChar": 175
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "50da33ef_9c5a9c28",
+        "filename": "samples/game_controller/common/input_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 111
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "70484d0a_a1bfedfc",
+        "filename": "samples/game_controller/common/texture_asset_loader.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 110
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bae1c589_c5a46f52",
+        "filename": "samples/game_controller/common/texture_asset_loader.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 178,
+        "startChar": 0,
+        "endLine": 178,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2b65e1bc_17b1095a",
+        "filename": "samples/game_controller/common/texture_asset_loader.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 144
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "594c7f8a_3410497e",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 189,
+        "startChar": 0,
+        "endLine": 189,
+        "endChar": 121
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4a555373_0fe2c0ac",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 192,
+        "startChar": 0,
+        "endLine": 192,
+        "endChar": 107
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0d595833_872e4edf",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 196,
+        "startChar": 0,
+        "endLine": 196,
+        "endChar": 123
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8d948e2b_7020cf01",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7321783c_e8a9b772",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 205,
+        "endChar": 104
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "6630b1d3_64cc2a8d",
+          "description": "Change to \"samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+              "range": {
+                "startLine": 452,
+                "startChar": 24,
+                "endLine": 452,
+                "endChar": 35
+              },
+              "replacement": "successful"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "8199fcd3_d023f3a2",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 452,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"successfull\" -- should it be \"successful\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 452,
+        "startChar": 24,
+        "endLine": 452,
+        "endChar": 35
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "11a9d301_1c47847e",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 662,
+        "startChar": 36,
+        "endLine": 662,
+        "endChar": 37
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9d825037_9804f540",
+        "filename": "samples/game_controller/gameactivity/app/src/main/java/com/google/android/games/paddleboat/gamecontrollersample/PaddleboatDemoActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 101
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876186",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "6f1b0c16_be3ae1e1",
+          "description": "Change to \"samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.cpp",
+              "range": {
+                "startLine": 360,
+                "startChar": 24,
+                "endLine": 360,
+                "endChar": 35
+              },
+              "replacement": "successful"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "e5164ccb_2a2e6ce5",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Common typo found: \"successfull\" -- should it be \"successful\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 360,
+        "startChar": 24,
+        "endLine": 360,
+        "endChar": 35
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012876184",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1758290?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b24a8808_6c567c39",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-07T14:52:41Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 570,
+        "startChar": 36,
+        "endLine": 570,
+        "endChar": 37
+      },
+      "revId": "ab52d7f6f9f2343f6b950b39580ffd56d72b70af",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
