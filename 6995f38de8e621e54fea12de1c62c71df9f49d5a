@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d5994a9_dd4e1fe5",
+        "filename": "samples/game_controller/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T09:33:07Z",
+      "side": 1,
+      "message": "I get an error indicating that my combination of API and NDK isn\u0027t included in the aar:\nCause: error when building with cmake using /Users/willosborn/dev/gamesdk/gamesdk/samples/game_controller/nativeactivity/app/src/main/cpp/CMakeLists.txt: Build command failed.\nError while executing java process with main class com.google.prefab.cli.AppKt with arguments {--build-system cmake --platform android --abi armeabi-v7a --os-version 16 --stl c++_shared --ndk-version 21 --output /Users/willosborn/dev/gamesdk/gamesdk/samples/game_controller/nativeactivity/app/.cxx/cmake/debug/prefab/armeabi-v7a/prefab /Users/willosborn/.gradle/caches/transforms-2/files-2.1/a789a9ba91b4592ce01a94052abef06e/games-controller-1.0.0-beta01/prefab}\n\nException in thread \"main\" java.lang.RuntimeException: Prebuilt directory does not contain libpaddleboat.a or libpaddleboat.so: /Users/willosborn/.gradle/caches/transforms-2/files-2.1/a789a9ba91b4592ce01a94052abef06e/games-controller-1.0.0-beta01/prefab/modules/paddleboat_static/libs/android.armeabi-v7a_API23_NDK14_gnustl_shared_Release\n\nCan we add a sentence to explain what to do if users get this error?\n\nI\u0027m not completely sure why API23 and NDK14 are being chosen in my case: the gradle.build has compileSdkVersion 30, minSdkVersion 16 and I only have flavours of NDK 21 and 22 installed locally.\n\nI upgraded Android Studio to 4.2.2 and the android gradle plugin to 4.2.1 and still see the above error.",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
