@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a92c68a6_57aa4af0",
+        "filename": "samples/game_controller/README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Per chat, empty permutations weren\u0027t getting cleaned out of your local build.",
+      "parentUuid": "4d5994a9_dd4e1fe5",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f5c74843_aaf038dd",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "nit: lirary-\u003elibrary",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec30122d_d86bb67b",
+        "filename": "samples/game_controller/common/JNIUtil.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f5c74843_aaf038dd",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef6a06d3_660d7155",
+        "filename": "samples/game_controller/common/Log.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "498d0868_1fcd861c",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2c11b670_147dc24b",
@@ -82,6 +136,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "Comment that draw_list contains the output and must be non-null?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "471832ee_58873983",
+        "filename": "samples/game_controller/common/controllerui_util.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c11b670_147dc24b",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -103,6 +175,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9aa96b8_d6347502",
+        "filename": "samples/game_controller/common/scene.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62c0d496_52bfeddc",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d393731b_7ffa964a",
@@ -116,6 +206,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86ceb3de_cef94011",
+        "filename": "samples/game_controller/common/scene_manager.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d393731b_7ffa964a",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -137,6 +245,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "867d5802_aa05f6eb",
+        "filename": "samples/game_controller/common/texture_asset_loader.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "197e66b5_88ac2b9c",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f10c2885_7adf9186",
@@ -150,6 +276,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1d94bec_007d4ef2",
+        "filename": "samples/game_controller/common/util.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f10c2885_7adf9186",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -171,6 +315,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6c4591a_81783c24",
+        "filename": "samples/game_controller/common/util.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f673c8b_793c5012",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5b6aaaa3_37e36185",
@@ -184,6 +346,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "Is this wise/necessary?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c45ff691_86edbd3d",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Removed.",
+      "parentUuid": "5b6aaaa3_37e36185",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -205,6 +385,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "464bc22d_a8161e43",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "675e4a9a_75ab3f4f",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "251242ed_0078eb61",
@@ -218,6 +416,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "041101e6_23449894",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "251242ed_0078eb61",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -239,6 +455,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9940a5d_79dcc614",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a16a7a2_7e6cb785",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d9ef8e1c_6ad2586f",
@@ -252,6 +486,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b08b48d5_f75050f3",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/our_key_codes.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9ef8e1c_6ad2586f",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -273,6 +525,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "81be565b_313a9a3b",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2173c483_3ce22062",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1c66758b_1601b8aa",
@@ -290,6 +560,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ec0929b_6358847a",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c66758b_1601b8aa",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f00823cc_88bdc584",
@@ -303,6 +591,24 @@
       "writtenOn": "2021-07-08T10:19:23Z",
       "side": 1,
       "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1755159b_eaaf7675",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-08T14:24:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f00823cc_88bdc584",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
