@@ -341,7 +341,8 @@ static void onSaveInstanceState(GameActivity* activity,
 
   if (android_app->savedState != NULL) {
     // Tell the Java side about our state.
-    recallback(android_app->savedState, android_app->savedStateSize, context);
+    recallback((const char*)android_app->savedState, android_app->savedStateSize,
+               context);
     // Now we can free it.
     free(android_app->savedState);
     android_app->savedState = NULL;
@@ -375,7 +376,7 @@ static void onTrimMemory(GameActivity* activity, int level) {
   android_app_write_cmd(android_app, APP_CMD_LOW_MEMORY);
 }
 
-static void onWindowFocusChanged(GameActivity* activity, int focused) {
+static void onWindowFocusChanged(GameActivity* activity, bool focused) {
   LOGV("WindowFocusChanged: %p -- %d\n", activity, focused);
   android_app_write_cmd((struct android_app*)activity->instance,
                         focused ? APP_CMD_GAINED_FOCUS : APP_CMD_LOST_FOCUS);
