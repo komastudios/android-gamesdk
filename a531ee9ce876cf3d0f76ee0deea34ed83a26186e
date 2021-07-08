@@ -1,0 +1,713 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "02be3f51_5b3a44b0",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 87,
+        "startChar": 85,
+        "endLine": 87,
+        "endChar": 86
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7f92ef5d_76c0e3a4",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ff8e9a9f_5dd292df",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data/alphabet.inl",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 20,
+        "startChar": 29,
+        "endLine": 20,
+        "endChar": 30
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9c12dcca_5b3edd9f",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data/alphabet.inl",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 21,
+        "startChar": 29,
+        "endLine": 21,
+        "endChar": 30
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3b2667e3_8d148237",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data/blurb.inl",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027they\u0027, \u0027them\u0027, or \u0027person\u0027; see https://developers.google.com/style/word-list#gender for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 29,
+        "startChar": 11,
+        "endLine": 29,
+        "endChar": 15
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4d0e14ee_f2089b56",
+        "filename": "samples/agdktunnel/app/src/main/cpp/game_asset_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 632,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 632,
+        "startChar": 50,
+        "endLine": 632,
+        "endChar": 51
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "68a97b28_e4d5879a",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loading_thread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 38,
+        "startChar": 75,
+        "endLine": 38,
+        "endChar": 76
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956712",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "790105ce_01c80203",
+          "description": "Change to \"samples/agdktunnel/app/src/main/cpp/native_engine.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+              "range": {
+                "startLine": 519,
+                "startChar": 25,
+                "endLine": 519,
+                "endChar": 36
+              },
+              "replacement": "successful"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "c2fe22bd_f22fa965",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 519,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Common typo found: \"successfull\" -- should it be \"successful\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 519,
+        "startChar": 25,
+        "endLine": 519,
+        "endChar": 36
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956712",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "7b4681f2_59fa5463",
+          "description": "Change to \"samples/agdktunnel/app/src/main/cpp/texture_manager.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+              "range": {
+                "startLine": 263,
+                "startChar": 10,
+                "endLine": 263,
+                "endChar": 19
+              },
+              "replacement": "extension"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "82b44ad1_f783664e",
+        "filename": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Common typo found: \"extention\" -- should it be \"extension\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 263,
+        "startChar": 10,
+        "endLine": 263,
+        "endChar": 19
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956712",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "fb890e79_371639e7",
+          "description": "Change to \"samples/agdktunnel/app/src/main/cpp/texture_manager.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+              "range": {
+                "startLine": 265,
+                "startChar": 38,
+                "endLine": 265,
+                "endChar": 47
+              },
+              "replacement": "extension"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "dcd1ed6d_0f21e27e",
+        "filename": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Common typo found: \"extention\" -- should it be \"extension\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 265,
+        "startChar": 38,
+        "endLine": 265,
+        "endChar": 47
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956712",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "08b1459f_eba5e336",
+          "description": "Change to \"samples/agdktunnel/app/src/main/cpp/texture_manager.cpp\"",
+          "replacements": [
+            {
+              "path": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+              "range": {
+                "startLine": 266,
+                "startChar": 26,
+                "endLine": 266,
+                "endChar": 35
+              },
+              "replacement": "extension"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "da5aabae_7ac8f4c4",
+        "filename": "samples/agdktunnel/app/src/main/cpp/texture_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Common typo found: \"extention\" -- should it be \"extension\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 266,
+        "startChar": 26,
+        "endLine": 266,
+        "endChar": 35
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ed416e85_25a1be60",
+        "filename": "samples/agdktunnel/app/src/main/cpp/tuning_manager.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 101
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956712",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "c65da720_008c34de",
+          "description": "Change to \"samples/agdktunnel/app/src/main/cpp/ui_scene.hpp\"",
+          "replacements": [
+            {
+              "path": "samples/agdktunnel/app/src/main/cpp/ui_scene.hpp",
+              "range": {
+                "startLine": 71,
+                "startChar": 15,
+                "endLine": 71,
+                "endChar": 22
+              },
+              "replacement": "the"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "053e1e1b_e604d797",
+        "filename": "samples/agdktunnel/app/src/main/cpp/ui_scene.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Common typo found: \"the the\" -- should it be \"the\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 22
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "446d8caa_2889fa12",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 27,
+        "startChar": 77,
+        "endLine": 27,
+        "endChar": 78
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a5565a26_8abb77cd",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d696505d_b3e96b51",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ab0ad41a_f886a77a",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b0cb1571_27c8ee67",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d3df3951_25a59d84",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "837aad6e_a2621a3c",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "51ef3895_1f6e9694",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "72399ae1_6bc4c605",
+        "filename": "samples/agdktunnel/app/src/main/proto/tuningfork.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5f4b8d5c_977a13af",
+        "filename": "samples/agdktunnel/app/src/main/res/values/strings.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000012956710",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1760378?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "04e0f21f_dbce1f37",
+        "filename": "samples/agdktunnel/app/src/main/res/values/styles.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-07-08T22:55:24Z",
+      "side": 1,
+      "message": "Please remove the trailing whitespace.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 1
+      },
+      "revId": "a531ee9ce876cf3d0f76ee0deea34ed83a26186e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
