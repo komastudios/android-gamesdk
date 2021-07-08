@@ -283,7 +283,7 @@ namespace paddleboat {
     GameController::processGameActivityMotionEvent(const Paddleboat_GameActivityMotionEvent *event,
                                                    const size_t eventSize) {
         int32_t handledEvent = IGNORED_EVENT;
-        if (event->pointerCount > 0 && event->pointers != nullptr) {
+        if (event->pointerCount > 0) {
             handledEvent = processMotionEventInternal(event->pointers->axisValues, nullptr);
         }
         return handledEvent;
