@@ -129,6 +129,12 @@ def gameControllerLibrary = new NativeLibrary('paddleboat')
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', 'game_controller'))
+                        .copySourcesTo("samples/game_controller"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', 'agdktunnel'))
+                        .copySourcesTo("samples/agdktunnel"))
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
