@@ -13,6 +13,8 @@ set -e # Exit on error
 # Set up the environment
 export ANDROID_HOME=$(pwd)/../prebuilts/sdk
 export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r20
+export BUILDBOT_SCRIPT=true
+export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake/linux-x86
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
 # Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,
@@ -28,13 +30,14 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_input -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_input -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
@@ -42,13 +45,14 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_input -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_input -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
 # Calculate hash of the zip file

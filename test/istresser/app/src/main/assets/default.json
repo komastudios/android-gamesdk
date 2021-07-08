@@ -79,9 +79,6 @@
                 "VmRSS > baseline.availMem"
               ]
             }
-          },
-          "predictions": {
-            "oom_score": true
           }
         },
         "switchTest": {

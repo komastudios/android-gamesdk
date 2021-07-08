@@ -36,8 +36,24 @@ buildscript {
     }
 }
 
+// The following is needed for sub-projects that have their own gradle script and that are
+// not using the general swappy/tuningfork multi-ndk build logic below and in buildSrc.
+def buildScript = System.getenv("BUILDBOT_SCRIPT")
+if (buildScript) {
+    Properties properties = new Properties()
+
+    if (project.rootProject.file('local.properties').exists()) {
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    }
+    properties.setProperty('sdk.dir', System.getenv("ANDROID_HOME"))
+    properties.setProperty('ndk.dir', System.getenv("ANDROID_NDK_HOME"))
+    properties.setProperty('cmake.dir', System.getenv("BUILDBOT_CMAKE"))
+
+    properties.store(project.rootProject.file('local.properties').newDataOutputStream(), '')
+}
+
 def swappyNativeLibrary = new NativeLibrary('swappy')
-        .setAarLibrary("games-frame-pacing", "1.7.0-rc01")
+        .setAarLibrary("games-frame-pacing", "1.9.0")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -56,7 +72,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy')
         )
 
 def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
-        .setAarLibrary("games-performance-tuner", "1.1.0-rc01")
+        .setAarLibrary("games-performance-tuner", "1.4.3")
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -87,22 +103,32 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice')
-        .setAarLibrary("games-memory-advice", "1.0.0-rc01")
+        .setAarLibrary("games-memory-advice", "1.0.0")
 
 def oboeNativeLibrary = new NativeLibrary('oboe')
-        .setAarLibrary("games-oboe", "1.0.0-rc01")
+        .setAarLibrary("games-oboe", "1.0.0")
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "1.0.0-alpha01")
+        .setAarLibrary("games-activity", "1.0.0")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameInputLibrary = new AndroidArchiveLibrary('game_input', "GameInput")
-        .setAarLibrary("games-text-input", "1.0.0-alpha01")
+def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
+        .setAarLibrary("games-text-input", "1.0.0")
+        // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
+
+def gameControllerLibrary = new NativeLibrary('paddleboat')
+        .setAarLibrary("games-controller", "1.0.0")
+        .setHybridLibrary()
+        .setHybridProjectDir("GameController")
+        .setMinimumAndroidApiLevel(16)
+        .setMinimumNdkVersion(17)
+        .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def protobufInstallDir() {
     return new File("$projectDir/third_party/protobuf-3.0.0/install/"
@@ -124,6 +150,11 @@ task prepare_proto_before {
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     doLast {
+        // Install protobuf-3.0.0 prerequisites
+        exec {
+            setEnvironment env
+            commandLine "python", "-m", "pip", "install", "-r", "requirements.txt"
+        }
         // Install python-protobuf
         exec {
             workingDir "./third_party/protobuf-3.0.0/python"
@@ -170,13 +201,15 @@ allprojects {
 
 // All the libraries that are part of the Game SDK. These can be native libraries (which we can
 // package in a zip, or in an AAR) or "Android libraries" (which are built by default in an AAR).
+
 def allLibraries = [
         swappyNativeLibrary,
         tuningForkNativeLibrary,
         memoryAdviceNativeLibrary,
         oboeNativeLibrary,
         gameActivityLibrary,
-        gameInputLibrary,
+        gameTextInputLibrary,
+        gameControllerLibrary,
 ]
 
 def getBuildPath() {
@@ -228,11 +261,13 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
         def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
 
         runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
-        runNinja(project, toolchain, workingFolder)
 
-        def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
-        jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
-                ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        if (!builtLibraries.isEmpty()) {
+            runNinja(project, toolchain, workingFolder)
+            def jsonDescription = new File(joinPath(outputFolder, "abi.json"))
+            jsonDescription.text = '{"abi":"' + buildOptions.arch + '","api":' + toolchain.getAndroidVersion() +
+                    ',"ndk":' + toolchain.getNdkVersionNumber() + ',"stl":"' + buildOptions.stl + '"}'
+        }
     }
 
     return [arch: buildOptions.arch, buildKey: buildKey]
@@ -246,11 +281,29 @@ task cleanPath(type: Delete) {
 }
 
 /**
+ * Take the classes.jar from a hybrid library and copy it to the
+ * Prefab AAR being generated
+ */
+def copyHybridClassesFromAar(outFolder, library, doRemove) {
+    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
+    def buildFolder = joinPath(getPackagePath(), outFolder)
+    def aarPrefabPatcher = new AarPrefabPatcher()
+    aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder, doRemove)
+}
+
+/**
  * Generate the structure of files needed to make an AAR from a native library.
  */
 def copyNativeLibraryToPrefabAar(buildInfo, outFolder, library) {
     def libraryName = library.nativeLibraryName
     def prefabName = library.aarLibraryName
+    def prefabVersion = "1.0.0"
+    def versionIndex = library.aarVersion.indexOf('-')
+    if (versionIndex == -1) {
+        prefabVersion = library.aarVersion
+    } else {
+        prefabVersion = library.aarVersion.substring(0, versionIndex)
+    }
     def arch = buildInfo.arch
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
@@ -335,7 +388,7 @@ def copyNativeLibraryToPrefabAar(buildInfo, outFolder, library) {
     }
     // 5. Create the json files
     def jsonPrefabDescription = new File(joinPath(buildFolder, 'prefab', 'prefab.json'))
-    jsonPrefabDescription.text = '{"name":"' + prefabName + '","schema_version":1,"dependencies":[],"version":"1.3.0"}'
+    jsonPrefabDescription.text = '{"name":"' + prefabName + '","schema_version":1,"dependencies":[],"version":"' + prefabVersion + '"}'
     if (buildSharedLibrary) {
         def jsonModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName, 'module.json'))
         jsonModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
@@ -630,6 +683,12 @@ Collection<NativeLibrary> filterNativeLibraries(allLibraries) {
     }
 }
 
+Collection<NativeLibrary> filterLibrariesByHybridStatus(allLibraries, isHybrid) {
+    return filterLibraries(allLibraries).findAll { library ->
+        library.isHybridLibrary == isHybrid
+    }
+}
+
 Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
     return filterLibraries(allLibraries).findAll { library ->
         library instanceof AndroidArchiveLibrary
@@ -688,6 +747,7 @@ tasks.withType(BuildTask) {
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -719,6 +779,16 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
             copyNativeLibs(it, packageName, nativeLibraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
         }
+        // We need to copy the classes.jar out of a hybrid library and make sure
+        // it only has the relevant classes
+        nativeLibraries.each { nativeLibrary ->
+            if (nativeLibrary.isHybridLibrary()) {
+                // Put classes.jar in 'libs' root
+                def outFolder = joinPath(packageName, "libs")
+                copyHybridClassesFromAar(outFolder, nativeLibrary, true)
+            }
+
+        }
         copyNativeLibrariesIncludes(packageName, nativeLibraries)
         copyDocs(packageName)
         if (shouldIncludeSampleSources()) {
@@ -736,6 +806,7 @@ task buildAar {
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -758,7 +829,11 @@ task buildAar {
         // Build native libraries, and add them to the AAR
         buildNativeLibrariesForAar(nativeLibraries, getBuildType()).each { buildInfo ->
             nativeLibraries.forEach {
-                library -> copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
+                library ->
+                    copyNativeLibraryToPrefabAar(buildInfo, getPackageName(), library)
+                    if (library.isHybridLibrary()) {
+                        copyHybridClassesFromAar(getPackageName(), library, true)
+                    }
             }
         }
     }
@@ -809,7 +884,9 @@ task format {
             fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"])
             fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
             fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h'])
+            fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'GameTextInput/prefab_src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'GameActivity/prefab_src', include: ['**/*.cpp', '**/*.c', '**/*.h'])
 
         formattedFiles.files.each { file ->
             exec {

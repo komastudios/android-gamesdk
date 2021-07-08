@@ -48,7 +48,7 @@ LatencyFrameStatisticsGL::LatencyFrameStatisticsGL(
 void LatencyFrameStatisticsGL::updateLatency(
     swappy::EGL::FrameTimestamps& frameStats, TimePoint frameStartTime) {
     int latency = getFrameDelta(frameStartTime.time_since_epoch().count(),
-                                frameStats.presented);
+                                frameStats.compositionLatched);
     TRACE_INT("FrameLatency", latency);
     mLastLatency = latency;
 }
@@ -122,8 +122,9 @@ void FullFrameStatisticsGL::updateIdleFrames(EGL::FrameTimestamps& frameStats) {
 
 void FullFrameStatisticsGL::updateLatencyFrames(
     swappy::EGL::FrameTimestamps& frameStats, TimePoint frameStartTime) {
-    int latency = updateFrames(frameStartTime.time_since_epoch().count(),
-                               frameStats.presented, mStats.latencyFrames);
+    int latency =
+        updateFrames(frameStartTime.time_since_epoch().count(),
+                     frameStats.compositionLatched, mStats.latencyFrames);
     TRACE_INT("FrameLatency", latency);
     mLastLatency = latency;
 }

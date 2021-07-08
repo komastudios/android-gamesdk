@@ -17,14 +17,6 @@
     "metrics": {
       "$ref": "metricsResults.schema.json"
     },
-    "predictions": {
-      "type": "object",
-      "patternProperties": {
-        "[A-Za-z0-9_]+": {
-          "type": "integer"
-        }
-      }
-    },
     "warnings": {
       "type": "array",
       "items": {

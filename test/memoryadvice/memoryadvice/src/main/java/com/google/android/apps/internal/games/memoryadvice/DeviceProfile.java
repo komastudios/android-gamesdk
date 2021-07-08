@@ -1,16 +1,8 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
-import static com.google.android.apps.internal.games.memoryadvice_common.StreamUtils.readStream;
-
-import android.content.res.AssetManager;
 import android.os.Build;
-import android.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,42 +26,6 @@ class DeviceProfile {
       }
       index++;
     }
-  }
-
-  /**
-   * Selects the device profile from all available.
-   *
-   * @param assets   The assert manager used to load files.
-   * @param params   Configuration parameters (can affect selection method).
-   * @param baseline This device's baseline metrics (can be used to aid selection).
-   * @return The selected device profile, plus metadata.
-   */
-  static Map<String, Object> getDeviceProfile(
-      AssetManager assets, Map<String, Object> params, Map<String, Object> baseline) {
-    Map<String, Object> profile = new LinkedHashMap<>();
-
-    Map<String, Object> lookup = null;
-    try {
-      ObjectReader objectReader = new ObjectMapper().reader();
-      lookup =
-          objectReader.readValue(readStream(assets.open("memoryadvice/lookup.json")), Map.class);
-
-      String matchStrategy = (String) params.get("matchStrategy");
-      String best;
-      if (matchStrategy == null || "fingerprint".equals(matchStrategy)) {
-        best = matchByFingerprint(lookup);
-      } else if ("baseline".equals(matchStrategy)) {
-        best = matchByBaseline(lookup, baseline);
-      } else {
-        throw new IllegalStateException("Unknown match strategy " + matchStrategy);
-      }
-      profile.put("limits", lookup.get(best));
-      profile.put("matched", best);
-      profile.put("fingerprint", Build.FINGERPRINT);
-    } catch (IOException e) {
-      Log.w("Profile problem.", e);
-    }
-    return profile;
   }
 
   /**

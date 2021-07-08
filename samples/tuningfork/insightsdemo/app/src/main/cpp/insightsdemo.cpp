@@ -276,4 +276,11 @@ Java_com_tuningfork_insightsdemo_TFTestActivity_setFidelityParameters(JNIEnv * e
     TuningFork_CProtobufSerialization_free(&params);
 }
 
+JNIEXPORT jlong JNICALL
+Java_com_tuningfork_insightsdemo_TFTestActivity_nGetTuningforkVersion(JNIEnv *env, jclass /*clz*/) {
+    return TUNINGFORK_MAJOR_VERSION*10000L
+      + TUNINGFORK_MINOR_VERSION*100L
+      + TUNINGFORK_BUGFIX_VERSION;
+}
+
 }
