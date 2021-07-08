@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8aecfe6a_af1ba61e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "Looks good apart from a few minor things.\nI couldn\u0027t build and run it though because prefab wouldn\u0027t pick up the right game controller shared library.",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d5994a9_dd4e1fe5",
@@ -14,6 +31,278 @@
       "writtenOn": "2021-07-08T09:33:07Z",
       "side": 1,
       "message": "I get an error indicating that my combination of API and NDK isn\u0027t included in the aar:\nCause: error when building with cmake using /Users/willosborn/dev/gamesdk/gamesdk/samples/game_controller/nativeactivity/app/src/main/cpp/CMakeLists.txt: Build command failed.\nError while executing java process with main class com.google.prefab.cli.AppKt with arguments {--build-system cmake --platform android --abi armeabi-v7a --os-version 16 --stl c++_shared --ndk-version 21 --output /Users/willosborn/dev/gamesdk/gamesdk/samples/game_controller/nativeactivity/app/.cxx/cmake/debug/prefab/armeabi-v7a/prefab /Users/willosborn/.gradle/caches/transforms-2/files-2.1/a789a9ba91b4592ce01a94052abef06e/games-controller-1.0.0-beta01/prefab}\n\nException in thread \"main\" java.lang.RuntimeException: Prebuilt directory does not contain libpaddleboat.a or libpaddleboat.so: /Users/willosborn/.gradle/caches/transforms-2/files-2.1/a789a9ba91b4592ce01a94052abef06e/games-controller-1.0.0-beta01/prefab/modules/paddleboat_static/libs/android.armeabi-v7a_API23_NDK14_gnustl_shared_Release\n\nCan we add a sentence to explain what to do if users get this error?\n\nI\u0027m not completely sure why API23 and NDK14 are being chosen in my case: the gradle.build has compileSdkVersion 30, minSdkVersion 16 and I only have flavours of NDK 21 and 22 installed locally.\n\nI upgraded Android Studio to 4.2.2 and the android gradle plugin to 4.2.1 and still see the above error.",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5c74843_aaf038dd",
+        "filename": "samples/game_controller/common/JNIUtil.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "nit: lirary-\u003elibrary",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "498d0868_1fcd861c",
+        "filename": "samples/game_controller/common/Log.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "Can you update and use the Log.h in samples/common/include instead?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c11b670_147dc24b",
+        "filename": "samples/game_controller/common/controllerui_util.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "Comment that draw_list contains the output and must be non-null?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62c0d496_52bfeddc",
+        "filename": "samples/game_controller/common/scene.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "\u0027#pragma once\u0027 to be consistent with the other headers?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d393731b_7ffa964a",
+        "filename": "samples/game_controller/common/scene_manager.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "197e66b5_88ac2b9c",
+        "filename": "samples/game_controller/common/texture_asset_loader.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "Remove commented out code?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f10c2885_7adf9186",
+        "filename": "samples/game_controller/common/util.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f673c8b_793c5012",
+        "filename": "samples/game_controller/common/util.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "NULL -\u003e nullptr",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b6aaaa3_37e36185",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "Is this wise/necessary?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "675e4a9a_75ab3f4f",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#include \"Log.h\" instead?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "251242ed_0078eb61",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a16a7a2_7e6cb785",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9ef8e1c_6ad2586f",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/our_key_codes.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2173c483_3ce22062",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/common.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#include Log.h?",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c66758b_1601b8aa",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
+      "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f00823cc_88bdc584",
+        "filename": "samples/game_controller/nativeactivity/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T10:19:23Z",
+      "side": 1,
+      "message": "#pragma once",
       "revId": "6995f38de8e621e54fea12de1c62c71df9f49d5a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
