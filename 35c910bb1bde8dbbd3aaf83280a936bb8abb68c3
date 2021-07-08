@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1651770d_2652853d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-08T08:37:48Z",
+      "side": 1,
+      "message": "I checked the built bouncyball.apk from the presubmits and it works fine.",
+      "revId": "35c910bb1bde8dbbd3aaf83280a936bb8abb68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
