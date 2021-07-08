@@ -40,6 +40,7 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
     public static native void destroy();
     public static native void raiseSignal(int signal);
     public static native void setFidelityParameters();
+    public static native long nGetTuningforkVersion();
 
     private SurfaceView view;
 
@@ -56,6 +57,14 @@ public class TFTestActivity extends AppCompatActivity implements Choreographer.F
 
         CheckGMS();
         initTuningFork(false);
+
+        try {
+            getSupportActionBar().setTitle("Insights v" + getApplicationContext().getPackageManager()
+                .getPackageInfo(getPackageName(), 0).versionName + " (" + String.valueOf(nGetTuningforkVersion()) + ")");
+        } catch(Exception e) {
+            // Ignore
+        }
+
     }
 
     @Override

@@ -4,31 +4,16 @@
   "description": "Configuration for the memory advisor.",
   "additionalProperties": false,
   "properties": {
-    "predictOomLimit": {
-      "description": "Enables on-device prediction of the oom_score limit.",
-      "type": "boolean"
-    },
-    "matchStrategy": {
-      "description": "The algorithm to use when identifying the closest matching profile to a device.",
-      "enum": [
-        "baseline",
-        "fingerprint"
-      ]
-    },
     "metrics": {
       "$ref": "monitorParameters.schema.json"
     },
     "heuristics": {
       "$ref": "heuristics.schema.json"
-    },
-    "predictions": {
-      "$ref": "predictionsSpec.schema.json"
     }
   },
   "type": "object",
   "examples": [
     {
-      "matchStrategy": "fingerprint",
       "metrics": {
         "baseline": {
           "debug": true
@@ -48,9 +33,6 @@
             "yellow": 0.75
           }
         }
-      },
-      "predictions": {
-        "oom_score": true
       }
     }
   ]

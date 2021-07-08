@@ -38,7 +38,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import com.google.androidgamesdk.gameinput.*;
+import com.google.androidgamesdk.gametextinput.InputConnection;
+import com.google.androidgamesdk.gametextinput.GameTextInput;
+import com.google.androidgamesdk.gametextinput.Listener;
+import com.google.androidgamesdk.gametextinput.Settings;
+import com.google.androidgamesdk.gametextinput.State;
 import dalvik.system.BaseDexClassLoader;
 import java.io.File;
 
@@ -127,8 +131,7 @@ public class GameActivity
   protected boolean mDestroyed;
 
   protected native long loadNativeCode(String path, String funcname, String internalDataPath,
-      String obbPath, String externalDataPath, int sdkVersion, AssetManager assetMgr,
-      byte[] savedState);
+      String obbPath, String externalDataPath, AssetManager assetMgr, byte[] savedState);
 
   protected native String getDlError();
 
@@ -146,7 +149,7 @@ public class GameActivity
 
   protected native void onConfigurationChangedNative(long handle);
 
-  protected native void onLowMemoryNative(long handle);
+  protected native void onTrimMemoryNative(long handle, int level);
 
   protected native void onWindowFocusChangedNative(long handle, boolean focused);
 
@@ -158,8 +161,6 @@ public class GameActivity
   protected native void onSurfaceRedrawNeededNative(long handle, Surface surface);
 
   protected native void onSurfaceDestroyedNative(long handle);
-
-  protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
   protected native void onTouchEventNative(long handle, MotionEvent motionEvent);
 
@@ -251,7 +252,7 @@ public class GameActivity
 
     mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
         getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
-        Build.VERSION.SDK_INT, getAssets(), nativeSavedState);
+        getAssets(), nativeSavedState);
 
     if (mNativeHandle == 0) {
       throw new UnsatisfiedLinkError(
@@ -324,10 +325,10 @@ public class GameActivity
   }
 
   @Override
-  public void onLowMemory() {
-    super.onLowMemory();
+  public void onTrimMemory(int level) {
+    super.onTrimMemory(level);
     if (!mDestroyed) {
-      onLowMemoryNative(mNativeHandle);
+      onTrimMemoryNative(mNativeHandle, level);
     }
   }
 
@@ -380,8 +381,7 @@ public class GameActivity
       mLastContentWidth = w;
       mLastContentHeight = h;
       if (!mDestroyed) {
-        onContentRectChangedNative(
-            mNativeHandle, mLastContentX, mLastContentY, mLastContentWidth, mLastContentHeight);
+        // We used to call onContentRectChangedNative here but were advised it is not needed.
       }
     }
   }
@@ -423,9 +423,9 @@ public class GameActivity
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-      // TODO (b/187147952): allow to disable the usage of GameInput in GameActivity.
+      // TODO (b/187147952): allow to disable the usage of GameTextInput in GameActivity.
       if (outAttrs != null) {
-        GameInput.copyEditorInfo(mInputConnection.getEditorInfo(), outAttrs);
+        GameTextInput.copyEditorInfo(mInputConnection.getEditorInfo(), outAttrs);
       }
       return mInputConnection;
     }

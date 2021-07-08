@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +24,7 @@ public class MemoryAdvisor {
   private static final long BYTES_IN_MEGABYTE = BYTES_IN_KILOBYTE * 1024;
   private static final long BYTES_IN_GIGABYTE = BYTES_IN_MEGABYTE * 1024;
 
-  private final Map<String, Object> deviceProfile;
   private final Map<String, Object> params;
-  private final float predictedOomLimit;
   private final MemoryMonitor memoryMonitor;
   private final Map<String, Object> build;
   private Map<String, Object> baseline;
@@ -59,17 +56,6 @@ public class MemoryAdvisor {
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor();
 
-    if (Boolean.TRUE.equals(params.get("predictOomLimit"))) {
-      Predictor predictor = new Predictor("/oom.tflite", "/oom_features.json");
-      try {
-        predictedOomLimit = predictor.predict(getDeviceInfo());
-      } catch (MissingPathException e) {
-        throw new MemoryAdvisorException(e);
-      }
-    } else {
-      predictedOomLimit = -1;
-    }
-
     Map<String, Object> baselineSpec = (Map<String, Object>) metrics.get("baseline");
     baseline = new LinkedHashMap<>();
     if (baselineSpec == null) {
@@ -81,8 +67,6 @@ public class MemoryAdvisor {
         baseline.put("constant", memoryMonitor.getMemoryMetrics(constant));
       }
     }
-
-    deviceProfile = DeviceProfile.getDeviceProfile(context.getAssets(), params, baseline);
   }
 
   /**
@@ -126,22 +110,12 @@ public class MemoryAdvisor {
    * in bytes. 0 if no estimate is available.
    */
   public static long availabilityEstimate(Map<String, Object> advice) {
-    Map<String, Object> predictions = (Map<String, Object>) advice.get("predictions");
-    if (predictions == null) {
-      return 0;
+    Map<String, Object> metrics = (Map<String, Object>) advice.get("metrics");
+    Object predictedUsage = metrics.get("predictedAvailable");
+    if (predictedUsage instanceof Number) {
+      return ((Number) predictedUsage).longValue();
     }
-
-    long smallestEstimate = Long.MAX_VALUE;
-
-    Iterator<String> it = predictions.keySet().iterator();
-    if (!it.hasNext()) {
-      return 0;
-    }
-    do {
-      String key = it.next();
-      smallestEstimate = Math.min(smallestEstimate, ((Number) predictions.get(key)).longValue());
-    } while (it.hasNext());
-    return smallestEstimate;
+    return 0L;
   }
 
   /**
@@ -223,16 +197,6 @@ public class MemoryAdvisor {
     Map<String, Object> results = new LinkedHashMap<>();
 
     Map<String, Object> metricsParams = (Map<String, Object>) params.get("metrics");
-
-    Map<String, Object> deviceBaseline;
-    Map<String, Object> deviceLimit;
-    if (deviceProfile != null) {
-      Map<String, Object> limits = (Map<String, Object>) deviceProfile.get("limits");
-      deviceLimit = (Map<String, Object>) limits.get("limit");
-      deviceBaseline = (Map<String, Object>) limits.get("baseline");
-    } else {
-      throw new MemoryAdvisorException("Methods called before Advisor was ready");
-    }
 
     Map<String, Object> metricsSpec = (Map<String, Object>) metricsParams.get("variable");
     Map<String, Object> metrics = memoryMonitor.getMemoryMetrics(metricsSpec);
@@ -334,190 +298,6 @@ public class MemoryAdvisor {
           warning.put("level", "red");
           warnings.add(warning);
         }
-        // Handler for device-based metrics.
-        for (Map.Entry<String, Object> entry : heuristics.entrySet()) {
-          String key = entry.getKey();
-          Object value = entry.getValue();
-          if (!(value instanceof Map)) {
-            continue;
-          }
-          Map<String, Object> heuristic = (Map<String, Object>) value;
-          Number _metricValue = getValue(metrics, key);
-          if (_metricValue == null) {
-            continue;
-          }
-          long metricValue = _metricValue.longValue();
-
-          Number _deviceLimitValue = getValue(deviceLimit, key);
-          if (_deviceLimitValue == null) {
-            continue;
-          }
-          long deviceLimitValue = _deviceLimitValue.longValue();
-
-          Number _deviceBaselineValue = getValue(deviceBaseline, key);
-          if (_deviceBaselineValue == null) {
-            continue;
-          }
-          long deviceBaselineValue = _deviceBaselineValue.longValue();
-
-          Number _baselineValue = getValue(baseline, key);
-          if (_baselineValue == null) {
-            continue;
-          }
-          long baselineValue = _baselineValue.longValue();
-
-          boolean increasing = deviceLimitValue > deviceBaselineValue;
-
-          // Fires warnings as metrics approach absolute values.
-          // Example: "Active": {"fixed": {"red": "300M", "yellow": "400M"}}
-          Map<String, Object> fixed = (Map<String, Object>) heuristic.get("fixed");
-          if (fixed != null) {
-            long red = getMemoryQuantity(fixed.get("red"));
-            long yellow = getMemoryQuantity(fixed.get("yellow"));
-            String level = null;
-            if (increasing ? metricValue > red : metricValue < red) {
-              level = "red";
-            } else if (increasing ? metricValue > yellow : metricValue < yellow) {
-              level = "yellow";
-            }
-            if (level != null) {
-              Map<String, Object> warning = new LinkedHashMap<>();
-              Map<String, Object> trigger = new LinkedHashMap<>();
-              trigger.put("fixed", fixed);
-              warning.put(key, trigger);
-              warning.put("level", level);
-              warnings.add(warning);
-            }
-          }
-
-          // Fires warnings as metrics approach ratios of the device baseline.
-          // Example: "availMem": {"baselineRatio": {"red": 0.30, "yellow": 0.40}}
-          Map<String, Object> baselineRatio = (Map<String, Object>) heuristic.get("baselineRatio");
-          if (baselineRatio != null) {
-            String level = null;
-            double baselineRed = ((Number) baselineRatio.get("red")).doubleValue();
-            if (increasing ? metricValue > baselineValue * baselineRed
-                           : metricValue < baselineValue * baselineRed) {
-              level = "red";
-            } else {
-              double baselineYellow = ((Number) baselineRatio.get("yellow")).doubleValue();
-              if (increasing ? metricValue > baselineValue * baselineYellow
-                             : metricValue < baselineValue * baselineYellow) {
-                level = "yellow";
-              }
-            }
-            if (level != null) {
-              Map<String, Object> warning = new LinkedHashMap<>();
-              Map<String, Object> trigger = new LinkedHashMap<>();
-              trigger.put("baselineRatio", baselineRatio);
-              warning.put(key, trigger);
-              warning.put("level", level);
-              warnings.add(warning);
-            }
-          }
-
-          // Fires warnings as baseline-relative metrics approach ratios of the device's baseline-
-          // relative limit.
-          // Example: "oom_score": {"deltaLimit": {"red": 0.85, "yellow": 0.75}}
-          Map<String, Object> deltaLimit = (Map<String, Object>) heuristic.get("deltaLimit");
-          if (deltaLimit != null) {
-            long limitValue = deviceLimitValue - deviceBaselineValue;
-            long relativeValue = metricValue - baselineValue;
-            String level = null;
-            double deltaLimitRed = ((Number) deltaLimit.get("red")).doubleValue();
-            if (increasing ? relativeValue > limitValue * deltaLimitRed
-                           : relativeValue < limitValue * deltaLimitRed) {
-              level = "red";
-            } else {
-              double deltaLimitYellow = ((Number) deltaLimit.get("yellow")).doubleValue();
-              if (increasing ? relativeValue > limitValue * deltaLimitYellow
-                             : relativeValue < limitValue * deltaLimitYellow) {
-                level = "yellow";
-              }
-            }
-            if (level != null) {
-              Map<String, Object> warning = new LinkedHashMap<>();
-              Map<String, Object> trigger = new LinkedHashMap<>();
-              trigger.put("deltaLimit", deltaLimit);
-              warning.put(key, trigger);
-              warning.put("level", level);
-              warnings.add(warning);
-            }
-          }
-
-          // Fires warnings as metrics approach ratios of the device's limit.
-          // Example: "VmRSS": {"deltaLimit": {"red": 0.90, "yellow": 0.75}}
-          Map<String, Object> limit = (Map<String, Object>) heuristic.get("limit");
-          if (limit != null) {
-            String level = null;
-            double redLimit = ((Number) limit.get("red")).doubleValue();
-            if (increasing ? metricValue > deviceLimitValue * redLimit
-                           : metricValue * redLimit < deviceLimitValue) {
-              level = "red";
-            } else {
-              double yellowLimit = ((Number) limit.get("yellow")).doubleValue();
-              if (increasing ? metricValue > deviceLimitValue * yellowLimit
-                             : metricValue * yellowLimit < deviceLimitValue) {
-                level = "yellow";
-              }
-            }
-            if (level != null) {
-              Map<String, Object> warning = new LinkedHashMap<>();
-              Map<String, Object> trigger = new LinkedHashMap<>();
-              trigger.put("limit", limit);
-              warning.put(key, trigger);
-              warning.put("level", level);
-              warnings.add(warning);
-            }
-          }
-        }
-
-        Map<String, Object> stressed = (Map<String, Object>) deviceLimit.get("stressed");
-        if (stressed != null) {
-          Map<String, Object> predictionsParams = (Map<String, Object>) params.get("predictions");
-          if (predictionsParams != null) {
-            Number applicationAllocated = (Number) stressed.get("applicationAllocated");
-            if (applicationAllocated != null) {
-              Map<String, Object> predictions = new LinkedHashMap<>();
-              for (String key : predictionsParams.keySet()) {
-                Number metricValue = getValue(metrics, key);
-                if (metricValue == null) {
-                  continue;
-                }
-
-                Number deviceLimitValue = getValue(deviceLimit, key);
-                if (deviceLimitValue == null) {
-                  continue;
-                }
-
-                Number deviceBaselineValue = getValue(deviceBaseline, key);
-                if (deviceBaselineValue == null) {
-                  continue;
-                }
-
-                Number baselineValue = getValue(baseline, key);
-                if (baselineValue == null) {
-                  continue;
-                }
-
-                long delta = metricValue.longValue() - baselineValue.longValue();
-                long deviceDelta = deviceLimitValue.longValue() - deviceBaselineValue.longValue();
-                if (deviceDelta == 0) {
-                  continue;
-                }
-
-                float percentageEstimate = (float) delta / deviceDelta;
-                predictions.put(
-                    key, applicationAllocated.longValue() * (1.0f - percentageEstimate));
-              }
-
-              results.put("predictions", predictions);
-              Map<String, Object> meta = new LinkedHashMap<>();
-              meta.put("duration", System.currentTimeMillis() - time);
-              results.put("meta", meta);
-            }
-          }
-        }
       }
 
       Map<String, Object> allFormulas = (Map<String, Object>) heuristics.get("formulas");
@@ -528,9 +308,6 @@ public class MemoryAdvisor {
             String formula = formulas.get(idx);
             try {
               if (evaluator.evaluate(formula, key1 -> {
-                    if ("predictedOomLimit".equals(key1)) {
-                      return (double) predictedOomLimit;
-                    }
                     Map<String, Object> dictionary;
                     if (key1.startsWith("baseline.")) {
                       key1 = key1.substring("baseline.".length());
@@ -577,13 +354,7 @@ public class MemoryAdvisor {
     Map<String, Object> deviceInfo = new LinkedHashMap<>();
     deviceInfo.put("build", build);
     deviceInfo.put("baseline", baseline);
-    if (deviceProfile != null) {
-      deviceInfo.put("deviceProfile", deviceProfile);
-    }
     deviceInfo.put("params", params);
-    if (predictedOomLimit != -1) {
-      deviceInfo.put("predictedOomLimit", predictedOomLimit);
-    }
     return deviceInfo;
   }
 

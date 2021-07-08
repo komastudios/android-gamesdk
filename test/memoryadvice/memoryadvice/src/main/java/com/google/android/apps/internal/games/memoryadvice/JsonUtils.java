@@ -21,11 +21,12 @@ class JsonUtils {
         return (T) object.get(path);
       }
       String nextPart = path.substring(0, slash);
-      if (!object.containsKey(nextPart)) {
+      Map<String, Object> nextObject = (Map<String, Object>) object.get(nextPart);
+      if (nextObject == null) {
         throw new MissingPathException();
       }
 
-      return getFromPath(path.substring(slash), (Map<String, Object>) object.get(nextPart));
+      return getFromPath(path.substring(slash), nextObject);
     } catch (MissingPathException ex) {
       throw new MissingPathException("Missing path: " + path);
     }

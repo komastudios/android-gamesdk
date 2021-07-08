@@ -43,7 +43,7 @@ First, download the core project and tools:
 ```bash
 repo sync -c -j8 gamesdk
 repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
-repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/mac-x86
+repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
 ```
 
 Next, use the download script to get prebuilt SDKs and/or NDKs.

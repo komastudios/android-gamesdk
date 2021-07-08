@@ -42,7 +42,7 @@ abstract class Toolchain {
     protected fun getNdkVersionFromPropertiesFile(): String {
         val file = File(getAndroidNDKPath(), "source.properties")
         if (!file.exists()) {
-            println("Warning: can't get NDK version from source.properties")
+            println("Warning: can't get NDK version from " + getAndroidNDKPath()+ "/source.properties")
             return "UNKNOWN"
         } else {
             val props = loadPropertiesFromFile(file)

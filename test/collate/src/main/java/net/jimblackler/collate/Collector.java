@@ -5,6 +5,8 @@ import static net.jimblackler.collate.JsonUtils.getSchema;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -20,18 +22,14 @@ import com.google.api.services.toolresults.model.ToolExecution;
 import com.google.api.services.toolresults.model.ToolOutputReference;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.MalformedInputException;
@@ -50,8 +48,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.json.JSONObject;
 
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
@@ -238,12 +235,12 @@ class Collector {
     text.lines().forEach(line -> {
       line = line.trim();
       try {
-        Map<String, Object> lineData = objectMapper.readValue(line, Map.class);
+        Map<String, Object> value = objectMapper.readValue(line, Map.class);
         if (validate) {
-          resultsRowSchema.validate(new JSONArray(line));
+          resultsRowSchema.validate(new JSONObject(line));
         }
-        data.add(lineData);
-      } catch (JSONException | JsonProcessingException e) {
+        data.add(value);
+      } catch (JsonProcessingException e) {
         System.out.println("Not JSON: " + line);
       } catch (ValidationException e) {
         System.out.println("Did not validate: " + e.getMessage());
@@ -284,9 +281,13 @@ class Collector {
     }
   }
 
-  public static void datastoreCollect(String version, Consumer<Entity> consumer)
+  static void collectDataStoreResult(DataStoreResultConsumer consumer, String version)
       throws IOException {
-    NetHttpTransport httpTransport = null;
+    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectReader objectReader = objectMapper.reader();
+    ObjectReader smileReader = new SmileMapper().reader();
+    Collection<Number> runTimes = new HashSet<>();
+    NetHttpTransport httpTransport;
     try {
       httpTransport = newTrustedTransport();
     } catch (GeneralSecurityException e) {
@@ -301,20 +302,76 @@ class Collector {
         jsonFactory.fromInputStream(Collector.class.getResourceAsStream(secretsName), Map.class);
     Map<String, Object> installed = (Map<String, Object>) secrets.get("installed");
     String projectId = (String) installed.get("project_id");
-    Datastore datastore = DatastoreOptions.newBuilder()
-                              .setCredentials(googleCredentials)
-                              .setProjectId(projectId)
-                              .build()
-                              .getService();
+    DatastoreOptions.newBuilder()
+        .setCredentials(googleCredentials)
+        .setProjectId(projectId)
+        .build()
+        .getService()
+        .run(Query.newEntityQueryBuilder()
+                 .setKind("Benchmark")
+                 .setFilter(StructuredQuery.CompositeFilter.and(
+                     StructuredQuery.PropertyFilter.eq("versionName", version),
+                     StructuredQuery.PropertyFilter.eq("testType", "management")))
+                 .build())
+        .forEachRemaining(entity -> {
+          Map<String, Object> results1;
+          try {
+            if (entity.contains("resultsSmile")) {
+              com.google.cloud.datastore.Blob resultsSmile = entity.getBlob("resultsSmile");
+              results1 = smileReader.readValue(resultsSmile.toByteArray(), Map.class);
+            } else {
+              results1 = objectReader.readValue(entity.getString("results"), Map.class);
+            }
+          } catch (IOException e) {
+            throw new IllegalStateException(e);
+          }
 
-    QueryResults<Entity> results =
-        datastore.run(Query.newEntityQueryBuilder()
-                          .setKind("Benchmark")
-                          .setFilter(StructuredQuery.PropertyFilter.eq("versionName", version))
-                          .build());
+          Number runTime = (Number) results1.get("runTime");
+          if (!runTimes.add(runTime)) {
+            System.out.println("Duplicate run seen");
+            return;
+          }
 
-    while (results.hasNext()) {
-      consumer.accept(results.next());
+          System.out.println("Registering run number " + runTimes.size());
+
+          List<List<Map<String, Object>>> tests1 =
+              (List<List<Map<String, Object>>>) results1.get("tests");
+
+          Map<String, Object> buildConfig = (Map<String, Object>) results1.get("buildConfig");
+
+          String versionName = (String) buildConfig.get("VERSION_NAME");
+
+          List<List<Map<String, Object>>> results =
+              (List<List<Map<String, Object>>>) results1.get("results");
+          for (int testNumber = 0; testNumber != results.size(); testNumber++) {
+            List<Map<String, Object>> result = results.get(testNumber);
+            Map<String, Object> paramsIn = new LinkedHashMap<>();
+            paramsIn.put("tests", tests1);
+            paramsIn.put("coordinates", getCoordinates(testNumber, tests1));
+            paramsIn.put("run", versionName);
+            if (!result.isEmpty()) {
+              Map<String, Object> first = result.get(0);
+              if (first != null) {
+                first.put("params", paramsIn);
+              }
+            }
+            consumer.accept(results1, result);
+          }
+        });
+  }
+
+  static Collection<Integer> getCoordinates(int testNumber, List<List<Map<String, Object>>> tests) {
+    List<Integer> coordinates = new ArrayList<>();
+    int calc = testNumber;
+    for (int idx = tests.size() - 1; idx >= 0; idx--) {
+      int dimensionSize = tests.get(idx).size();
+      coordinates.add(0, calc % dimensionSize);
+      calc /= dimensionSize;
     }
+    return coordinates;
+  }
+
+  interface DataStoreResultConsumer {
+    void accept(Map<String, Object> results1, List<Map<String, Object>> result);
   }
 }

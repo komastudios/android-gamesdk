@@ -16,26 +16,40 @@
         "totalMem": true,
         "threshold": true
       },
+      "ActivityManager": {
+        "MemoryClass": true,
+        "LargeMemoryClass": true,
+        "LowRamDevice": true
+      },
       "meminfo": {
         "CommitLimit": true,
         "HighTotal": true,
         "LowTotal": true,
-        "MemTotal": true,
-        "VmallocTotal": true
-      },
-      "status": {
-        "VmExe": true,
-        "VmStk": true
+        "MemTotal": true
       }
+    },
+    "baseline": {
+      "ActivityManager": true,
+      "DebugMemoryInfo": true,
+      "MemoryInfo": true,
+      "debug": true,
+      "meminfo": true,
+      "proc": true,
+      "smaps_rollup": true,
+      "status": true,
+      "summary": true,
+      "timings": true
     },
     "variable": {
       "proc": true,
-      "status": true,
-      "debug": true,
       "canaryProcessTester": {
         "memory": "256M"
       },
-      "predictRealtime": true
+      "MemoryInfo": {
+        "availMem": true
+      },
+      "predictRealtime": true,
+      "availableRealtime": true
     }
   }
 }

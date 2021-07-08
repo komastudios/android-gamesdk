@@ -37,6 +37,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
   const series = {};
   const combined = {};
   const rowOut = [0];
+  let maxApplicationAllocated = 0;
   for (const row of result) {
     const rowTime1 = rowTime(row);
     if (startTime === 0) {
@@ -112,6 +113,9 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
         applicationAllocated += value;
       }
       combined.applicationAllocated = applicationAllocated;
+      if (applicationAllocated > maxApplicationAllocated) {
+        maxApplicationAllocated = applicationAllocated;
+      }
     }
 
     const metrics = rowMetrics(row) || {};
@@ -177,7 +181,7 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
 
     if ('mapTester' in metrics) {
       annotations.push(
-          {series: 'nativeAllocated', x: time, shortText: 'M', text: 'M'});
+          {series: 'applicationAllocated', x: time, shortText: 'M', text: 'M'});
     }
     if (advice && 'warnings' in advice) {
       const warnings = advice.warnings;
@@ -297,6 +301,13 @@ export function buildDygraph(graphDiv, extrasDiv, deviceInfo, result) {
       }
     }
   });
+
+  if (maxApplicationAllocated > 0) {
+    const oldValueRanges = graph.yAxisRanges();
+    const newValueRanges = [...oldValueRanges];
+    newValueRanges[0] = [0, maxApplicationAllocated / (1024 * 1024) / 0.6];
+    graph.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {});
+  }
 
   const fieldsets = {};
   const allCheckboxes = [];

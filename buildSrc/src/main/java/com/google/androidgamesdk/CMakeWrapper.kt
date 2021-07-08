@@ -28,6 +28,8 @@ class CMakeWrapper {
             buildOptions: BuildOptions,
             libraries: Collection<NativeLibrary>
         ) {
+            if (libraries.isEmpty()) return
+
             ensureFoldersReady(project, buildFolders)
 
             val ndkPath = toolchain.getAndroidNDKPath()

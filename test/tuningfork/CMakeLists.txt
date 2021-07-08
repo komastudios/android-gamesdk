@@ -78,6 +78,7 @@ set(TEST_SRCS
   histogram_test.cpp
   jni_test.cpp
   serialization_test.cpp
+  settings_test.cpp
   tf_test_utils.cpp
   ${PGENS_DIR}/nano/dev_tuningfork.pb.c
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
