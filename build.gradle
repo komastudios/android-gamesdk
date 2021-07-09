@@ -113,7 +113,7 @@ def oboeNativeLibrary = new NativeLibrary('oboe')
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "1.0.0")
+        .setAarLibrary("games-activity", "1.0.0-rc01")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
