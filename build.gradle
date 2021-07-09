@@ -118,12 +118,12 @@ def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivi
         .setPrefabFolderName("prefab-src")
 
 def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
-        .setAarLibrary("games-text-input", "1.0.0")
+        .setAarLibrary("games-text-input", "1.0.0-rc01")
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
 def gameControllerLibrary = new NativeLibrary('paddleboat')
-        .setAarLibrary("games-controller", "1.0.0")
+        .setAarLibrary("games-controller", "1.0.0-rc01")
         .setHybridLibrary()
         .setHybridProjectDir("GameController")
         .setMinimumAndroidApiLevel(16)
