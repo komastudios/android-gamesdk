@@ -117,3 +117,18 @@ Version 1.2.4
 =============
 This release is a bugfix release for APT.
 - Fix loading time and duration recording on devices with inconsistent CLOCK_BOOTTIME.
+
+Version 2021.1.0
+================
+This major release includes several new libraries, a rebranding and minor bug fixes in the Android
+Frame Pacing and Android Performance Tuner libraries.
+- GameActivity is a new component that replaces and improves upon the NDK's NativeActivity.
+- GameTextInput is a new component that improves interaction with the Android soft keyboard.
+- GameController is a new component that allows easier interaction with and management of external
+  controllers.
+- Where we used to refer to this product as the Android Game SDK, it is now referred to as
+  the Android Game Development Kit. 
+- See the individual libraries and the source code at
+  https://android.googlesource.com/platform/frameworks/opt/gamesdk for details of changes.
+
+For full documentation, see https://developer.android.com/games/agdk.
