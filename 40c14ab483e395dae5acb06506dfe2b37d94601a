@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58048858_9636d1cd",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-07-09T08:58:35Z",
+      "side": 1,
+      "message": "AGDK includes tools. Let\u0027s say \"AGDK libraries\" in the beginning and then just AGDK",
+      "revId": "40c14ab483e395dae5acb06506dfe2b37d94601a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e3bf129_94082165",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-07-09T08:58:35Z",
+      "side": 1,
+      "message": "Change the url to agdk",
+      "revId": "40c14ab483e395dae5acb06506dfe2b37d94601a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
