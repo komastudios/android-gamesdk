@@ -1,12 +1,13 @@
-Android Game SDK
+# Android Game Development Kit (AGDK)
 
-## Integrating the Game SDK in your game
+## Integrating AGDK in your game
 
-Unless you need to compile the Game SDK from sources, it's recommended that you use the package with the pre-compiled library. You can download it on https://developer.android.com/games/sdk.
+Unless you need to compile AGDK from sources, it's recommended that you use the package with the pre-compiled library. You can download it on https://developer.android.com/games/sdk.
 
-## Build the Game SDK
+## Build AGDK
 
-In order to build the Game SDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/). On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, to avoid issues with symlinks.
+In order to build AGDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/).
+On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, to avoid issues with symlinks.
 
 ```bash
 mkdir android-games-sdk
@@ -16,7 +17,7 @@ repo init -u https://android.googlesource.com/platform/manifest -b android-games
 
 ### Build with locally installed SDK/NDK
 
-If the Android SDK is already installed locally, then download only the Game SDK source and build tools (~500Mb).
+If the Android SDK is already installed locally, then download only the AGDK source and build tools (~500Mb).
 
 ```bash
 repo sync -c -j8 gamesdk
@@ -53,7 +54,7 @@ cd gamesdk
 ./download.sh
 ```
 
-Finally, build the Game SDK using downloaded prebuilts.
+Finally, build AGDK using downloaded prebuilts.
 
 ```bash
 cd gamesdk
@@ -135,7 +136,7 @@ ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuni
 
 ## Samples
 
-Samples are classic Android projects, using CMake to build the native code. They are also all triggering the build of the Game SDK.
+Samples are classic Android projects, using CMake to build the native code. They are also all triggering the build of AGDK.
 
 ### Using Grade command line:
 
@@ -146,7 +147,7 @@ cd samples/tuningfork/insightsdemo && ./gradlew assemble
 cd samples/tuningfork/experimentsdemo && ./gradlew assemble
 ```
 
-The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be used for building both the sample project and the Game SDK.
+The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be used for building both the sample project and AGDK.
 
 ### Using Android Studio
 
@@ -157,7 +158,7 @@ Open projects using Android Studio:
 * `samples/tuningfork/insightsdemo`
 * `samples/tuningfork/experimentsdemo`
 
-and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The local Android SDK/NDK (configured in Android Studio) will be used for building both the sample project and the Game SDK.
+and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The local Android SDK/NDK (configured in Android Studio) will be used for building both the sample project and AGDK.
 
 #### Development and debugging
 
