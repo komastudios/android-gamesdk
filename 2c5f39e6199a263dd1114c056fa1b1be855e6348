@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5181c32f_c8d45940",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-12T21:54:30Z",
+      "side": 1,
+      "message": "Build output looks good, just noted one issue with a unit test that needs updating.",
+      "revId": "2c5f39e6199a263dd1114c056fa1b1be855e6348",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6aec5700_59e5e296",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/ToolchainEnumerator.kt",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-07-12T21:54:30Z",
+      "side": 1,
+      "message": "I had to refactor ToolchainEnumeratorTest.kt a little bit to get build.sh to run without error due to this change",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 11
+      },
+      "revId": "2c5f39e6199a263dd1114c056fa1b1be855e6348",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
