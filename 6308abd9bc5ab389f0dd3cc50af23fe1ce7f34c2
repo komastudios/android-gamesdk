@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bdbf6fbe_a95e422a",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-12T15:05:30Z",
+      "side": 1,
+      "message": "Do we need to define the version? I don\u0027t have 3.18.1 installed so get an error.",
+      "revId": "6308abd9bc5ab389f0dd3cc50af23fe1ce7f34c2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b988965c_816f92ec",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-12T15:05:30Z",
+      "side": 1,
+      "message": "The greater-than is misplaced - it should be on the next line, I think",
+      "revId": "6308abd9bc5ab389f0dd3cc50af23fe1ce7f34c2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
