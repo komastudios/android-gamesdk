@@ -16,11 +16,12 @@
 
 #pragma once
 
-#include <cstdint>
 #include <android/input.h>
 
-namespace paddleboat {
-    const char *LogGetInputSourceString(const int32_t eventSource);
+#include <cstdint>
 
-    void LogInputEvent(const AInputEvent *event);
-} // namespace paddleboat
+namespace paddleboat {
+const char *LogGetInputSourceString(const int32_t eventSource);
+
+void LogInputEvent(const AInputEvent *event);
+}  // namespace paddleboat
