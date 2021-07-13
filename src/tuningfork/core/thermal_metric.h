@@ -60,7 +60,6 @@ struct ThermalMetricData : public MetricData {
     virtual void Clear() override { data_.erase(data_.begin(), data_.end()); }
     virtual size_t Count() const override { return data_.size(); }
     static Metric::Type MetricType() { return Metric::Type::THERMAL; }
-
 };
 
 }  // namespace tuningfork
