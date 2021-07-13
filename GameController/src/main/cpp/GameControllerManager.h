@@ -16,163 +16,175 @@
 
 #pragma once
 
-#include <jni.h>
-#include <mutex>
 #include <android/input.h>
+#include <jni.h>
+
+#include <mutex>
+
 #include "GameController.h"
 #include "ThreadUtil.h"
 
 namespace paddleboat {
 
-    class GameControllerManager {
-    private:
-        // Allows construction with std::unique_ptr from a static method, but
-        // disallows construction outside of the class since no one else can
-        // construct a ConstructorTag
-        struct ConstructorTag {
-        };
+class GameControllerManager {
+   private:
+    // Allows construction with std::unique_ptr from a static method, but
+    // disallows construction outside of the class since no one else can
+    // construct a ConstructorTag
+    struct ConstructorTag {};
 
-        static constexpr int32_t MAX_MOUSE_DEVICES = 2;
-        static constexpr int32_t INVALID_MOUSE_ID = -1;
-        static constexpr int32_t MAX_REMAP_TABLE_SIZE = 256;
-    public:
-        GameControllerManager(JNIEnv *env, jobject jcontext, ConstructorTag);
+    static constexpr int32_t MAX_MOUSE_DEVICES = 2;
+    static constexpr int32_t INVALID_MOUSE_ID = -1;
+    static constexpr int32_t MAX_REMAP_TABLE_SIZE = 256;
 
-        ~GameControllerManager();
+   public:
+    GameControllerManager(JNIEnv *env, jobject jcontext, ConstructorTag);
 
-        static inline int32_t getRemapTableSize() { return MAX_REMAP_TABLE_SIZE; }
+    ~GameControllerManager();
 
-        static Paddleboat_ErrorCode init(JNIEnv *env, jobject jcontext);
+    static inline int32_t getRemapTableSize() { return MAX_REMAP_TABLE_SIZE; }
 
-        static void destroyInstance(JNIEnv *env);
+    static Paddleboat_ErrorCode init(JNIEnv *env, jobject jcontext);
 
-        static bool isInitialized();
+    static void destroyInstance(JNIEnv *env);
 
-        // Get/Set whether AKEYCODE_BACK is 'eaten' or allowed to pass through to the system
-        // This can be used to block the OS backing out of the game, or allowing it if the
-        // game is in an appropriate state (i.e. the title screen)
-        static bool getBackButtonConsumed();
+    static bool isInitialized();
 
-        static void setBackButtonConsumed(bool consumed);
+    // Get/Set whether AKEYCODE_BACK is 'eaten' or allowed to pass through to
+    // the system This can be used to block the OS backing out of the game, or
+    // allowing it if the game is in an appropriate state (i.e. the title
+    // screen)
+    static bool getBackButtonConsumed();
 
-        static void setControllerStatusCallback(
-                Paddleboat_ControllerStatusCallback statusCallback, void *userData);
+    static void setBackButtonConsumed(bool consumed);
 
-        static void setMouseStatusCallback(
-                Paddleboat_MouseStatusCallback statusCallback, void *userData);
+    static void setControllerStatusCallback(
+        Paddleboat_ControllerStatusCallback statusCallback, void *userData);
 
-        static void onStop(JNIEnv *env);
+    static void setMouseStatusCallback(
+        Paddleboat_MouseStatusCallback statusCallback, void *userData);
 
-        static void onStart(JNIEnv *env);
+    static void onStop(JNIEnv *env);
 
-        static void update(JNIEnv *env);
+    static void onStart(JNIEnv *env);
 
-        static Paddleboat_ErrorCode getControllerData(const int32_t controllerIndex,
-                                      Paddleboat_Controller_Data *controllerData);
+    static void update(JNIEnv *env);
 
-        static Paddleboat_ErrorCode
-        getControllerInfo(const int32_t controllerIndex, Paddleboat_Controller_Info *deviceInfo);
+    static Paddleboat_ErrorCode getControllerData(
+        const int32_t controllerIndex,
+        Paddleboat_Controller_Data *controllerData);
 
-        static Paddleboat_ErrorCode getControllerName(const int32_t controllerIndex,
-                                 const size_t bufferSize, char *controllerName);
+    static Paddleboat_ErrorCode getControllerInfo(
+        const int32_t controllerIndex, Paddleboat_Controller_Info *deviceInfo);
 
-        static Paddleboat_ControllerStatus getControllerStatus(const int32_t controllerIndex);
+    static Paddleboat_ErrorCode getControllerName(const int32_t controllerIndex,
+                                                  const size_t bufferSize,
+                                                  char *controllerName);
 
-        static Paddleboat_ErrorCode setControllerVibrationData(const int32_t controllerIndex,
-                                               const Paddleboat_Vibration_Data *vibrationData,
-                                               JNIEnv *env);
+    static Paddleboat_ControllerStatus getControllerStatus(
+        const int32_t controllerIndex);
 
-        static Paddleboat_ErrorCode getMouseData(Paddleboat_Mouse_Data *mouseData);
+    static Paddleboat_ErrorCode setControllerVibrationData(
+        const int32_t controllerIndex,
+        const Paddleboat_Vibration_Data *vibrationData, JNIEnv *env);
 
-        static Paddleboat_MouseStatus getMouseStatus();
+    static Paddleboat_ErrorCode getMouseData(Paddleboat_Mouse_Data *mouseData);
 
-        static int32_t processInputEvent(const AInputEvent *event);
+    static Paddleboat_MouseStatus getMouseStatus();
 
-        static int32_t processGameActivityKeyInputEvent(const void *event, const size_t eventSize);
+    static int32_t processInputEvent(const AInputEvent *event);
 
-        static int32_t processGameActivityMotionInputEvent(const void *event,
-                                                           const size_t eventSize);
+    static int32_t processGameActivityKeyInputEvent(const void *event,
+                                                    const size_t eventSize);
 
-        static uint64_t getActiveAxisMask();
+    static int32_t processGameActivityMotionInputEvent(const void *event,
+                                                       const size_t eventSize);
 
-        static void addControllerRemapData(const Paddleboat_Remap_Addition_Mode addMode,
-                                           const int32_t remapTableEntryCount,
-                                           const Paddleboat_Controller_Mapping_Data *mappingData);
+    static uint64_t getActiveAxisMask();
 
-        static int32_t getControllerRemapTableData(const int32_t destRemapTableEntryCount,
-                                                   Paddleboat_Controller_Mapping_Data *mappingData);
+    static void addControllerRemapData(
+        const Paddleboat_Remap_Addition_Mode addMode,
+        const int32_t remapTableEntryCount,
+        const Paddleboat_Controller_Mapping_Data *mappingData);
 
-        // Called from the JNI bridge functions
-        static GameControllerDeviceInfo *onConnection();
+    static int32_t getControllerRemapTableData(
+        const int32_t destRemapTableEntryCount,
+        Paddleboat_Controller_Mapping_Data *mappingData);
 
-        static void onDisconnection(const int32_t deviceId);
+    // Called from the JNI bridge functions
+    static GameControllerDeviceInfo *onConnection();
 
-        static void onMouseConnection(const int32_t deviceId);
+    static void onDisconnection(const int32_t deviceId);
 
-        static void onMouseDisconnection(const int32_t deviceId);
+    static void onMouseConnection(const int32_t deviceId);
 
-        static jclass getGameControllerClass();
+    static void onMouseDisconnection(const int32_t deviceId);
 
-        static jobject getGameControllerObject();
+    static jclass getGameControllerClass();
 
-        // device debug helper function
-        static int32_t getLastKeycode();
+    static jobject getGameControllerObject();
 
-    private:
-        static GameControllerManager *getInstance();
+    // device debug helper function
+    static int32_t getLastKeycode();
 
-        int32_t processControllerKeyEvent(const AInputEvent *event,
-                                          GameController &gameController);
+   private:
+    static GameControllerManager *getInstance();
 
-        int32_t processControllerGameActivityKeyEvent(const Paddleboat_GameActivityKeyEvent *event,
-                                                      const size_t eventSize,
-                                                      GameController &gameController);
+    int32_t processControllerKeyEvent(const AInputEvent *event,
+                                      GameController &gameController);
 
-        int32_t processMouseEvent(const AInputEvent *event);
+    int32_t processControllerGameActivityKeyEvent(
+        const Paddleboat_GameActivityKeyEvent *event, const size_t eventSize,
+        GameController &gameController);
 
-        int32_t processGameActivityMouseEvent(const void *event,
-                                              const size_t eventSize, const int32_t eventDeviceId);
+    int32_t processMouseEvent(const AInputEvent *event);
 
-        void rescanVirtualMouseControllers();
+    int32_t processGameActivityMouseEvent(const void *event,
+                                          const size_t eventSize,
+                                          const int32_t eventDeviceId);
 
-        void updateMouseDataTimestamp();
+    void rescanVirtualMouseControllers();
 
-        void releaseGlobals(JNIEnv *env);
+    void updateMouseDataTimestamp();
 
-        const Paddleboat_Controller_Mapping_Data *
-        getMapForController(const GameController &gameController);
+    void releaseGlobals(JNIEnv *env);
 
-        bool mInitialized = false;
-        bool mGCMClassInitialized = false;
-        bool mBackButtonConsumed = true;
+    const Paddleboat_Controller_Mapping_Data *getMapForController(
+        const GameController &gameController);
 
-        int32_t mApiLevel = 16;
-        jobject mContext = NULL;
-        jclass mGameControllerClass = NULL;
-        jobject mGameControllerObject = NULL;
-        jmethodID mGetApiLevelMethodId = NULL;
-        jmethodID mSetVibrationMethodId = NULL;
+    bool mInitialized = false;
+    bool mGCMClassInitialized = false;
+    bool mBackButtonConsumed = true;
 
-        uint64_t mActiveAxisMask = 0;
+    int32_t mApiLevel = 16;
+    jobject mContext = NULL;
+    jclass mGameControllerClass = NULL;
+    jobject mGameControllerObject = NULL;
+    jmethodID mGetApiLevelMethodId = NULL;
+    jmethodID mSetVibrationMethodId = NULL;
 
-        int32_t mRemapEntryCount = 0;
-        Paddleboat_Controller_Mapping_Data mMappingTable[MAX_REMAP_TABLE_SIZE];
+    uint64_t mActiveAxisMask = 0;
 
-        GameController mGameControllers[PADDLEBOAT_MAX_CONTROLLERS];
-        Paddleboat_ControllerStatusCallback mStatusCallback = nullptr;
-        void *mStatusCallbackUserData = nullptr;
-        // device debug helper
-        int32_t mLastKeyEventKeyCode = 0;
+    int32_t mRemapEntryCount = 0;
+    Paddleboat_Controller_Mapping_Data mMappingTable[MAX_REMAP_TABLE_SIZE];
 
-        Paddleboat_MouseStatus mMouseStatus = PADDLEBOAT_MOUSE_NONE;
-        int32_t mMouseDeviceIds[MAX_MOUSE_DEVICES] = {INVALID_MOUSE_ID, INVALID_MOUSE_ID};
-        int32_t mMouseControllerIndex = INVALID_MOUSE_ID;
-        Paddleboat_Mouse_Data mMouseData;
-        Paddleboat_MouseStatusCallback mMouseCallback = nullptr;
-        void *mMouseCallbackUserData = nullptr;
+    GameController mGameControllers[PADDLEBOAT_MAX_CONTROLLERS];
+    Paddleboat_ControllerStatusCallback mStatusCallback = nullptr;
+    void *mStatusCallbackUserData = nullptr;
+    // device debug helper
+    int32_t mLastKeyEventKeyCode = 0;
 
-        std::mutex mUpdateMutex;
-        static std::mutex sInstanceMutex;
-        static std::unique_ptr<GameControllerManager> sInstance GUARDED_BY(sInstanceMutex);
-    };
-} // namespace paddleboat
+    Paddleboat_MouseStatus mMouseStatus = PADDLEBOAT_MOUSE_NONE;
+    int32_t mMouseDeviceIds[MAX_MOUSE_DEVICES] = {INVALID_MOUSE_ID,
+                                                  INVALID_MOUSE_ID};
+    int32_t mMouseControllerIndex = INVALID_MOUSE_ID;
+    Paddleboat_Mouse_Data mMouseData;
+    Paddleboat_MouseStatusCallback mMouseCallback = nullptr;
+    void *mMouseCallbackUserData = nullptr;
+
+    std::mutex mUpdateMutex;
+    static std::mutex sInstanceMutex;
+    static std::unique_ptr<GameControllerManager> sInstance
+        GUARDED_BY(sInstanceMutex);
+};
+}  // namespace paddleboat
