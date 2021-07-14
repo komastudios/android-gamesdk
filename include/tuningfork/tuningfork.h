@@ -57,14 +57,14 @@ extern "C" {
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
-#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
-    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
-#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
-    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
+#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT) \
+    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX##_##GITCOMMIT
+#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT) \
+    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT)
 #define TUNINGFORK_VERSION_SYMBOL                                           \
     TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, \
                               TUNINGFORK_MINOR_VERSION,                     \
-                              TUNINGFORK_BUGFIX_VERSION)
+                              TUNINGFORK_BUGFIX_VERSION, AGDK_GIT_COMMIT)
 
 /** @endcond */
 
@@ -686,6 +686,8 @@ typedef enum TuningFork_LifecycleState {
  */
 TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
     TuningFork_LifecycleState state);
+
+const char* Tuningfork_versionString();
 
 #ifdef __cplusplus
 }

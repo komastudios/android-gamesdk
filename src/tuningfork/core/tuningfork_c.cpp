@@ -211,4 +211,11 @@ void TUNINGFORK_VERSION_SYMBOL() {
     // undefined symbol, as the name of the function depends on the version.
 }
 
+const char *Tuningfork_versionString() {
+    static const char version[] =
+        AGDK_STRING_VERSION(TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION,
+                            TUNINGFORK_BUGFIX_VERSION, AGDK_GIT_COMMIT);
+    return version;
+}
+
 }  // extern "C" {

@@ -22,8 +22,7 @@ if [ $headerChanged -eq "1" ]; then
     minorVersion=`git show $1 $TUNINGFORK_H | grep "#define TUNINGFORK_MINOR_VERSION" | wc -l`
     # echo "version_files $version_files"
     if [[ $majorVersion -eq "0" && $minorVersion -eq "0" ]]; then
-      echo "Did you break the TuningFork ABI without changing TUNINGFORK_MAJOR_VERSION or TUNINGFORK_MINOR_VERSION ?"
-      exit 1
+      echo "Warning: did you break the TuningFork ABI without changing TUNINGFORK_MAJOR_VERSION or TUNINGFORK_MINOR_VERSION ?"
     fi
 
 fi
