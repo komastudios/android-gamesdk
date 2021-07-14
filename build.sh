@@ -57,7 +57,8 @@ fi
 
 # Calculate hash of the zip file
 pushd "$dist_dir/$package_name"
-sha256sum gamesdk.zip > gamesdk.zip.sha256
+ZIPNAME=$(ls agdk-libraries-*)
+sha256sum $ZIPNAME > $ZIPNAME.sha256
 popd
 
 pushd "$dist_dir/$package_name"

@@ -13,6 +13,7 @@ import com.google.androidgamesdk.NativeLibrary
 import com.google.androidgamesdk.NativeLibrary.SampleFolder
 import com.google.androidgamesdk.ToolchainEnumerator
 import com.google.androidgamesdk.AarPrefabPatcher
+import com.google.androidgamesdk.LibraryVersions
 
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
 import static org.gradle.internal.logging.text.StyledTextOutput.Style;
@@ -55,8 +56,22 @@ if (buildScript) {
     properties.store(project.rootProject.file('local.properties').newDataOutputStream(), '')
 }
 
-def swappyNativeLibrary = new NativeLibrary('swappy')
-        .setAarLibrary("games-frame-pacing", "1.9.0")
+def versions = new LibraryVersions(project.rootProject.file('VERSIONS').getPath())
+
+ext.getAGDKZipName = { ->
+    return "agdk-libraries-"+ versions["AGDK"].version + ".zip"
+}
+
+def getGitCommit() {
+    def sout = new StringBuilder(), serr = new StringBuilder()
+    def proc = ['sh', '-c', 'cd ' + project.projectDir.toString() + ' && git rev-parse --short HEAD'].execute()
+    proc.consumeProcessOutput(sout, serr)
+    proc.waitForOrKill(1000)
+    println(serr)
+    return sout.toString().trim()
+}
+
+def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -74,8 +89,7 @@ def swappyNativeLibrary = new NativeLibrary('swappy')
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 
-def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
-        .setAarLibrary("games-performance-tuner", "1.4.3")
+def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -105,30 +119,24 @@ def tuningForkNativeLibrary = new NativeLibrary('tuningfork')
         .addSampleExtraFolder(
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
-def memoryAdviceNativeLibrary = new NativeLibrary('memory_advice')
-        .setAarLibrary("games-memory-advice", "1.0.0")
+def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
 
-def oboeNativeLibrary = new NativeLibrary('oboe')
-        .setAarLibrary("games-oboe", "1.0.0")
+def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
-def gameActivityLibrary = new AndroidArchiveLibrary('game_activity', "GameActivity")
-        .setAarLibrary("games-activity", "1.0.0-rc01")
+def gameActivityLibrary = new AndroidArchiveLibrary(versions['game_activity'])
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameTextInputLibrary = new AndroidArchiveLibrary('game_text_input', "GameTextInput")
-        .setAarLibrary("games-text-input", "1.0.0-rc01")
+def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input'])
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameControllerLibrary = new NativeLibrary('paddleboat')
-        .setAarLibrary("games-controller", "1.0.0-rc02")
+def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
         .setHybridLibrary()
-        .setHybridProjectDir("GameController")
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
@@ -269,7 +277,7 @@ def buildNativeModules(BuildOptions buildOptions, Toolchain toolchain, Collectio
         def buildFolders = new BuildFolders(cmakeProjectFolder, workingFolder, outputFolder)
         def builtLibraries = filterBuiltLibraries(libraries, buildOptions, toolchain)
 
-        runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries)
+        runAndroidCMake(project, buildFolders, toolchain, buildOptions, builtLibraries, getGitCommit())
 
         if (!builtLibraries.isEmpty()) {
             runNinja(project, toolchain, workingFolder)
@@ -1091,7 +1099,7 @@ task packageMavenZip(type: Zip) {
 }
 
 addZipTask("packageUnityZip", buildUnity, "builds.zip")
-addZipTask("packageZip", build, "gamesdk.zip")
+addZipTask("packageZip", build, getAGDKZipName())
 addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
 addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
 addZipTask("packageAar", buildAarStructure, "gamesdk.aar")

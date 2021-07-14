@@ -30,8 +30,11 @@ extern "C" {
 namespace tf = tuningfork;
 namespace jni = gamesdk::jni;
 
-TuningFork_ErrorCode TuningFork_init_internal(
-    const TuningFork_Settings *c_settings_in, JNIEnv *env, jobject context) {
+void TUNINGFORK_VERSION_SYMBOL();
+
+TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings *c_settings_in,
+                                     JNIEnv *env, jobject context) {
+    TUNINGFORK_VERSION_SYMBOL();
     tf::Settings settings{};
     if (c_settings_in != nullptr) {
         settings.c_settings = *c_settings_in;
@@ -209,6 +212,13 @@ void TUNINGFORK_VERSION_SYMBOL() {
     // version of the library is linked against the proper headers.
     // In case of mismatch, a linker error will be triggered because of an
     // undefined symbol, as the name of the function depends on the version.
+}
+
+const char *Tuningfork_versionString() {
+    static const char version[] =
+        AGDK_STRING_VERSION(TUNINGFORK_MAJOR_VERSION, TUNINGFORK_MINOR_VERSION,
+                            TUNINGFORK_BUGFIX_VERSION, AGDK_GIT_COMMIT);
+    return version;
 }
 
 }  // extern "C" {
