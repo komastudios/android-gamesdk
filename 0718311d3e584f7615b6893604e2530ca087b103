@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "569ef30e_b9960425",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-14T09:18:31Z",
+      "side": 1,
+      "message": "This does not replace the version numbers in the C header file. People who download and use the source from AOSP will probably not use our gradle scripts, so I still wanted to leave the semantic version numbers in there.",
+      "revId": "0718311d3e584f7615b6893604e2530ca087b103",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
