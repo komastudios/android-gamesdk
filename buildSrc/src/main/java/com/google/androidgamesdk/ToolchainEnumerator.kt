@@ -8,7 +8,7 @@ import java.util.stream.Collectors
  * Expose the toolchains to use to compile a library against all combinations
  * of architecture/STL/Android NDK/Android SDK version.
  */
-class ToolchainEnumerator {
+class ToolchainEnumerator() {
     private val abis32Bits = listOf("armeabi-v7a", "x86")
     private val abis64Bits = listOf("arm64-v8a", "x86_64")
     val allAbis = abis32Bits + abis64Bits
@@ -54,7 +54,13 @@ class ToolchainEnumerator {
         "r21" to listOf(21, 22, 23, 24, 26, 27, 28, 29)
     )
 
-    fun enumerateAllToolchains(project: Project): List<EnumeratedToolchain> {
+    fun enumerate(toolchainSet: ToolchainSet, project: Project): List<EnumeratedToolchain> {
+        return when ( toolchainSet ) {
+            ToolchainSet.ALL -> enumerateAllToolchains(project)
+            ToolchainSet.AAR -> enumerateAllAarToolchains(project)
+        }
+    }
+    private fun enumerateAllToolchains(project: Project): List<EnumeratedToolchain> {
         val pre17Toolchains: List<EnumeratedToolchain> = allAbis.flatMap {
             abi ->
             pre17STLs.flatMap { stl ->
@@ -70,7 +76,7 @@ class ToolchainEnumerator {
         return pre17Toolchains + post17Toolchains
     }
 
-    fun enumerateAllAarToolchains(project: Project): List<EnumeratedToolchain> {
+    private fun enumerateAllAarToolchains(project: Project): List<EnumeratedToolchain> {
         return abis32Bits.flatMap { abi ->
             aarPre17STLs.flatMap { stl ->
                 enumerateToolchains(project, abi, stl, aar32BitsPre17NdkToSdks)
@@ -132,7 +138,7 @@ class ToolchainEnumerator {
 
     companion object {
         /**
-         * Filter the libraries to keep only those who are compatible
+         * Filter the libraries to keep only those that are compatible
          * with the Android version, NDK version and STL specified in the
          * toolchain/build options.
          */
