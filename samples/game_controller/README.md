@@ -16,20 +16,6 @@ uses GameActivity.
 Before building in Android Studio the following prerequisites must be
 performed:
 
-### AGDK library archives
-
-Copy the relevant AGDK library .aar files to the libs/ folder of
-the sample you wish to run.
-
-For `nativeactivity/app/libs` you only need to copy the `games-controller` AAR file.
-For `gameactivity/app/libs` you need to copy both the `games-controller` and the
-`games-activity` AAR files.
-
-**Note:** Verify that the filename of the .aar(s) in the
-`nativeactivity/app/build.gradle` or `gameactivity/app/build.gradle`
-dependencies section matches the filename of the .aar(s) you copied to `libs/`.
-Fix the name in relevant `build.gradle` if they do not match.
-
 ### ImGui
 
 1. Open a terminal and set the working directory to `samples/game_controller/`
