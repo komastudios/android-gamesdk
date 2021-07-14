@@ -18,7 +18,7 @@ class ToolchainEnumeratorTest {
     fun generateProperToolchains() {
         val project = createMockProject()
         val allToolchains =
-            ToolchainEnumerator().enumerateAllToolchains(project)
+            ToolchainEnumerator().enumerate(ToolchainSet.ALL, project)
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
@@ -64,7 +64,7 @@ class ToolchainEnumeratorTest {
     fun generateProperAarToolchains() {
         val project = createMockProject()
         val allAarToolchains =
-            ToolchainEnumerator().enumerateAllAarToolchains(project)
+            ToolchainEnumerator().enumerate(ToolchainSet.AAR, project)
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
