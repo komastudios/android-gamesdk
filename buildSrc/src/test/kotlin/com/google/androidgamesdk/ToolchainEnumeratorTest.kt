@@ -1,10 +1,10 @@
 package com.google.androidgamesdk
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 
 class ToolchainEnumeratorTest {
     private fun createMockProject(): Project {
@@ -112,15 +112,19 @@ class ToolchainEnumeratorTest {
         )
     }
 
+    private fun makeUpLibraryInfo(name: String) =
+        LibraryInfo(name, name + "_j", null, SemanticVersion(1, 0, 0), "alpha")
+
     @Test
     fun canFilterLibraries() {
-        val alwaysLibrary = NativeLibrary("alwayslib")
-        val apiMin24Library = NativeLibrary("apiMin24Lib")
+        val alwaysLibrary = NativeLibrary(makeUpLibraryInfo("alwayslib"))
+        val apiMin24Library = NativeLibrary(makeUpLibraryInfo("apiMin24Lib"))
             .setMinimumAndroidApiLevel(24)
-        val ndkMin18Library = NativeLibrary("ndkMin28Lib")
+        val ndkMin18Library = NativeLibrary(makeUpLibraryInfo("ndkMin28Lib"))
             .setMinimumNdkVersion(18)
-        val someStlOnlyLibrary = NativeLibrary("someStlOnlyLib")
-            .setSupportedStlVersions(listOf("c++_static"))
+        val someStlOnlyLibrary =
+            NativeLibrary(makeUpLibraryInfo("someStlOnlyLib"))
+                .setSupportedStlVersions(listOf("c++_static"))
 
         val allLibraries = listOf(
             alwaysLibrary, apiMin24Library, ndkMin18Library, someStlOnlyLibrary

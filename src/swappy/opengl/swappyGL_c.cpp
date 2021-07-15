@@ -26,7 +26,22 @@ using namespace swappy;
 
 extern "C" {
 
-bool SwappyGL_init_internal(JNIEnv *env, jobject jactivity) {
+// Internal function to track Swappy version bundled in a binary.
+void SWAPPY_VERSION_SYMBOL();
+
+/**
+ * @brief Initialize Swappy, getting the required Android parameters from the
+ * display subsystem via JNI.
+ * @param env The JNI environment where Swappy is used
+ * @param jactivity The activity where Swappy is used
+ * @return false if Swappy failed to initialize.
+ * @see SwappyGL_destroy
+ */
+bool SwappyGL_init(JNIEnv *env, jobject jactivity) {
+    // This call ensures that the header and the linked library are from the
+    // same version (if not, a linker error will be triggered because of an
+    // undefined symbolP).
+    SWAPPY_VERSION_SYMBOL();
     return SwappyGL::init(env, jactivity);
 }
 

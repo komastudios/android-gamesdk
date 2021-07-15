@@ -57,14 +57,14 @@ extern "C" {
 
 // Internal macros to generate a symbol to track TuningFork version, do not use
 // directly.
-#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
-    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
-#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \
-    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX)
+#define TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT) \
+    PREFIX##_##MAJOR##_##MINOR##_##BUGFIX##_##GITCOMMIT
+#define TUNINGFORK_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT) \
+    TUNINGFORK_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX, GITCOMMIT)
 #define TUNINGFORK_VERSION_SYMBOL                                           \
     TUNINGFORK_VERSION_CONCAT(TuningFork_version, TUNINGFORK_MAJOR_VERSION, \
                               TUNINGFORK_MINOR_VERSION,                     \
-                              TUNINGFORK_BUGFIX_VERSION)
+                              TUNINGFORK_BUGFIX_VERSION, AGDK_GIT_COMMIT)
 
 /** @endcond */
 
@@ -371,20 +371,6 @@ inline void TuningFork_CProtobufSerialization_free(
     }
 }
 
-/** @cond INTERNAL */
-
-// Internal init function. Do not call directly.
-TuningFork_ErrorCode TuningFork_init_internal(
-    const TuningFork_Settings* settings, JNIEnv* env, jobject context);
-
-// Internal function to track TuningFork version bundled in a binary. Do not
-// call directly. If you are getting linker errors related to
-// TuningFork_version_x_y, you probably have a mismatch between the header used
-// at compilation and the actually library used by the linker.
-void TUNINGFORK_VERSION_SYMBOL();
-
-/** @endcond */
-
 /**
  * @brief Initialize Tuning Fork. This must be called before any other
  * functions.
@@ -405,14 +391,8 @@ void TUNINGFORK_VERSION_SYMBOL();
  * @return TUNINGFORK_ERROR_ALREADY_INITIALIZED if tuningfork was already
  * initialized.
  */
-static inline TuningFork_ErrorCode TuningFork_init(
-    const TuningFork_Settings* settings, JNIEnv* env, jobject context) {
-    // This call ensures that the header and the linked library are from the
-    // same version (if not, a linker error will be triggered because of an
-    // undefined symbol).
-    TUNINGFORK_VERSION_SYMBOL();
-    return TuningFork_init_internal(settings, env, context);
-}
+TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
+                                     JNIEnv* env, jobject context);
 
 // The functions below will return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED
 // if TuningFork_init
@@ -686,6 +666,8 @@ typedef enum TuningFork_LifecycleState {
  */
 TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
     TuningFork_LifecycleState state);
+
+const char* Tuningfork_versionString();
 
 #ifdef __cplusplus
 }
