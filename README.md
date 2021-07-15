@@ -165,3 +165,11 @@ and run them directly (`Shift + F10` on Linux, `Control + R` on macOS). The loca
 After opening a sample project using Android Studio, uncomment the line containing `add_gamesdk_sources()`.
 This will add the Swappy/Tuning Fork sources as part of the project. You can then inspect the source code (with working auto completions) and run the app in debug mode (with working breakpoints and inspectors).
 
+#### Note for macOs Users
+
+You may find that the APT demos will not build on your machine beacuse protoc is being blocked by
+security settings. A warning dialog message is displayed:
+```"protoc" cannot be opened because the developer cannot be verified"```
+
+In this case, please follow the instructions in the following article to allow protoc to be run:
+https://support.apple.com/en-gb/guide/mac-help/mh40616/mac
