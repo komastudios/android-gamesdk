@@ -53,8 +53,6 @@ public class MemoryAdvisor {
     memoryMonitor = new MemoryMonitor(context, metrics);
     this.params = params;
     build = BuildInfo.getBuild(context);
-    ScheduledExecutorService scheduledExecutorService =
-        Executors.newSingleThreadScheduledExecutor();
 
     Map<String, Object> baselineSpec = (Map<String, Object>) metrics.get("baseline");
     baseline = new LinkedHashMap<>();
@@ -151,12 +149,12 @@ public class MemoryAdvisor {
     if (Boolean.TRUE.equals(advice.get("backgrounded"))) {
       return MemoryState.BACKGROUNDED;
     }
-    Collection<Object> warnings = (Collection<Object>) advice.get("warnings");
+    Collection<Map<String, Object>> warnings =
+        (Collection<Map<String, Object>>) advice.get("warnings");
     if (warnings == null || warnings.isEmpty()) {
       return MemoryState.OK;
     }
-    for (Object value : warnings) {
-      Map<String, Object> warning = (Map<String, Object>) value;
+    for (Map<String, Object> warning : warnings) {
       if (warning != null && "red".equals(warning.get("level"))) {
         return MemoryState.CRITICAL;
       }
@@ -193,7 +191,6 @@ public class MemoryAdvisor {
    * allocation shouldn't happen, and RED indicates high memory pressure.
    */
   public Map<String, Object> getAdvice() throws MemoryAdvisorException {
-    long time = System.currentTimeMillis();
     Map<String, Object> results = new LinkedHashMap<>();
 
     Map<String, Object> metricsParams = (Map<String, Object>) params.get("metrics");
