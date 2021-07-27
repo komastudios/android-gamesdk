@@ -16,6 +16,24 @@
       "message": "Will the trailing whitespaces cause problems? If not they\u0027re fine with me",
       "revId": "9059c84def34aef3b0e97ff3be16fcafef12a378",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "580947dc_c13fa7fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-07-27T14:46:35Z",
+      "side": 1,
+      "message": "Whitespace will be ignored :)",
+      "parentUuid": "fa11928b_3a5d6b74",
+      "revId": "9059c84def34aef3b0e97ff3be16fcafef12a378",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
