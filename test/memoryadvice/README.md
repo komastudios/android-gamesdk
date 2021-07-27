@@ -87,8 +87,7 @@ The API can be called at any time to discover:
 
 The library offers an optional class `MemoryWatcher` that can perform the task of
 polling the `MemoryAdvisor` on behalf of the application; calling back the
-application when the advice state changes, as well as enforcing a budget for how
-much CPU time is allocated to this task.
+application when the advice state changes at a rate selected by the application.
 
 Otherwise, the choice of polling rate is left to the developer, to strike the
 correct balance between calling cost (this varies significantly by device but
@@ -286,15 +285,8 @@ class MyActivity extends Activity {
 ```
 
 Another options is to initialize a `MemoryWatcher` object. This will call back
-the application when the memory warning changes.
-
-To limit the time overhead introduced by the Memory Assistance API, the calling
-application sets a budget in milliseconds per second of runtime to spend
-collecting the memory metrics and prepare the advice. The callback rate will be
-automatically adjusted to stay within this budget.
-
-In this example, a limit of 10 milliseconds per second is applied, and a maximum
-duration between iterations of three seconds.
+the application when the memory warning changes. In this example the fixed
+sample rate is 1/4 second, or 250 milliseconds.
 
 ```java
 import android.app.Activity;
@@ -308,7 +300,7 @@ class MyActivity extends Activity {
   void myMethod() {
     Map<String, Object> advice = memoryAdvisor.getAdvice();
     MemoryWatcher memoryWatcher =
-        new MemoryWatcher(memoryAdvisor, 10, 100, 2000, new MemoryWatcher.DefaultClient() {
+        new MemoryWatcher(memoryAdvisor, 250, new MemoryWatcher.DefaultClient() {
           @Override
           public void newState(MemoryAdvisor.MemoryState memoryState) {
             switch (memoryState) {
