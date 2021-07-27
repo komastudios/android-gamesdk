@@ -23,22 +23,6 @@ done
 echo "Swappy changed: $swappyChanged"
 echo "TuningFork changed: $tuningforkChanged"
 
-if [ $swappyChanged -eq "1" ]; then
-    bugfixVersion=`git show $1 $SWAPPY_COMMON_H | grep "#define SWAPPY_BUGFIX_VERSION" | wc -l`
-    if [[ $bugfixVersion -eq "0" ]]; then
-      echo "Did you perform a bugfix in Swappy without updating SWAPPY_BUGFIX_VERSION in $SWAPPY_COMMON_H?"
-    fi
-fi
-
-if [ $tuningforkChanged -eq "1" ]; then
-    bugfixVersion=`git show $1 $TUNINGFORK_H | grep "#define TUNINGFORK_BUGFIX_VERSION" | wc -l`
-    if [[ $bugfixVersion -eq "0" ]]; then
-      echo "Did you perform a bugfix in Tuning Fork without updating TUNINGFORK_BUGFIX_VERSION in $TUNINGFORK_H?"
-    fi
-fi
-
-if [ $tuningforkChanged -eq "1" ] || [ $swappyChanged -eq "1" ]; then
-    exit 1
-fi
+# TODO (willosborn): check that swappy and tuningfork versions match those in VERSIONS
 
 exit 0

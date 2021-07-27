@@ -8,11 +8,11 @@ namespace istresser_allocator {
 
 constexpr char kAppName[] = "memorytest";
 
-bool Allocator::Allocate(size_t bytes) {
+bool Allocator::Allocate(uint64_t bytes) {
   mtx.lock();
   bool result = true;
   while (result && bytes > 0) {
-    size_t byte_count = bytes > SIZE_T_MAX ? SIZE_T_MAX : bytes;
+    uint64_t byte_count = bytes > SIZE_T_MAX ? SIZE_T_MAX : bytes;
     char *data = (char *)malloc(byte_count);
 
     if (data) {

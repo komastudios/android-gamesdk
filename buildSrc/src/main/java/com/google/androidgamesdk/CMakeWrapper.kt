@@ -26,7 +26,8 @@ class CMakeWrapper {
             buildFolders: BuildFolders,
             toolchain: Toolchain,
             buildOptions: BuildOptions,
-            libraries: Collection<NativeLibrary>
+            libraries: Collection<NativeLibrary>,
+            gitCommit: String
         ) {
             if (libraries.isEmpty()) return
 
@@ -37,8 +38,9 @@ class CMakeWrapper {
                 "/build/cmake/android.toolchain.cmake"
             val androidVersion = toolchain.getAndroidVersion()
 
-            var cxx_flags =
-                "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()}"
+            var cxx_flags = "-DANDROID_NDK_VERSION=${toolchain.getNdkVersionNumber()} " +
+            "-DAGDK_GIT_COMMIT=${gitCommit}"
+
             if (buildOptions.stl == "gnustl_static" ||
                 buildOptions.stl == "gnustl_shared"
             )

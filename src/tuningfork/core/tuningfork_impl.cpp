@@ -633,6 +633,10 @@ TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(
 
 TuningFork_ErrorCode TuningForkImpl::LoadingTimeMetadataToId(
     const LoadingTimeMetadataWithGroup &metadata, LoadingTimeMetadataId &id) {
+    if (metadata.metadata.state ==
+            TuningFork_LoadingTimeMetadata::UNKNOWN_STATE ||
+        metadata.metadata.state > TuningFork_LoadingTimeMetadata::INTER_LEVEL)
+        return TUNINGFORK_ERROR_INVALID_LOADING_STATE;
     std::lock_guard<std::mutex> lock(loading_time_metadata_map_mutex_);
     auto it = loading_time_metadata_map_.find(metadata);
     if (it != loading_time_metadata_map_.end()) {
@@ -663,7 +667,13 @@ TuningFork_ErrorCode TuningForkImpl::RecordLoadingTime(
     LoadingTimeMetadataId metadata_id;
     LoadingTimeMetadataWithGroup metadata_with_group_id{
         metadata, relativeToStart ? "" : current_loading_group_};
-    LoadingTimeMetadataToId(metadata_with_group_id, metadata_id);
+    if (LoadingTimeMetadataToId(metadata_with_group_id, metadata_id) !=
+        TUNINGFORK_ERROR_OK) {
+        ALOGW_ONCE_IF(
+            true,
+            "You must set the loading state when using RecordLoadingTime");
+        return TUNINGFORK_ERROR_INVALID_LOADING_STATE;
+    }
     AnnotationId ann_id = 0;
     auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -684,7 +694,13 @@ TuningFork_ErrorCode TuningForkImpl::StartRecordingLoadingTime(
     LoadingTimeMetadataId metadata_id;
     LoadingTimeMetadataWithGroup metadata_with_group_id{metadata,
                                                         current_loading_group_};
-    LoadingTimeMetadataToId(metadata_with_group_id, metadata_id);
+    if (LoadingTimeMetadataToId(metadata_with_group_id, metadata_id) !=
+        TUNINGFORK_ERROR_OK) {
+        ALOGW_ONCE_IF(true,
+                      "You must set the loading state when using "
+                      "StartRecordingLoadingTime");
+        return TUNINGFORK_ERROR_INVALID_LOADING_STATE;
+    }
     AnnotationId ann_id = 0;
     auto err = SerializedAnnotationToAnnotationId(annotation, ann_id);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -735,7 +751,13 @@ TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
     auto new_loading_group = UniqueId();
     metadata_in.metadata.source = LoadingSource::TOTAL_USER_WAIT_FOR_GROUP;
     metadata_in.group_id = new_loading_group;
-    LoadingTimeMetadataToId(metadata_in, metadata_id);
+    if (LoadingTimeMetadataToId(metadata_in, metadata_id) !=
+        TUNINGFORK_ERROR_OK) {
+        ALOGW_ONCE_IF(
+            true,
+            "You must set the loading state when using StartLoadingGroup");
+        return TUNINGFORK_ERROR_INVALID_LOADING_STATE;
+    }
     if (pAnnotation != nullptr) {
         auto err = SerializedAnnotationToAnnotationId(*pAnnotation, ann_id);
         if (err != TUNINGFORK_ERROR_OK) return err;

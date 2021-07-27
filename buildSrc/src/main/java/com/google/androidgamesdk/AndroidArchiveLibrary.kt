@@ -6,25 +6,14 @@ package com.google.androidgamesdk
  * to include prefab - can be removed once we use prefabPublishing).
  */
 data class AndroidArchiveLibrary(
-    val nativeLibraryName: String,
-    val projectName: String
+    val libraryInfo: LibraryInfo
 ) {
-    var aarLibraryName: String = ""
-        private set
-    var aarVersion: String = "0.0.0"
-        private set
+    val nativeLibraryName: String = libraryInfo.nickname
+    val aarLibraryName: String = libraryInfo.jetpackName
+    val aarVersion: String = libraryInfo.jetpackVersion()
+    val projectName: String = libraryInfo.projectName ?: "UnknownProject"
     var prefabFolderName: String = ""
         private set
-
-    fun setAarLibrary(
-        aarLibraryName: String,
-        aarVersion: String
-    ): AndroidArchiveLibrary {
-        this.aarLibraryName = aarLibraryName
-        this.aarVersion = aarVersion
-
-        return this
-    }
 
     fun setPrefabFolderName(
         prefabFolderName: String

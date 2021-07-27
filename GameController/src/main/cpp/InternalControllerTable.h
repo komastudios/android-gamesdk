@@ -17,10 +17,11 @@
 #pragma once
 
 #include <cstdint>
+
 #include "paddleboat.h"
 
 namespace paddleboat {
-    const Paddleboat_Controller_Mapping_Data *GetInternalControllerData();
+const Paddleboat_Controller_Mapping_Data *GetInternalControllerData();
 
-    int32_t GetInternalControllerDataCount();
-} // namespace paddleboat
+int32_t GetInternalControllerDataCount();
+}  // namespace paddleboat

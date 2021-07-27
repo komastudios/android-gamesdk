@@ -7,14 +7,12 @@ package com.google.androidgamesdk
  * @see ExternalAndroidProject
  */
 data class NativeLibrary(
-    val nativeLibraryName: String
+    val libraryInfo: LibraryInfo
 ) {
-    var aarLibraryName: String = ""
-        private set
-    var aarVersion: String = "0.0.0"
-        private set
-    var hybridProjectDir: String = ""
-        private set
+    val nativeLibraryName: String = libraryInfo.nickname
+    val aarLibraryName: String = libraryInfo.jetpackName
+    val aarVersion: String = libraryInfo.jetpackVersion()
+    var hybridProjectDir: String = libraryInfo.projectName ?: ""
     var sampleAndroidProjects: ArrayList<ExternalAndroidProject> = ArrayList()
         private set
     var sampleExtraFolderPaths: ArrayList<SampleFolder> = ArrayList()
@@ -32,16 +30,6 @@ data class NativeLibrary(
     var usesProtobuf = false
         private set
 
-    fun setAarLibrary(
-        aarLibraryName: String,
-        aarVersion: String
-    ): NativeLibrary {
-        this.aarLibraryName = aarLibraryName
-        this.aarVersion = aarVersion
-
-        return this
-    }
-
     fun addSampleAndroidProject(
         sampleAndroidProject: ExternalAndroidProject
     ): NativeLibrary {
@@ -53,13 +41,6 @@ data class NativeLibrary(
         sampleFolder: SampleFolder
     ): NativeLibrary {
         sampleExtraFolderPaths.add(sampleFolder)
-        return this
-    }
-
-    fun setHybridProjectDir(
-        projectDir: String
-    ) : NativeLibrary {
-        this.hybridProjectDir = projectDir
         return this
     }
 
