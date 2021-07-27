@@ -81,7 +81,6 @@ class MemoryMonitor {
 
     Map<String, Object> _meta = new LinkedHashMap<>();
     _meta.put("time", System.currentTimeMillis());
-    report.put("meta", _meta);
 
     if (mapTester.warning()) {
       report.put("mapTester", true);
@@ -305,6 +304,8 @@ class MemoryMonitor {
       }
     }
 
+    _meta.put("endTime", System.currentTimeMillis());
+    report.put("meta", _meta);
     return report;
   }
 
