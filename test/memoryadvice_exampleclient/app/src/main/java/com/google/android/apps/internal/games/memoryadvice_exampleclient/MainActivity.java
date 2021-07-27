@@ -15,17 +15,11 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
 
     memoryAdvisor = new MemoryAdvisor(this);
-    // The budget for overhead introduced by the advisor and watcher.
-    int maxMillisecondsPerSecond = 10;
+    // Delay between polls.
+    int delay = 250;
 
-    // The minimum time duration between iterations, in milliseconds.
-    int minimumFrequency = 100;
-
-    // The maximum time duration between iterations, in milliseconds.
-    int maximumFrequency = 2000;
-
-    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor, maxMillisecondsPerSecond,
-        minimumFrequency, maximumFrequency, new MemoryWatcher.DefaultClient() {
+    MemoryWatcher memoryWatcher = new MemoryWatcher(memoryAdvisor,  delay,
+        new MemoryWatcher.DefaultClient() {
       @Override
       public void newState(MemoryAdvisor.MemoryState state) {}
     });
