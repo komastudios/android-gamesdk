@@ -1,5 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -24,6 +25,13 @@ dependencies {
 
     // Use ktlint for auto-formatting and linting
     ktlint("com.pinterest:ktlint:0.37.2")
+}
+
+tasks {
+    test {
+        testLogging.showExceptions = true
+        testLogging.exceptionFormat = TestExceptionFormat.FULL
+    }
 }
 
 // Ktlint tasks:

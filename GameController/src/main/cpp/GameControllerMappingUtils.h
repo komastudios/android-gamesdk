@@ -23,35 +23,38 @@
 #endif
 
 namespace paddleboat {
-    class MappingTableSearch {
-    public:
-        MappingTableSearch();
+class MappingTableSearch {
+   public:
+    MappingTableSearch();
 
-        MappingTableSearch(Paddleboat_Controller_Mapping_Data *mapRoot, int32_t entryCount);
+    MappingTableSearch(Paddleboat_Controller_Mapping_Data *mapRoot,
+                       int32_t entryCount);
 
-        void initSearchParameters(const int32_t newVendorId, const int32_t newProductId,
-                                  const int32_t newMinApi, const int32_t newMaxApi);
+    void initSearchParameters(const int32_t newVendorId,
+                              const int32_t newProductId,
+                              const int32_t newMinApi, const int32_t newMaxApi);
 
-        Paddleboat_Controller_Mapping_Data *mappingRoot;
-        int32_t vendorId;
-        int32_t productId;
-        int32_t minApi;
-        int32_t maxApi;
-        int32_t tableIndex;
-        int32_t mapEntryCount;
-        int32_t tableEntryCount;
-        int32_t tableMaxEntryCount;
-    };
+    Paddleboat_Controller_Mapping_Data *mappingRoot;
+    int32_t vendorId;
+    int32_t productId;
+    int32_t minApi;
+    int32_t maxApi;
+    int32_t tableIndex;
+    int32_t mapEntryCount;
+    int32_t tableEntryCount;
+    int32_t tableMaxEntryCount;
+};
 
-    class GameControllerMappingUtils {
-    public:
-        static bool findMatchingMapEntry(MappingTableSearch *searchEntry);
+class GameControllerMappingUtils {
+   public:
+    static bool findMatchingMapEntry(MappingTableSearch *searchEntry);
 
-        static bool insertMapEntry(const Paddleboat_Controller_Mapping_Data *mappingData,
-                                   MappingTableSearch *searchEntry);
+    static bool insertMapEntry(
+        const Paddleboat_Controller_Mapping_Data *mappingData,
+        MappingTableSearch *searchEntry);
 
-        static const Paddleboat_Controller_Mapping_Data *
-        validateMapTable(const Paddleboat_Controller_Mapping_Data *mappingRoot,
-                         const int32_t tableEntryCount);
-    };
-} // namespace paddleboat
+    static const Paddleboat_Controller_Mapping_Data *validateMapTable(
+        const Paddleboat_Controller_Mapping_Data *mappingRoot,
+        const int32_t tableEntryCount);
+};
+}  // namespace paddleboat

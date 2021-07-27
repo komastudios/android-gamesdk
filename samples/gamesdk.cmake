@@ -52,6 +52,10 @@ function(add_gamesdk_target)
         set(GAMESDK_ANDROID_NDK_VERSION ${ANDROID_NDK_REVISION})
     endif()
     string(REGEX REPLACE "^([^.]+).*" "\\1" GAMESDK_ANDROID_NDK_MAJOR_VERSION ${GAMESDK_ANDROID_NDK_VERSION} ) # Get NDK major version
+
+    # TODO(b/192829605): look into why sometimes ANDROID_NDK_REVISION seems to be wrong
+    string(SUBSTRING ${GAMESDK_ANDROID_NDK_MAJOR_VERSION} 0 2 GAMESDK_ANDROID_NDK_MAJOR_VERSION) # Mitigate bug above by taking at most 2 chars
+
     if (NOT DEFINED GAMESDK_ANDROID_API_LEVEL)
         string(REGEX REPLACE "^android-([^.]+)" "\\1" GAMESDK_ANDROID_API_LEVEL ${ANDROID_PLATFORM} )
     endif()

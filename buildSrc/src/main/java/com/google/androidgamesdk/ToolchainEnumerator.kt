@@ -1,8 +1,8 @@
 package com.google.androidgamesdk
 
-import org.gradle.api.Project
 import java.lang.reflect.UndeclaredThrowableException
 import java.util.stream.Collectors
+import org.gradle.api.Project
 
 /**
  * Expose the toolchains to use to compile a library against all combinations
@@ -54,6 +54,7 @@ class ToolchainEnumerator() {
         "r21" to listOf(21, 22, 23, 24, 26, 27, 28, 29)
     )
 
+<<<<<<< HEAD   (c87dbd Merge cherrypicks of [1766306] into android-games-sdk-releas)
     fun enumerate(toolchainSet: ToolchainSet, project: Project): List<EnumeratedToolchain> {
         return when ( toolchainSet ) {
             ToolchainSet.ALL -> enumerateAllToolchains(project)
@@ -66,13 +67,31 @@ class ToolchainEnumerator() {
             pre17STLs.flatMap { stl ->
                 enumerateToolchains(project, abi, stl, pre17NdkToSdks)
             }
+=======
+    fun enumerate(
+        toolchainSet: ToolchainSet,
+        project: Project
+    ): List<EnumeratedToolchain> {
+        return when (toolchainSet) {
+            ToolchainSet.ALL -> enumerateAllToolchains(project)
+            ToolchainSet.AAR -> enumerateAllAarToolchains(project)
+>>>>>>> BRANCH (c683d6 Merge "Update version numbers for next Jetpack release")
         }
-        val post17Toolchains: List<EnumeratedToolchain> = allAbis.flatMap {
-            abi ->
-            post17STLs.flatMap { stl ->
-                enumerateToolchains(project, abi, stl, post17NdkToSdks)
+    }
+
+    private fun enumerateAllToolchains(project: Project): List<EnumeratedToolchain> {
+        val pre17Toolchains: List<EnumeratedToolchain> =
+            allAbis.flatMap { abi ->
+                pre17STLs.flatMap { stl ->
+                    enumerateToolchains(project, abi, stl, pre17NdkToSdks)
+                }
             }
-        }
+        val post17Toolchains: List<EnumeratedToolchain> =
+            allAbis.flatMap { abi ->
+                post17STLs.flatMap { stl ->
+                    enumerateToolchains(project, abi, stl, post17NdkToSdks)
+                }
+            }
         return pre17Toolchains + post17Toolchains
     }
 
@@ -159,14 +178,9 @@ class ToolchainEnumerator() {
                     nativeLibrary.minimumNdkVersion!! > ndkVersion
                 ) {
                     false
-                } else if (nativeLibrary.supportedStlVersions != null &&
+                } else !(nativeLibrary.supportedStlVersions != null &&
                     !nativeLibrary.supportedStlVersions!!
-                        .contains(buildOptions.stl)
-                ) {
-                    false
-                } else {
-                    true
-                }
+                        .contains(buildOptions.stl))
             }
         }
     }

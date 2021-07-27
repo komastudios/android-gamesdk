@@ -21,6 +21,9 @@
 
 extern "C" {
 
+// Internal function to track Swappy version bundled in a binary.
+void SWAPPY_VERSION_SYMBOL();
+
 void SwappyVk_determineDeviceExtensions(
     VkPhysicalDevice physicalDevice, uint32_t availableExtensionCount,
     VkExtensionProperties* pAvailableExtensions,
@@ -39,9 +42,12 @@ void SwappyVk_setQueueFamilyIndex(VkDevice device, VkQueue queue,
     swappy.SetQueueFamilyIndex(device, queue, queueFamilyIndex);
 }
 
-bool SwappyVk_initAndGetRefreshCycleDuration_internal(
-    JNIEnv* env, jobject jactivity, VkPhysicalDevice physicalDevice,
-    VkDevice device, VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
+bool SwappyVk_initAndGetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
+                                             VkPhysicalDevice physicalDevice,
+                                             VkDevice device,
+                                             VkSwapchainKHR swapchain,
+                                             uint64_t* pRefreshDuration) {
+    SWAPPY_VERSION_SYMBOL();
     TRACE_CALL();
     swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
     return swappy.GetRefreshCycleDuration(env, jactivity, physicalDevice,

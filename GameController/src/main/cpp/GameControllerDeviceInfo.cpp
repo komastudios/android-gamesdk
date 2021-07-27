@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <cstring>
 #include "GameControllerDeviceInfo.h"
 
+#include <cstring>
+
 namespace paddleboat {
-    GameControllerDeviceInfo::GameControllerDeviceInfo() {
-        mName[0] = '\0';
-        mInfo.mDeviceId = -1;
-        mInfo.mProductId = -1;
-        mInfo.mVendorId = -1;
-        mInfo.mAxisBitsLow = 0;
-        mInfo.mAxisBitsHigh = 0;
-        mInfo.mControllerNumber = -1;
-        mInfo.mControllerFlags = 0;
+GameControllerDeviceInfo::GameControllerDeviceInfo() {
+    mName[0] = '\0';
+    mInfo.mDeviceId = -1;
+    mInfo.mProductId = -1;
+    mInfo.mVendorId = -1;
+    mInfo.mAxisBitsLow = 0;
+    mInfo.mAxisBitsHigh = 0;
+    mInfo.mControllerNumber = -1;
+    mInfo.mControllerFlags = 0;
 
-        for (size_t i = 0; i < paddleboat::MAX_AXIS_COUNT; ++i) {
-            mAxisMinArray[i] = 0.0f;
-            mAxisMaxArray[i] = 0.0f;
-            mAxisFlatArray[i] = 0.0f;
-            mAxisFuzzArray[i] = 0.0f;
-        }
+    for (size_t i = 0; i < paddleboat::MAX_AXIS_COUNT; ++i) {
+        mAxisMinArray[i] = 0.0f;
+        mAxisMaxArray[i] = 0.0f;
+        mAxisFlatArray[i] = 0.0f;
+        mAxisFuzzArray[i] = 0.0f;
     }
+}
 
-    void GameControllerDeviceInfo::setName(const char *name) {
-        strncpy(mName, name, DEVICEINFO_MAX_NAME_LENGTH);
-    }
-} // namespace paddleboat
+void GameControllerDeviceInfo::setName(const char *name) {
+    strncpy(mName, name, DEVICEINFO_MAX_NAME_LENGTH);
+}
+}  // namespace paddleboat

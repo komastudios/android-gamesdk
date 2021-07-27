@@ -15,11 +15,12 @@
  */
 
 /*
- * This is the main interface to the Android Game Controller library, also known as Paddleboat.
+ * This is the main interface to the Android Game Controller library, also known
+ as Paddleboat.
 
    See the documentation at
-   https://developer.android.com/games/sdk/game-controller for more information on using this
-   library in a native Android game.
+   https://developer.android.com/games/sdk/game-controller for more information
+ on using this library in a native Android game.
  */
 
 /**
@@ -31,9 +32,9 @@
 #ifndef PADDLEBOAT_H
 #define PADDLEBOAT_H
 
-#include <stdint.h>
-#include <jni.h>
 #include <android/input.h>
+#include <jni.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,232 +42,250 @@ extern "C" {
 
 /**
  * @brief Maximum number of simultaneously connected controllers.
-*/
+ */
 #define PADDLEBOAT_MAX_CONTROLLERS 8
 
 /**
  * @brief Paddleboat error code results.
-*/
+ */
 enum Paddleboat_ErrorCode {
     /**
      * @brief No error. Function call was successful.
-    */
+     */
     PADDLEBOAT_NO_ERROR = 0,
     /**
-     * @brief ::Paddleboat_init was called a second time without a call to ::Paddleboat_destroy
-     * in between.
-    */
+     * @brief ::Paddleboat_init was called a second time without a call to
+     * ::Paddleboat_destroy in between.
+     */
     PADDLEBOAT_ERROR_ALREADY_INITIALIZED = -2000,
     /**
-     * @brief Paddleboat was not successfully initialized. Either ::Paddleboat_init was not
-     * called or returned an error.
-    */
+     * @brief Paddleboat was not successfully initialized. Either
+     * ::Paddleboat_init was not called or returned an error.
+     */
     PADDLEBOAT_ERROR_NOT_INITIALIZED = -2001,
     /**
      * @brief Paddleboat could not be successfully initialized. Instantiation
      * of the GameControllerManager class failed.
-    */
+     */
     PADDLEBOAT_ERROR_INIT_GCM_FAILURE = -2002,
     /**
      * @brief Invalid controller index specified. Valid index range is from 0
      * to PADDLEBOAT_MAX_CONTROLLERS - 1
-    */
+     */
     PADDLEBOAT_ERROR_INVALID_CONTROLLER_INDEX = -2003,
     /**
      * @brief No controller is connected at the specified controller index.
-    */
+     */
     PADDLEBOAT_ERROR_NO_CONTROLLER = -2004,
     /**
      * @brief No virtual or physical mouse device is connected.
-    */
+     */
     PADDLEBOAT_ERROR_NO_MOUSE = -2005,
     /**
      * @brief The feature is not supported by the specified controller.
      * Example: Calling ::Paddleboat_setControllerVibrationData on a controller
      * that does not have the `PADDLEBOAT_CONTROLLER_FLAG_VIBRATION` bit
      * set in `Paddleboat_Controller_Info.controllerFlags`.
-    */
+     */
     PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED = -2006,
     /**
-     * @brief An invalid parameter was specified. This usually means NULL or nullptr
-     * was passed in a parameter that requires a valid pointer.
-    */
+     * @brief An invalid parameter was specified. This usually means NULL or
+     * nullptr was passed in a parameter that requires a valid pointer.
+     */
     PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007
 };
 
 /**
  * @brief Paddleboat controller buttons defined as bitmask values.
- * AND against `Paddleboat_Controller_Data.buttonsDown` to check for button status.
-*/
+ * AND against `Paddleboat_Controller_Data.buttonsDown` to check for button
+ * status.
+ */
 enum Paddleboat_Buttons {
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad up button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad
+     * up button.
+     */
     PADDLEBOAT_BUTTON_DPAD_UP = (1U << 0),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad left button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad
+     * left button.
+     */
     PADDLEBOAT_BUTTON_DPAD_LEFT = (1U << 1),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad down button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad
+     * down button.
+     */
     PADDLEBOAT_BUTTON_DPAD_DOWN = (1U << 2),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad right button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad
+     * right button.
+     */
     PADDLEBOAT_BUTTON_DPAD_RIGHT = (1U << 3),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` A button.
-    */
+     */
     PADDLEBOAT_BUTTON_A = (1U << 4),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` B button.
-    */
+     */
     PADDLEBOAT_BUTTON_B = (1U << 5),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` X button.
-    */
+     */
     PADDLEBOAT_BUTTON_X = (1U << 6),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Y button.
-    */
+     */
     PADDLEBOAT_BUTTON_Y = (1U << 7),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L1 trigger button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L1 trigger
+     * button.
+     */
     PADDLEBOAT_BUTTON_L1 = (1U << 8),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L2 trigger button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L2 trigger
+     * button.
+     */
     PADDLEBOAT_BUTTON_L2 = (1U << 9),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L3 thumbstick button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` L3 thumbstick
+     * button.
+     */
     PADDLEBOAT_BUTTON_L3 = (1U << 10),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R1 trigger button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R1 trigger
+     * button.
+     */
     PADDLEBOAT_BUTTON_R1 = (1U << 11),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R2 trigger button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R2 trigger
+     * button.
+     */
     PADDLEBOAT_BUTTON_R2 = (1U << 12),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R3 thumbstick button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` R3 thumbstick
+     * button.
+     */
     PADDLEBOAT_BUTTON_R3 = (1U << 13),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Select button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Select
+     * button.
+     */
     PADDLEBOAT_BUTTON_SELECT = (1U << 14),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Start button.
-    */
+     */
     PADDLEBOAT_BUTTON_START = (1U << 15),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` System button.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` System
+     * button.
+     */
     PADDLEBOAT_BUTTON_SYSTEM = (1U << 16),
     /**
-     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Touchpad pressed.
-    */
+     * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` Touchpad
+     * pressed.
+     */
     PADDLEBOAT_BUTTON_TOUCHPAD = (1U << 17),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` AUX1 button.
-    */
+     */
     PADDLEBOAT_BUTTON_AUX1 = (1U << 18),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` AUX2 button.
-    */
+     */
     PADDLEBOAT_BUTTON_AUX2 = (1U << 19),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` AUX3 button.
-    */
+     */
     PADDLEBOAT_BUTTON_AUX3 = (1U << 20),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` AUX4 button.
-    */
+     */
     PADDLEBOAT_BUTTON_AUX4 = (1U << 21),
     /**
      * @brief Count of defined controller buttons.
-    */
+     */
     PADDLEBOAT_BUTTON_COUNT = 22
 };
 
 /**
  * @brief Paddleboat controller device feature flags as bitmask values
- * AND against `Paddleboat_Controller_Info.controllerFlags` to determine feature availability.
-*/
+ * AND against `Paddleboat_Controller_Info.controllerFlags` to determine feature
+ * availability.
+ */
 enum Paddleboat_Controller_Flags {
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device wasn't found in the internal
      * controller database and a generic button and axis mapping
      * profile is being used
-    */
+     */
     PADDLEBOAT_CONTROLLER_FLAG_GENERIC_PROFILE = (0x0000000010),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device supports vibration effects
      * using the ::Paddleboat_setControllerVibrationData function
-    */
+     */
     PADDLEBOAT_CONTROLLER_FLAG_VIBRATION = (0x08000000),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device supports both left and right
      * vibration motor data for vibration effects
-    */
+     */
     PADDLEBOAT_CONTROLLER_FLAG_VIBRATION_DUAL_MOTOR = (0x10000000),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device has a touchpad that will register
      * the `PADDLEBOAT_BUTTON_TOUCHPAD` button when pressed
-    */
+     */
     PADDLEBOAT_CONTROLLER_FLAG_TOUCHPAD = (0x20000000),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device can simulate a virtual mouse and
      * will report coordinates in `Paddleboat_Controller_Data.virtualPointer`
-    */
+     */
     PADDLEBOAT_CONTROLLER_FLAG_VIRTUAL_MOUSE = (0x40000000)
 };
 
 /**
  * @brief Paddleboat mouse buttons as bitmask values
  * AND against `Paddleboat_Mouse_Data.buttonsDown` to determine button status.
-*/
+ */
 enum Paddleboat_Mouse_Buttons {
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` left mouse button.
-    */
+     */
     PADDLEBOAT_MOUSE_BUTTON_LEFT = (1U << 0),
     /**
-     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` right mouse button.
-    */
+     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` right mouse
+     * button.
+     */
     PADDLEBOAT_MOUSE_BUTTON_RIGHT = (1U << 1),
     /**
-     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` middle mouse button.
-    */
+     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` middle mouse
+     * button.
+     */
     PADDLEBOAT_MOUSE_BUTTON_MIDDLE = (1U << 2),
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` back mouse button.
-    */
+     */
     PADDLEBOAT_MOUSE_BUTTON_BACK = (1U << 3),
     /**
-     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` forward mouse button.
-    */
+     * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` forward mouse
+     * button.
+     */
     PADDLEBOAT_MOUSE_BUTTON_FORWARD = (1U << 4),
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` mouse button 6.
-    */
+     */
     PADDLEBOAT_MOUSE_BUTTON_6 = (1U << 5),
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` mouse button 7.
-    */
+     */
     PADDLEBOAT_MOUSE_BUTTON_7 = (1U << 6),
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` mouse button 8.
-    */
+     */
     PADDLEBOAT_MOUSE_BUTTON_8 = (1U << 7)
 };
 
@@ -274,7 +293,7 @@ enum Paddleboat_Mouse_Buttons {
 
 /**
  * @brief Paddleboat axis mapping table axis order.
-*/
+ */
 enum Paddleboat_Mapping_Axis {
     /**
      * @brief Paddleboat internal mapping index for left thumbstick X axis. */
@@ -314,52 +333,54 @@ enum Paddleboat_Mapping_Axis {
 };
 
 /**
- * @brief Special constants to specify an axis or axis button mapping is ignored by
- * the controller.
-*/
+ * @brief Special constants to specify an axis or axis button mapping is ignored
+ * by the controller.
+ */
 enum Paddleboat_Ignored_Axis {
     /**
      * @brief Constant that signifies an axis in the
      * `Paddleboat_Controller_Mapping_Data.axisPositiveButtonMapping` array
-     * and/or `Paddleboat_Controller_Mapping_Data.axisNegativeButtonMapping` array
-     * does not have a mapping to a button
-    */
+     * and/or `Paddleboat_Controller_Mapping_Data.axisNegativeButtonMapping`
+     * array does not have a mapping to a button
+     */
     PADDLEBOAT_AXIS_BUTTON_IGNORED = 0xFE,
     /**
      * @brief Constant that signifies an axis in the
      * `Paddleboat_Controller_Mapping_Data.axisMapping` array is unused by
      * the controller
-    */
+     */
     PADDLEBOAT_AXIS_IGNORED = 0xFFFE
 };
 
 /**
  * @brief Special constant to specify a button is ignored by the controller.
-*/
+ */
 enum Paddleboat_Ignored_Buttons {
     /**
      * @brief Constant that signifies a button in the
      * `Paddleboat_Controller_Mapping_Data.buttonMapping` array
      * does not map to a button on the controller
-    */
+     */
     PADDLEBOAT_BUTTON_IGNORED = 0xFFFE
 };
 
 /**
  * @brief Current status of a controller (at a specified controller index)
-*/
+ */
 enum Paddleboat_ControllerStatus {
-    PADDLEBOAT_CONTROLLER_INACTIVE = 0, ///< No controller is connected
-    PADDLEBOAT_CONTROLLER_ACTIVE = 1, ///< Controller is connected and active
-    PADDLEBOAT_CONTROLLER_JUST_CONNECTED = 2, ///< Controller has just connected,
-                                              ///< only seen in a controller status callback
-    PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED = 3 ///< Controller has just disconnected,
-                                                ///< only seen in a controller status callback
+    PADDLEBOAT_CONTROLLER_INACTIVE = 0,  ///< No controller is connected
+    PADDLEBOAT_CONTROLLER_ACTIVE = 1,    ///< Controller is connected and active
+    PADDLEBOAT_CONTROLLER_JUST_CONNECTED =
+        2,  ///< Controller has just connected,
+            ///< only seen in a controller status callback
+    PADDLEBOAT_CONTROLLER_JUST_DISCONNECTED =
+        3  ///< Controller has just disconnected,
+           ///< only seen in a controller status callback
 };
 
 /**
  * @brief The button layout and iconography of the controller buttons
-*/
+ */
 enum Paddleboat_ControllerButtonLayout {
     //!  Y \n
     //! X B\n
@@ -385,35 +406,41 @@ enum Paddleboat_ControllerButtonLayout {
 
 /**
  * @brief The status of the mouse device
-*/
+ */
 enum Paddleboat_MouseStatus {
-    PADDLEBOAT_MOUSE_NONE = 0, ///< No mouse device is connected
-    PADDLEBOAT_MOUSE_CONTROLLER_EMULATED = 1, ///< A virtual mouse is connected
-                                              ///< The virtual mouse is being simulated
-                                              ///< by a game controller
-    PADDLEBOAT_MOUSE_PHYSICAL ///< A physical mouse or trackpad device is connected
+    PADDLEBOAT_MOUSE_NONE = 0,  ///< No mouse device is connected
+    PADDLEBOAT_MOUSE_CONTROLLER_EMULATED =
+        1,                     ///< A virtual mouse is connected
+                               ///< The virtual mouse is being simulated
+                               ///< by a game controller
+    PADDLEBOAT_MOUSE_PHYSICAL  ///< A physical mouse or trackpad device is
+                               ///< connected
 };
 
 /**
  * @brief The addition mode to use when passing new controller mapping data
  * to ::Paddleboat_addControllerRemapData
-*/
+ */
 enum Paddleboat_Remap_Addition_Mode {
-    PADDLEBOAT_REMAP_ADD_MODE_DEFAULT = 0, ///< If a vendorId/productId controller entry in the
-                                           ///< new remap table exists in the current database,
-                                           ///< and the min/max API ranges overlap, replace the
-                                           ///< existing entry, otherwise add a new entry.
-                                           ///< Always adds a new entry if the vendorId/productId
-                                           ///< does not exist in the current database. These
-                                           ///< changes only persist for the current session.
-    PADDLEBOAT_REMAP_ADD_MODE_REPLACE_ALL  ///< The current controller database will be erased and
-                                           ///< entirely replaced by the new remap table.
-                                           ///< This change only persists for the current session.
+    PADDLEBOAT_REMAP_ADD_MODE_DEFAULT =
+        0,  ///< If a vendorId/productId controller entry in the
+            ///< new remap table exists in the current database,
+            ///< and the min/max API ranges overlap, replace the
+            ///< existing entry, otherwise add a new entry.
+            ///< Always adds a new entry if the vendorId/productId
+            ///< does not exist in the current database. These
+            ///< changes only persist for the current session.
+    PADDLEBOAT_REMAP_ADD_MODE_REPLACE_ALL  ///< The current controller database
+                                           ///< will be erased and entirely
+                                           ///< replaced by the new remap table.
+                                           ///< This change only persists for
+                                           ///< the current session.
 };
 
 /**
  * @brief A structure that contains virtual pointer position data.
- * X and Y coordinates are pixel based and range from 0,0 to window width,height.
+ * X and Y coordinates are pixel based and range from 0,0 to window
+ * width,height.
  */
 typedef struct Paddleboat_Controller_Pointer {
     /** @brief X pointer position in window space pixel coordinates */
@@ -434,10 +461,10 @@ typedef struct Paddleboat_Controller_Thumbstick {
 } Paddleboat_Controller_Thumbstick;
 
 /**
- * @brief A structure that contains axis precision data for a thumbstick in the X and Y axis.
- * Value ranges from 0.0 to 1.0.
- * Flat is the extent of a center flat (deadzone) area of a thumbstick axis
- * Fuzz is the error tolerance (deviation) of a thumbstick axis
+ * @brief A structure that contains axis precision data for a thumbstick in the
+ * X and Y axis. Value ranges from 0.0 to 1.0. Flat is the extent of a center
+ * flat (deadzone) area of a thumbstick axis Fuzz is the error tolerance
+ * (deviation) of a thumbstick axis
  */
 typedef struct Paddleboat_Controller_Thumbstick_Precision {
     /** @brief X axis flat value for the thumbstick */
@@ -476,7 +503,8 @@ typedef struct Paddleboat_Controller_Data {
      * @brief Virtual pointer pixel coordinates in window space.
      * If `Paddleboat_Controller_Info.controllerFlags` has the
      * `PADDLEBOAT_CONTROLLER_FLAG_VIRTUAL_MOUSE` bit set, pointer coordinates
-     * are valid. If this bit is not set, pointer coordinates will always be 0,0.
+     * are valid. If this bit is not set, pointer coordinates will always be
+     * 0,0.
      */
     Paddleboat_Controller_Pointer virtualPointer;
 } Paddleboat_Controller_Data;
@@ -512,15 +540,15 @@ typedef struct Paddleboat_Mouse_Data {
     uint64_t timestamp;
     /** @brief Bit-per-button bitfield array of mouse button status. */
     uint32_t buttonsDown;
-     /** @brief Number of horizontal mouse wheel movements since previous
-       * read of mouse data. Can be positive or negative depending
-       * on direction of scrolling.
-       */
+    /** @brief Number of horizontal mouse wheel movements since previous
+     * read of mouse data. Can be positive or negative depending
+     * on direction of scrolling.
+     */
     int32_t mouseScrollDeltaH;
     /** @brief Number of vertical mouse wheel movements since previous
-      * read of mouse data. Can be positive or negative depending
-      * on direction of scrolling.
-      */
+     * read of mouse data. Can be positive or negative depending
+     * on direction of scrolling.
+     */
     int32_t mouseScrollDeltaV;
     /** @brief Current mouse X coordinates in window space pixels. */
     float mouseX;
@@ -536,17 +564,19 @@ typedef struct Paddleboat_Vibration_Data {
     int32_t durationLeft;
     /** @brief Duration to vibrate the right motor in milliseconds. */
     int32_t durationRight;
-    /** @brief Intensity of vibration of left motor, valid range is 0.0 to 1.0. */
+    /** @brief Intensity of vibration of left motor, valid range is 0.0 to 1.0.
+     */
     float intensityLeft;
-    /** @brief Intensity of vibration of right motor, valid range is 0.0 to 1.0. */
+    /** @brief Intensity of vibration of right motor, valid range is 0.0 to 1.0.
+     */
     float intensityRight;
 } Paddleboat_Vibration_Data;
 
 /**
  * @brief A structure that describes the button and axis mappings
- * for a specified controller device running on a specified range of Android API levels.\n
- * See `Paddleboat_Mapping_Axis` for axis order.
- * Hat axis should be mapped to dpad buttons.
+ * for a specified controller device running on a specified range of Android API
+ * levels.\n See `Paddleboat_Mapping_Axis` for axis order. Hat axis should be
+ * mapped to dpad buttons.
  */
 typedef struct Paddleboat_Controller_Mapping_Data {
     /** @brief Minimum API level required for this entry */
@@ -558,34 +588,37 @@ typedef struct Paddleboat_Controller_Mapping_Data {
     /** @brief ProductID of the controller device for this entry */
     int32_t productId;
     /** @brief Flag bits, will be ORed with
-      * `Paddleboat_Controller_Info.controllerFlags`
-      */
+     * `Paddleboat_Controller_Info.controllerFlags`
+     */
     int32_t flags;
     /** @brief AMOTION_EVENT_AXIS value for
-      * the corresponding Paddleboat control axis, or PADDLEBOAT_AXIS_IGNORED if unsupported.
-      */
+     * the corresponding Paddleboat control axis, or PADDLEBOAT_AXIS_IGNORED if
+     * unsupported.
+     */
     uint16_t axisMapping[PADDLEBOAT_MAPPING_AXIS_COUNT];
     /** @brief Button to set on
-      * positive axis value, PADDLEBOAT_AXIS_BUTTON_IGNORED if none.
-      */
+     * positive axis value, PADDLEBOAT_AXIS_BUTTON_IGNORED if none.
+     */
     uint8_t axisPositiveButtonMapping[PADDLEBOAT_MAPPING_AXIS_COUNT];
     /** @brief Button to set on
-      * negative axis value, PADDLEBOAT_AXIS_BUTTON_IGNORED if none.
-      */
+     * negative axis value, PADDLEBOAT_AXIS_BUTTON_IGNORED if none.
+     */
     uint8_t axisNegativeButtonMapping[PADDLEBOAT_MAPPING_AXIS_COUNT];
     /** @brief AKEYCODE_ value corresponding
-      * with the corresponding Paddleboat button.
-      * PADDLEBOAT_BUTTON_IGNORED if unsupported.
-      */
+     * with the corresponding Paddleboat button.
+     * PADDLEBOAT_BUTTON_IGNORED if unsupported.
+     */
     uint16_t buttonMapping[PADDLEBOAT_BUTTON_COUNT];
 } Paddleboat_Controller_Mapping_Data;
 
 /**
  * @brief Signature of a function that can be passed to
- * ::Paddleboat_setControllerStatusCallback to receive information about controller
+ * ::Paddleboat_setControllerStatusCallback to receive information about
+ controller
  * connections and disconnections.
 
- * @param controllerIndex Index of the controller that has registered a status change,
+ * @param controllerIndex Index of the controller that has registered a status
+ change,
  * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
  * @param controllerStatus New status of the controller.
  * @param userData The value of the userData parameter passed
@@ -593,7 +626,8 @@ typedef struct Paddleboat_Controller_Mapping_Data {
  *
  * Function will be called on the same thread that calls ::Paddleboat_update.
  */
-typedef void (*Paddleboat_ControllerStatusCallback)(const int32_t controllerIndex,
+typedef void (*Paddleboat_ControllerStatusCallback)(
+    const int32_t controllerIndex,
     const Paddleboat_ControllerStatus controllerStatus, void *userData);
 
 /**
@@ -606,17 +640,17 @@ typedef void (*Paddleboat_ControllerStatusCallback)(const int32_t controllerInde
  *
  * Function will be called on the same thread that calls ::Paddleboat_update.
  */
-typedef void (*Paddleboat_MouseStatusCallback)(const Paddleboat_MouseStatus mouseStatus,
-        void *userData);
+typedef void (*Paddleboat_MouseStatusCallback)(
+    const Paddleboat_MouseStatus mouseStatus, void *userData);
 
 /**
- * @brief Initialize Paddleboat, constructing internal resources via JNI. This may be called
- * after calling ::Paddleboat_destroy to reinitialize the library.
+ * @brief Initialize Paddleboat, constructing internal resources via JNI. This
+ * may be called after calling ::Paddleboat_destroy to reinitialize the library.
  * @param env The JNIEnv attached to the thread calling the function.
- * @param jcontext A Context derived object used by the game. This can be an Activity derived
- * class.
- * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code relating to
- * initialization failure.
+ * @param jcontext A Context derived object used by the game. This can be an
+ * Activity derived class.
+ * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code relating
+ * to initialization failure.
  * @see Paddleboat_destroy
  */
 Paddleboat_ErrorCode Paddleboat_init(JNIEnv *env, jobject jcontext);
@@ -650,7 +684,8 @@ void Paddleboat_onStart(JNIEnv *env);
  * @brief Process an input event to see if it is from a device being
  * managed by Paddleboat.
  * @param event the input event received by the application.
- * @return 0 if the event was ignored, 1 if the event was processed/consumed by Paddleboat.
+ * @return 0 if the event was ignored, 1 if the event was processed/consumed by
+ * Paddleboat.
  */
 int32_t Paddleboat_processInputEvent(const AInputEvent *event);
 
@@ -659,177 +694,210 @@ int32_t Paddleboat_processInputEvent(const AInputEvent *event);
  * device being managed by Paddleboat. At least once per game frame, the
  * game should iterate through reported GameActivityKeyEvents and pass them to
  * ::Paddleboat_processGameActivityKeyInputEvent for evaluation.
- * @param event the GameActivityKeyEvent input event received by the application.
- * @param eventSize the size of the GameActivityKeyEvent struct being passed in bytes.
- * @return 0 if the event was ignored, 1 if the event was processed/consumed by Paddleboat.
+ * @param event the GameActivityKeyEvent input event received by the
+ * application.
+ * @param eventSize the size of the GameActivityKeyEvent struct being passed in
+ * bytes.
+ * @return 0 if the event was ignored, 1 if the event was processed/consumed by
+ * Paddleboat.
  */
-int32_t Paddleboat_processGameActivityKeyInputEvent(const void *event, const size_t eventSize);
+int32_t Paddleboat_processGameActivityKeyInputEvent(const void *event,
+                                                    const size_t eventSize);
 
 /**
  * @brief Process a GameActivityMotionEvent input event to see if it is from a
  * device being managed by Paddleboat. At least once per game frame, the
- * game should iterate through reported GameActivityMotionEvents and pass them to
+ * game should iterate through reported GameActivityMotionEvents and pass them
+ * to
  * ::Paddleboat_processGameActivityMotionInputEvent for evaluation.
- * @param event the GameActivityMotionEvent input event received by the application.
- * @param eventSize the size of the GameActivityMotionEvent struct being passed in bytes.
- * @return 0 if the event was ignored, 1 if the event was processed/consumed by Paddleboat.
+ * @param event the GameActivityMotionEvent input event received by the
+ * application.
+ * @param eventSize the size of the GameActivityMotionEvent struct being passed
+ * in bytes.
+ * @return 0 if the event was ignored, 1 if the event was processed/consumed by
+ * Paddleboat.
  */
-int32_t Paddleboat_processGameActivityMotionInputEvent(const void *event, const size_t eventSize);
+int32_t Paddleboat_processGameActivityMotionInputEvent(const void *event,
+                                                       const size_t eventSize);
 
 /**
- * @brief Retrieve the active axis ids being used by connected devices. This can be used
- * to determine what axis values to provide to GameActivityPointerInfo_enableAxis
- * when GameActivity is being used.
- * @return A bitmask of the active axis ids that have been used by connected devices
- * during the current application session.
+ * @brief Retrieve the active axis ids being used by connected devices. This can
+ * be used to determine what axis values to provide to
+ * GameActivityPointerInfo_enableAxis when GameActivity is being used.
+ * @return A bitmask of the active axis ids that have been used by connected
+ * devices during the current application session.
  */
 uint64_t Paddleboat_getActiveAxisMask();
 
 /**
- * @brief Get whether Paddleboat consumes AKEYCODE_BACK key events from devices being
- * managed by Paddleboat. The default at initialization is true.
+ * @brief Get whether Paddleboat consumes AKEYCODE_BACK key events from devices
+ * being managed by Paddleboat. The default at initialization is true.
  * @return If true, Paddleboat will consume AKEYCODE_BACK key events, if false
  * it will pass them through.
  */
 bool Paddleboat_getBackButtonConsumed();
 
 /**
- * @brief Set whether Paddleboat consumes AKEYCODE_BACK key events from devices being
- * managed by Paddleboat. The default at initialization is true. This can be set to false
- * to allow exiting the application from a back button press when the application is in
- * an appropriate state (i.e. the title screen).
- * @param consumeBackButton If true, Paddleboat will consume AKEYCODE_BACK key events, if false
- * it will pass them through.
+ * @brief Set whether Paddleboat consumes AKEYCODE_BACK key events from devices
+ * being managed by Paddleboat. The default at initialization is true. This can
+ * be set to false to allow exiting the application from a back button press
+ * when the application is in an appropriate state (i.e. the title screen).
+ * @param consumeBackButton If true, Paddleboat will consume AKEYCODE_BACK key
+ * events, if false it will pass them through.
  */
 void Paddleboat_setBackButtonConsumed(bool consumeBackButton);
 
 /**
- * @brief Set a callback to be called whenever a controller managed by Paddleboat changes
- * status. This is used to inform of controller connections and disconnections.
- * @param statusCallback function pointer to the controllers status change callback,
- * passing NULL or nullptr will remove any currently registered callback.
- * @param userData optional pointer (may be NULL or nullptr) to user data that will be
- * passed as a parameter to the status callback. A reference to this pointer will be retained
- * internally until changed by a future call to ::Paddleboat_setControllerStatusCallback
+ * @brief Set a callback to be called whenever a controller managed by
+ * Paddleboat changes status. This is used to inform of controller connections
+ * and disconnections.
+ * @param statusCallback function pointer to the controllers status change
+ * callback, passing NULL or nullptr will remove any currently registered
+ * callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that
+ * will be passed as a parameter to the status callback. A reference to this
+ * pointer will be retained internally until changed by a future call to
+ * ::Paddleboat_setControllerStatusCallback
  */
-void Paddleboat_setControllerStatusCallback(Paddleboat_ControllerStatusCallback statusCallback,
-                                            void *userData);
+void Paddleboat_setControllerStatusCallback(
+    Paddleboat_ControllerStatusCallback statusCallback, void *userData);
 
 /**
- * @brief Set a callback to be called when the mouse status changes. This is used
- * to inform of physical or virual mouse device connections and disconnections.
- * @param statusCallback function pointer to the controllers status change callback,
- * passing NULL or nullptr will remove any currently registered callback.
- * @param userData optional pointer (may be NULL or nullptr) to user data that will be
- * passed as a parameter to the status callback. A reference to this pointer will be retained
- * internally until changed by a future call to ::Paddleboat_setMouseStatusCallback
+ * @brief Set a callback to be called when the mouse status changes. This is
+ * used to inform of physical or virual mouse device connections and
+ * disconnections.
+ * @param statusCallback function pointer to the controllers status change
+ * callback, passing NULL or nullptr will remove any currently registered
+ * callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that
+ * will be passed as a parameter to the status callback. A reference to this
+ * pointer will be retained internally until changed by a future call to
+ * ::Paddleboat_setMouseStatusCallback
  */
-void Paddleboat_setMouseStatusCallback(Paddleboat_MouseStatusCallback statusCallback,
-                                       void *userData);
+void Paddleboat_setMouseStatusCallback(
+    Paddleboat_MouseStatusCallback statusCallback, void *userData);
 
 /**
- * @brief Retrieve the current controller data from the controller with the specified index.
- * @param controllerIndex The index of the controller to read from, must be between
- * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
- * @param[out] controllerData a pointer to the controller data struct to populate.
+ * @brief Retrieve the current controller data from the controller with the
+ * specified index.
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
+ * @param[out] controllerData a pointer to the controller data struct to
+ * populate.
  * @return `PADDLEBOAT_NO_ERROR` if data was successfully read.
  */
-Paddleboat_ErrorCode Paddleboat_getControllerData(const int32_t controllerIndex,
-                                  Paddleboat_Controller_Data *controllerData);
+Paddleboat_ErrorCode Paddleboat_getControllerData(
+    const int32_t controllerIndex, Paddleboat_Controller_Data *controllerData);
 
 /**
- * @brief Retrieve the current controller device info from the controller with the specified index.
- * @param controllerIndex The index of the controller to read from, must be between
- * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
- * @param[out] controllerInfo a pointer to the controller device info struct to populate.
+ * @brief Retrieve the current controller device info from the controller with
+ * the specified index.
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
+ * @param[out] controllerInfo a pointer to the controller device info struct to
+ * populate.
  * @return true if the data was read, false if there was no connected controller
  * at the specified index.
  */
-Paddleboat_ErrorCode Paddleboat_getControllerInfo(const int32_t controllerIndex,
-                                  Paddleboat_Controller_Info *controllerInfo);
+Paddleboat_ErrorCode Paddleboat_getControllerInfo(
+    const int32_t controllerIndex, Paddleboat_Controller_Info *controllerInfo);
 
 /**
- * @brief Retrieve the current controller name from the controller with the specified index.
- * This name is retrieved from InputDevice.getName().
- * @param controllerIndex The index of the controller to read from, must be between
- * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
- * @param bufferSize The capacity in bytes of the string buffer passed in controllerName
- * @param[out] controllerName A pointer to a buffer that will be populated with the name string.
- * The name string is a C string in UTF-8 format. If the length of the string is greater than
- * bufferSize the string will be truncated to fit.
+ * @brief Retrieve the current controller name from the controller with the
+ * specified index. This name is retrieved from InputDevice.getName().
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
+ * @param bufferSize The capacity in bytes of the string buffer passed in
+ * controllerName
+ * @param[out] controllerName A pointer to a buffer that will be populated with
+ * the name string. The name string is a C string in UTF-8 format. If the length
+ * of the string is greater than bufferSize the string will be truncated to fit.
  * @return `PADDLEBOAT_NO_ERROR` if data was successfully read.
  */
 Paddleboat_ErrorCode Paddleboat_getControllerName(const int32_t controllerIndex,
-                                                  const size_t bufferSize, char *controllerName);
+                                                  const size_t bufferSize,
+                                                  char *controllerName);
 /**
- * @brief Retrieve the current controller device info from the controller with the specified index.
- * @param controllerIndex The index of the controller to read from, must be between
- * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1.
- * @return Paddleboat_ControllerStatus enum value of the current controller status of
- * the specified controller index.
+ * @brief Retrieve the current controller device info from the controller with
+ * the specified index.
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1.
+ * @return Paddleboat_ControllerStatus enum value of the current controller
+ * status of the specified controller index.
  */
-Paddleboat_ControllerStatus Paddleboat_getControllerStatus(const int32_t controllerIndex);
+Paddleboat_ControllerStatus Paddleboat_getControllerStatus(
+    const int32_t controllerIndex);
 
 /**
  * @brief Set vibration data for the controller with the specified index.
- * @param controllerIndex The index of the controller to read from, must be between
- * 0 and PADDLEBOAT_MAX_CONTROLLERS - 1.
- * @param vibrationData The intensity and duration data for the vibration effect. Valid intensity
- * range is from 0.0 to 1.0. Intensity of 0.0 will turn off vibration if it is active. Duration
- * is specified in milliseconds. The pointer passed in vibrationData is not retained and does not
- * need to persist after function return.
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1.
+ * @param vibrationData The intensity and duration data for the vibration
+ * effect. Valid intensity range is from 0.0 to 1.0. Intensity of 0.0 will turn
+ * off vibration if it is active. Duration is specified in milliseconds. The
+ * pointer passed in vibrationData is not retained and does not need to persist
+ * after function return.
  * @param env The JNIEnv attached to the thread calling the function.
- * @return true if the vibration data was set, false if there was no connected controller or the
- * connected controller does not support vibration.
+ * @return true if the vibration data was set, false if there was no connected
+ * controller or the connected controller does not support vibration.
  */
-Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(const int32_t controllerIndex,
-                                           const Paddleboat_Vibration_Data *vibrationData,
-                                           JNIEnv *env);
+Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(
+    const int32_t controllerIndex,
+    const Paddleboat_Vibration_Data *vibrationData, JNIEnv *env);
 /**
  * @brief Retrieve the current mouse data.
  * @param[out] mouseData pointer to the mouse data struct to populate.
- * @return true if the data was read, false if there was no connected mouse device.
+ * @return true if the data was read, false if there was no connected mouse
+ * device.
  */
 Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData);
 
 /**
- * @brief Retrieve the current controller device info from the controller with the specified index.
+ * @brief Retrieve the current controller device info from the controller with
+ * the specified index.
  * @return Paddleboat_MouseStatus enum value of the current mouse status.
  */
 Paddleboat_MouseStatus Paddleboat_getMouseStatus();
 
 /**
  * @brief Add new controller remap information to the internal remapping table.
- * @param addMode The addition mode for the new data. See the `Paddleboat_Remap_Addition_Mode` enum
- * for details on each mode.
- * @param remapTableEntryCount the number of remap elements in the mappingData array.
- * @param mappingData An array of controller mapping structs to be added to the internal
- * remapping table. The pointer passed in mappingData is not retained and does not need to
- * persist after function return.
+ * @param addMode The addition mode for the new data. See the
+ * `Paddleboat_Remap_Addition_Mode` enum for details on each mode.
+ * @param remapTableEntryCount the number of remap elements in the mappingData
+ * array.
+ * @param mappingData An array of controller mapping structs to be added to the
+ * internal remapping table. The pointer passed in mappingData is not retained
+ * and does not need to persist after function return.
  */
-void Paddleboat_addControllerRemapData(const Paddleboat_Remap_Addition_Mode addMode,
-                                       const int32_t remapTableEntryCount,
-                                       const Paddleboat_Controller_Mapping_Data* mappingData);
+void Paddleboat_addControllerRemapData(
+    const Paddleboat_Remap_Addition_Mode addMode,
+    const int32_t remapTableEntryCount,
+    const Paddleboat_Controller_Mapping_Data *mappingData);
 
 /**
  * @brief Retrieve the current table of controller remap entries.
- * @param destRemapTableEntryCount the number of `Paddleboat_Controller_Mapping_Data`
- * entries in the array passed in the mappingData parameter. Paddleboat will not copy
- * more than this number of entries out of the internal array to avoid overflowing the buffer.
- * @param[out] mappingData pointer to an array of `Paddleboat_Controller_Mapping_Data` structures.
- * this should contain at least destRemapTableEntryCount elements. Passing nullptr is valid,
- * and can be used to get the number of elements in the internal remap table.
+ * @param destRemapTableEntryCount the number of
+ * `Paddleboat_Controller_Mapping_Data` entries in the array passed in the
+ * mappingData parameter. Paddleboat will not copy more than this number of
+ * entries out of the internal array to avoid overflowing the buffer.
+ * @param[out] mappingData pointer to an array of
+ * `Paddleboat_Controller_Mapping_Data` structures. this should contain at least
+ * destRemapTableEntryCount elements. Passing nullptr is valid, and can be used
+ * to get the number of elements in the internal remap table.
  * @return The number of elements in the internal remap table.
  */
-int32_t Paddleboat_getControllerRemapTableData(const int32_t destRemapTableEntryCount,
-                                               Paddleboat_Controller_Mapping_Data* mappingData);
+int32_t Paddleboat_getControllerRemapTableData(
+    const int32_t destRemapTableEntryCount,
+    Paddleboat_Controller_Mapping_Data *mappingData);
 
 /**
- * @brief Updates internal Paddleboat status and processes pending connection/disconnections.
- * Paddleboat_update is responsible for triggering any registered controller or mouse status
- * callbacks, those callbacks will fire on the same thread that called Paddleboat_update.
- * This function should be called once per game frame. It is recommended to call Paddleboat_update
- * before sending any new input events or reading controller inputs for a particular game frame.
+ * @brief Updates internal Paddleboat status and processes pending
+ * connection/disconnections. Paddleboat_update is responsible for triggering
+ * any registered controller or mouse status callbacks, those callbacks will
+ * fire on the same thread that called Paddleboat_update. This function should
+ * be called once per game frame. It is recommended to call Paddleboat_update
+ * before sending any new input events or reading controller inputs for a
+ * particular game frame.
  * @param env The JNIEnv attached to the thread calling the function.
  */
 void Paddleboat_update(JNIEnv *env);
