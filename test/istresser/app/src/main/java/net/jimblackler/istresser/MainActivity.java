@@ -272,10 +272,7 @@ public class MainActivity extends Activity {
 
     WebView webView = findViewById(R.id.webView);
 
-    new MemoryWatcher(memoryAdvisor,
-        maxMillisecondsPerSecond == null ? 1000 : maxMillisecondsPerSecond.longValue(),
-        minimumFrequency == null ? 200 : minimumFrequency.longValue(),
-        maximumFrequency == null ? 2000 : maximumFrequency.longValue(),
+    new MemoryWatcher(memoryAdvisor, 250,
         new MemoryTest(this, memoryAdvisor, findViewById(R.id.glsurfaceView), params, report0 -> {
           String reportString;
           try {

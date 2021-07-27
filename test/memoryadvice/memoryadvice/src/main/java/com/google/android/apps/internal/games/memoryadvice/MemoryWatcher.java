@@ -1,7 +1,6 @@
 package com.google.android.apps.internal.games.memoryadvice;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,10 +16,7 @@ public class MemoryWatcher implements Closeable {
   private final long watcherStartTime;
   private final Runnable runner;
 
-  private long expectedTime;
-  private long unresponsiveTime;
   private MemoryAdvisor.MemoryState lastReportedState = MemoryAdvisor.MemoryState.UNKNOWN;
-  private long totalTimeSpent;
   private boolean interrupt;
 
   /**
@@ -28,20 +24,15 @@ public class MemoryWatcher implements Closeable {
    * changes.
    *
    * @param memoryAdvisor            The memory advisor object to employ.
-   * @param maxMillisecondsPerSecond The budget for overhead introduced by the advisor and watcher.
-   * @param minimumFrequency         The minimum time duration between iterations, in milliseconds.
-   * @param maximumFrequency         The maximum time duration between iterations, in milliseconds.
+   * @param delay                    Delay between polls.
    * @param client                   The client to call back when the state changes.
    */
-  public MemoryWatcher(MemoryAdvisor memoryAdvisor, long maxMillisecondsPerSecond,
-      long minimumFrequency, long maximumFrequency, Client client) {
+  public MemoryWatcher(MemoryAdvisor memoryAdvisor, long delay, Client client) {
     watcherStartTime = System.currentTimeMillis();
-    expectedTime = watcherStartTime;
 
     ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor(runnable -> {
           Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-          thread.setPriority(Thread.MIN_PRIORITY);
           return thread;
         });
 
@@ -51,44 +42,14 @@ public class MemoryWatcher implements Closeable {
         if (interrupt) {
           return;
         }
-        long start = System.currentTimeMillis();
         Map<String, Object> advice = memoryAdvisor.getAdvice();
         client.receiveAdvice(advice);
         MemoryAdvisor.MemoryState memoryState = MemoryAdvisor.getMemoryState(advice);
-        long late = start - expectedTime;
-        if (late > UNRESPONSIVE_THRESHOLD) {
-          // The timer fired very late. We deduct the 'lost' time from the runtime used for
-          // calculation.
-          unresponsiveTime += late;
-        }
-        long end = System.currentTimeMillis();
         if (memoryState != lastReportedState) {
           lastReportedState = memoryState;
           client.newState(memoryState);
         }
-
-        // Time spent this iteration.
-        long duration = end - start;
-        totalTimeSpent += duration;
-
-        // Calculate the run time required to have enough budget for the time actually spent
-        // (in milliseconds).
-        long targetTime = totalTimeSpent * 1000 / maxMillisecondsPerSecond;
-
-        // The total time the object has been created (in milliseconds), minus any time when the
-        // watcher was unresponsive.
-        long timeSinceStart = end - watcherStartTime - unresponsiveTime;
-
-        // Sleep until the moment that the method will be within its budget.
-        long sleepFor = targetTime - timeSinceStart;
-
-        if (sleepFor < minimumFrequency) {
-          sleepFor = minimumFrequency;  // Impose minimum frequency.
-        } else if (sleepFor > maximumFrequency) {
-          sleepFor = maximumFrequency;  // Impose maximum frequency.
-        }
-        expectedTime = System.currentTimeMillis() + sleepFor;
-        scheduledExecutorService.schedule(runner, sleepFor, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.schedule(runner, delay, TimeUnit.MILLISECONDS);
       }
     };
     runner.run();
