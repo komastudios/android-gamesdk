@@ -49,7 +49,7 @@ extern "C" {
 
 #define TUNINGFORK_MAJOR_VERSION 1
 #define TUNINGFORK_MINOR_VERSION 4
-#define TUNINGFORK_BUGFIX_VERSION 3
+#define TUNINGFORK_BUGFIX_VERSION 4
 #define TUNINGFORK_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
                                    TUNINGFORK_MINOR_VERSION, \
@@ -189,6 +189,10 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_METERED_CONNECTION_DISALLOWED =
         35,  ///< An HTTP request could not be made because there is no
              ///< unmetered connection available.
+    TUNINGFORK_ERROR_INVALID_LOADING_STATE =
+        36,  ///< The loading state was not set as part of
+             ///< TuningFork_LoadingTimeMetadata when calling a loading
+             ///< function.
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -537,6 +541,8 @@ TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
  * @brief Metadata recorded with a loading time event
  */
 typedef struct TuningFork_LoadingTimeMetadata {
+    // Note that an error will be generated if the loading state is set to
+    // UNKNOWN_STATE or an invalid value. You must set the state appropriately.
     enum LoadingState {
         UNKNOWN_STATE = 0,
         // The first time the game is run
@@ -587,6 +593,9 @@ typedef struct TuningFork_LoadingTimeMetadata {
  * @param eventMetadata A LoadingTimeMetadata structure
  * @param eventMetadataSize Size in bytes of the LoadingTimeMetadata structure
  * @param annotation The annotation to use with this event.
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_INVALID_LOADING_STATE if state was not set in the
+ *metadata.
  **/
 TuningFork_ErrorCode TuningFork_recordLoadingTime(
     uint64_t time_ns, const TuningFork_LoadingTimeMetadata* eventMetadata,
@@ -600,6 +609,9 @@ TuningFork_ErrorCode TuningFork_recordLoadingTime(
  *(for versioning of the structure).
  * @param annotation The annotation to use with this event.
  * @param[out] handle A handle for this event.
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_INVALID_LOADING_STATE if state was not set in the
+ *metadata.
  **/
 TuningFork_ErrorCode TuningFork_startRecordingLoadingTime(
     const TuningFork_LoadingTimeMetadata* eventMetadata,
@@ -617,14 +629,16 @@ TuningFork_ErrorCode TuningFork_stopRecordingLoadingTime(
 /**
  * @brief Start a loading group. Subsequent loading times will be tagged
  * with this group's id until startLoadingGroup is called again or
- * stopLoadingGroup is called. Note that if you do not intend to call
- * stopLoadingGroup, you should set the metadata and annotation to null.
+ * stopLoadingGroup is called.
  * @param eventMetadata A LoadingTimeMetadata structure.
  * @param eventMetadataSize Size in bytes of the LoadingTimeMetadata structure
  *(for versioning of the structure).
  * @param annotation The annotation to use with this event.
  * @param[out] handle A handle for this event (currently is always null since
  * there can only be one loading group active).
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_INVALID_LOADING_STATE if state was not set in the
+ *metadata.
  **/
 TuningFork_ErrorCode TuningFork_startLoadingGroup(
     const TuningFork_LoadingTimeMetadata* eventMetadata,
