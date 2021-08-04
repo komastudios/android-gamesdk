@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000014125216",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1786190?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c7dba209_ac9eaea5",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 839,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-08-04T17:19:09Z",
+      "side": 1,
+      "message": "Prefer to use inclusive terms like \u0027valid\u0027, \u0027validity check\u0027 or \u0027initial check\u0027; see https://source.android.com/setup/contribute/respectful-code for more details. In the case of a false positive add BYPASS_INCLUSIVE_LANGUAGE_REASON\u003dmy_reason_here to your commit message to disable this check.",
+      "range": {
+        "startLine": 839,
+        "startChar": 54,
+        "endLine": 839,
+        "endChar": 60
+      },
+      "revId": "75fc4f748e5419ff31c11ec700c36637d0e896a2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
