@@ -358,9 +358,15 @@ typedef struct TuningFork_Settings {
      */
     TuningFork_MetricLimits max_num_metrics;
     /**
-     * If non-null, this value overrides the api_key field in the app's tuningfork_settings.bin file.
+     * If non-null, this value overrides the api_key field in the app's
+     * tuningfork_settings.bin file. See tuningfork.proto for more information.
      */
     const char* api_key;
+    /**
+     * Override of the aggregation strategy's intervalms_or_count in
+     * tungingfork.proto. Ignored if zero.
+     */
+    uint32_t aggregation_strategy_intervalms_or_count;
 } TuningFork_Settings;
 
 /**
@@ -681,7 +687,30 @@ typedef enum TuningFork_LifecycleState {
 TuningFork_ErrorCode TuningFork_reportLifecycleEvent(
     TuningFork_LifecycleState state);
 
+/**
+ * @brief Get the Tuning Fork API version as a null-terminated ASCII string.
+ */
 const char* Tuningfork_versionString();
+
+typedef enum TuningFork_Submission {
+    TUNINGFORK_SUBMISSION_UNDEFINED = 0,
+    TUNINGFORK_SUBMISSION_TIME_BASED = 1,
+    TUNINGFORK_SUBMISSION_TICK_BASED = 2
+} TuningFork_Submission;
+
+/**
+ * @brief Set the interval between histogram uploads, overriding that in
+ * settings.
+ * @param method Whether to use time-based or tick-based strategy.
+ * @param interval_ms_or_count Millisecond or count-based interval.
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't
+ * initialized.
+ * @return TUNINGFORK_ERROR_BAD_PARAMETER if method is not TIME_BASED or
+ * TICK_BASED or if interval_ms_or_count is 0 or greater than one day.
+ */
+TuningFork_ErrorCode TuningFork_setAggregationStrategyInterval(
+    TuningFork_Submission method, uint32_t interval_ms_or_count);
 
 #ifdef __cplusplus
 }
