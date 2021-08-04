@@ -221,4 +221,9 @@ const char *Tuningfork_versionString() {
     return version;
 }
 
+TuningFork_ErrorCode TuningFork_setAggregationStrategyInterval(
+    TuningFork_Submission method, uint32_t interval_ms_or_count) {
+    return tf::SetAggregationStrategyInterval(method, interval_ms_or_count);
+}
+
 }  // extern "C" {

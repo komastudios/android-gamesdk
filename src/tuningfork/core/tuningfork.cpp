@@ -270,4 +270,13 @@ std::string DefaultTuningForkSaveDirectory() {
     return save_dir.str();
 }
 
+TuningFork_ErrorCode SetAggregationStrategyInterval(
+    TuningFork_Submission method, uint32_t interval_ms_or_count) {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->SetAggregationStrategyInterval(method,
+                                                      interval_ms_or_count);
+}
+
 }  // namespace tuningfork
