@@ -165,6 +165,9 @@ class TuningForkImpl : public IdProvider {
         return initialization_error_code_;
     }
 
+    TuningFork_ErrorCode SetAggregationStrategyInterval(
+        TuningFork_Submission method, uint32_t interval_ms_or_count);
+
    private:
     // Record the time between t and the previous tick in the histogram
     // associated with compound_id. Return the MetricData associated with
