@@ -822,4 +822,25 @@ TuningFork_ErrorCode TuningForkImpl::ReportLifecycleEvent(
     return TUNINGFORK_ERROR_OK;
 }
 
+TuningFork_ErrorCode TuningForkImpl::SetAggregationStrategyInterval(
+    TuningFork_Submission method, uint32_t intervalms_or_count) {
+    switch (method) {
+        case TUNINGFORK_SUBMISSION_TICK_BASED:
+            settings_.aggregation_strategy.method =
+                Settings::AggregationStrategy::Submission::TICK_BASED;
+            break;
+        case TUNINGFORK_SUBMISSION_TIME_BASED:
+            settings_.aggregation_strategy.method =
+                Settings::AggregationStrategy::Submission::TIME_BASED;
+            break;
+        default:
+            return TUNINGFORK_ERROR_BAD_PARAMETER;
+    }
+#define A_DAY_IN_MILLISECONDS 24 * 60 * 60 * 1000  // Validity check
+    if (intervalms_or_count == 0 || intervalms_or_count > A_DAY_IN_MILLISECONDS)
+        return TUNINGFORK_ERROR_BAD_PARAMETER;
+    settings_.aggregation_strategy.intervalms_or_count = intervalms_or_count;
+    return TUNINGFORK_ERROR_OK;
+}
+
 }  // namespace tuningfork
