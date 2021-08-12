@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
  * when the state changes.
  */
 public class MemoryWatcher implements Closeable {
-  private static final int UNRESPONSIVE_THRESHOLD = 100;
-
-  private final long watcherStartTime;
   private final Runnable runner;
 
   private MemoryAdvisor.MemoryState lastReportedState = MemoryAdvisor.MemoryState.UNKNOWN;
@@ -28,13 +25,8 @@ public class MemoryWatcher implements Closeable {
    * @param client                   The client to call back when the state changes.
    */
   public MemoryWatcher(MemoryAdvisor memoryAdvisor, long delay, Client client) {
-    watcherStartTime = System.currentTimeMillis();
-
-    ScheduledExecutorService scheduledExecutorService =
-        Executors.newSingleThreadScheduledExecutor(runnable -> {
-          Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-          return thread;
-        });
+    ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(
+        runnable -> Executors.defaultThreadFactory().newThread(runnable));
 
     runner = new Runnable() {
       @Override
