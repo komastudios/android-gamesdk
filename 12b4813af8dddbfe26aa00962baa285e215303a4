@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1c1e954_1ba2c2c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-08-13T09:57:51Z",
+      "side": 1,
+      "message": "Neat, TIL you can use try to close resources in Java :)",
+      "revId": "12b4813af8dddbfe26aa00962baa285e215303a4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
