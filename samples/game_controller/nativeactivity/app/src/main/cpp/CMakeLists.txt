@@ -17,6 +17,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(paddleboat_demo)
 
+find_package(png16 REQUIRED CONFIG)
 find_package(games-controller REQUIRED CONFIG)
 
 # build native_app_glue as a static lib
@@ -41,11 +42,6 @@ set(COMMON_INCLUDE_DIR "../../../../../../common/include")
 # build Dear ImGui as a static lib
 set(IMGUI_BASE_DIR "../../../../../third-party/imgui")
 
-# libpng setup
-set(LIBPNG_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../third-party/libpng")
-add_library(png16 STATIC IMPORTED)
-set_target_properties(png16 PROPERTIES IMPORTED_LOCATION
-        ${LIBPNG_BASE_DIR}/libs/${ANDROID_ABI}/libpng16.a)
 
 add_library(imgui STATIC
         ${IMGUI_BASE_DIR}/imgui_demo.cpp
@@ -78,7 +74,6 @@ target_include_directories(game PRIVATE
         ${COMMON_SRC_DIR}
         ${COMMON_INCLUDE_DIR}
         ${IMGUI_BASE_DIR}
-        ${LIBPNG_BASE_DIR}/include
         ${ANDROID_NDK}/sources/android/native_app_glue)
 
 target_compile_options(game
@@ -97,7 +92,7 @@ target_link_libraries(game
         imgui
         native_app_glue
         games-controller::paddleboat_static
-        png16
+        png16::png16-static
         atomic
         EGL
         GLESv2
