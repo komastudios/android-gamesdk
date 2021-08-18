@@ -19,22 +19,8 @@ performed:
 ### ImGui
 
 1. Open a terminal and set the working directory to `samples/game_controller/`
-2. `cd third-party`
-3. `git clone https://github.com/ocornut/imgui`
-4. `cd imgui`
-5. `git checkout v1.80`
-
-### libPNG
-
-1. Download the source code to libPNG 1.6.37 from the [project site](http://www.libpng.org/pub/png/libpng.html)
-2. Extract the `libpng-1.6.37` directory and copy it into the
-`third-party/libpng` directory
-3. Open a terminal and set the working directory to `samples/game_controller/`
-4. `cd third-party/libpng`
-5. `./build_all_android.sh libpng-1.6.37`
-
-Note: The build script expects the `$ANDROID_NDK` environment variable to be
-set to a path of a valid Android NDK install.
+2. `cd third-party` (mkdir if it doesn't exist)
+3. `git clone -b v1.80 https://github.com/ocornut/imgui`
 
 ## Building
 
