@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "034b47c7_e411fa06",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-08-23T10:42:15Z",
+      "side": 1,
+      "message": "The Windows build machine is stalled, looking into it now",
+      "revId": "c84dda8e101e620b20b1fdf49c67c6d200a58979",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
