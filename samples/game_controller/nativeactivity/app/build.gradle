@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,8 @@ android.lintOptions {
 }
 
 dependencies {
-    implementation "androidx.games:games-controller:1.0.0-rc02"
+    implementation "androidx.games:games-controller:1.0.0"
+    implementation "com.android.ndk.thirdparty:libpng:1.6.37-alpha-1"
 
     // Example of using local .aar files in libs/ directory.
     // Comment out the androidx.games implementation lines if
