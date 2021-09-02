@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef _ANDROID_NATIVE_APP_GLUE_H
-#define _ANDROID_NATIVE_APP_GLUE_H
+#pragma once
 
 /**
  * @addtogroup android_native_app_glue Native App Glue library
@@ -425,5 +424,3 @@ extern void android_main(struct android_app* app);
 #endif
 
 /** @} */
-
-#endif /* _ANDROID_NATIVE_APP_GLUE_H */

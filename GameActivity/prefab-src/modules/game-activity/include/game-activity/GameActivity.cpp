@@ -609,7 +609,7 @@ static jbyteArray onSaveInstanceState_native(JNIEnv *env,
                                              jlong handle) {
   LOG_TRACE("onSaveInstanceState_native");
 
-  SaveInstanceLocals locals {}; // Passed through the user's state prep function.
+  SaveInstanceLocals locals { env, NULL}; // Passed through the user's state prep function.
 
   if (handle != 0) {
     NativeCode *code = (NativeCode *)handle;
@@ -755,6 +755,23 @@ static void onSurfaceDestroyed_native(JNIEnv *env, jobject javaGameActivity,
     }
     code->setSurface(NULL);
   }
+}
+
+static void onContentRectChanged_native(JNIEnv* env, jobject clazz, jlong handle,
+        jint x, jint y, jint w, jint h)
+{
+    LOG_TRACE("onContentRectChanged_native");
+    if (handle != 0) {
+        NativeCode* code = (NativeCode*)handle;
+        if (code->callbacks.onContentRectChanged != NULL) {
+            ARect rect;
+            rect.left = x;
+            rect.top = y;
+            rect.right = x+w;
+            rect.bottom = y+h;
+            code->callbacks.onContentRectChanged(code, &rect);
+        }
+    }
 }
 
 static bool enabledAxes[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT] = {
@@ -1067,6 +1084,9 @@ static const JNINativeMethod g_methods[] = {
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
+    {"onContentRectChangedNative",
+     "(JIIII)V",
+     (void *)onContentRectChanged_native},
 };
 static const char *const kGameActivityPathName =
     "com/google/androidgamesdk/GameActivity";
