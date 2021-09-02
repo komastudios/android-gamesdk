@@ -73,7 +73,7 @@ dependencies {
     implementation 'com.google.oboe:oboe:1.5.0'
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.4.3"
-    implementation "androidx.games:games-activity:1.0.0"
+    implementation "androidx.games:games-activity:1.0.1"
     implementation "androidx.games:games-controller:1.0.0"
 
     // Example of using local .aar files in libs/ directory.
