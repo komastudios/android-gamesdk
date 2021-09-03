@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e672f85c_d8c17dd8",
+        "filename": "test/istresser/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-03T12:29:03Z",
+      "side": 1,
+      "message": "nit: extra ws here and below",
+      "revId": "1744213c401dfa5cf6c1979988f77917aedfa1a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da3b46b7_cddb22de",
+        "filename": "test/memoryadvice/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-03T12:29:03Z",
+      "side": 1,
+      "message": "nit: extra tabs here and below",
+      "revId": "1744213c401dfa5cf6c1979988f77917aedfa1a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
