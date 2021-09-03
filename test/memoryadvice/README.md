@@ -178,7 +178,7 @@ dependencies. For example:
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
         maven {
             url 'https://jitpack.io'
         }
