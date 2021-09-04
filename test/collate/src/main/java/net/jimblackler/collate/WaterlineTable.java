@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,8 @@ import java.util.Map;
 public class WaterlineTable {
   public static void main(String[] args) throws IOException {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    Map<String, Object> out = gson.fromJson(Files.readString(Path.of("lookup.json")), Map.class);
+    Map<String, Object> out = gson.fromJson(
+        FileUtils.readFile(FileSystems.getDefault().getPath("lookup.json")), Map.class);
     List<String> baselineMetrics = new ArrayList<>();
 
     for (Object o : out.values()) {

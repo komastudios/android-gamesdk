@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class Score {
 
     if (directory.get() == null) {
       String dirName = extra == null ? (String) params.get("run") : (String) extra.get("historyId");
-      directory.set(Path.of("reports").resolve(dirName));
+      directory.set(FileSystems.getDefault().getPath("reports").resolve(dirName));
       try {
         File outDir = directory.get().toFile();
         if (outDir.exists()) {
@@ -141,7 +142,8 @@ public class Score {
           }
         }
         outDir.mkdirs();
-        Utils.copyFolder(Path.of("resources", "static"), directory.get().resolve("static"));
+        Utils.copyFolder(FileSystems.getDefault().getPath("resources", "static"),
+            directory.get().resolve("static"));
       } catch (IOException e) {
         throw new IllegalStateException(e);
       }
@@ -232,7 +234,7 @@ public class Score {
     content = content.replace("<!--body-->", body);
 
     Path outputFile = directory.resolve("index.html");
-    Files.writeString(outputFile, content);
+    FileUtils.writeString(outputFile, content);
     return outputFile.toUri();
   }
 

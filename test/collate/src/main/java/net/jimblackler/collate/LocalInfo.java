@@ -1,8 +1,7 @@
 package net.jimblackler.collate;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.FileSystems;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,12 +18,16 @@ public class LocalInfo {
         try {
           {
             String data = Utils.execute("adb", "shell", "cat", "/d/kgsl/globals");
-            Files.writeString(Path.of("out", String.format("kgsl_globals_%02d.txt", c[0])), data);
+            FileUtils.writeString(FileSystems.getDefault().getPath(
+                                      "out", String.format("kgsl_globals_%02d.txt", c[0])),
+                data);
           }
 
           {
             String data = Utils.execute("adb", "shell", "cat", "/d/kgsl/proc/" + pid + "/mem");
-            Files.writeString(Path.of("out", String.format("kgsl_mem_%02d.txt", c[0])), data);
+            FileUtils.writeString(
+                FileSystems.getDefault().getPath("out", String.format("kgsl_mem_%02d.txt", c[0])),
+                data);
           }
 
           c[0]++;
