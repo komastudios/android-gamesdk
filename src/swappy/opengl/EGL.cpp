@@ -227,8 +227,8 @@ std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(
         if (reason == EGL_BAD_SURFACE) {
             eglSurfaceAttrib(dpy, surface, EGL_TIMESTAMPS_ANDROID, EGL_TRUE);
         } else {
-            ALOGE("Failed to get timestamps for frame %llu",
-                  (unsigned long long)frameId);
+            ALOGE_ONCE("Failed to get timestamps for frame %llu",
+                       (unsigned long long)frameId);
         }
         return nullptr;
     }
