@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bbb80d7_73d57a93",
+        "filename": "test/memoryadvice/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2021-09-07T12:05:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d24521a_e99ff455",
+      "revId": "ae7bcfa9d1cbd40ff4c526453f4d6b4e97c8a4ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "37a72bdd_c35e4165",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-09-07T11:11:22Z",
       "side": 1,
       "message": "dispensed -\u003e provided?",
+      "revId": "ae7bcfa9d1cbd40ff4c526453f4d6b4e97c8a4ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2c6b4dc_94934016",
+        "filename": "test/memoryadvice/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2021-09-07T12:05:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37a72bdd_c35e4165",
       "revId": "ae7bcfa9d1cbd40ff4c526453f4d6b4e97c8a4ed",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
