@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d24521a_e99ff455",
+        "filename": "test/memoryadvice/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-07T11:11:22Z",
+      "side": 1,
+      "message": "Use of \u0027available\u0027 is a bit confusing here - if something is available then it\u0027s not used. Maybe reword?",
+      "revId": "ae7bcfa9d1cbd40ff4c526453f4d6b4e97c8a4ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37a72bdd_c35e4165",
+        "filename": "test/memoryadvice/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-07T11:11:22Z",
+      "side": 1,
+      "message": "dispensed -\u003e provided?",
+      "revId": "ae7bcfa9d1cbd40ff4c526453f4d6b4e97c8a4ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
