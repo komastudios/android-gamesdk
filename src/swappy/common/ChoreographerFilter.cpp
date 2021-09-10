@@ -59,18 +59,25 @@ class Timer {
 
         point += mAppToSfDelay;
 
-        while (mBaseTime + mRefreshPeriod * 1.5 < point) {
+        bool moreThanOneRefreshPeriodElapsed =
+            mBaseTime + mRefreshPeriod * 1.5 < point;
+        if (moreThanOneRefreshPeriodElapsed) {
+            do {
+                mBaseTime += mRefreshPeriod;
+            } while (mBaseTime + mRefreshPeriod * 1.5 < point);
             mBaseTime += mRefreshPeriod;
-        }
-
-        std::chrono::nanoseconds delta = (point - (mBaseTime + mRefreshPeriod));
-        if (delta < -mRefreshPeriod / 2 || delta > mRefreshPeriod / 2) {
+            // Long waits pollute the filter so don't adjust refreshPeriod.
             return true;
         }
 
-        // TODO: 0.2 weighting factor for exponential smoothing is completely
-        // arbitrary
-        mRefreshPeriod += delta * 2 / 10;
+        std::chrono::nanoseconds delta = (point - (mBaseTime + mRefreshPeriod));
+        if (delta < -mRefreshPeriod / 2) {
+            // Also ignore short intervals
+            return true;
+        }
+
+        // Exponential smoothing factor = 0.04 avoids roughness.
+        mRefreshPeriod += delta / 25;
         mBaseTime += mRefreshPeriod;
 
         return true;
