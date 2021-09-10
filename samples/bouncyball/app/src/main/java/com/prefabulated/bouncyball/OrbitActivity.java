@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Trace;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Choreographer;
