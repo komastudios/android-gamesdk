@@ -77,7 +77,7 @@ static SwappyThreadFunctions sThreadFunctions = {
 /**/
 
 JNIEXPORT void JNICALL
-Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activity) {
+Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activity, jlong initialSwapIntervalNS) {
     // Get the Renderer instance to create it
     Renderer::getInstance();
 
@@ -89,6 +89,8 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activi
     Swappy_setThreadFunctions(&sThreadFunctions);
 
     SwappyGL_init(env, activity);
+
+    SwappyGL_setSwapIntervalNS(initialSwapIntervalNS);
 
     SwappyTracer tracers;
     tracers.preWait = nullptr;
