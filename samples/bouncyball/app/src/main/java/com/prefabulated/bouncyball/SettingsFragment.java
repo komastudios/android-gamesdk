@@ -69,7 +69,7 @@ public class SettingsFragment
         }
 
         // fill the swap interval list based on the screen refresh rate(s)
-        TreeSet<Integer> fpsSet = new TreeSet<Integer>();
+        TreeSet<Float> fpsSet = new TreeSet<Float>();
         if (Build.VERSION.SDK_INT >= 23) {
             mCurrentMode = display.getMode();
             Display.Mode[] supportedModes =
@@ -80,27 +80,27 @@ public class SettingsFragment
                 }
                 float refreshRate = mode.getRefreshRate();
                 for (int interval = 1; refreshRate / interval >= 20; interval++) {
-                    fpsSet.add((int) refreshRate / interval);
+                    fpsSet.add(refreshRate / interval);
                 }
             }
         } else {
             float refreshRate =
                     getActivity().getWindowManager().getDefaultDisplay().getRefreshRate();
             for (int interval = 1; refreshRate / interval >= 20; interval++) {
-                fpsSet.add((int)refreshRate / interval);
+                fpsSet.add(refreshRate / interval);
             }
         }
 
-        int numEntries = fpsSet.size();
+        int numEntries = fpsSet.size() + 1;
         String[] entries = new String[numEntries];
         String[] entryValues = new String[numEntries];
 
-        Iterator<Integer> fpsSetIterator = fpsSet.descendingIterator();
-        for(int i = 0; i < numEntries; i++) {
+        Iterator<Float> fpsSetIterator = fpsSet.descendingIterator();
+        for(int i = 0; i < numEntries - 1; i++) {
             float fps = fpsSetIterator.next();
             float ms =  1000 / fps;
 
-            entries[i] = String.format(Locale.US, "%.2fms (%.0ffps)", ms, fps);
+            entries[i] = String.format(Locale.US, "%.2fms (%.1ffps)", ms, fps);
             entryValues[i] = Float.toString(ms);
         }
 
