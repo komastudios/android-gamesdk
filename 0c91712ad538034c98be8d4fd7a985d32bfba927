@@ -16,6 +16,24 @@
       "message": "Are there two bug fixes here? What\u0027s the deal with the extra entry in the arrays? Was there a bug where the no pacing entry overwrite the final entry?",
       "revId": "0c91712ad538034c98be8d4fd7a985d32bfba927",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0c1a30a_06668edf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-16T12:56:59Z",
+      "side": 1,
+      "message": "I noticed the extra entry overwriting the last one when fixing the float rounding issue.",
+      "parentUuid": "18ba2f67_78581ea5",
+      "revId": "0c91712ad538034c98be8d4fd7a985d32bfba927",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
