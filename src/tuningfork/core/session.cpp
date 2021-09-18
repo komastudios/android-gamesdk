@@ -35,9 +35,8 @@ LoadingTimeMetricData* Session::CreateLoadingTimeSeries(MetricId id) {
     return p;
 }
 
-MemoryMetricData* Session::CreateMemoryHistogram(
-    MetricId id, const Settings::Histogram& settings) {
-    memory_data_.push_back(std::make_unique<MemoryMetricData>(id, settings));
+MemoryMetricData* Session::CreateMemoryTimeSeries(MetricId id) {
+    memory_data_.push_back(std::make_unique<MemoryMetricData>(id));
     auto p = memory_data_.back().get();
     available_memory_data_.push_back(p);
     return p;

@@ -28,7 +28,11 @@
 #include <vector>
 
 #define LOG_TAG "TuningFork"
+#include <iostream>
+#include <string>
+
 #include "Log.h"
+#include "jni.h"
 #include "session.h"
 
 namespace tuningfork {
@@ -43,79 +47,59 @@ using memInfoMap = std::unordered_map<std::string, size_t>;
 
 using namespace std::chrono;
 
-void MemoryTelemetry::CreateMemoryHistograms(
-    Session &session, IMemInfoProvider *mem_info_provider,
-    uint32_t max_num_histograms) {
-    Settings::Histogram hist_settings{};
-    if (mem_info_provider != nullptr)
-        hist_settings.bucket_max = mem_info_provider->GetDeviceMemoryBytes();
-    else
-        hist_settings.bucket_max = DEFAULT_HIST_END;
-    hist_settings.n_buckets = NUM_BUCKETS;
-    if (max_num_histograms == 0) {
-        max_num_histograms = MemoryRecordType::COUNT;
-    }
-    for (int i = 0; i < max_num_histograms; ++i) {
-        session.CreateMemoryHistogram(
-            MetricId::Memory(MemoryRecordType::INVALID), hist_settings);
-    }
-}
+Duration MemoryTelemetry::UploadPeriod() { return kMemoryMetricInterval; }
 
-void MemoryTelemetry::SetUpAsyncWork(AsyncTelemetry &async,
-                                     IMemInfoProvider *mem_info_provider) {
-    async.AddTask(std::make_shared<DebugNativeHeapTask>(mem_info_provider));
-    async.AddTask(std::make_shared<OomScoreTask>(mem_info_provider));
-    async.AddTask(std::make_shared<MemInfoTask>(mem_info_provider));
-}
-
-Duration MemoryTelemetry::UploadPeriodForMemoryType(MemoryRecordType t) {
-    switch (t) {
-        case MemoryRecordType::ANDROID_DEBUG_NATIVE_HEAP:
-            return kFastMemoryMetricInterval;
-        default:
-            return kSlowMemoryMetricInterval;
-    }
-}
-
-void MemoryMetricTask::DoWork(Session *session) {
+void MemoryReportingTask::DoWork(Session *session) {
     if (mem_info_provider_ != nullptr && mem_info_provider_->GetEnabled()) {
-        uint64_t value = Measure();
         auto d = session->GetData<MemoryMetricData>(metric_id_);
-        d->Record(value);
+        d->Record(mem_info_provider_, time_provider_->TimeSinceProcessStart());
     }
 }
 
-#define UPDATE_OPT_HIST(label, metric)                              \
-    if (mem_info_provider_->IsMemInfo##metric##Available()) {       \
-        auto d = session->GetData<MemoryMetricData>(                \
-            MetricId::Memory(ANDROID_##label));                     \
-        d->Record(mem_info_provider_->GetMemInfo##metric##Bytes()); \
-    }
-
-void MemInfoTask::DoWork(Session *session) {
-    if (mem_info_provider_ != nullptr && mem_info_provider_->GetEnabled()) {
-        mem_info_provider_->UpdateMemInfo();
-
-        UPDATE_OPT_HIST(MEMINFO_ACTIVE, Active);
-        UPDATE_OPT_HIST(MEMINFO_ACTIVEANON, ActiveAnon);
-        UPDATE_OPT_HIST(MEMINFO_ACTIVEFILE, ActiveFile);
-        UPDATE_OPT_HIST(MEMINFO_ANONPAGES, AnonPages);
-        UPDATE_OPT_HIST(MEMINFO_COMMITLIMIT, CommitLimit);
-        UPDATE_OPT_HIST(MEMINFO_HIGHTOTAL, HighTotal);
-        UPDATE_OPT_HIST(MEMINFO_LOWTOTAL, LowTotal);
-        UPDATE_OPT_HIST(MEMINFO_MEMAVAILABLE, MemAvailable);
-        UPDATE_OPT_HIST(MEMINFO_MEMFREE, MemFree);
-        UPDATE_OPT_HIST(MEMINFO_MEMTOTAL, MemTotal);
-        UPDATE_OPT_HIST(MEMINFO_VMDATA, VmData);
-        UPDATE_OPT_HIST(MEMINFO_VMRSS, VmRss);
-        UPDATE_OPT_HIST(MEMINFO_VMSIZE, VmSize);
-    }
-}
+void MemoryReportingTask::UpdateMetricId(MetricId id) { metric_id_ = id; }
 
 uint64_t DefaultMemInfoProvider::GetNativeHeapAllocatedSize() {
     if (gamesdk::jni::IsValid()) {
         // Call android.os.Debug.getNativeHeapAllocatedSize()
         return android_debug_.getNativeHeapAllocatedSize();
+    }
+    return 0;
+}
+
+uint64_t DefaultMemInfoProvider::GetPss() {
+    if (gamesdk::jni::IsValid()) {
+        // Call android.os.Debug.getPss()
+        return BYTES_IN_KB * android_debug_.getPss();
+    }
+    return 0;
+}
+
+uint64_t DefaultMemInfoProvider::GetAvailMem() {
+    if (gamesdk::jni::IsValid()) {
+        using namespace gamesdk::jni;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::ACTIVITY_SERVICE);
+        if (!obj.IsNull()) {
+            android::app::ActivityManager activity_manager(std::move(obj));
+            gamesdk::jni::android::app::MemoryInfo memory_info;
+            activity_manager.getMemoryInfo(memory_info);
+            return memory_info.availMem();
+        }
+    }
+    return 0;
+}
+
+uint64_t DefaultMemInfoProvider::GetTotalMem() {
+    if (gamesdk::jni::IsValid()) {
+        using namespace gamesdk::jni;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::ACTIVITY_SERVICE);
+        if (!obj.IsNull()) {
+            android::app::ActivityManager activity_manager(std::move(obj));
+            gamesdk::jni::android::app::MemoryInfo memory_info;
+            activity_manager.getMemoryInfo(memory_info);
+            return memory_info.totalMem();
+        }
     }
     return 0;
 }
@@ -161,6 +145,9 @@ void DefaultMemInfoProvider::UpdateMemInfo() {
     ss_path << "/proc/" << memInfo.pid << "/status";
     getMemInfoFromFile(data, ss_path.str());
 
+    // For the time being, only swap total is being used.
+    // Disabling the rest for efficiency
+    /*
     memInfo.active = getMemInfoValueFromData(data, "Active");
     memInfo.activeAnon = getMemInfoValueFromData(data, "Active(anon)");
     memInfo.activeFile = getMemInfoValueFromData(data, "Active(file)");
@@ -171,9 +158,13 @@ void DefaultMemInfoProvider::UpdateMemInfo() {
     memInfo.memAvailable = getMemInfoValueFromData(data, "MemAvailable");
     memInfo.memFree = getMemInfoValueFromData(data, "MemFree");
     memInfo.memTotal = getMemInfoValueFromData(data, "MemTotal");
+    */
+    memInfo.swapTotal = getMemInfoValueFromData(data, "SwapTotal");
+    /*
     memInfo.vmData = getMemInfoValueFromData(data, "VmData");
     memInfo.vmRss = getMemInfoValueFromData(data, "VmRSS");
     memInfo.vmSize = getMemInfoValueFromData(data, "VmSize");
+    */
 }
 
 void DefaultMemInfoProvider::UpdateOomScore() {
@@ -305,6 +296,9 @@ uint64_t DefaultMemInfoProvider::GetMemInfoMemTotalBytes() const {
     return memInfo.memTotal.first;
 }
 
+uint64_t DefaultMemInfoProvider::GetMemInfoSwapTotalBytes() const {
+    return memInfo.swapTotal.first;
+}
 uint64_t DefaultMemInfoProvider::GetMemInfoVmDataBytes() const {
     return memInfo.vmData.first;
 }

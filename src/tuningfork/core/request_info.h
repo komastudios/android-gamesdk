@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "meminfo_provider.h"
 #include "proto/protobuf_util.h"
 
 namespace tuningfork {
@@ -48,6 +49,8 @@ struct RequestInfo {
     std::string device;
     std::string soc_model;
     std::string soc_manufacturer;
+    int64_t total_mem;
+    int64_t swap_total;
     uint32_t swappy_version;
 
     // Note that this will include an empty experiment_id and
@@ -56,6 +59,8 @@ struct RequestInfo {
 
     // We have a globally accessible cached value
     static RequestInfo& CachedValue();
+
+    void UpdateMemoryValues(IMemInfoProvider* meminfo_provider);
 };
 
 }  // namespace tuningfork

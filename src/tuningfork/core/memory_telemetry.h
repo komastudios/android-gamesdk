@@ -31,13 +31,7 @@ class Session;
 
 class MemoryTelemetry {
    public:
-    static void CreateMemoryHistograms(Session& session,
-                                       IMemInfoProvider* mem_info_provider,
-                                       uint32_t max_num_histograms);
-    static void SetUpAsyncWork(AsyncTelemetry& async,
-                               IMemInfoProvider* mem_info_provider);
-
-    static Duration UploadPeriodForMemoryType(MemoryRecordType t);
+    static Duration UploadPeriod();
 };
 
 struct MemInfo {
@@ -54,13 +48,14 @@ struct MemInfo {
     std::pair<uint64_t, bool> memAvailable;
     std::pair<uint64_t, bool> memFree;
     std::pair<uint64_t, bool> memTotal;
+    std::pair<uint64_t, bool> swapTotal;
     std::pair<uint64_t, bool> vmData;
     std::pair<uint64_t, bool> vmRss;
     std::pair<uint64_t, bool> vmSize;
 };
 
 class DefaultMemInfoProvider : public IMemInfoProvider {
-    bool enabled_ = false;
+    bool enabled_ = true;
     uint64_t device_memory_bytes = 0;
     gamesdk::jni::android::os::DebugClass android_debug_;
 
@@ -71,6 +66,9 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     void UpdateMemInfo() override;
     void UpdateOomScore() override;
     uint64_t GetNativeHeapAllocatedSize() override;
+    uint64_t GetPss() override;
+    uint64_t GetTotalMem() override;
+    uint64_t GetAvailMem() override;
     void SetEnabled(bool enable) override;
     bool GetEnabled() const override;
     void SetDeviceMemoryBytes(uint64_t bytesize) override;
@@ -99,50 +97,27 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     uint64_t GetMemInfoMemAvailableBytes() const override;
     uint64_t GetMemInfoMemFreeBytes() const override;
     uint64_t GetMemInfoMemTotalBytes() const override;
+    uint64_t GetMemInfoSwapTotalBytes() const override;
     uint64_t GetMemInfoVmDataBytes() const override;
     uint64_t GetMemInfoVmRssBytes() const override;
     uint64_t GetMemInfoVmSizeBytes() const override;
 };
 
-class MemoryMetricTask : public RepeatingTask {
+class MemoryReportingTask : public RepeatingTask {
    protected:
     IMemInfoProvider* mem_info_provider_;
     MetricId metric_id_;
+    ITimeProvider* time_provider_;
 
    public:
-    MemoryMetricTask(IMemInfoProvider* m, MetricId metric_id)
-        : RepeatingTask(MemoryTelemetry::UploadPeriodForMemoryType(
-              (MemoryRecordType)metric_id.detail.memory.record_type)),
+    MemoryReportingTask(ITimeProvider* time_provider, IMemInfoProvider* m,
+                        MetricId metric_id)
+        : RepeatingTask(MemoryTelemetry::UploadPeriod()),
           mem_info_provider_(m),
-          metric_id_(metric_id) {}
+          metric_id_(metric_id),
+          time_provider_(time_provider) {}
     virtual void DoWork(Session* session) override;
-    virtual uint64_t Measure() { return 0; }
-};
-
-class DebugNativeHeapTask : public MemoryMetricTask {
-   public:
-    DebugNativeHeapTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_DEBUG_NATIVE_HEAP)) {}
-    virtual uint64_t Measure() override {
-        return mem_info_provider_->GetNativeHeapAllocatedSize();
-    }
-};
-
-class OomScoreTask : public MemoryMetricTask {
-   public:
-    OomScoreTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_OOM_SCORE)) {}
-    virtual uint64_t Measure() override {
-        mem_info_provider_->UpdateOomScore();
-        return mem_info_provider_->GetMemInfoOomScore();
-    }
-};
-
-class MemInfoTask : public MemoryMetricTask {
-   public:
-    MemInfoTask(IMemInfoProvider* m)
-        : MemoryMetricTask(m, MetricId::Memory(ANDROID_MEMINFO_ACTIVE)) {}
-    virtual void DoWork(Session* session) override;
+    void UpdateMetricId(MetricId id);
 };
 
 }  // namespace tuningfork
