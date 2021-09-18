@@ -511,6 +511,19 @@ class DebugClass {
         }
         return 0;
     }
+
+    static uint64_t getPss() {
+        JNIEnv* env = Env();
+        if (env != nullptr) {
+            LocalObject obj;
+            obj.Cast("android/os/Debug");
+            jclass clz = obj;
+            jmethodID method = env->GetStaticMethodID(clz, "getPss", "()J");
+            if (method != NULL)
+                return (uint64_t)env->CallStaticLongMethod(clz, method);
+        }
+        return 0;
+    }
 };  // class Debug
 
 class Build {

@@ -125,9 +125,6 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
         CreateSessionFrameHistograms(*sessions_[i], max_num_frametime_metrics,
                                      max_ikeys, settings_.histograms,
                                      settings.c_settings.max_num_metrics);
-        MemoryTelemetry::CreateMemoryHistograms(
-            *sessions_[i], meminfo_provider_,
-            settings.c_settings.max_num_metrics.memory);
     }
     current_session_ = sessions_[0].get();
     live_traces_.resize(max_num_frametime_metrics);
@@ -198,6 +195,10 @@ void TuningForkImpl::CreateSessionFrameHistograms(
     for (int i = 0; i < limits.thermal; ++i) {
         session.CreateThermalTimeSeries(MetricId::Thermal(0));
     }
+
+    for (int i = 0; i < limits.memory; ++i) {
+        session.CreateMemoryTimeSeries(MetricId::Memory(0));
+    }
 }
 
 // Return the set annotation id or -1 if it could not be set
@@ -248,6 +249,7 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
         thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
+        memory_reporting_task_->UpdateMetricId(MetricId::Memory(id));
         return current_annotation_id_;
     }
 }
@@ -602,7 +604,6 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
 
 void TuningForkImpl::InitAsyncTelemetry() {
     async_telemetry_ = std::make_unique<AsyncTelemetry>(time_provider_);
-    MemoryTelemetry::SetUpAsyncWork(*async_telemetry_, meminfo_provider_);
     battery_reporting_task_ = std::make_shared<BatteryReportingTask>(
         &activity_lifecycle_state_, time_provider_, battery_provider_,
         MetricId::Battery(0));
@@ -610,18 +611,11 @@ void TuningForkImpl::InitAsyncTelemetry() {
     thermal_reporting_task_ = std::make_shared<ThermalReportingTask>(
         time_provider_, battery_provider_, MetricId::Thermal(0));
     async_telemetry_->AddTask(thermal_reporting_task_);
+    memory_reporting_task_ = std::make_shared<MemoryReportingTask>(
+        time_provider_, meminfo_provider_, MetricId::Memory(0));
+    async_telemetry_->AddTask(memory_reporting_task_);
     async_telemetry_->SetSession(current_session_);
     async_telemetry_->Start();
-}
-
-TuningFork_ErrorCode TuningForkImpl::MetricIdToMemoryMetric(MetricId id,
-                                                            MemoryMetric &m) {
-    m.memory_record_type_ = (MemoryRecordType)id.detail.memory.record_type;
-    m.period_ms_ =
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            MemoryTelemetry::UploadPeriodForMemoryType(m.memory_record_type_))
-            .count();
-    return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode TuningForkImpl::AnnotationIdToSerializedAnnotation(

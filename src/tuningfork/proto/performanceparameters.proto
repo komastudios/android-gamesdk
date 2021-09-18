@@ -442,6 +442,27 @@ message NetworkInfo {
 message MemoryReport {
   // Distribution of memory usage
   repeated MemoryHistogram memory_histogram = 1;
+  // Memory usage reported as timed events
+  repeated MemoryEvent memory_event = 2;
+}
+
+// An event describing current memory state of the device.
+message MemoryEvent {
+  // Duration from process start to the time the event is collected.
+  google.protobuf.Duration event_time = 1;
+  // The total memory on the device, in bytes, read from
+  // ActivityManager#MemoryInfo
+  int64 total_mem = 2;
+  // The memory used by the app, in bytes, except the shared memory
+  // is proportionally calculated. Read from android.os.Debug#getPss
+  int64 proportional_set_size = 3;
+  // Total swap memory of the device, in bytes, read from /proc/meminfo
+  int64 swap_total = 4;
+  // The available memory on the device, in bytes, read from
+  // ActivityManager#MemoryInfo
+  int64 avail_mem = 5;
+  // OOM score of the app, read from /proc/<pid>/oom_score
+  int64 oom_score = 6;
 }
 
 // A histogram describing memory usage.

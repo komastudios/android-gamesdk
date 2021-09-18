@@ -18,39 +18,77 @@
 
 #include "histogram.h"
 #include "memory_record_type.h"
+#include "memory_telemetry.h"
 #include "metricdata.h"
 #include "settings.h"
 
 namespace tuningfork {
 
-static const Duration kFastMemoryMetricInterval =
-    std::chrono::milliseconds(100);
+static const int32_t kBufferSize = 2 * 60;
 
-static const Duration kSlowMemoryMetricInterval =
-    std::chrono::milliseconds(1000);
+static const Duration kMemoryMetricInterval = std::chrono::seconds(60);
 
-struct MemoryMetric {
-    MemoryMetric(
-        MemoryRecordType memory_record_type = MemoryRecordType::INVALID,
-        Duration period = Duration::zero())
-        : memory_record_type_(memory_record_type),
-          period_ms_(
-              std::chrono::duration_cast<std::chrono::milliseconds>(period)
-                  .count()) {}
-    MemoryRecordType memory_record_type_;
-    uint32_t period_ms_;
+struct InitialMemoryMetric {
+    int64_t total_mem_, proportional_set_size_, swap_total_;
+
+    InitialMemoryMetric(int64_t total_mem, int64_t proportional_set_size,
+                        int64_t swap_total)
+        : total_mem_(total_mem),
+          proportional_set_size_(proportional_set_size),
+          swap_total_(swap_total) {}
+};
+
+struct RealTimeMemoryMetric {
+    int64_t avail_mem_, oom_score_;
+    Duration time_since_process_start_;
+
+    RealTimeMemoryMetric(int64_t avail_mem, int64_t oom_score,
+                         Duration time_since_process_start)
+        : avail_mem_(avail_mem),
+          oom_score_(oom_score),
+          time_since_process_start_(time_since_process_start) {}
+
+    void UpdateValues(int64_t avail_mem, int64_t oom_score,
+                      Duration time_since_process_start) {
+        avail_mem_ = avail_mem;
+        oom_score_ = oom_score;
+        time_since_process_start_ = time_since_process_start;
+    }
 };
 
 struct MemoryMetricData : public MetricData {
-    MemoryMetricData(MetricId metric_id, const Settings::Histogram& settings)
-        : MetricData(MetricType()),
-          metric_id_(metric_id),
-          histogram_(settings, false) {}
+    MemoryMetricData(MetricId metric_id)
+        : MetricData(MetricType()), metric_id_(metric_id) {}
     MetricId metric_id_;
-    Histogram<uint64_t> histogram_;
-    void Record(uint64_t value) { histogram_.Add(value); }
-    virtual void Clear() override { histogram_.Clear(); }
-    virtual size_t Count() const override { return histogram_.Count(); }
+    std::vector<RealTimeMemoryMetric> data_;
+    int cyclical_buffer_location = 0;
+    std::unique_ptr<InitialMemoryMetric> initial_memory_metric_;
+
+    void Record(IMemInfoProvider *mem_info_provider,
+                Duration time_since_process_start) {
+        if (initial_memory_metric_.get() == nullptr) {
+            mem_info_provider->UpdateMemInfo();
+            initial_memory_metric_ = std::make_unique<InitialMemoryMetric>(
+                mem_info_provider->GetTotalMem(), mem_info_provider->GetPss(),
+                mem_info_provider->GetMemInfoSwapTotalBytes());
+        }
+        mem_info_provider->UpdateOomScore();
+        if (data_.size() < kBufferSize) {
+            RealTimeMemoryMetric metric(mem_info_provider->GetAvailMem(),
+                                        mem_info_provider->GetMemInfoOomScore(),
+                                        time_since_process_start);
+            data_.push_back(metric);
+        } else {
+            data_[cyclical_buffer_location].UpdateValues(
+                mem_info_provider->GetAvailMem(),
+                mem_info_provider->GetMemInfoOomScore(),
+                time_since_process_start);
+            cyclical_buffer_location++;
+            cyclical_buffer_location %= kBufferSize;
+        }
+    }
+    virtual void Clear() override { data_.clear(); }
+    virtual size_t Count() const override { return data_.size(); }
     static Metric::Type MetricType() { return Metric::Type::MEMORY; }
 };
 

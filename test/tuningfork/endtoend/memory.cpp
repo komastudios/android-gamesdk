@@ -38,7 +38,7 @@ TuningForkLogEvent TestEndToEndWithMemory() {
     }
     // Wait for the async metric thread to process 2s worth of memory requests
     test.WaitForMemoryUpdates((NTICKS * tickDuration) /
-                              tf::kFastMemoryMetricInterval);
+                              tf::kMemoryMetricInterval);
     // Wait for the upload thread to complete writing the string
     EXPECT_TRUE(test.cv_->wait_for(lock, s_test_wait_time) ==
                 std::cv_status::no_timeout)
@@ -88,51 +88,22 @@ TEST(EndToEndTest, WithMemory) {
       }
     },
     "report": {
+      "memory": {
+        "memory_event":[
+          {
+            "avail_mem":234,
+            "event_time":"!REGEX(.*?s)",
+            "oom_score":42,
+            "proportional_set_size":456,
+            "swap_total":123,
+            "total_mem":345
+          }
+        ]
+      },
       "rendering": {
         "render_time_histogram": [{
          "counts": [**],
          "instrument_id": 64000
-        }]
-      }
-    }
-  },{
-    "context": {
-      "annotations": "",
-      "duration": "20s",
-      "tuning_parameters": {
-        "experiment_id": "",
-        "serialized_fidelity_parameters": ""
-      }
-    },
-    "report": {
-      "memory": {
-        "memory_histogram": [
-        {
-          "counts": [**],
-         "histogram_config": {
-          "bucket_max_bytes": "8000000000",
-          "bucket_min_bytes": "0"
-         },
-         "period_ms": 100,
-         "type": 1
-        },
-        {
-          "counts": [**],
-         "histogram_config": {
-          "bucket_max_bytes": "8000000000",
-          "bucket_min_bytes": "0"
-         },
-         "period_ms": 1000,
-         "type": 2
-        },
-        {
-          "counts": [**],
-         "histogram_config": {
-          "bucket_max_bytes": "8000000000",
-          "bucket_min_bytes": "0"
-         },
-         "period_ms": 1000,
-         "type": 11
         }]
       }
     }

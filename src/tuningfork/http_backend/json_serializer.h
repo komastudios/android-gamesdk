@@ -58,8 +58,6 @@ class JsonSerializer {
         const AnnotationId& annotation, const LifecycleUploadEvent& event,
         Duration& duration);
 
-    json11::Json::object MemoryTelemetryReportJson(bool& empty);
-
     json11::Json::object TelemetryJson(const AnnotationId& annotation,
                                        const RequestInfo& request_info,
                                        Duration& duration, bool& empty);
@@ -68,10 +66,6 @@ class JsonSerializer {
         const AnnotationId& annotation, const LifecycleUploadEvent& event,
         const RequestInfo& request_info);
 
-    json11::Json::object MemoryTelemetryJson(const AnnotationId& annotation,
-                                             const RequestInfo& request_info,
-                                             const Duration& duration,
-                                             bool& empty);
     json11::Json::object LoadingTimeMetadataJson(
         const LoadingTimeMetadataWithGroup& md);
     std::vector<json11::Json::object> CrashReportsJson(
