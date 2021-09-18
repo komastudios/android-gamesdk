@@ -35,6 +35,9 @@ class TestMemInfoProvider : public tf::DefaultMemInfoProvider {
         return result_;
     }
     uint64_t GetMemInfoOomScore() const override { return 42; }
+    uint64_t GetAvailMem() override { return 234; }
+    uint64_t GetTotalMem() override { return 345; }
+    uint64_t GetPss() override { return 456; }
     void UpdateMemInfo() override {
         memInfo.active = std::make_pair(0, false);
         memInfo.activeAnon = std::make_pair(0, false);
@@ -48,6 +51,7 @@ class TestMemInfoProvider : public tf::DefaultMemInfoProvider {
         memInfo.memFree = std::make_pair(200, true);
 
         memInfo.memTotal = std::make_pair(0, false);
+        memInfo.swapTotal = std::make_pair(123, false);
         memInfo.vmData = std::make_pair(0, false);
         memInfo.vmRss = std::make_pair(0, false);
         memInfo.vmSize = std::make_pair(0, false);

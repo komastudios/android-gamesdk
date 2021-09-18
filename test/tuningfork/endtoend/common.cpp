@@ -36,6 +36,8 @@ const std::string session_context = R"TF(
     "product": "",
     "soc_manufacturer": "",
     "soc_model": "",
+    "swap_total": 123,
+    "total_mem": 345,
     "total_memory_bytes": 0
   },
   "game_sdk_info": {
@@ -66,6 +68,8 @@ const std::string session_context_loading = R"TF(
     "product": "",
     "soc_manufacturer": "",
     "soc_model": "",
+    "swap_total": 123,
+    "total_mem": 345,
     "total_memory_bytes": 0
   },
   "game_sdk_info": {

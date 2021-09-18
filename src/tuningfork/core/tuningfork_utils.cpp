@@ -265,18 +265,21 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
         {"minor", static_cast<int>(request_info.gl_es_version & 0xffff)}};
     std::vector<double> freqs(request_info.cpu_max_freq_hz.begin(),
                               request_info.cpu_max_freq_hz.end());
-    return Json::object{{"fingerprint", request_info.build_fingerprint},
-                        {"total_memory_bytes",
-                         static_cast<double>(request_info.total_memory_bytes)},
-                        {"build_version", request_info.build_version_sdk},
-                        {"gles_version", gles_version},
-                        {"cpu_core_freqs_hz", freqs},
-                        {"model", request_info.model},
-                        {"brand", request_info.brand},
-                        {"product", request_info.product},
-                        {"device", request_info.device},
-                        {"soc_model", request_info.soc_model},
-                        {"soc_manufacturer", request_info.soc_manufacturer}};
+    return Json::object{
+        {"fingerprint", request_info.build_fingerprint},
+        {"total_memory_bytes",
+         static_cast<double>(request_info.total_memory_bytes)},
+        {"build_version", request_info.build_version_sdk},
+        {"gles_version", gles_version},
+        {"cpu_core_freqs_hz", freqs},
+        {"model", request_info.model},
+        {"brand", request_info.brand},
+        {"product", request_info.product},
+        {"device", request_info.device},
+        {"soc_model", request_info.soc_model},
+        {"soc_manufacturer", request_info.soc_manufacturer},
+        {"total_mem", static_cast<double>(request_info.total_mem)},
+        {"swap_total", static_cast<double>(request_info.swap_total)}};
 }
 
 }  // namespace json_utils

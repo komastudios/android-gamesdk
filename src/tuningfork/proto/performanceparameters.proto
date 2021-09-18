@@ -231,6 +231,13 @@ message DeviceSpec {
   // See:
   // https://developer.android.com/reference/android/os/Build#SOC_MANUFACTURER
   string soc_manufacturer = 11;
+
+  // The total memory on the device, in bytes, read from
+  // ActivityManager#MemoryInfo
+  int64 total_mem = 12;
+
+  // Total swap memory of the device, in bytes, read from /proc/meminfo
+  int64 swap_total = 13;
 }
 
 // Message representing a version of OpenGL ES.
@@ -442,6 +449,24 @@ message NetworkInfo {
 message MemoryReport {
   // Distribution of memory usage
   repeated MemoryHistogram memory_histogram = 1;
+  // Memory usage reported as timed events. Upper limit for the size
+  // of this array is 120 events. Results exceeding this limit will be
+  // truncated.
+  repeated MemoryEvent memory_event = 2;
+}
+
+// An event describing current memory state of the device.
+message MemoryEvent {
+  // Duration from process start to the time the event is collected.
+  google.protobuf.Duration event_time = 1;
+  // The memory used by the app, in bytes, except the shared memory
+  // is proportionally calculated. Read from android.os.Debug#getPss
+  int64 proportional_set_size = 2;
+  // The available memory on the device, in bytes, read from
+  // ActivityManager#MemoryInfo
+  int64 avail_mem = 3;
+  // OOM score of the app, read from /proc/<pid>/oom_score
+  int64 oom_score = 4;
 }
 
 // A histogram describing memory usage.
