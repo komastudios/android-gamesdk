@@ -49,6 +49,7 @@ RequestInfo test_device_info{
     "DEVICE" /*device*/,
     "SOC_MODEL" /*soc_model*/,
     "SOC_MANUFACTURER" /*soc_manufacturer*/,
+    234 /*swap_total_bytes*/,
     ANDROID_GAMESDK_PACKED_VERSION(2, 7, 0) /*swappy_version*/};
 
 std::string test_device_info_ser = R"TF({
@@ -64,6 +65,7 @@ std::string test_device_info_ser = R"TF({
   "product": "PRODUCT",
   "soc_manufacturer": "SOC_MANUFACTURER",
   "soc_model": "SOC_MODEL",
+  "swap_total_bytes": 234,
   "total_memory_bytes": 2387
 })TF";
 
@@ -94,6 +96,7 @@ std::string report_start = R"TF({
       "product": "PRODUCT",
       "soc_manufacturer": "SOC_MANUFACTURER",
       "soc_model": "SOC_MODEL",
+      "swap_total_bytes": 234,
       "total_memory_bytes": 2387
     },
     "game_sdk_info": {
@@ -171,12 +174,6 @@ class IdMap : public IdProvider {
     TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
         AnnotationId id, SerializedAnnotation& ann) override {
         ann = {1, 2, 3};
-        return TUNINGFORK_ERROR_OK;
-    }
-    TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
-                                                MemoryMetric& m) override {
-        // Not used
-        m = {};
         return TUNINGFORK_ERROR_OK;
     }
     TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(

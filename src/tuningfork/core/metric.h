@@ -75,10 +75,10 @@ struct MetricId {
         id.detail.loading_time.metadata = mid;
         return id;
     }
-    static MetricId Memory(MemoryRecordType record_type) {
+    static MetricId Memory(AnnotationId aid) {
         MetricId id;
         id.detail.type = Metric::MEMORY;
-        id.detail.memory.record_type = record_type;
+        id.detail.annotation = aid;
         return id;
     }
     static MetricId Battery(AnnotationId aid) {

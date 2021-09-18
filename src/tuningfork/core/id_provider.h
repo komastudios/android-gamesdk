@@ -26,7 +26,6 @@ class AAsset;
 
 namespace tuningfork {
 
-class MemoryMetric;
 struct LoadingTimeMetadataWithGroup;
 
 // Interface to an object that can map between serializations and ids and create
@@ -47,9 +46,6 @@ class IdProvider {
 
     virtual TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
         AnnotationId id, SerializedAnnotation& ser) = 0;
-
-    virtual TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
-                                                        MemoryMetric& m) = 0;
 
     virtual TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
         MetricId id, LoadingTimeMetadataWithGroup& md) = 0;
