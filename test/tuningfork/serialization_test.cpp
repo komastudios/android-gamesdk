@@ -173,12 +173,6 @@ class IdMap : public IdProvider {
         ann = {1, 2, 3};
         return TUNINGFORK_ERROR_OK;
     }
-    TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
-                                                MemoryMetric& m) override {
-        // Not used
-        m = {};
-        return TUNINGFORK_ERROR_OK;
-    }
     TuningFork_ErrorCode MetricIdToLoadingTimeMetadata(
         MetricId id, LoadingTimeMetadataWithGroup& mg) override {
         LoadingTimeMetadata& m = mg.metadata;
