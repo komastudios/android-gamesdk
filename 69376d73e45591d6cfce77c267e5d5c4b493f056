@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bc43370_7a2a5146",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-20T12:11:02Z",
+      "side": 1,
+      "message": "Without this fix, I could reproduce the problem seen in the bug: a hang after 30 or so minutes when running bouncyball on emulator (Pixel 3 API 28 on gLinux).\nWith it, bouncyball continues running overnight at least.",
+      "revId": "69376d73e45591d6cfce77c267e5d5c4b493f056",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
