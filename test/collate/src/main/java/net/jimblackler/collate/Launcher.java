@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableSet;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
@@ -239,8 +240,8 @@ public class Launcher {
 
       Map<String, Object> flattened = Utils.flattenParams(paramsIn);
 
-      Path apkPath =
-          Path.of((String) flattened.get("apk_base"), (String) flattened.get("apk_name"));
+      Path apkPath = FileSystems.getDefault().getPath(
+          (String) flattened.get("apk_base"), (String) flattened.get("apk_name"));
       if (!apkPath.toFile().exists()) {
         throw new IllegalStateException(apkPath + " missing");
       }

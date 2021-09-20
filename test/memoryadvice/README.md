@@ -6,8 +6,8 @@ considered an alternative to using
 [onTrimMemory](https://developer.android.com/reference/android/content/ComponentCallbacks2#onTrimMemory\(int\))
 events to manage memory limits.
 
-It can also provide an estimate of how much memory is approximately available,
-helping apps scale assets to make the best use of the device.
+It provides an estimate of the percentage of potential total memory resources
+used at that moment.
 
 # Specifics and limitations
 
@@ -36,9 +36,8 @@ The metric sources available are currently:
     real-time use due to the high cost of calls and being rate throttled to one
     call per five minutes on newer devices.
 
-It also has access to a dictionary of readings taken from about 175 distinct
-phones that have run a stress test application in the Firebase Test Lab. This
-dictionary is bundled directly with the library.
+These signals are combined with a machine learning model trained from real user
+devices in order to generate the usage estimate.
 
 The library is only intended for use while applications are running in the
 foreground (currently operated by users). (In the event that the application is
@@ -76,67 +75,31 @@ are run in 64 bit mode wherever available.
 
 The API can be called at any time to discover:
 
-*   A memory warning signal that indicates whether siginficant allocation should
+*   A memory warning signal that indicates whether significant allocation should
     stop ("yellow"), or memory should be freed ("red").
-
-*   An estimate of the number of bytes safely available for future allocation
-    (in the case of a "yellow" warning signal, or no warning signal).
 
 *   A collection of raw memory metrics that can be captured for diagnostic
     purposes.
 
-The library offers an optional class `MemoryWatcher` that can perform the task of
-polling the `MemoryAdvisor` on behalf of the application; calling back the
+The library offers an optional class `MemoryWatcher` that can perform the task
+of polling the `MemoryAdvisor` on behalf of the application; calling back the
 application when the advice state changes at a rate selected by the application.
 
 Otherwise, the choice of polling rate is left to the developer, to strike the
 correct balance between calling cost (this varies significantly by device but
-the ballpark is between 5 and 20 ms per call) and the rate of memory allocation
+the ballpark is between 1 and 3 ms per call) and the rate of memory allocation
 performed by the app (higher rate allows a more timely reaction to warnings ).
 The API does not cache or rate limit, nor does it use a timer or other thread
 mechanism.
 
-All this information is dispensed as a Java map that can be converted to a JSON
-object, for a few reasons:
-
-*   To allow easy integration across language barriers, C++, Java, and in the
-    case of Unity projects, C#.
-
-*   To allow capture of all data using telemetry for diagnostic purposes without
-    devising a separate schema for the telemetry.
-
-*   To avoid solidifying a strict schema in the API when the metrics that are
-    captured and synthesized are both not available on all devices, and liable
-    to change.
+All this information is provided as a Java map to allow easy integration across
+language barriers, C++, Java, and in the case of Unity projects, C# and to allow
+capture of all data using telemetry for diagnostic purposes without devising a
+separate schema for the telemetry.
 
 The library provides methods that can be called to get simple recommendations
 from the map returned. However, as long as the library is experimental, this
 interface is not guaranteed to be stable.
-
-# Limitations of estimates
-
-Estimates are currently the most experimental part of the library, and estimates
-may be inaccurate for combinations of devices that we have not seen in lab
-testing.
-
-They may suggest a lower limit than can be allocated by an application in
-practice, because:
-
-*   Different types of memory allocation (e.g. heap allocation vs allocation via
-    graphics API) experience different limits, MB for MB. The library is
-    pessimistic so will report the lower figure.
-
-*   The memory advice library is pessimistic about the effets of zram
-    compression on memory availability. Allocated memory that is both rarely
-    used, and has compressible contents (e.g. contains repeated data) can be
-    compressed by [zram](https://en.wikipedia.org/wiki/Zram) on Android. In
-    extreme cases this could even result in apps apparently allocating more
-    memory that was actually present on the device.
-
-The estimate is of remaining memory to allocate. This may change over time
-affected by other actvity on the device. After memory has been allocated by the
-app, further calls may receive more accurate results than calls made at the
-start of the app's lifetime.
 
 # Recommended strategies
 
@@ -163,12 +126,37 @@ particle effects, or shadows, reducing screen resolution, or reducing texture
 resolution. These can be restored when no more memory warnings (including
 "yellow" signal) are received.
 
+# Limitations of estimates
+
+Specific memory quantity estimates are currently a highly experimental part of
+the library, as estimates may be inaccurate for combinations of devices that we
+have not seen in lab testing.
+
+They may suggest a lower limit than can be allocated by an application in
+practice, because:
+
+*   Different types of memory allocation (e.g. heap allocation vs allocation via
+    graphics API) experience different limits, MB for MB. The library is
+    pessimistic so will report the lower figure.
+
+*   The memory advice library is pessimistic about the effects of zram
+    compression on memory availability. Allocated memory that is both rarely
+    used, and has compressible contents (e.g. contains repeated data) can be
+    compressed by [zram](https://en.wikipedia.org/wiki/Zram) on Android. In
+    extreme cases this could even result in apps apparently allocating more
+    memory that was actually present on the device.
+
+The estimate is of remaining memory to allocate. This may change over time
+affected by other activity on the device. After memory has been allocated by the
+app, further calls may receive more accurate results than calls made at the
+start of the app's lifetime.
+
 # API specifics
 
 ## Adding the library to an Android project
 
 The library is published on
-[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.21).
+[Google's Maven repository](https://maven.google.com/web/index.html?q=com.google.android.games#com.google.android.games:memory-advice:0.22).
 
 In the application root `build.gradle` file, ensure `google()` is specified as a
 repository for the project, as well as `jitpack.io` for some of its
@@ -178,7 +166,7 @@ dependencies. For example:
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url 'https://jitpack.io'
         }
@@ -192,18 +180,18 @@ the `dependencies` section:
 ```gradle
 dependencies {
     // ..
-    implementation 'com.google.android.games:memory-advice:0.21'
+    implementation 'com.google.android.games:memory-advice:0.22'
 
 }
 ```
 
-Since the library has *AndroidX* dependencies, it is necesary to enable
+Since the library has *AndroidX* dependencies, it is necessary to enable
 *AndroidX* in the application, if it is not already. Instructions can be
 [found here](https://developer.android.com/jetpack/androidx/migrate).
 
 ### Building the library from source
 
-If you prefer to build your own version of the libary, get the
+If you prefer to build your own version of the library, get the
 [repo tool](https://gerrit.googlesource.com/git-repo/) and sync the Games SDK
 project
 [games-sdk project](https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master);

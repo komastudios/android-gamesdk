@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +53,7 @@ import org.json.JSONObject;
 
 class Collector {
   private static final Pattern BAD_CHARS = Pattern.compile("[^a-zA-Z0-9-_.]");
+  private static final Pattern LINE_SPLIT = Pattern.compile("\\r?\\n");
 
   static void deviceCollect(String appName, Consumer<List<Map<String, Object>>> emitter)
       throws IOException {
@@ -63,7 +65,7 @@ class Collector {
         "/storage/emulated/0/Android/data/" + appName + "/files", "-type", "f");
     for (String file : files.split(System.lineSeparator())) {
       Utils.execute("adb", "pull", file, outputFile.toString());
-      collectResult(emitter, Files.readString(outputFile), null, resultsRowSchema);
+      collectResult(emitter, FileUtils.readFile(outputFile), null, resultsRowSchema);
     }
   }
 
@@ -232,7 +234,7 @@ class Collector {
     ObjectMapper objectMapper = new ObjectMapper();
     boolean validate = false;
     List<Map<String, Object>> data = new ArrayList<>();
-    text.lines().forEach(line -> {
+    Arrays.asList(LINE_SPLIT.split(text)).forEach(line -> {
       line = line.trim();
       try {
         Map<String, Object> value = objectMapper.readValue(line, Map.class);
@@ -271,7 +273,7 @@ class Collector {
       }
     }
     try {
-      String s = Files.readString(file);
+      String s = FileUtils.readFile(file);
       if (s.isEmpty()) {
         Files.delete(file);  // Don't cache an empty file.
       }

@@ -14,6 +14,13 @@ AGDKTunnel uses the following AGDK libraries:
 
 ## Prerequisites
 
+### Python
+
+Python is expected to be available in your `PATH`. The `protobuf` package is
+expected to have been installed via `pip`.
+
+### GLM
+
 The GLM library must be downloaded before building:
 
 1. Open a shell and set the working directory to `samples/agdktunnel`

@@ -46,7 +46,7 @@ class Main {
       String content = Utils.fileToString("main.html");
       // noinspection HardcodedFileSeparator
       content = content.replace("[/*data*/]", objectWriter.writeValueAsString(result));
-      Files.writeString(outputFile, content);
+      FileUtils.writeString(outputFile, content);
       return outputFile.toUri();
     } catch (IOException ex) {
       throw new RuntimeException(ex);
