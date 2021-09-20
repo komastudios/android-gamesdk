@@ -162,6 +162,8 @@ public class GameActivity
 
   protected native void onSurfaceDestroyedNative(long handle);
 
+  protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
+
   protected native void onTouchEventNative(long handle, MotionEvent motionEvent);
 
   protected native void onKeyDownNative(long handle, KeyEvent keyEvent);
@@ -381,7 +383,8 @@ public class GameActivity
       mLastContentWidth = w;
       mLastContentHeight = h;
       if (!mDestroyed) {
-        // We used to call onContentRectChangedNative here but were advised it is not needed.
+        onContentRectChangedNative(mNativeHandle, mLastContentX,
+                mLastContentY, mLastContentWidth, mLastContentHeight);
       }
     }
   }

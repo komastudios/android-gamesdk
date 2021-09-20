@@ -23,7 +23,9 @@ public class Utils {
    * @throws IOException Thrown if a read error occurs.
    */
   public static String readFile(String filename) throws IOException {
-    return StreamUtils.readStream(new FileInputStream(filename));
+    try (FileInputStream inputStream = new FileInputStream(filename)) {
+      return StreamUtils.readStream(inputStream);
+    }
   }
 
   /**

@@ -105,7 +105,8 @@ struct GameTextInput *GameTextInput_init(JNIEnv *env, uint32_t max_string_size) 
                  "Warning: called GameTextInput_init twice without calling GameTextInput_destroy");
       return s_gameTextInput.get();
   }
-  s_gameTextInput = std::make_unique<GameTextInput>(env, max_string_size);
+  // Don't use make_unique, for C++11 compatibility
+  s_gameTextInput = std::unique_ptr<GameTextInput>(new GameTextInput(env, max_string_size));
   return s_gameTextInput.get();
 }
 

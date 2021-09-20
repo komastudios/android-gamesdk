@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.4.1)
-project(libpng C ASM)
-option(PNG_SHARED "Build shared lib" ON)
-option(PNG_STATIC "Build static lib" ON)
-option(PNG_TESTS  "Build libpng tests" OFF)
-add_subdirectory( ./${LIBPNG_BASE_DIR} )

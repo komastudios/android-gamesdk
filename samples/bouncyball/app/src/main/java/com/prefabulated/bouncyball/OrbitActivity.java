@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Trace;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Choreographer;
@@ -305,7 +305,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
 
         // Initialize the native renderer
 
-        nInit();
+        nInit(refreshPeriodNanos);
 
         runScript();
     }
@@ -551,7 +551,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         nClearSurface();
     }
 
-    public native void nInit();
+    public native void nInit(long initialSwapIntervalNS);
     public native void nSetSurface(Surface surface, int width, int height);
     public native void nClearSurface();
     public native void nStart();

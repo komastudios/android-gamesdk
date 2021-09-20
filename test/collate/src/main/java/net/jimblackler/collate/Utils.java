@@ -27,7 +27,7 @@ class Utils {
   });
 
   static String fileToString(String filename) throws IOException {
-    return Files.readString(Paths.get("resources", filename));
+    return FileUtils.readFile(Paths.get("resources", filename));
   }
 
   public static void copyFolder(Path from, Path to) throws IOException {

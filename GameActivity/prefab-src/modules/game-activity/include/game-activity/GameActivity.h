@@ -350,6 +350,11 @@ typedef struct GameActivityCallbacks {
                                   ANativeWindow* window);
 
   /**
+   * The rectangle in the window in which content should be placed has changed.
+   */
+  void (*onContentRectChanged)(GameActivity* activity, const ARect* rect);
+
+  /**
    * The current device AConfiguration has changed.  The new configuration can
    * be retrieved from assetManager.
    */
