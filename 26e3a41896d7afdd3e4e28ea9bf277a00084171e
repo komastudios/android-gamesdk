@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9334ac53_3dc5f741",
+        "filename": "src/tuningfork/core/request_info.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-21T14:55:07Z",
+      "side": 1,
+      "message": "I don\u0027t think you need this: there\u0027s already a total_memory_bytes field",
+      "revId": "26e3a41896d7afdd3e4e28ea9bf277a00084171e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2001cf7e_f2ba1c8d",
+        "filename": "src/tuningfork/core/request_info.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-21T14:55:07Z",
+      "side": 1,
+      "message": "Can you change to swap_total_bytes for consistency, please",
+      "revId": "26e3a41896d7afdd3e4e28ea9bf277a00084171e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
