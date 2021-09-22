@@ -27,6 +27,7 @@
 #include "crash_handler.h"
 #include "http_backend/http_backend.h"
 #include "meminfo_provider.h"
+#include "memory_telemetry.h"
 #include "session.h"
 #include "thermal_metric.h"
 #include "thermal_reporting_task.h"
@@ -71,6 +72,7 @@ class TuningForkImpl : public IdProvider {
     AnnotationMap annotation_map_;
     std::shared_ptr<BatteryReportingTask> battery_reporting_task_;
     std::shared_ptr<ThermalReportingTask> thermal_reporting_task_;
+    std::shared_ptr<MemoryReportingTask> memory_reporting_task_;
 
     std::unique_ptr<ITimeProvider> default_time_provider_;
     std::unique_ptr<HttpBackend> default_backend_;
@@ -196,9 +198,6 @@ class TuningForkImpl : public IdProvider {
 
     TuningFork_ErrorCode AnnotationIdToSerializedAnnotation(
         AnnotationId id, SerializedAnnotation &ser) override;
-
-    TuningFork_ErrorCode MetricIdToMemoryMetric(MetricId id,
-                                                MemoryMetric &m) override;
 
     TuningFork_ErrorCode LoadingTimeMetadataToId(
         const LoadingTimeMetadataWithGroup &metadata,

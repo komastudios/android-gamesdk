@@ -276,7 +276,9 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
                         {"product", request_info.product},
                         {"device", request_info.device},
                         {"soc_model", request_info.soc_model},
-                        {"soc_manufacturer", request_info.soc_manufacturer}};
+                        {"soc_manufacturer", request_info.soc_manufacturer},
+                        {"swap_total_bytes",
+                         static_cast<double>(request_info.swap_total_bytes)}};
 }
 
 }  // namespace json_utils

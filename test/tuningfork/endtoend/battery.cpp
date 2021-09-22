@@ -63,6 +63,7 @@ TEST(TuningForkTest, TestEndToEndWithBattery) {
       "product": "",
       "soc_manufacturer": "",
       "soc_model": "",
+      "swap_total_bytes": 123,
       "total_memory_bytes": 0
     },
     "game_sdk_info": {

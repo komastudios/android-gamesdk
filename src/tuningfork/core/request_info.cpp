@@ -137,4 +137,9 @@ static RequestInfo s_request_info;
 
 /*static*/ RequestInfo& RequestInfo::CachedValue() { return s_request_info; }
 
+void RequestInfo::UpdateMemoryValues(IMemInfoProvider* meminfo_provider) {
+    meminfo_provider->UpdateMemInfo();
+    swap_total_bytes = meminfo_provider->GetMemInfoSwapTotalBytes();
+}
+
 }  // namespace tuningfork
