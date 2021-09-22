@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51debe26_4541a134",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-22T13:03:32Z",
+      "side": 1,
+      "message": "Note that GameActivity.cpp had DOS line-endings too, and they have been changed to Unix",
+      "revId": "16d248a5f6a1ad4e5be17f2ce908a50285a9ffac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
