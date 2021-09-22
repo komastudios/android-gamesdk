@@ -404,6 +404,12 @@ typedef struct GameActivityCallbacks {
      */
     void (*onTextInputEvent)(GameActivity* activity,
                              const GameTextInputState* state);
+
+    /**
+     * Callback called when WindowInsets of the main app window have changed.
+     * Call GameActivity_getWindowInsets to retrieve the insets themselves.
+     */
+    void (*onWindowInsetsChanged)(GameActivity* activity);
 } GameActivityCallbacks;
 
 /**
@@ -726,6 +732,42 @@ enum GameActivityHideSoftInputFlags {
  * thread of the process where the Java finish call will take place.
  */
 void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
+
+/**
+ * The type of a component for which to retrieve insets. See
+ * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
+ */
+enum GameActivityInsetsType {
+    GAMEACTIVITY_INSETS_TYPE_CAPTION_BAR = 0,
+    GAMEACTIVITY_INSETS_TYPE_DISPLAY_CUTOUT,
+    GAMEACTIVITY_INSETS_TYPE_IME,
+    GAMEACTIVITY_INSETS_TYPE_MANDATORY_SYSTEM_GESTURES,
+    GAMEACTIVITY_INSETS_TYPE_NAVIGATION_BARS,
+    GAMEACTIVITY_INSETS_TYPE_STATUS_BARS,
+    GAMEACTIVITY_INSETS_TYPE_SYSTEM_BARS,
+    GAMEACTIVITY_INSETS_TYPE_SYSTEM_GESTURES,
+    GAMEACTIVITY_INSETS_TYPE_TAPABLE_ELEMENT,
+    GAMEACTIVITY_INSETS_TYPE_COUNT
+};
+
+/**
+ * Insets of a window component relative to the borders of the window.
+ */
+typedef struct GameActivityInsets {
+    int32_t left;
+    int32_t right;
+    int32_t top;
+    int32_t bottom;
+} GameActivityInsets;
+
+/**
+ * Get the current window insets of the particular component. See
+ * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
+ * for more details.
+ */
+void GameActivity_getWindowInsets(GameActivity* activity,
+                                  enum GameActivityInsetsType type,
+                                  GameActivityInsets* insets);
 
 #ifdef __cplusplus
 }

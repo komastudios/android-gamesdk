@@ -18,3 +18,12 @@ The AAR is output in the `package` directory. It contains GameActivity, both the
 ## Integrate GameActivity AAR to your build
 
 Refer to the integration guide for now. Link to it and other documentation will be added here later.
+
+Note that the library has a dependency on androidx.core version 1.5.0 or later. You should add the following to your app's build.gradle file:
+`
+dependencies {
+    ...
+    implementation "androidx.core:core:1.5.0"
+    ...
+`
+Not adding this will cause a JNI crash at startup.

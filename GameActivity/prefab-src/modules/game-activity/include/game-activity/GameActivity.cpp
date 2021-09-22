@@ -197,7 +197,26 @@ struct OwnedGameTextInputState {
 static struct {
     jmethodID finish;
     jmethodID setWindowFlags;
+    jmethodID getWindowInsets;
 } gGameActivityClassInfo;
+
+/*
+ * JNI fields of the androidx.core.graphics.Insets Java class.
+ */
+static struct {
+    jfieldID left;
+    jfieldID right;
+    jfieldID top;
+    jfieldID bottom;
+} gInsetsClassInfo;
+
+/*
+ * JNI methods of the WindowInsetsCompat.Type Java class.
+ */
+static struct {
+    jmethodID methods[GAMEACTIVITY_INSETS_TYPE_COUNT];
+    jclass clazz;
+} gWindowInsetsCompatTypeClassInfo;
 
 /*
  * Contains a command to be executed by the GameActivity
@@ -348,6 +367,8 @@ struct NativeCode : public GameActivity {
     // GameTextInput.
     OwnedGameTextInputState gameTextInputState;
     std::mutex gameTextInputStateMutex;
+
+    GameActivityInsets insetsState[GAMEACTIVITY_INSETS_TYPE_COUNT];
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -386,6 +407,14 @@ extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
                                            uint32_t flags) {
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_HIDE_SOFT_INPUT, flags);
+}
+
+extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
+                                             enum GameActivityInsetsType type,
+                                             GameActivityInsets *insets) {
+    if (type < 0 || type >= GAMEACTIVITY_INSETS_TYPE_COUNT) return;
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    *insets = code->insetsState[type];
 }
 
 /*
@@ -1072,6 +1101,27 @@ static void onTextInput_native(JNIEnv *env, jobject activity, jlong handle,
     GameTextInput_processEvent(code->gameTextInput, textInputEvent);
 }
 
+static void onWindowInsetsChanged_native(JNIEnv *env, jobject activity,
+                                         jlong handle) {
+    if (handle == 0) return;
+    NativeCode *code = (NativeCode *)handle;
+    if (code->callbacks.onWindowInsetsChanged == nullptr) return;
+    for (int type = 0; type < GAMEACTIVITY_INSETS_TYPE_COUNT; ++type) {
+        int jtype = env->CallStaticIntMethod(
+            gWindowInsetsCompatTypeClassInfo.clazz,
+            gWindowInsetsCompatTypeClassInfo.methods[type]);
+        jobject jinsets = env->CallObjectMethod(
+            code->javaGameActivity, gGameActivityClassInfo.getWindowInsets,
+            jtype);
+        GameActivityInsets &insets = code->insetsState[type];
+        insets.left = env->GetIntField(jinsets, gInsetsClassInfo.left);
+        insets.right = env->GetIntField(jinsets, gInsetsClassInfo.right);
+        insets.top = env->GetIntField(jinsets, gInsetsClassInfo.top);
+        insets.bottom = env->GetIntField(jinsets, gInsetsClassInfo.bottom);
+    }
+    code->callbacks.onWindowInsetsChanged(code);
+}
+
 static void setInputConnection_native(JNIEnv *env, jobject activity,
                                       jlong handle, jobject inputConnection) {
     NativeCode *code = (NativeCode *)handle;
@@ -1110,20 +1160,38 @@ static const JNINativeMethod g_methods[] = {
     {"onTextInputEventNative",
      "(JLcom/google/androidgamesdk/gametextinput/State;)V",
      (void *)onTextInput_native},
+    {"onWindowInsetsChangedNative", "(J)V",
+     (void *)onWindowInsetsChanged_native},
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
     {"onContentRectChangedNative", "(JIIII)V",
      (void *)onContentRectChanged_native},
 };
+
 static const char *const kGameActivityPathName =
     "com/google/androidgamesdk/GameActivity";
+
+static const char *const kInsetsPathName = "androidx/core/graphics/Insets";
+
+static const char *const kWindowInsetsCompatTypePathName =
+    "androidx/core/view/WindowInsetsCompat$Type";
+
 #define FIND_CLASS(var, className)   \
     var = env->FindClass(className); \
     LOG_FATAL_IF(!var, "Unable to find class %s", className);
+
 #define GET_METHOD_ID(var, clazz, methodName, fieldDescriptor)  \
     var = env->GetMethodID(clazz, methodName, fieldDescriptor); \
-    LOG_FATAL_IF(!var, "Unable to find method" methodName);
+    LOG_FATAL_IF(!var, "Unable to find method %s", methodName);
+
+#define GET_STATIC_METHOD_ID(var, clazz, methodName, fieldDescriptor) \
+    var = env->GetStaticMethodID(clazz, methodName, fieldDescriptor); \
+    LOG_FATAL_IF(!var, "Unable to find static method %s", methodName);
+
+#define GET_FIELD_ID(var, clazz, fieldName, fieldDescriptor)  \
+    var = env->GetFieldID(clazz, fieldName, fieldDescriptor); \
+    LOG_FATAL_IF(!var, "Unable to find field %s" fieldName);
 
 static int jniRegisterNativeMethods(JNIEnv *env, const char *className,
                                     const JNINativeMethod *methods,
@@ -1151,11 +1219,40 @@ static int jniRegisterNativeMethods(JNIEnv *env, const char *className,
 
 extern "C" int GameActivity_register(JNIEnv *env) {
     ALOGD("GameActivity_register");
-    jclass clazz;
-    FIND_CLASS(clazz, kGameActivityPathName);
-    GET_METHOD_ID(gGameActivityClassInfo.finish, clazz, "finish", "()V");
-    GET_METHOD_ID(gGameActivityClassInfo.setWindowFlags, clazz,
+    jclass activity_class;
+    FIND_CLASS(activity_class, kGameActivityPathName);
+    GET_METHOD_ID(gGameActivityClassInfo.finish, activity_class, "finish",
+                  "()V");
+    GET_METHOD_ID(gGameActivityClassInfo.setWindowFlags, activity_class,
                   "setWindowFlags", "(II)V");
+    GET_METHOD_ID(gGameActivityClassInfo.getWindowInsets, activity_class,
+                  "getWindowInsets", "(I)Landroidx/core/graphics/Insets;");
+    jclass insets_class;
+    FIND_CLASS(insets_class, kInsetsPathName);
+    GET_FIELD_ID(gInsetsClassInfo.left, insets_class, "left", "I");
+    GET_FIELD_ID(gInsetsClassInfo.right, insets_class, "right", "I");
+    GET_FIELD_ID(gInsetsClassInfo.top, insets_class, "top", "I");
+    GET_FIELD_ID(gInsetsClassInfo.bottom, insets_class, "bottom", "I");
+    jclass windowInsetsCompatType_class;
+    FIND_CLASS(windowInsetsCompatType_class, kWindowInsetsCompatTypePathName);
+    gWindowInsetsCompatTypeClassInfo.clazz =
+        (jclass)env->NewGlobalRef(windowInsetsCompatType_class);
+    // These names must match, in order, the GameActivityInsetsType enum fields
+    const char *methodNames[GAMEACTIVITY_INSETS_TYPE_COUNT] = {
+        "captionBar",
+        "displayCutout",
+        "ime",
+        "mandatorySystemGestures",
+        "navigationBars",
+        "statusBars",
+        "systemBars",
+        "systemGestures",
+        "tappableElement"};
+    for (int i = 0; i < GAMEACTIVITY_INSETS_TYPE_COUNT; ++i) {
+        GET_STATIC_METHOD_ID(gWindowInsetsCompatTypeClassInfo.methods[i],
+                             windowInsetsCompatType_class, methodNames[i],
+                             "()I");
+    }
     return jniRegisterNativeMethods(env, kGameActivityPathName, g_methods,
                                     NELEM(g_methods));
 }

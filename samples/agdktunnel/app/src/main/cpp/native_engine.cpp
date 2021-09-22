@@ -354,6 +354,13 @@ void NativeEngine::HandleCommand(int32_t cmd) {
         case APP_CMD_WINDOW_REDRAW_NEEDED:
             VLOGD("NativeEngine: APP_CMD_WINDOW_REDRAW_NEEDED");
             break;
+        case APP_CMD_WINDOW_INSETS_CHANGED:
+            VLOGD("NativeEngine: APP_CMD_WINDOW_INSETS_CHANGED");
+            GameActivityInsets insets;
+            GameActivity_getWindowInsets(mApp->activity, GAMEACTIVITY_INSETS_TYPE_IME, &insets);
+            VLOGD("IME insets: left=%d right=%d top=%d bottom=%d",
+                  insets.left, insets.right, insets.top, insets.bottom);
+            break;
         default:
             VLOGD("NativeEngine: (unknown command).");
             break;

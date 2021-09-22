@@ -497,6 +497,11 @@ static void onTextInputEvent(GameActivity* activity,
     pthread_mutex_unlock(&android_app->mutex);
 }
 
+static void onWindowInsetsChanged(GameActivity* activity) {
+    LOGV("WindowInsetsChanged: %p", activity);
+    android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_INSETS_CHANGED);
+}
+
 JNIEXPORT
 void GameActivity_onCreate(GameActivity* activity, void* savedState,
                            size_t savedStateSize) {
@@ -520,6 +525,7 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
         onNativeWindowRedrawNeeded;
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
     activity->callbacks->onContentRectChanged = onContentRectChanged;
+    activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
     LOGV("Callbacks set: %p", activity->callbacks);
 
     activity->instance =
