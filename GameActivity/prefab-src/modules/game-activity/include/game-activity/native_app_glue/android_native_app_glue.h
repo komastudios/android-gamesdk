@@ -365,6 +365,12 @@ enum NativeAppGlueAppCmd {
      * and waiting for the app thread to clean up and exit before proceeding.
      */
     APP_CMD_DESTROY,
+
+    /**
+     * Command from main thread: the app's insets have changed.
+     */
+    APP_CMD_WINDOW_INSETS_CHANGED,
+
 };
 
 /**
