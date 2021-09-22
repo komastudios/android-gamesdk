@@ -951,14 +951,15 @@ task localDeviceInfoUnitTests {
 task format {
     doLast {
         def formattedFiles =
-            fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"])
+            fileTree(dir: 'src', include: ['**/*.cpp', '**/*.c', '**/*.h'], excludes: ["protobuf"]) +
             fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
             fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameTextInput/prefab_src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameActivity/prefab_src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'GameTextInput/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'GameActivity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'GameController/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
 
+	println(formattedFiles.files)
         formattedFiles.files.each { file ->
             exec {
                 commandLine "/bin/bash"

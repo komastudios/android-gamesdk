@@ -31,9 +31,9 @@
 #include <android/input.h>
 #include <android/native_window.h>
 #include <jni.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <stdbool.h>
 
 #include "game-text-input/gametextinput.h"
 
@@ -52,65 +52,66 @@ struct GameActivityCallbacks;
  * code as it is being launched.
  */
 typedef struct GameActivity {
-  /**
-   * Pointer to the callback function table of the native application.
-   * You can set the functions here to your own callbacks.  The callbacks
-   * pointer itself here should not be changed; it is allocated and managed
-   * for you by the framework.
-   */
-  struct GameActivityCallbacks* callbacks;
+    /**
+     * Pointer to the callback function table of the native application.
+     * You can set the functions here to your own callbacks.  The callbacks
+     * pointer itself here should not be changed; it is allocated and managed
+     * for you by the framework.
+     */
+    struct GameActivityCallbacks* callbacks;
 
-  /**
-   * The global handle on the process's Java VM.
-   */
-  JavaVM* vm;
+    /**
+     * The global handle on the process's Java VM.
+     */
+    JavaVM* vm;
 
-  /**
-   * JNI context for the main thread of the app.  Note that this field
-   * can ONLY be used from the main thread of the process; that is, the
-   * thread that calls into the GameActivityCallbacks.
-   */
-  JNIEnv* env;
+    /**
+     * JNI context for the main thread of the app.  Note that this field
+     * can ONLY be used from the main thread of the process; that is, the
+     * thread that calls into the GameActivityCallbacks.
+     */
+    JNIEnv* env;
 
-  /**
-   * The GameActivity object handle.
-   */
-  jobject javaGameActivity;
+    /**
+     * The GameActivity object handle.
+     */
+    jobject javaGameActivity;
 
-  /**
-   * Path to this application's internal data directory.
-   */
-  const char* internalDataPath;
+    /**
+     * Path to this application's internal data directory.
+     */
+    const char* internalDataPath;
 
-  /**
-   * Path to this application's external (removable/mountable) data directory.
-   */
-  const char* externalDataPath;
+    /**
+     * Path to this application's external (removable/mountable) data directory.
+     */
+    const char* externalDataPath;
 
-  /**
-   * The platform's SDK version code.
-   */
-  int32_t sdkVersion;
+    /**
+     * The platform's SDK version code.
+     */
+    int32_t sdkVersion;
 
-  /**
-   * This is the native instance of the application.  It is not used by
-   * the framework, but can be set by the application to its own instance
-   * state.
-   */
-  void* instance;
+    /**
+     * This is the native instance of the application.  It is not used by
+     * the framework, but can be set by the application to its own instance
+     * state.
+     */
+    void* instance;
 
-  /**
-   * Pointer to the Asset Manager instance for the application.  The application
-   * uses this to access binary assets bundled inside its own .apk file.
-   */
-  AAssetManager* assetManager;
+    /**
+     * Pointer to the Asset Manager instance for the application.  The
+     * application uses this to access binary assets bundled inside its own .apk
+     * file.
+     */
+    AAssetManager* assetManager;
 
-  /**
-   * Available starting with Honeycomb: path to the directory containing
-   * the application's OBB files (if any).  If the app doesn't have any
-   * OBB files, this directory may not exist.
-   */
-  const char* obbPath;
+    /**
+     * Available starting with Honeycomb: path to the directory containing
+     * the application's OBB files (if any).  If the app doesn't have any
+     * OBB files, this directory may not exist.
+     */
+    const char* obbPath;
 } GameActivity;
 
 /**
@@ -134,22 +135,22 @@ typedef struct GameActivity {
  * \see GameActivityMotionEvent
  */
 typedef struct GameActivityPointerAxes {
-  int32_t id;
-  float axisValues[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
-  float rawX;
-  float rawY;
+    int32_t id;
+    float axisValues[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
+    float rawX;
+    float rawY;
 } GameActivityPointerAxes;
 
 /** \brief Get the current X coordinate of the pointer. */
 inline float GameActivityPointerAxes_getX(
     const GameActivityPointerAxes* pointerInfo) {
-  return pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
+    return pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
 }
 
 /** \brief Get the current Y coordinate of the pointer. */
 inline float GameActivityPointerAxes_getY(
     const GameActivityPointerAxes* pointerInfo) {
-  return pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
+    return pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
 }
 
 /**
@@ -193,11 +194,11 @@ void GameActivityPointerAxes_disableAxis(int32_t axis);
  */
 inline float GameActivityPointerAxes_getAxisValue(
     GameActivityPointerAxes* pointerInfo, int32_t axis) {
-  if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
-    return 0;
-  }
+    if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
+        return 0;
+    }
 
-  return pointerInfo->axisValues[axis];
+    return pointerInfo->axisValues[axis];
 }
 
 /**
@@ -212,26 +213,27 @@ inline float GameActivityPointerAxes_getAxisValue(
  * (see https://developer.android.com/reference/android/view/MotionEvent).
  */
 typedef struct GameActivityMotionEvent {
-  int32_t deviceId;
-  int32_t source;
-  int32_t action;
+    int32_t deviceId;
+    int32_t source;
+    int32_t action;
 
-  int64_t eventTime;
-  int64_t downTime;
+    int64_t eventTime;
+    int64_t downTime;
 
-  int32_t flags;
-  int32_t metaState;
+    int32_t flags;
+    int32_t metaState;
 
-  int32_t actionButton;
-  int32_t buttonState;
-  int32_t classification;
-  int32_t edgeFlags;
+    int32_t actionButton;
+    int32_t buttonState;
+    int32_t classification;
+    int32_t edgeFlags;
 
-  uint32_t pointerCount;
-  GameActivityPointerAxes pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
+    uint32_t pointerCount;
+    GameActivityPointerAxes
+        pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
 
-  float precisionX;
-  float precisionY;
+    float precisionX;
+    float precisionY;
 } GameActivityMotionEvent;
 
 /**
@@ -241,26 +243,27 @@ typedef struct GameActivityMotionEvent {
  * (see https://developer.android.com/reference/android/view/KeyEvent).
  */
 typedef struct GameActivityKeyEvent {
-  int32_t deviceId;
-  int32_t source;
-  int32_t action;
+    int32_t deviceId;
+    int32_t source;
+    int32_t action;
 
-  int64_t eventTime;
-  int64_t downTime;
+    int64_t eventTime;
+    int64_t downTime;
 
-  int32_t flags;
-  int32_t metaState;
+    int32_t flags;
+    int32_t metaState;
 
-  int32_t modifiers;
-  int32_t repeatCount;
-  int32_t keyCode;
+    int32_t modifiers;
+    int32_t repeatCount;
+    int32_t keyCode;
 } GameActivityKeyEvent;
 
 /**
- * A function the user should call from their callback with the data, its length and the library-
- * supplied context.
+ * A function the user should call from their callback with the data, its length
+ * and the library- supplied context.
  */
-typedef void (*SaveInstanceStateRecallback)(const char* bytes, int len, void* context);
+typedef void (*SaveInstanceStateRecallback)(const char* bytes, int len,
+                                            void* context);
 
 /**
  * These are the callbacks the framework makes into a native application.
@@ -269,127 +272,138 @@ typedef void (*SaveInstanceStateRecallback)(const char* bytes, int len, void* co
  * to have it called.
  */
 typedef struct GameActivityCallbacks {
-  /**
-   * GameActivity has started.  See Java documentation for Activity.onStart()
-   * for more information.
-   */
-  void (*onStart)(GameActivity* activity);
+    /**
+     * GameActivity has started.  See Java documentation for Activity.onStart()
+     * for more information.
+     */
+    void (*onStart)(GameActivity* activity);
 
-  /**
-   * GameActivity has resumed.  See Java documentation for Activity.onResume()
-   * for more information.
-   */
-  void (*onResume)(GameActivity* activity);
+    /**
+     * GameActivity has resumed.  See Java documentation for Activity.onResume()
+     * for more information.
+     */
+    void (*onResume)(GameActivity* activity);
 
-  /**
-   * The framework is asking GameActivity to save its current instance state.
-   * See the Java documentation for Activity.onSaveInstanceState() for more
-   * information. The user should call the recallback with their data, its length and the provided
-   * context; they retain ownership of the data. Note that the saved state will be persisted, so it
-   * can not contain any active entities (pointers to memory, file descriptors, etc).
-   */
-  void (*onSaveInstanceState)(GameActivity* activity, SaveInstanceStateRecallback recallback,
-                               void* context);
+    /**
+     * The framework is asking GameActivity to save its current instance state.
+     * See the Java documentation for Activity.onSaveInstanceState() for more
+     * information. The user should call the recallback with their data, its
+     * length and the provided context; they retain ownership of the data. Note
+     * that the saved state will be persisted, so it can not contain any active
+     * entities (pointers to memory, file descriptors, etc).
+     */
+    void (*onSaveInstanceState)(GameActivity* activity,
+                                SaveInstanceStateRecallback recallback,
+                                void* context);
 
-  /**
-   * GameActivity has paused.  See Java documentation for Activity.onPause()
-   * for more information.
-   */
-  void (*onPause)(GameActivity* activity);
+    /**
+     * GameActivity has paused.  See Java documentation for Activity.onPause()
+     * for more information.
+     */
+    void (*onPause)(GameActivity* activity);
 
-  /**
-   * GameActivity has stopped.  See Java documentation for Activity.onStop()
-   * for more information.
-   */
-  void (*onStop)(GameActivity* activity);
+    /**
+     * GameActivity has stopped.  See Java documentation for Activity.onStop()
+     * for more information.
+     */
+    void (*onStop)(GameActivity* activity);
 
-  /**
-   * GameActivity is being destroyed.  See Java documentation for
-   * Activity.onDestroy() for more information.
-   */
-  void (*onDestroy)(GameActivity* activity);
+    /**
+     * GameActivity is being destroyed.  See Java documentation for
+     * Activity.onDestroy() for more information.
+     */
+    void (*onDestroy)(GameActivity* activity);
 
-  /**
-   * Focus has changed in this GameActivity's window.  This is often used,
-   * for example, to pause a game when it loses input focus.
-   */
-  void (*onWindowFocusChanged)(GameActivity* activity, bool hasFocus);
+    /**
+     * Focus has changed in this GameActivity's window.  This is often used,
+     * for example, to pause a game when it loses input focus.
+     */
+    void (*onWindowFocusChanged)(GameActivity* activity, bool hasFocus);
 
-  /**
-   * The drawing window for this native activity has been created.  You
-   * can use the given native window object to start drawing.
-   */
-  void (*onNativeWindowCreated)(GameActivity* activity, ANativeWindow* window);
-
-  /**
-   * The drawing window for this native activity has been resized.  You should
-   * retrieve the new size from the window and ensure that your rendering in
-   * it now matches.
-   */
-  void (*onNativeWindowResized)(GameActivity* activity, ANativeWindow* window, int32_t newWidth,
-                                int32_t newHeight);
-
-  /**
-   * The drawing window for this native activity needs to be redrawn.  To avoid
-   * transient artifacts during screen changes (such resizing after rotation),
-   * applications should not return from this function until they have finished
-   * drawing their window in its current state.
-   */
-  void (*onNativeWindowRedrawNeeded)(GameActivity* activity,
-                                     ANativeWindow* window);
-
-  /**
-   * The drawing window for this native activity is going to be destroyed.
-   * You MUST ensure that you do not touch the window object after returning
-   * from this function: in the common case of drawing to the window from
-   * another thread, that means the implementation of this callback must
-   * properly synchronize with the other thread to stop its drawing before
-   * returning from here.
-   */
-  void (*onNativeWindowDestroyed)(GameActivity* activity,
+    /**
+     * The drawing window for this native activity has been created.  You
+     * can use the given native window object to start drawing.
+     */
+    void (*onNativeWindowCreated)(GameActivity* activity,
                                   ANativeWindow* window);
 
-  /**
-   * The rectangle in the window in which content should be placed has changed.
-   */
-  void (*onContentRectChanged)(GameActivity* activity, const ARect* rect);
+    /**
+     * The drawing window for this native activity has been resized.  You should
+     * retrieve the new size from the window and ensure that your rendering in
+     * it now matches.
+     */
+    void (*onNativeWindowResized)(GameActivity* activity, ANativeWindow* window,
+                                  int32_t newWidth, int32_t newHeight);
 
-  /**
-   * The current device AConfiguration has changed.  The new configuration can
-   * be retrieved from assetManager.
-   */
-  void (*onConfigurationChanged)(GameActivity* activity);
+    /**
+     * The drawing window for this native activity needs to be redrawn.  To
+     * avoid transient artifacts during screen changes (such resizing after
+     * rotation), applications should not return from this function until they
+     * have finished drawing their window in its current state.
+     */
+    void (*onNativeWindowRedrawNeeded)(GameActivity* activity,
+                                       ANativeWindow* window);
 
-  /**
-   * The system is running low on memory.  Use this callback to release
-   * resources you do not need, to help the system avoid killing more
-   * important processes.
-   */
-  void (*onTrimMemory)(GameActivity* activity, int level);
+    /**
+     * The drawing window for this native activity is going to be destroyed.
+     * You MUST ensure that you do not touch the window object after returning
+     * from this function: in the common case of drawing to the window from
+     * another thread, that means the implementation of this callback must
+     * properly synchronize with the other thread to stop its drawing before
+     * returning from here.
+     */
+    void (*onNativeWindowDestroyed)(GameActivity* activity,
+                                    ANativeWindow* window);
 
-  /**
-   * Callback called for every MotionEvent done on the GameActivity SurfaceView.
-   * Ownership of `event` is maintained by the library and it is only valid during the callback.
-   */
-  void (*onTouchEvent)(GameActivity* activity, const GameActivityMotionEvent* event);
+    /**
+     * The rectangle in the window in which content should be placed has
+     * changed.
+     */
+    void (*onContentRectChanged)(GameActivity* activity, const ARect* rect);
 
-  /**
-   * Callback called for every key down event on the GameActivity SurfaceView.
-   * Ownership of `event` is maintained by the library and it is only valid during the callback.
-   */
-  void (*onKeyDown)(GameActivity* activity, const GameActivityKeyEvent* event);
+    /**
+     * The current device AConfiguration has changed.  The new configuration can
+     * be retrieved from assetManager.
+     */
+    void (*onConfigurationChanged)(GameActivity* activity);
 
-  /**
-   * Callback called for every key up event on the GameActivity SurfaceView.
-   * Ownership of `event` is maintained by the library and it is only valid during the callback.
-   */
-  void (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
+    /**
+     * The system is running low on memory.  Use this callback to release
+     * resources you do not need, to help the system avoid killing more
+     * important processes.
+     */
+    void (*onTrimMemory)(GameActivity* activity, int level);
 
-  /**
-   * Callback called for every soft-keyboard text input event.
-   * Ownership of `state` is maintained by the library and it is only valid during the callback.
-   */
-  void (*onTextInputEvent)(GameActivity* activity, const GameTextInputState* state);
+    /**
+     * Callback called for every MotionEvent done on the GameActivity
+     * SurfaceView. Ownership of `event` is maintained by the library and it is
+     * only valid during the callback.
+     */
+    void (*onTouchEvent)(GameActivity* activity,
+                         const GameActivityMotionEvent* event);
+
+    /**
+     * Callback called for every key down event on the GameActivity SurfaceView.
+     * Ownership of `event` is maintained by the library and it is only valid
+     * during the callback.
+     */
+    void (*onKeyDown)(GameActivity* activity,
+                      const GameActivityKeyEvent* event);
+
+    /**
+     * Callback called for every key up event on the GameActivity SurfaceView.
+     * Ownership of `event` is maintained by the library and it is only valid
+     * during the callback.
+     */
+    void (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
+
+    /**
+     * Callback called for every soft-keyboard text input event.
+     * Ownership of `state` is maintained by the library and it is only valid
+     * during the callback.
+     */
+    void (*onTextInputEvent)(GameActivity* activity,
+                             const GameTextInputState* state);
 } GameActivityCallbacks;
 
 /**
@@ -457,18 +471,18 @@ enum GameActivitySetWindowFlags {
      */
     GAMEACTIVITY_FLAG_ALLOW_LOCK_WHILE_SCREEN_ON = 0x00000001,
     /** Everything behind this window will be dimmed. */
-    GAMEACTIVITY_FLAG_DIM_BEHIND                 = 0x00000002,
+    GAMEACTIVITY_FLAG_DIM_BEHIND = 0x00000002,
     /**
      * Blur everything behind this window.
      * @deprecated Blurring is no longer supported.
      */
-    GAMEACTIVITY_FLAG_BLUR_BEHIND                = 0x00000004,
+    GAMEACTIVITY_FLAG_BLUR_BEHIND = 0x00000004,
     /**
      * This window won't ever get key input focus, so the
      * user can not send key or other button events to it.  Those will
      * instead go to whatever focusable window is behind it.  This flag
-     * will also enable {@link GAMEACTIVITY_FLAG_NOT_TOUCH_MODAL} whether or not that
-     * is explicitly set.
+     * will also enable {@link GAMEACTIVITY_FLAG_NOT_TOUCH_MODAL} whether or not
+     * that is explicitly set.
      *
      * Setting this flag also implies that the window will not need to
      * interact with
@@ -476,19 +490,20 @@ enum GameActivitySetWindowFlags {
      * independently of any active input method (typically this means it
      * gets Z-ordered on top of the input method, so it can use the full
      * screen for its content and cover the input method if needed.  You
-     * can use {@link GAMEACTIVITY_FLAG_ALT_FOCUSABLE_IM} to modify this behavior.
+     * can use {@link GAMEACTIVITY_FLAG_ALT_FOCUSABLE_IM} to modify this
+     * behavior.
      */
-    GAMEACTIVITY_FLAG_NOT_FOCUSABLE              = 0x00000008,
+    GAMEACTIVITY_FLAG_NOT_FOCUSABLE = 0x00000008,
     /** This window can never receive touch events. */
-    GAMEACTIVITY_FLAG_NOT_TOUCHABLE              = 0x00000010,
+    GAMEACTIVITY_FLAG_NOT_TOUCHABLE = 0x00000010,
     /**
      * Even when this window is focusable (its
-     * {@link GAMEACTIVITY_FLAG_NOT_FOCUSABLE} is not set), allow any pointer events
-     * outside of the window to be sent to the windows behind it.  Otherwise
-     * it will consume all pointer events itself, regardless of whether they
-     * are inside of the window.
+     * {@link GAMEACTIVITY_FLAG_NOT_FOCUSABLE} is not set), allow any pointer
+     * events outside of the window to be sent to the windows behind it.
+     * Otherwise it will consume all pointer events itself, regardless of
+     * whether they are inside of the window.
      */
-    GAMEACTIVITY_FLAG_NOT_TOUCH_MODAL            = 0x00000020,
+    GAMEACTIVITY_FLAG_NOT_TOUCH_MODAL = 0x00000020,
     /**
      * When set, if the device is asleep when the touch
      * screen is pressed, you will receive this first touch event.  Usually
@@ -497,21 +512,21 @@ enum GameActivitySetWindowFlags {
      *
      * @deprecated This flag has no effect.
      */
-    GAMEACTIVITY_FLAG_TOUCHABLE_WHEN_WAKING      = 0x00000040,
+    GAMEACTIVITY_FLAG_TOUCHABLE_WHEN_WAKING = 0x00000040,
     /**
      * As long as this window is visible to the user, keep
      * the device's screen turned on and bright.
      */
-    GAMEACTIVITY_FLAG_KEEP_SCREEN_ON             = 0x00000080,
+    GAMEACTIVITY_FLAG_KEEP_SCREEN_ON = 0x00000080,
     /**
      * Place the window within the entire screen, ignoring
      * decorations around the border (such as the status bar).  The
      * window must correctly position its contents to take the screen
      * decoration into account.
      */
-    GAMEACTIVITY_FLAG_LAYOUT_IN_SCREEN           = 0x00000100,
+    GAMEACTIVITY_FLAG_LAYOUT_IN_SCREEN = 0x00000100,
     /** Allows the window to extend outside of the screen. */
-    GAMEACTIVITY_FLAG_LAYOUT_NO_LIMITS           = 0x00000200,
+    GAMEACTIVITY_FLAG_LAYOUT_NO_LIMITS = 0x00000200,
     /**
      * Hide all screen decorations (such as the status
      * bar) while this window is displayed.  This allows the window to
@@ -521,30 +536,30 @@ enum GameActivitySetWindowFlags {
      * GAMEACTIVITY_SOFT_INPUT_ADJUST_RESIZE}; the window will stay
      * fullscreen and will not resize.
      */
-    GAMEACTIVITY_FLAG_FULLSCREEN                 = 0x00000400,
+    GAMEACTIVITY_FLAG_FULLSCREEN = 0x00000400,
     /**
      * Override {@link GAMEACTIVITY_FLAG_FULLSCREEN} and force the
      * screen decorations (such as the status bar) to be shown.
      */
-    GAMEACTIVITY_FLAG_FORCE_NOT_FULLSCREEN       = 0x00000800,
+    GAMEACTIVITY_FLAG_FORCE_NOT_FULLSCREEN = 0x00000800,
     /**
      * Turn on dithering when compositing this window to
      * the screen.
      * @deprecated This flag is no longer used.
      */
-    GAMEACTIVITY_FLAG_DITHER                     = 0x00001000,
+    GAMEACTIVITY_FLAG_DITHER = 0x00001000,
     /**
      * Treat the content of the window as secure, preventing
      * it from appearing in screenshots or from being viewed on non-secure
      * displays.
      */
-    GAMEACTIVITY_FLAG_SECURE                     = 0x00002000,
+    GAMEACTIVITY_FLAG_SECURE = 0x00002000,
     /**
      * A special mode where the layout parameters are used
      * to perform scaling of the surface when it is composited to the
      * screen.
      */
-    GAMEACTIVITY_FLAG_SCALED                     = 0x00004000,
+    GAMEACTIVITY_FLAG_SCALED = 0x00004000,
     /**
      * Intended for windows that will often be used when the user is
      * holding the screen against their face, it will aggressively
@@ -555,16 +570,16 @@ enum GameActivitySetWindowFlags {
      * applications can handle this accordingly by taking no action on
      * the event until the finger is released.
      */
-    GAMEACTIVITY_FLAG_IGNORE_CHEEK_PRESSES       = 0x00008000,
+    GAMEACTIVITY_FLAG_IGNORE_CHEEK_PRESSES = 0x00008000,
     /**
      * A special option only for use in combination with
-     * {@link GAMEACTIVITY_FLAG_LAYOUT_IN_SCREEN}.  When requesting layout in the
-     * screen your window may appear on top of or behind screen decorations
+     * {@link GAMEACTIVITY_FLAG_LAYOUT_IN_SCREEN}.  When requesting layout in
+     * the screen your window may appear on top of or behind screen decorations
      * such as the status bar.  By also including this flag, the window
      * manager will report the inset rectangle needed to ensure your
      * content is not covered by screen decorations.
      */
-    GAMEACTIVITY_FLAG_LAYOUT_INSET_DECOR         = 0x00010000,
+    GAMEACTIVITY_FLAG_LAYOUT_INSET_DECOR = 0x00010000,
     /**
      * Invert the state of {@link GAMEACTIVITY_FLAG_NOT_FOCUSABLE} with
      * respect to how this window interacts with the current method.
@@ -576,7 +591,7 @@ enum GameActivitySetWindowFlags {
      * with the input method and can be placed to use more space and
      * cover the input method.
      */
-    GAMEACTIVITY_FLAG_ALT_FOCUSABLE_IM           = 0x00020000,
+    GAMEACTIVITY_FLAG_ALT_FOCUSABLE_IM = 0x00020000,
     /**
      * If you have set {@link GAMEACTIVITY_FLAG_NOT_TOUCH_MODAL}, you
      * can set this flag to receive a single special MotionEvent with
@@ -586,18 +601,18 @@ enum GameActivitySetWindowFlags {
      * receive the full down/move/up gesture, only the location of the
      * first down as an {@link AMOTION_EVENT_ACTION_OUTSIDE}.
      */
-    GAMEACTIVITY_FLAG_WATCH_OUTSIDE_TOUCH        = 0x00040000,
+    GAMEACTIVITY_FLAG_WATCH_OUTSIDE_TOUCH = 0x00040000,
     /**
      * Special flag to let windows be shown when the screen
      * is locked. This will let application windows take precedence over
      * key guard or any other lock screens. Can be used with
-     * {@link GAMEACTIVITY_FLAG_KEEP_SCREEN_ON} to turn screen on and display windows
-     * directly before showing the key guard window.  Can be used with
-     * {@link GAMEACTIVITY_FLAG_DISMISS_KEYGUARD} to automatically fully dismisss
-     * non-secure keyguards.  This flag only applies to the top-most
+     * {@link GAMEACTIVITY_FLAG_KEEP_SCREEN_ON} to turn screen on and display
+     * windows directly before showing the key guard window.  Can be used with
+     * {@link GAMEACTIVITY_FLAG_DISMISS_KEYGUARD} to automatically fully
+     * dismisss non-secure keyguards.  This flag only applies to the top-most
      * full-screen window.
      */
-    GAMEACTIVITY_FLAG_SHOW_WHEN_LOCKED           = 0x00080000,
+    GAMEACTIVITY_FLAG_SHOW_WHEN_LOCKED = 0x00080000,
     /**
      * Ask that the system wallpaper be shown behind
      * your window.  The window surface must be translucent to be able
@@ -605,14 +620,14 @@ enum GameActivitySetWindowFlags {
      * that the wallpaper surface will be there if this window actually
      * has translucent regions.
      */
-    GAMEACTIVITY_FLAG_SHOW_WALLPAPER             = 0x00100000,
+    GAMEACTIVITY_FLAG_SHOW_WALLPAPER = 0x00100000,
     /**
      * When set as a window is being added or made
      * visible, once the window has been shown then the system will
      * poke the power manager's user activity (as if the user had woken
      * up the device) to turn the screen on.
      */
-    GAMEACTIVITY_FLAG_TURN_SCREEN_ON             = 0x00200000,
+    GAMEACTIVITY_FLAG_TURN_SCREEN_ON = 0x00200000,
     /**
      * When set the window will cause the keyguard to
      * be dismissed, only if it is not a secure lock keyguard.  Because such
@@ -626,15 +641,15 @@ enum GameActivitySetWindowFlags {
      * seeing this window, unless {@link GAMEACTIVITY_FLAG_SHOW_WHEN_LOCKED} has
      * also been set.
      */
-    GAMEACTIVITY_FLAG_DISMISS_KEYGUARD           = 0x00400000,
+    GAMEACTIVITY_FLAG_DISMISS_KEYGUARD = 0x00400000,
 };
-
 
 /**
  * Change the window flags of the given activity.  Calls getWindow().setFlags()
  * of the given activity.
  * Note that some flags must be set before the window decoration is created,
- * see https://developer.android.com/reference/android/view/Window#setFlags(int,%20int).
+ * see
+ * https://developer.android.com/reference/android/view/Window#setFlags(int,%20int).
  * Note also that this method can be called from
  * *any* thread; it will send a message to the main thread of the process
  * where the Java finish call will take place.
@@ -647,18 +662,18 @@ void GameActivity_setWindowFlags(GameActivity* activity, uint32_t addFlags,
  * API for documentation.
  */
 enum GameActivityShowSoftInputFlags {
-  /**
-   * Implicit request to show the input window, not as the result
-   * of a direct request by the user.
-   */
-  GAMEACTIVITY_SHOW_SOFT_INPUT_IMPLICIT = 0x0001,
+    /**
+     * Implicit request to show the input window, not as the result
+     * of a direct request by the user.
+     */
+    GAMEACTIVITY_SHOW_SOFT_INPUT_IMPLICIT = 0x0001,
 
-  /**
-   * The user has forced the input method open (such as by
-   * long-pressing menu) so it should not be closed until they
-   * explicitly do so.
-   */
-  GAMEACTIVITY_SHOW_SOFT_INPUT_FORCED = 0x0002,
+    /**
+     * The user has forced the input method open (such as by
+     * long-pressing menu) so it should not be closed until they
+     * explicitly do so.
+     */
+    GAMEACTIVITY_SHOW_SOFT_INPUT_FORCED = 0x0002,
 };
 
 /**
@@ -683,7 +698,7 @@ void GameActivity_setTextInputState(GameActivity* activity,
  * GameTextInputState struct in the Game Text Input library reference).
  *
  */
-void GameActivity_getTextInputState(GameActivity *activity,
+void GameActivity_getTextInputState(GameActivity* activity,
                                     GameTextInputGetStateCallback callback,
                                     void* context);
 
@@ -692,16 +707,16 @@ void GameActivity_getTextInputState(GameActivity *activity,
  * API for documentation.
  */
 enum GameActivityHideSoftInputFlags {
-  /**
-   * The soft input window should only be hidden if it was not
-   * explicitly shown by the user.
-   */
-  GAMEACTIVITY_HIDE_SOFT_INPUT_IMPLICIT_ONLY = 0x0001,
-  /**
-   * The soft input window should normally be hidden, unless it was
-   * originally shown with {@link GAMEACTIVITY_SHOW_SOFT_INPUT_FORCED}.
-   */
-  GAMEACTIVITY_HIDE_SOFT_INPUT_NOT_ALWAYS = 0x0002,
+    /**
+     * The soft input window should only be hidden if it was not
+     * explicitly shown by the user.
+     */
+    GAMEACTIVITY_HIDE_SOFT_INPUT_IMPLICIT_ONLY = 0x0001,
+    /**
+     * The soft input window should normally be hidden, unless it was
+     * originally shown with {@link GAMEACTIVITY_SHOW_SOFT_INPUT_FORCED}.
+     */
+    GAMEACTIVITY_HIDE_SOFT_INPUT_NOT_ALWAYS = 0x0002,
 };
 
 /**
