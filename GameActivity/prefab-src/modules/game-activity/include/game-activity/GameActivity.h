@@ -404,6 +404,12 @@ typedef struct GameActivityCallbacks {
      */
     void (*onTextInputEvent)(GameActivity* activity,
                              const GameTextInputState* state);
+
+    /**
+     * Callback called when WindowInsets of the main app window have changed.
+     * Call GameActivity_getWindowInsets to retrieve the insets themselves.
+     */
+    void (*onWindowInsetsChanged)(GameActivity* activity);
 } GameActivityCallbacks;
 
 /**
@@ -726,6 +732,29 @@ enum GameActivityHideSoftInputFlags {
  * thread of the process where the Java finish call will take place.
  */
 void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
+
+enum GameActivityInsetsType {
+    GAMEACTIVITY_INSETS_TYPE_CAPTION_BAR = 0,
+    GAMEACTIVITY_INSETS_TYPE_DISPLAY_CUTOUT,
+    GAMEACTIVITY_INSETS_TYPE_IME,
+    GAMEACTIVITY_INSETS_TYPE_MANDATORY_SYSTEM_GESTURES,
+    GAMEACTIVITY_INSETS_TYPE_NAVIGATION_BARS,
+    GAMEACTIVITY_INSETS_TYPE_STATUS_BARS,
+    GAMEACTIVITY_INSETS_TYPE_SYSTEM_BARS,
+    GAMEACTIVITY_INSETS_TYPE_SYSTEM_GESTURES,
+    GAMEACTIVITY_INSETS_TYPE_TAPABLE_ELEMENT,
+    GAMEACTIVITY_INSETS_TYPE_COUNT
+};
+typedef struct GameActivityInsets {
+    int32_t left;
+    int32_t right;
+    int32_t top;
+    int32_t bottom;
+} GameActivityInsets;
+
+void GameActivity_getWindowInsets(GameActivity* activity,
+                                  enum GameActivityInsetsType type,
+                                  GameActivityInsets* insets);
 
 #ifdef __cplusplus
 }
