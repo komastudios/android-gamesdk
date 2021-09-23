@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "069141d9_fb9a2d2c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-23T09:34:58Z",
+      "side": 1,
+      "message": "Merged the formatting changes in GameActivity.java from master and updated the README.",
+      "revId": "4d14548f7b414e38deb31331949dfc51f95412ee",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
