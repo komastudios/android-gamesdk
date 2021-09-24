@@ -25,6 +25,8 @@
 #include <jni.h>
 #include <stdint.h>
 
+#include "gamecommon.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -215,6 +217,48 @@ typedef void (*GameTextInputEventCallback)(
 void GameTextInput_setEventCallback(GameTextInput *input,
                                     GameTextInputEventCallback callback,
                                     void *context);
+
+/**
+ * Type of the callback needed by GameTextInput_setImeInsetsCallback that will
+ * be called every time the IME window insets change.
+ * @param context User-defined context set in
+ * GameTextInput_setImeWIndowInsetsCallback.
+ * @param current_insets Current IME insets, owned by the library and valid
+ * during the callback.
+ */
+typedef void (*GameTextInputImeInsetsCallback)(
+    void *context, const GameCommonInsets *current_insets);
+
+/**
+ * Optionally set a callback to be called whenever the IME insets change.
+ * Not necessary if you are using GameActivity, which handles these callbacks
+ * for you.
+ * @param input A valid GameTextInput library handle.
+ * @param callback Called by the library when the IME insets change.
+ * @param context Context passed as first argument to the callback.
+ */
+void GameTextInput_setImeInsetsCallback(GameTextInput *input,
+                                        GameTextInputImeInsetsCallback callback,
+                                        void *context);
+
+/**
+ * Get the current window insets for the IME.
+ * @param input A valid GameTextInput library handle.
+ * @param insets Filled with the current insets by this function.
+ */
+void GameTextInput_getImeInsets(const GameTextInput *input,
+                                GameCommonInsets *insets);
+
+/**
+ * Unless using GameActivity, it is required to call this function from your
+ * Java gametextinput.Listener.onImeInsetsChanged method to
+ * trigger any event callbacks. When using GameActivity, this does not need to
+ * be called as insets processing is handled by the Activity.
+ * @param input A valid GameTextInput library handle.
+ * @param eventState A Java gametextinput.State object.
+ */
+void GameTextInput_processImeInsets(GameTextInput *input,
+                                    const GameCommonInsets *insets);
 
 /**
  * Convert a GameTextInputState struct to a Java gametextinput.State object.

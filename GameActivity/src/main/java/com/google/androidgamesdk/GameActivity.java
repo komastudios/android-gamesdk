@@ -412,6 +412,7 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+    Log.v(LOG_TAG, "onApplyWindowInsets in GameActivity");
     onWindowInsetsChangedNative(mNativeHandle);
     return insets;
   }
@@ -419,6 +420,13 @@ public class GameActivity
   public Insets getWindowInsets(int type) {
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mSurfaceView);
     return insets.getInsets(type);
+  }
+
+  // From the text input Listener.
+  // Do nothing as we already handle inset events above.
+  @Override
+  public void onImeInsetsChanged(Insets insets) {
+    Log.v(LOG_TAG, "onImeInsetsChanged from Text Listener");
   }
 
   protected class InputEnabledSurfaceView extends SurfaceView {
