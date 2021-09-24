@@ -127,6 +127,10 @@ void WelcomeScene::OnTextInput() {
     }, this);
     __android_log_print(ANDROID_LOG_DEBUG, "WelcomeScene", "Got game text %s", sNameEdit.c_str());
     mNameEdit->SetText(sNameEdit.c_str());
+    GameCommonInsets insets;
+    GameTextInput_getImeInsets(GameActivity_getTextInput(activity), &insets);
+    __android_log_print(ANDROID_LOG_DEBUG, "WelcomeScene", "IME insets: left=%d right=%d top=%d bottom=%d",
+                        insets.left, insets.right, insets.top, insets.bottom);
 }
 
 void WelcomeScene::DoFrame() {

@@ -959,7 +959,6 @@ task format {
             fileTree(dir: 'GameActivity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'GameController/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
 
-	println(formattedFiles.files)
         formattedFiles.files.each { file ->
             exec {
                 commandLine "/bin/bash"
