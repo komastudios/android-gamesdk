@@ -214,7 +214,7 @@ static struct {
  * JNI methods of the WindowInsetsCompat.Type Java class.
  */
 static struct {
-    jmethodID methods[GAMEACTIVITY_INSETS_TYPE_COUNT];
+    jmethodID methods[GAMECOMMON_INSETS_TYPE_COUNT];
     jclass clazz;
 } gWindowInsetsCompatTypeClassInfo;
 
@@ -368,7 +368,7 @@ struct NativeCode : public GameActivity {
     OwnedGameTextInputState gameTextInputState;
     std::mutex gameTextInputStateMutex;
 
-    GameActivityInsets insetsState[GAMEACTIVITY_INSETS_TYPE_COUNT];
+    GameCommonInsets insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -410,11 +410,17 @@ extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
 }
 
 extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
-                                             enum GameActivityInsetsType type,
-                                             GameActivityInsets *insets) {
-    if (type < 0 || type >= GAMEACTIVITY_INSETS_TYPE_COUNT) return;
+                                             enum GameCommonInsetsType type,
+                                             GameCommonInsets *insets) {
+    if (type < 0 || type >= GAMECOMMON_INSETS_TYPE_COUNT) return;
     NativeCode *code = static_cast<NativeCode *>(activity);
     *insets = code->insetsState[type];
+}
+
+extern "C" GameTextInput *GameActivity_getTextInput(
+    const GameActivity *activity) {
+    const NativeCode *code = static_cast<const NativeCode *>(activity);
+    return code->gameTextInput;
 }
 
 /*
@@ -1106,19 +1112,21 @@ static void onWindowInsetsChanged_native(JNIEnv *env, jobject activity,
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onWindowInsetsChanged == nullptr) return;
-    for (int type = 0; type < GAMEACTIVITY_INSETS_TYPE_COUNT; ++type) {
+    for (int type = 0; type < GAMECOMMON_INSETS_TYPE_COUNT; ++type) {
         int jtype = env->CallStaticIntMethod(
             gWindowInsetsCompatTypeClassInfo.clazz,
             gWindowInsetsCompatTypeClassInfo.methods[type]);
         jobject jinsets = env->CallObjectMethod(
             code->javaGameActivity, gGameActivityClassInfo.getWindowInsets,
             jtype);
-        GameActivityInsets &insets = code->insetsState[type];
+        GameCommonInsets &insets = code->insetsState[type];
         insets.left = env->GetIntField(jinsets, gInsetsClassInfo.left);
         insets.right = env->GetIntField(jinsets, gInsetsClassInfo.right);
         insets.top = env->GetIntField(jinsets, gInsetsClassInfo.top);
         insets.bottom = env->GetIntField(jinsets, gInsetsClassInfo.bottom);
     }
+    GameTextInput_processImeInsets(
+        code->gameTextInput, &code->insetsState[GAMECOMMON_INSETS_TYPE_IME]);
     code->callbacks.onWindowInsetsChanged(code);
 }
 
@@ -1237,8 +1245,8 @@ extern "C" int GameActivity_register(JNIEnv *env) {
     FIND_CLASS(windowInsetsCompatType_class, kWindowInsetsCompatTypePathName);
     gWindowInsetsCompatTypeClassInfo.clazz =
         (jclass)env->NewGlobalRef(windowInsetsCompatType_class);
-    // These names must match, in order, the GameActivityInsetsType enum fields
-    const char *methodNames[GAMEACTIVITY_INSETS_TYPE_COUNT] = {
+    // These names must match, in order, the GameCommonInsetsType enum fields
+    const char *methodNames[GAMECOMMON_INSETS_TYPE_COUNT] = {
         "captionBar",
         "displayCutout",
         "ime",
@@ -1248,7 +1256,7 @@ extern "C" int GameActivity_register(JNIEnv *env) {
         "systemBars",
         "systemGestures",
         "tappableElement"};
-    for (int i = 0; i < GAMEACTIVITY_INSETS_TYPE_COUNT; ++i) {
+    for (int i = 0; i < GAMECOMMON_INSETS_TYPE_COUNT; ++i) {
         GET_STATIC_METHOD_ID(gWindowInsetsCompatTypeClassInfo.methods[i],
                              windowInsetsCompatType_class, methodNames[i],
                              "()I");
