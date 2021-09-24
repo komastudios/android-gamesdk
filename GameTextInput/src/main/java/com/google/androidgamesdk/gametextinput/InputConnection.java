@@ -15,6 +15,7 @@
  */
 package com.google.androidgamesdk.gametextinput;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.text.Editable;
@@ -25,10 +26,17 @@ import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.google.androidgamesdk.gametextinput.GameTextInput.Pair;
 import java.util.BitSet;
 
-public class InputConnection extends BaseInputConnection implements View.OnKeyListener {
+public class InputConnection
+    extends BaseInputConnection
+    implements View.OnKeyListener, OnApplyWindowInsetsListener {
   private static final String TAG = "gametextinput.InputConnection";
   // TODO: (b/183179971) We should react to most of these events rather than ignoring them? Plus
   // there are others that should be ignored.
@@ -71,6 +79,9 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
     for (int c : notInsertedKeyCodes) {
       dontInsertChars.set(c);
     }
+    // Listen for insets changes
+    WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
+    ViewCompat.setOnApplyWindowInsetsListener(targetView, this);
   }
 
   /**
@@ -426,4 +437,17 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
       listener.stateChanged(state, dismissed);
     }
   }
+
+  @Override
+  public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+    if (listener != null)
+      listener.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
+    return insets;
+  }
+
+  public Insets getImeInsets() {
+    WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+    return insets.getInsets(WindowInsetsCompat.Type.ime());
+  }
+
 }

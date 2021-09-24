@@ -15,7 +15,11 @@
  */
 package com.google.androidgamesdk.gametextinput;
 
+import androidx.core.graphics.Insets;
+
 // Listener for text, selection and composing region changes.
+// Also a listener for window insets changes.
 public interface Listener {
   void stateChanged(State newState, boolean dismissed);
+  void onImeInsetsChanged(Insets insets);
 }
