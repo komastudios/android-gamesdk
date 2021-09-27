@@ -204,7 +204,12 @@ inline float GameActivityPointerAxes_getAxisValue(
 /**
  * The maximum number of pointers returned inside a motion event.
  */
+#if (defined GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT_OVERRIDE)
+#define GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT \
+    GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT_OVERRIDE
+#else
 #define GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT 8
+#endif
 
 /**
  * \brief Describe a motion event that happened on the GameActivity SurfaceView.

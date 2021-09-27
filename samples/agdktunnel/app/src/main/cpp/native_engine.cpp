@@ -195,8 +195,11 @@ void NativeEngine::GameLoop() {
     mApp->userData = this;
     mApp->onAppCmd = _handle_cmd_proxy;
     //mApp->onInputEvent = _handle_input_proxy;
-    mApp->motionEventsCount = 0;
     mApp->textInputState = 0;
+    mApp->currentInputBuffer = 0;
+
+    android_app_clear_motion_events(&mApp->inputBuffers[mApp->currentInputBuffer]);
+    android_app_clear_key_events(&mApp->inputBuffers[mApp->currentInputBuffer]);
 
     while (1) {
         int events;
@@ -388,9 +391,12 @@ void NativeEngine::HandleGameActivityInput() {
     // read controller data and cook it into an event
     bool cookGameControllerEvent = false;
 
-    if (mApp->keyDownEventsCount != 0) {
-        for (uint64_t i = 0; i < mApp->keyDownEventsCount; ++i) {
-            GameActivityKeyEvent *keyEvent = &mApp->keyDownEvents[i];
+    // Swap input buffers so we don't miss any events while processing inputBuffer.
+    android_input_buffer* inputBuffer = android_app_swap_input_buffers(mApp);
+
+    if (inputBuffer->keyEventsCount != 0) {
+        for (uint64_t i = 0; i < inputBuffer->keyEventsCount; ++i) {
+            GameActivityKeyEvent* keyEvent = &inputBuffer->keyEvents[i];
             if (Paddleboat_processGameActivityKeyInputEvent(keyEvent,
                                                             sizeof(GameActivityKeyEvent))) {
                 cookGameControllerEvent = true;
@@ -398,35 +404,22 @@ void NativeEngine::HandleGameActivityInput() {
                 CookGameActivityKeyEvent(keyEvent, _cooked_event_callback);
             }
         }
-        android_app_clear_key_down_events(mApp);
+        android_app_clear_key_events(inputBuffer);
     }
-
-    if (mApp->keyUpEventsCount != 0) {
-        for (uint64_t i = 0; i < mApp->keyUpEventsCount; ++i) {
-            GameActivityKeyEvent *keyEvent = &mApp->keyUpEvents[i];
-            if (Paddleboat_processGameActivityKeyInputEvent(keyEvent,
-                                                            sizeof(GameActivityKeyEvent))) {
-                cookGameControllerEvent = true;
-            } else {
-                CookGameActivityKeyEvent(keyEvent, _cooked_event_callback);
-            }
-        }
-        android_app_clear_key_up_events(mApp);
-    }
-
-    if (mApp->motionEventsCount != 0) {
-        for (uint64_t i = 0; i < mApp->motionEventsCount; ++i) {
-            GameActivityMotionEvent *motionEvent = &mApp->motionEvents[i];
+    if (inputBuffer->motionEventsCount != 0) {
+        for (uint64_t i = 0; i < inputBuffer->motionEventsCount; ++i) {
+            GameActivityMotionEvent* motionEvent = &inputBuffer->motionEvents[i];
 
             if (Paddleboat_processGameActivityMotionInputEvent(motionEvent,
                                                                sizeof(GameActivityMotionEvent))) {
                 cookGameControllerEvent = true;
             } else {
                 // Didn't belong to a game controller, process it ourselves if it is a touch event
-                CookGameActivityMotionEvent(motionEvent, _cooked_event_callback);
+                CookGameActivityMotionEvent(motionEvent,
+                                            _cooked_event_callback);
             }
         }
-        android_app_clear_motion_events(mApp);
+        android_app_clear_motion_events(inputBuffer);
     }
 
     if (cookGameControllerEvent) {
