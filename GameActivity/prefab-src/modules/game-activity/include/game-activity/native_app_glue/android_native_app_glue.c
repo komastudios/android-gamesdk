@@ -416,76 +416,65 @@ static void onTouchEvent(GameActivity* activity,
     struct android_app* android_app = ToApp(activity);
     pthread_mutex_lock(&android_app->mutex);
 
+    struct android_input_buffer* inputBuffer =
+        &android_app->inputBuffers[android_app->currentInputBuffer];
+
     // Add to the list of active motion events
-    if (android_app->motionEventsCount <
+    if (inputBuffer->motionEventsCount <
         NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS) {
-        int new_ix = android_app->motionEventsCount;
-        memcpy(&android_app->motionEvents[new_ix], event,
+        int new_ix = inputBuffer->motionEventsCount;
+        memcpy(&inputBuffer->motionEvents[new_ix], event,
                sizeof(GameActivityMotionEvent));
-        ++android_app->motionEventsCount;
+        ++inputBuffer->motionEventsCount;
     }
     pthread_mutex_unlock(&android_app->mutex);
 }
 
-void android_app_clear_motion_events(struct android_app* android_app) {
+struct android_input_buffer* android_app_swap_input_buffers(
+    struct android_app* android_app) {
     pthread_mutex_lock(&android_app->mutex);
 
-    if (android_app->motionEventsCount != 0) {
-        android_app->motionEventsCount = 0;
+    struct android_input_buffer* inputBuffer =
+        &android_app->inputBuffers[android_app->currentInputBuffer];
+
+    if (inputBuffer->motionEventsCount == 0 &&
+        inputBuffer->keyEventsCount == 0) {
+        inputBuffer = NULL;
+    } else {
+        android_app->currentInputBuffer =
+            (android_app->currentInputBuffer + 1) %
+            NATIVE_APP_GLUE_MAX_INPUT_BUFFERS;
     }
 
     pthread_mutex_unlock(&android_app->mutex);
+
+    return inputBuffer;
 }
 
-static void onKeyDown(GameActivity* activity,
-                      const GameActivityKeyEvent* event) {
+void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
+    inputBuffer->motionEventsCount = 0;
+}
+
+static void onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
     struct android_app* android_app = ToApp(activity);
     pthread_mutex_lock(&android_app->mutex);
+
+    struct android_input_buffer* inputBuffer =
+        &android_app->inputBuffers[android_app->currentInputBuffer];
 
     // Add to the list of active key down events
-    if (android_app->keyDownEventsCount < NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS) {
-        int new_ix = android_app->keyDownEventsCount;
-        memcpy(&android_app->keyDownEvents[new_ix], event,
+    if (inputBuffer->keyEventsCount < NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS) {
+        int new_ix = inputBuffer->keyEventsCount;
+        memcpy(&inputBuffer->keyEvents[new_ix], event,
                sizeof(GameActivityKeyEvent));
-        ++android_app->keyDownEventsCount;
+        ++inputBuffer->keyEventsCount;
     }
 
     pthread_mutex_unlock(&android_app->mutex);
 }
 
-void android_app_clear_key_down_events(struct android_app* android_app) {
-    pthread_mutex_lock(&android_app->mutex);
-
-    if (android_app->keyDownEventsCount != 0) {
-        android_app->keyDownEventsCount = 0;
-    }
-
-    pthread_mutex_unlock(&android_app->mutex);
-}
-
-static void onKeyUp(GameActivity* activity, const GameActivityKeyEvent* event) {
-    struct android_app* android_app = ToApp(activity);
-    pthread_mutex_lock(&android_app->mutex);
-
-    // Add to the list of active key up events
-    if (android_app->keyUpEventsCount < NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS) {
-        int new_ix = android_app->keyUpEventsCount;
-        memcpy(&android_app->keyUpEvents[new_ix], event,
-               sizeof(GameActivityKeyEvent));
-        ++android_app->keyUpEventsCount;
-    }
-
-    pthread_mutex_unlock(&android_app->mutex);
-}
-
-void android_app_clear_key_up_events(struct android_app* android_app) {
-    pthread_mutex_lock(&android_app->mutex);
-
-    if (android_app->keyUpEventsCount != 0) {
-        android_app->keyUpEventsCount = 0;
-    }
-
-    pthread_mutex_unlock(&android_app->mutex);
+void android_app_clear_key_events(struct android_input_buffer* inputBuffer) {
+    inputBuffer->keyEventsCount = 0;
 }
 
 static void onTextInputEvent(GameActivity* activity,
@@ -513,8 +502,8 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onPause = onPause;
     activity->callbacks->onStop = onStop;
     activity->callbacks->onTouchEvent = onTouchEvent;
-    activity->callbacks->onKeyDown = onKeyDown;
-    activity->callbacks->onKeyUp = onKeyUp;
+    activity->callbacks->onKeyDown = onKey;
+    activity->callbacks->onKeyUp = onKey;
     activity->callbacks->onTextInputEvent = onTextInputEvent;
     activity->callbacks->onConfigurationChanged = onConfigurationChanged;
     activity->callbacks->onTrimMemory = onTrimMemory;
