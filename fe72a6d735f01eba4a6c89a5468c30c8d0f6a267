@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d86d424c_2dbfd614",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-09-27T14:26:32Z",
+      "side": 1,
+      "message": "Notes on choice of this solution are here:\nhttps://docs.google.com/document/d/1lsm_l_Bjh2pfBjFPSzBnFJD27EpCMMHZCcTaERZXKqM/edit?resourcekey\u003d0-XHq_IlBS9LPUI3xFjnAXqw#",
+      "revId": "fe72a6d735f01eba4a6c89a5468c30c8d0f6a267",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
