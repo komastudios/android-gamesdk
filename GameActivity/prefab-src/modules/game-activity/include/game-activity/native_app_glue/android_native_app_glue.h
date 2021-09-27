@@ -28,7 +28,21 @@
 #include <pthread.h>
 #include <sched.h>
 
-#include "../GameActivity.h"
+#include "game-activity/GameActivity.h"
+
+#if (defined NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS_OVERRIDE)
+#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS \
+    NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS_OVERRIDE
+#else
+#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 16
+#endif
+
+#if (defined NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS_OVERRIDE)
+#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS \
+    NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS_OVERRIDE
+#else
+#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 4
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -104,8 +118,6 @@ struct android_poll_source {
 };
 
 struct android_input_buffer {
-#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 16
-
     /**
      * Pointer to a read-only array of pointers to GameActivityMotionEvent.
      * Only the first motionEventsCount events are valid.
@@ -116,8 +128,6 @@ struct android_input_buffer {
      * The number of valid motion events in `motionEvents`.
      */
     uint64_t motionEventsCount;
-
-#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 16
 
     /**
      * Pointer to a read-only array of pointers to GameActivityKeyEvent.
@@ -201,7 +211,7 @@ struct android_app {
 #define NATIVE_APP_GLUE_MAX_INPUT_BUFFERS 2
 
     /**
-     * This is used for buffering input from GameActivity. Once ready
+     * This is used for buffering input from GameActivity. Once ready, the
      * application thread switches the buffers and processes what was
      * accumulated.
      */
@@ -397,7 +407,7 @@ void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
 /**
  * Call this before processing input events to get the events buffer.
- * Function returns NULL if there are no events to process.
+ * The function returns NULL if there are no events to process.
  */
 struct android_input_buffer* android_app_swap_input_buffers(
     struct android_app* android_app);
