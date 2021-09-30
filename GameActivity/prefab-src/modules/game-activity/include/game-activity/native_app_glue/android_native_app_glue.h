@@ -103,6 +103,34 @@ struct android_poll_source {
                     struct android_poll_source* source);
 };
 
+struct android_input_buffer {
+#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 16
+
+    /**
+     * Pointer to a read-only array of pointers to GameActivityMotionEvent.
+     * Only the first motionEventsCount events are valid.
+     */
+    GameActivityMotionEvent motionEvents[NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS];
+
+    /**
+     * The number of valid motion events in `motionEvents`.
+     */
+    uint64_t motionEventsCount;
+
+#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 16
+
+    /**
+     * Pointer to a read-only array of pointers to GameActivityKeyEvent.
+     * Only the first keyEventsCount events are valid.
+     */
+    GameActivityKeyEvent keyEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
+
+    /**
+     * The number of valid "Key" events in `keyEvents`.
+     */
+    uint64_t keyEventsCount;
+};
+
 /**
  * This is the interface for the standard glue code of a threaded
  * application.  In this model, the application's code is running
@@ -170,42 +198,16 @@ struct android_app {
      */
     int destroyRequested;
 
-#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 4
+#define NATIVE_APP_GLUE_MAX_INPUT_BUFFERS 2
 
     /**
-     * Pointer to a read-only array of pointers to GameActivityMotionEvent.
-     * Only the first motionEventsCount events are valid.
+     * This is used for buffering input from GameActivity. Once ready
+     * application thread switches the buffers and processes what was
+     * accumulated.
      */
-    GameActivityMotionEvent motionEvents[NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS];
+    struct android_input_buffer inputBuffers[NATIVE_APP_GLUE_MAX_INPUT_BUFFERS];
 
-    /**
-     * The number of valid motion events in `motionEvents`.
-     */
-    uint64_t motionEventsCount;
-
-#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 4
-
-    /**
-     * Pointer to a read-only array of pointers to GameActivityKeyEvent.
-     * Only the first keyUpEventsCount events are valid.
-     */
-    GameActivityKeyEvent keyUpEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
-
-    /**
-     * The number of valid "Key Up" events in `keyUpEvents`.
-     */
-    uint64_t keyUpEventsCount;
-
-    /**
-     * Pointer to a read-only array of pointers GameActivityKeyEvent.
-     * Only the first keyDownEventsCount events are valid.
-     */
-    GameActivityKeyEvent keyDownEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
-
-    /**
-     * The number of valid "Key Down" events in `keyDownEvents`.
-     */
-    uint64_t keyDownEventsCount;
+    int currentInputBuffer;
 
     /**
      * 0 if no text input event is outstanding, 1 if it is.
@@ -394,31 +396,29 @@ void android_app_pre_exec_cmd(struct android_app* android_app, int8_t cmd);
 void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
 /**
+ * Call this before processing input events to get the events buffer.
+ * Function returns NULL if there are no events to process.
+ */
+struct android_input_buffer* android_app_swap_input_buffers(
+    struct android_app* android_app);
+
+/**
  * Clear the array of motion events that were waiting to be handled, and release
  * each of them.
  *
  * This method should be called after you have processed the motion events in
  * your game loop. You should handle events at each iteration of your game loop.
  */
-void android_app_clear_motion_events(struct android_app* android_app);
+void android_app_clear_motion_events(struct android_input_buffer* inputBuffer);
 
 /**
- * Clear the array of key up events that were waiting to be handled, and release
+ * Clear the array of key events that were waiting to be handled, and release
  * each of them.
  *
  * This method should be called after you have processed the key up events in
  * your game loop. You should handle events at each iteration of your game loop.
  */
-void android_app_clear_key_up_events(struct android_app* android_app);
-
-/**
- * Clear the array of key down events that were waiting to be handled, and
- * release each of them.
- *
- * This method should be called after you have processed the key down events in
- * your game loop. You should handle events at each iteration of your game loop.
- */
-void android_app_clear_key_down_events(struct android_app* android_app);
+void android_app_clear_key_events(struct android_input_buffer* inputBuffer);
 
 /**
  * This is the function that application code must implement, representing
