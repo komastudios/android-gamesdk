@@ -86,91 +86,26 @@ struct android_app;
  * when that source has data ready.
  */
 struct android_poll_source {
-    /**
-     * The identifier of this source.  May be LOOPER_ID_MAIN or
-     * LOOPER_ID_INPUT.
-     */
-    int32_t id;
+  /**
+   * The identifier of this source.  May be LOOPER_ID_MAIN or
+   * LOOPER_ID_INPUT.
+   */
+  int32_t id;
 
-    /** The android_app this ident is associated with. */
-    struct android_app* app;
+  /** The android_app this ident is associated with. */
+  struct android_app* app;
 
-    /**
-     * Function to call to perform the standard processing of data from
-     * this source.
-     */
+  /**
+   * Function to call to perform the standard processing of data from
+   * this source.
+   */
     void (*process)(struct android_app* app,
                     struct android_poll_source* source);
 };
 
-/**
- * This is the interface for the standard glue code of a threaded
- * application.  In this model, the application's code is running
- * in its own thread separate from the main thread of the process.
- * It is not required that this thread be associated with the Java
- * VM, although it will need to be in order to make JNI calls any
- * Java objects.
- */
-struct android_app {
-    /**
-     * An optional pointer to application-defined state.
-     */
-    void* userData;
+struct android_input_buffer {
 
-    /**
-     * A required callback for processing main app commands (`APP_CMD_*`).
-     * This is called each frame if there are app commands that need processing.
-     */
-    void (*onAppCmd)(struct android_app* app, int32_t cmd);
-
-    /** The GameActivity object instance that this app is running in. */
-    GameActivity* activity;
-
-    /** The current configuration the app is running in. */
-    AConfiguration* config;
-
-    /**
-     * The last activity saved state, as provided at creation time.
-     * It is NULL if there was no state.  You can use this as you need; the
-     * memory will remain around until you call android_app_exec_cmd() for
-     * APP_CMD_RESUME, at which point it will be freed and savedState set to
-     * NULL. These variables should only be changed when processing a
-     * APP_CMD_SAVE_STATE, at which point they will be initialized to NULL and
-     * you can malloc your state and place the information here.  In that case
-     * the memory will be freed for you later.
-     */
-    void* savedState;
-
-    /**
-     * The size of the activity saved state. It is 0 if `savedState` is NULL.
-     */
-    size_t savedStateSize;
-
-    /** The ALooper associated with the app's thread. */
-    ALooper* looper;
-
-    /** When non-NULL, this is the window surface that the app can draw in. */
-    ANativeWindow* window;
-
-    /**
-     * Current content rectangle of the window; this is the area where the
-     * window's content should be placed to be seen by the user.
-     */
-    ARect contentRect;
-
-    /**
-     * Current state of the app's activity.  May be either APP_CMD_START,
-     * APP_CMD_RESUME, APP_CMD_PAUSE, or APP_CMD_STOP.
-     */
-    int activityState;
-
-    /**
-     * This is non-zero when the application's GameActivity is being
-     * destroyed and waiting for the app thread to complete.
-     */
-    int destroyRequested;
-
-#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 4
+#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 16
 
     /**
      * Pointer to a read-only array of pointers to GameActivityMotionEvent.
@@ -183,58 +118,125 @@ struct android_app {
      */
     uint64_t motionEventsCount;
 
-#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 4
+#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 16
 
     /**
      * Pointer to a read-only array of pointers to GameActivityKeyEvent.
-     * Only the first keyUpEventsCount events are valid.
+     * Only the first keyEventsCount events are valid.
      */
-    GameActivityKeyEvent keyUpEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
+    GameActivityKeyEvent keyEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
 
     /**
-     * The number of valid "Key Up" events in `keyUpEvents`.
+     * The number of valid "Key" events in `keyEvents`.
      */
-    uint64_t keyUpEventsCount;
+    uint64_t keyEventsCount;
+};
 
-    /**
-     * Pointer to a read-only array of pointers GameActivityKeyEvent.
-     * Only the first keyDownEventsCount events are valid.
-     */
-    GameActivityKeyEvent keyDownEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
+/**
+ * This is the interface for the standard glue code of a threaded
+ * application.  In this model, the application's code is running
+ * in its own thread separate from the main thread of the process.
+ * It is not required that this thread be associated with the Java
+ * VM, although it will need to be in order to make JNI calls any
+ * Java objects.
+ */
+struct android_app {
+  /**
+   * An optional pointer to application-defined state.
+   */
+  void* userData;
 
-    /**
-     * The number of valid "Key Down" events in `keyDownEvents`.
-     */
-    uint64_t keyDownEventsCount;
+  /**
+   * A required callback for processing main app commands (`APP_CMD_*`).
+   * This is called each frame if there are app commands that need processing.
+   */
+  void (*onAppCmd)(struct android_app* app, int32_t cmd);
 
-    /**
-     * 0 if no text input event is outstanding, 1 if it is.
-     * Use `GameActivity_getTextInputState` to get information
-     * about the text entered by the user.
-     */
-    int textInputState;
+  /** The GameActivity object instance that this app is running in. */
+  GameActivity* activity;
 
-    // Below are "private" implementation of the glue code.
-    /** @cond INTERNAL */
+  /** The current configuration the app is running in. */
+  AConfiguration* config;
 
-    pthread_mutex_t mutex;
-    pthread_cond_t cond;
+  /**
+   * The last activity saved state, as provided at creation time.
+   * It is NULL if there was no state.  You can use this as you need; the
+   * memory will remain around until you call android_app_exec_cmd() for
+   * APP_CMD_RESUME, at which point it will be freed and savedState set to
+   * NULL. These variables should only be changed when processing a
+   * APP_CMD_SAVE_STATE, at which point they will be initialized to NULL and
+   * you can malloc your state and place the information here.  In that case
+   * the memory will be freed for you later.
+   */
+  void* savedState;
 
-    int msgread;
-    int msgwrite;
+  /**
+   * The size of the activity saved state. It is 0 if `savedState` is NULL.
+   */
+  size_t savedStateSize;
 
-    pthread_t thread;
+  /** The ALooper associated with the app's thread. */
+  ALooper* looper;
 
-    struct android_poll_source cmdPollSource;
+  /** When non-NULL, this is the window surface that the app can draw in. */
+  ANativeWindow* window;
 
-    int running;
-    int stateSaved;
-    int destroyed;
-    int redrawNeeded;
-    ANativeWindow* pendingWindow;
-    ARect pendingContentRect;
+  /**
+   * Current content rectangle of the window; this is the area where the
+   * window's content should be placed to be seen by the user.
+   */
+  ARect contentRect;
 
-    /** @endcond */
+  /**
+   * Current state of the app's activity.  May be either APP_CMD_START,
+   * APP_CMD_RESUME, APP_CMD_PAUSE, or APP_CMD_STOP.
+   */
+  int activityState;
+
+  /**
+   * This is non-zero when the application's GameActivity is being
+   * destroyed and waiting for the app thread to complete.
+   */
+  int destroyRequested;
+
+#define NATIVE_APP_GLUE_MAX_INPUT_BUFFERS 2
+
+  /**
+   * This is used for buffering input from GameActivity. Once ready application
+   * thread switches the buffers and processes what was accumulated.
+   */
+  struct android_input_buffer inputBuffers[NATIVE_APP_GLUE_MAX_INPUT_BUFFERS];
+
+  int currentInputBuffer;
+
+  /**
+   * 0 if no text input event is outstanding, 1 if it is.
+   * Use `GameActivity_getTextInputState` to get information
+   * about the text entered by the user.
+   */
+  int textInputState;
+
+  // Below are "private" implementation of the glue code.
+  /** @cond INTERNAL */
+
+  pthread_mutex_t mutex;
+  pthread_cond_t cond;
+
+  int msgread;
+  int msgwrite;
+
+  pthread_t thread;
+
+  struct android_poll_source cmdPollSource;
+
+  int running;
+  int stateSaved;
+  int destroyed;
+  int redrawNeeded;
+  ANativeWindow* pendingWindow;
+  ARect pendingContentRect;
+
+  /** @endcond */
 };
 
 /**
@@ -242,129 +244,129 @@ struct android_app {
  * user-defined sources.
  */
 enum NativeAppGlueLooperId {
-    /**
-     * Looper data ID of commands coming from the app's main thread, which
-     * is returned as an identifier from ALooper_pollOnce().  The data for this
-     * identifier is a pointer to an android_poll_source structure.
-     * These can be retrieved and processed with android_app_read_cmd()
-     * and android_app_exec_cmd().
-     */
-    LOOPER_ID_MAIN = 1,
+  /**
+   * Looper data ID of commands coming from the app's main thread, which
+   * is returned as an identifier from ALooper_pollOnce().  The data for this
+   * identifier is a pointer to an android_poll_source structure.
+   * These can be retrieved and processed with android_app_read_cmd()
+   * and android_app_exec_cmd().
+   */
+  LOOPER_ID_MAIN = 1,
 
-    /**
-     * Unused. Reserved for future use when usage of AInputQueue will be
-     * supported.
-     */
-    LOOPER_ID_INPUT = 2,
+  /**
+   * Unused. Reserved for future use when usage of AInputQueue will be
+   * supported.
+   */
+  LOOPER_ID_INPUT = 2,
 
-    /**
-     * Start of user-defined ALooper identifiers.
-     */
-    LOOPER_ID_USER = 3,
+  /**
+   * Start of user-defined ALooper identifiers.
+   */
+  LOOPER_ID_USER = 3,
 };
 
 /**
  * Commands passed from the application's main Java thread to the game's thread.
  */
 enum NativeAppGlueAppCmd {
-    /**
-     * Unused. Reserved for future use when usage of AInputQueue will be
-     * supported.
-     */
-    UNUSED_APP_CMD_INPUT_CHANGED,
+  /**
+   * Unused. Reserved for future use when usage of AInputQueue will be
+   * supported.
+   */
+  UNUSED_APP_CMD_INPUT_CHANGED,
 
-    /**
-     * Command from main thread: a new ANativeWindow is ready for use.  Upon
-     * receiving this command, android_app->window will contain the new window
-     * surface.
-     */
-    APP_CMD_INIT_WINDOW,
+  /**
+   * Command from main thread: a new ANativeWindow is ready for use.  Upon
+   * receiving this command, android_app->window will contain the new window
+   * surface.
+   */
+  APP_CMD_INIT_WINDOW,
 
-    /**
-     * Command from main thread: the existing ANativeWindow needs to be
-     * terminated.  Upon receiving this command, android_app->window still
-     * contains the existing window; after calling android_app_exec_cmd
-     * it will be set to NULL.
-     */
-    APP_CMD_TERM_WINDOW,
+  /**
+   * Command from main thread: the existing ANativeWindow needs to be
+   * terminated.  Upon receiving this command, android_app->window still
+   * contains the existing window; after calling android_app_exec_cmd
+   * it will be set to NULL.
+   */
+  APP_CMD_TERM_WINDOW,
 
-    /**
-     * Command from main thread: the current ANativeWindow has been resized.
-     * Please redraw with its new size.
-     */
-    APP_CMD_WINDOW_RESIZED,
+  /**
+   * Command from main thread: the current ANativeWindow has been resized.
+   * Please redraw with its new size.
+   */
+  APP_CMD_WINDOW_RESIZED,
 
-    /**
-     * Command from main thread: the system needs that the current ANativeWindow
-     * be redrawn.  You should redraw the window before handing this to
-     * android_app_exec_cmd() in order to avoid transient drawing glitches.
-     */
-    APP_CMD_WINDOW_REDRAW_NEEDED,
+  /**
+   * Command from main thread: the system needs that the current ANativeWindow
+   * be redrawn.  You should redraw the window before handing this to
+   * android_app_exec_cmd() in order to avoid transient drawing glitches.
+   */
+  APP_CMD_WINDOW_REDRAW_NEEDED,
 
-    /**
-     * Command from main thread: the content area of the window has changed,
-     * such as from the soft input window being shown or hidden.  You can
-     * find the new content rect in android_app::contentRect.
-     */
-    APP_CMD_CONTENT_RECT_CHANGED,
+  /**
+   * Command from main thread: the content area of the window has changed,
+   * such as from the soft input window being shown or hidden.  You can
+   * find the new content rect in android_app::contentRect.
+   */
+  APP_CMD_CONTENT_RECT_CHANGED,
 
-    /**
-     * Command from main thread: the app's activity window has gained
-     * input focus.
-     */
-    APP_CMD_GAINED_FOCUS,
+  /**
+   * Command from main thread: the app's activity window has gained
+   * input focus.
+   */
+  APP_CMD_GAINED_FOCUS,
 
-    /**
-     * Command from main thread: the app's activity window has lost
-     * input focus.
-     */
-    APP_CMD_LOST_FOCUS,
+  /**
+   * Command from main thread: the app's activity window has lost
+   * input focus.
+   */
+  APP_CMD_LOST_FOCUS,
 
-    /**
-     * Command from main thread: the current device configuration has changed.
-     */
-    APP_CMD_CONFIG_CHANGED,
+  /**
+   * Command from main thread: the current device configuration has changed.
+   */
+  APP_CMD_CONFIG_CHANGED,
 
-    /**
-     * Command from main thread: the system is running low on memory.
-     * Try to reduce your memory use.
-     */
-    APP_CMD_LOW_MEMORY,
+  /**
+   * Command from main thread: the system is running low on memory.
+   * Try to reduce your memory use.
+   */
+  APP_CMD_LOW_MEMORY,
 
-    /**
-     * Command from main thread: the app's activity has been started.
-     */
-    APP_CMD_START,
+  /**
+   * Command from main thread: the app's activity has been started.
+   */
+  APP_CMD_START,
 
-    /**
-     * Command from main thread: the app's activity has been resumed.
-     */
-    APP_CMD_RESUME,
+  /**
+   * Command from main thread: the app's activity has been resumed.
+   */
+  APP_CMD_RESUME,
 
-    /**
-     * Command from main thread: the app should generate a new saved state
-     * for itself, to restore from later if needed.  If you have saved state,
-     * allocate it with malloc and place it in android_app.savedState with
-     * the size in android_app.savedStateSize.  The will be freed for you
-     * later.
-     */
-    APP_CMD_SAVE_STATE,
+  /**
+   * Command from main thread: the app should generate a new saved state
+   * for itself, to restore from later if needed.  If you have saved state,
+   * allocate it with malloc and place it in android_app.savedState with
+   * the size in android_app.savedStateSize.  The will be freed for you
+   * later.
+   */
+  APP_CMD_SAVE_STATE,
 
-    /**
-     * Command from main thread: the app's activity has been paused.
-     */
-    APP_CMD_PAUSE,
+  /**
+   * Command from main thread: the app's activity has been paused.
+   */
+  APP_CMD_PAUSE,
 
-    /**
-     * Command from main thread: the app's activity has been stopped.
-     */
-    APP_CMD_STOP,
+  /**
+   * Command from main thread: the app's activity has been stopped.
+   */
+  APP_CMD_STOP,
 
-    /**
-     * Command from main thread: the app's activity is being destroyed,
-     * and waiting for the app thread to clean up and exit before proceeding.
-     */
-    APP_CMD_DESTROY,
+  /**
+   * Command from main thread: the app's activity is being destroyed,
+   * and waiting for the app thread to clean up and exit before proceeding.
+   */
+  APP_CMD_DESTROY,
 
     /**
      * Command from main thread: the app's insets have changed.
@@ -394,31 +396,28 @@ void android_app_pre_exec_cmd(struct android_app* android_app, int8_t cmd);
 void android_app_post_exec_cmd(struct android_app* android_app, int8_t cmd);
 
 /**
+ * Call this before processing input events to get the events buffer.
+ * Function returns NULL if there are no events to process.
+ */
+struct android_input_buffer* android_app_swap_input_buffers(struct android_app* android_app);
+
+/**
  * Clear the array of motion events that were waiting to be handled, and release
  * each of them.
  *
- * This method should be called after you have processed the motion events in
- * your game loop. You should handle events at each iteration of your game loop.
+ * This method should be called after you have processed the motion events in your
+ * game loop. You should handle events at each iteration of your game loop.
  */
-void android_app_clear_motion_events(struct android_app* android_app);
+void android_app_clear_motion_events(struct android_input_buffer* inputBuffer);
 
 /**
- * Clear the array of key up events that were waiting to be handled, and release
+ * Clear the array of key events that were waiting to be handled, and release
  * each of them.
  *
- * This method should be called after you have processed the key up events in
- * your game loop. You should handle events at each iteration of your game loop.
+ * This method should be called after you have processed the key up events in your
+ * game loop. You should handle events at each iteration of your game loop.
  */
-void android_app_clear_key_up_events(struct android_app* android_app);
-
-/**
- * Clear the array of key down events that were waiting to be handled, and
- * release each of them.
- *
- * This method should be called after you have processed the key down events in
- * your game loop. You should handle events at each iteration of your game loop.
- */
-void android_app_clear_key_down_events(struct android_app* android_app);
+void android_app_clear_key_events(struct android_input_buffer* inputBuffer);
 
 /**
  * This is the function that application code must implement, representing
