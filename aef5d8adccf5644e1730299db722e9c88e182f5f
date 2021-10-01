@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24c3945b_13542e26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-01T12:48:08Z",
+      "side": 1,
+      "message": "We\u0027ll need to patch up the agdktunnel sample after this change, but let\u0027s get it in and then I can update it.",
+      "revId": "aef5d8adccf5644e1730299db722e9c88e182f5f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
