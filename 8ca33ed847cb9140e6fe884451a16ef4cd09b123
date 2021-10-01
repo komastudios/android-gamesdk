@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a280caf_9b304580",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-01T10:59:00Z",
+      "side": 1,
+      "message": "Can you reformat the files, please?\nIn the gamesdk directory:\n./gradlew format\nThen \u0027git add \u003cthe files\u003e\u0027, \u0027git commit --amend\u0027 and \u0027repo upload .\u0027",
+      "revId": "8ca33ed847cb9140e6fe884451a16ef4cd09b123",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
