@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b9b167b_7af71472",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-10-04T12:45:22Z",
+      "side": 1,
+      "message": "Looks good, just a quick style question",
+      "revId": "fc0183533cdb8aa7a0d54b2b6dc95c7c1879dbb4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fca520dd_d338d72d",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2021-10-04T12:45:22Z",
+      "side": 1,
+      "message": "Do we need this to be overridable too? If not consider using a constant (https://engdoc.corp.google.com/eng/doc/devguide/cpp/styleguide.md?cl\u003dhead#Preprocessor_Macros)",
+      "revId": "fc0183533cdb8aa7a0d54b2b6dc95c7c1879dbb4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
