@@ -33,11 +33,16 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.google.androidgamesdk.gametextinput.InputConnection;
 import com.google.androidgamesdk.gametextinput.GameTextInput;
 import com.google.androidgamesdk.gametextinput.Listener;
@@ -48,7 +53,8 @@ import java.io.File;
 
 public class GameActivity
     extends AppCompatActivity
-    implements SurfaceHolder.Callback2, OnGlobalLayoutListener, Listener {
+    implements SurfaceHolder.Callback2, OnGlobalLayoutListener, Listener,
+    OnApplyWindowInsetsListener {
   private static final String LOG_TAG = "GameActivity";
 
   /**
@@ -174,6 +180,8 @@ public class GameActivity
 
   protected native void setInputConnectionNative(long handle, InputConnection c);
 
+  protected native void onWindowInsetsChangedNative(long handle);
+
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
    * @return the pointer to the C `GameActivity` struct associated to this activity.
@@ -204,6 +212,11 @@ public class GameActivity
     mSurfaceView.getHolder().addCallback(
         this); // Register as a callback for the rendering of the surface, so that we can pass this
                // surface to the native code
+
+    // Listen for insets changes
+    WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+    ViewCompat.setOnApplyWindowInsetsListener(mSurfaceView, this);
+
   }
 
   /**
@@ -395,6 +408,25 @@ public class GameActivity
 
   void setWindowFormat(int format) {
     getWindow().setFormat(format);
+  }
+
+  @Override
+  public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+    Log.v(LOG_TAG, "onApplyWindowInsets in GameActivity");
+    onWindowInsetsChangedNative(mNativeHandle);
+    return insets;
+  }
+
+  public Insets getWindowInsets(int type) {
+    WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mSurfaceView);
+    return insets.getInsets(type);
+  }
+
+  // From the text input Listener.
+  // Do nothing as we already handle inset events above.
+  @Override
+  public void onImeInsetsChanged(Insets insets) {
+    Log.v(LOG_TAG, "onImeInsetsChanged from Text Listener");
   }
 
   protected class InputEnabledSurfaceView extends SurfaceView {

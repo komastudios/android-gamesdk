@@ -15,7 +15,28 @@
  */
 package com.google.androidgamesdk.gametextinput;
 
-// Listener for text, selection and composing region changes.
+import androidx.core.graphics.Insets;
+
+/**
+ * Listener interface for text, selection and composing region changes.
+ * Also a listener for window insets changes.
+ */
 public interface Listener {
+
+  /*
+   * Called when the IME text, selection or composing region has changed.
+   *
+   * @param newState The updated state
+   * @param dismmissed Whether the IME has been dismissed by the user
+   */
   void stateChanged(State newState, boolean dismissed);
+
+  /*
+   * Called when the IME window insets change, i.e. the IME moves into or out of view.
+   *
+   * @param insets The new window insets, i.e. the offsets of top, bottom, left and right
+   * relative to the window
+   */
+  void onImeInsetsChanged(Insets insets);
+
 }

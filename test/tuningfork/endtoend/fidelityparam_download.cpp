@@ -129,6 +129,7 @@ static const std::string empty_tuning_parameters_request = R"({
     "product": "",
     "soc_manufacturer": "",
     "soc_model": "",
+    "swap_total_bytes": 123,
     "total_memory_bytes": 0
   },
   "name": "applications//apks/0"

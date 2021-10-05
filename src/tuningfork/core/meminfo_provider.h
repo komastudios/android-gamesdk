@@ -27,6 +27,8 @@ class IMemInfoProvider {
     virtual void UpdateMemInfo() = 0;
     virtual void UpdateOomScore() = 0;
     virtual uint64_t GetNativeHeapAllocatedSize() = 0;
+    virtual uint64_t GetPss() = 0;
+    virtual uint64_t GetAvailMem() = 0;
     virtual void SetEnabled(bool enable) = 0;
     virtual bool GetEnabled() const = 0;
     virtual void SetDeviceMemoryBytes(uint64_t bytesize) = 0;
@@ -55,6 +57,7 @@ class IMemInfoProvider {
     virtual uint64_t GetMemInfoMemAvailableBytes() const = 0;
     virtual uint64_t GetMemInfoMemFreeBytes() const = 0;
     virtual uint64_t GetMemInfoMemTotalBytes() const = 0;
+    virtual uint64_t GetMemInfoSwapTotalBytes() const = 0;
     virtual uint64_t GetMemInfoVmDataBytes() const = 0;
     virtual uint64_t GetMemInfoVmRssBytes() const = 0;
     virtual uint64_t GetMemInfoVmSizeBytes() const = 0;
