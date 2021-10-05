@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c904aca_ebf237b3",
+        "filename": "GameTextInput/src/main/java/com/google/androidgamesdk/gametextinput/InputConnection.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-05T09:44:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1a1a2bb_c84592c8",
+      "revId": "c964b592a7000deffa2e5fb7d986d98f77a7ff78",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2a5ba07d_76fb3813",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-10-04T15:08:13Z",
       "side": 1,
       "message": "Please consider using Javadoc comments",
+      "revId": "c964b592a7000deffa2e5fb7d986d98f77a7ff78",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba41100d_5a15333b",
+        "filename": "GameTextInput/src/main/java/com/google/androidgamesdk/gametextinput/Listener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-05T09:44:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a5ba07d_76fb3813",
       "revId": "c964b592a7000deffa2e5fb7d986d98f77a7ff78",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
