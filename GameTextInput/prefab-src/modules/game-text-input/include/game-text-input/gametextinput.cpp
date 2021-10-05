@@ -53,26 +53,34 @@ struct GameTextInput {
     void stateFromJava(jobject textInputEvent,
                        GameTextInputGetStateCallback callback,
                        void *context) const;
+    void setImeInsetsCallback(GameTextInputImeInsetsCallback callback,
+                              void *context);
+    void processImeInsets(const GameCommonInsets *insets);
+    const GameCommonInsets &getImeInsets() const { return currentInsets_; }
 
    private:
     // Copy string and set other fields
     void setStateInner(const GameTextInputState &state);
     static void processCallback(void *context, const GameTextInputState *state);
-    JNIEnv *env_;
+    JNIEnv *env_ = nullptr;
     // Cached at initialization from
     // com/google/androidgamesdk/gametextinput/State.
-    jclass stateJavaClass_;
+    jclass stateJavaClass_ = nullptr;
     // The latest text input update.
-    GameTextInputState currentState_;
+    GameTextInputState currentState_ = {};
     // An instance of gametextinput.InputConnection.
-    jclass inputConnectionClass_;
-    jobject inputConnection_;
+    jclass inputConnectionClass_ = nullptr;
+    jobject inputConnection_ = nullptr;
     jmethodID inputConnectionSetStateMethod_;
     jmethodID setSoftKeyboardActiveMethod_;
     void (*eventCallback_)(void *context,
-                           const struct GameTextInputState *state);
-    void *eventCallbackContext_;
-    StateClassInfo stateClassInfo_;
+                           const struct GameTextInputState *state) = nullptr;
+    void *eventCallbackContext_ = nullptr;
+    void (*insetsCallback_)(void *context,
+                            const struct GameCommonInsets *insets) = nullptr;
+    GameCommonInsets currentInsets_ = {};
+    void *insetsCallbackContext_ = nullptr;
+    StateClassInfo stateClassInfo_ = {};
     // Constant-sized buffer used to store state text.
     std::vector<char> stateStringBuffer_;
 };
@@ -144,6 +152,11 @@ void GameTextInput_processEvent(GameTextInput *input, jobject textInputEvent) {
     input->processEvent(textInputEvent);
 }
 
+void GameTextInput_processImeInsets(GameTextInput *input,
+                                    const GameCommonInsets *insets) {
+    input->processImeInsets(insets);
+}
+
 void GameTextInput_showIme(struct GameTextInput *input, uint32_t flags) {
     input->showIme(flags);
 }
@@ -158,6 +171,17 @@ void GameTextInput_setEventCallback(struct GameTextInput *input,
     input->setEventCallback(callback, context);
 }
 
+void GameTextInput_setImeInsetsCallback(struct GameTextInput *input,
+                                        GameTextInputImeInsetsCallback callback,
+                                        void *context) {
+    input->setImeInsetsCallback(callback, context);
+}
+
+void GameTextInput_getImeInsets(const GameTextInput *input,
+                                GameCommonInsets *insets) {
+    *insets = input->getImeInsets();
+}
+
 }  // extern "C"
 
 ///////////////////////////////////////////////////////////
@@ -166,7 +190,6 @@ void GameTextInput_setEventCallback(struct GameTextInput *input,
 
 GameTextInput::GameTextInput(JNIEnv *env, uint32_t max_string_size)
     : env_(env),
-      currentState_{},
       stateStringBuffer_(max_string_size == 0 ? DEFAULT_MAX_STRING_SIZE
                                               : max_string_size) {
     stateJavaClass_ = (jclass)env_->NewGlobalRef(
@@ -176,8 +199,6 @@ GameTextInput::GameTextInput(JNIEnv *env, uint32_t max_string_size)
     inputConnectionSetStateMethod_ =
         env_->GetMethodID(inputConnectionClass_, "setState",
                           "(Lcom/google/androidgamesdk/gametextinput/State;)V");
-    inputConnection_ = nullptr;
-    eventCallback_ = nullptr;
     setSoftKeyboardActiveMethod_ = env_->GetMethodID(
         inputConnectionClass_, "setSoftKeyboardActive", "(ZI)V");
 
@@ -269,6 +290,19 @@ void GameTextInput::setEventCallback(GameTextInputEventCallback callback,
                                      void *context) {
     eventCallback_ = callback;
     eventCallbackContext_ = context;
+}
+
+void GameTextInput::setImeInsetsCallback(
+    GameTextInputImeInsetsCallback callback, void *context) {
+    insetsCallback_ = callback;
+    insetsCallbackContext_ = context;
+}
+
+void GameTextInput::processImeInsets(const GameCommonInsets *insets) {
+    currentInsets_ = *insets;
+    if (insetsCallback_) {
+        insetsCallback_(insetsCallbackContext_, &currentInsets_);
+    }
 }
 
 void GameTextInput::hideIme(uint32_t flags) {
