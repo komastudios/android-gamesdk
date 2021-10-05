@@ -93,8 +93,7 @@ class Session {
     LoadingTimeMetricData* CreateLoadingTimeSeries(MetricId id);
 
     // Create a memory histogram and add it to the available memory histograms.
-    MemoryMetricData* CreateMemoryHistogram(
-        MetricId id, const Settings::Histogram& settings);
+    MemoryMetricData* CreateMemoryTimeSeries(MetricId id);
 
     // Create a BatteryTimeSeries and add it to the available battery data.
     BatteryMetricData* CreateBatteryTimeSeries(MetricId id);

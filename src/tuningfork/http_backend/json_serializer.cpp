@@ -198,6 +198,7 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     std::vector<Json::object> loading_events;
     std::vector<Json::object> battery_events;
     std::vector<Json::object> thermal_events;
+    std::vector<Json::object> memory_events;
     duration = Duration::zero();
     for (const auto& th :
          session_.GetNonEmptyHistograms<FrameTimeMetricData>()) {
@@ -269,6 +270,20 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             thermal_events.push_back(o);
         }
     }
+    for (const auto& th : session_.GetNonEmptyHistograms<MemoryMetricData>()) {
+        auto ft = th->metric_id_.detail;
+        if (ft.annotation != annotation) continue;
+        for (auto& report : th->data_) {
+            Json::object o({});
+            o["event_time"] =
+                DurationToSecondsString(report.time_since_process_start_);
+            o["avail_mem"] = static_cast<double>(report.avail_mem_);
+            o["oom_score"] = static_cast<double>(report.oom_score_);
+            o["proportional_set_size"] =
+                static_cast<double>(report.proportional_set_size_);
+            memory_events.push_back(o);
+        }
+    }
 
     int total_size = render_histograms.size() + loading_events.size();
     empty = (total_size == 0);
@@ -288,6 +303,10 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
     // Thermal events
     if (thermal_events.size() > 0) {
         ret["thermal"] = Json::object{{"thermal_event", thermal_events}};
+    }
+    // Memory events
+    if (memory_events.size() > 0) {
+        ret["memory"] = Json::object{{"memory_event", memory_events}};
     }
     return ret;
 }
@@ -328,45 +347,6 @@ Json::object JsonSerializer::PartialLoadingTelemetryReportJson(
     return ret;
 }
 
-Json::object JsonSerializer::MemoryTelemetryReportJson(bool& empty) {
-    std::vector<Json::object> memory_histograms;
-    auto histograms = session_.GetNonEmptyHistograms<MemoryMetricData>();
-    // Sort so we have a stable order in tests
-    std::sort(histograms.begin(), histograms.end(),
-              [](const MemoryMetricData* lhs, const MemoryMetricData* rhs) {
-                  return lhs->metric_id_.base < rhs->metric_id_.base;
-              });
-    for (const auto& th : histograms) {
-        MemoryMetric mh;
-        if (id_provider_->MetricIdToMemoryMetric(th->metric_id_, mh) ==
-            TUNINGFORK_ERROR_OK) {
-            auto& h = th->histogram_;
-            if (h.GetMode() == HistogramBase::Mode::AUTO_RANGE)
-                const_cast<Histogram<uint64_t>*>(&h)->CalcBucketsFromSamples();
-            std::vector<int32_t> counts;
-            for (auto c : h.buckets())
-                counts.push_back(static_cast<int32_t>(c));
-            Json::object histogram_config{
-                {"bucket_min_bytes", JsonUint64(h.BucketStart())},
-                {"bucket_max_bytes", JsonUint64(h.BucketEnd())}};
-            Json::object o{{"type", mh.memory_record_type_},
-                           {"period_ms", static_cast<int>(mh.period_ms_)},
-                           {"histogram_config", histogram_config},
-                           {"counts", counts}};
-            memory_histograms.push_back(o);
-        }
-    }
-    // Memory histogram
-    Json::object ret;
-    empty = memory_histograms.size() == 0;
-    if (!empty) {
-        Json::object memory;
-        memory["memory_histogram"] = memory_histograms;
-        ret["memory"] = memory;
-    }
-    return ret;
-}
-
 Json::object JsonSerializer::TelemetryJson(const AnnotationId& annotation,
                                            const RequestInfo& request_info,
                                            Duration& duration, bool& empty) {
@@ -381,15 +361,6 @@ Json::object JsonSerializer::PartialLoadingTelemetryJson(
     Duration duration = Duration::zero();
     auto report =
         PartialLoadingTelemetryReportJson(annotation, event, duration);
-    return Json::object{
-        {"context", TelemetryContextJson(annotation, request_info, duration)},
-        {"report", report}};
-}
-
-Json::object JsonSerializer::MemoryTelemetryJson(
-    const AnnotationId& annotation, const RequestInfo& request_info,
-    const Duration& duration, bool& empty) {
-    auto report = MemoryTelemetryReportJson(empty);
     return Json::object{
         {"context", TelemetryContextJson(annotation, request_info, duration)},
         {"report", report}};
@@ -433,16 +404,6 @@ void JsonSerializer::SerializeEvent(const RequestInfo& request_info,
         Duration duration = Duration::zero();
         auto tel = TelemetryJson(a, request_info, duration, empty);
         max_duration = std::max(max_duration, duration);
-        if (!empty) telemetry.push_back(tel);
-    }
-    if (!annotations.empty()) {
-        bool empty;
-        // Rather than recording a memory histogram for each annotation, we are
-        // recording a single histogram, but each report needs to be associated
-        // with a context, including an annotation. We use the first one and
-        // expect it to be ignored  on the Play side.
-        auto& a = *annotations.begin();
-        auto tel = MemoryTelemetryJson(a, request_info, max_duration, empty);
         if (!empty) telemetry.push_back(tel);
     }
     SerializeTelemetryRequest(request_info, telemetry, evt_json_ser);
