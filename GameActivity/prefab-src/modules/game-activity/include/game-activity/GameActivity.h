@@ -384,7 +384,7 @@ typedef struct GameActivityCallbacks {
      * SurfaceView. Ownership of `event` is maintained by the library and it is
      * only valid during the callback.
      */
-    void (*onTouchEvent)(GameActivity* activity,
+    bool (*onTouchEvent)(GameActivity* activity,
                          const GameActivityMotionEvent* event);
 
     /**
@@ -392,7 +392,7 @@ typedef struct GameActivityCallbacks {
      * Ownership of `event` is maintained by the library and it is only valid
      * during the callback.
      */
-    void (*onKeyDown)(GameActivity* activity,
+    bool (*onKeyDown)(GameActivity* activity,
                       const GameActivityKeyEvent* event);
 
     /**
@@ -400,7 +400,7 @@ typedef struct GameActivityCallbacks {
      * Ownership of `event` is maintained by the library and it is only valid
      * during the callback.
      */
-    void (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
+    bool (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
 
     /**
      * Callback called for every soft-keyboard text input event.
