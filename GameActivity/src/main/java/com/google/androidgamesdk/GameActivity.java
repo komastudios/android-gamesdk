@@ -99,13 +99,13 @@ public class GameActivity
   @Override
   public boolean onKeyUp(final int keyCode, KeyEvent event) {
     onKeyUpNative(mNativeHandle, event);
-    return true;
+    return false;
   }
 
   @Override
   public boolean onKeyDown(final int keyCode, KeyEvent event) {
     onKeyDownNative(mNativeHandle, event);
-    return true;
+    return false;
   }
 
   // Called when the IME has changed the input
@@ -412,7 +412,6 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    Log.v(LOG_TAG, "onApplyWindowInsets in GameActivity");
     onWindowInsetsChangedNative(mNativeHandle);
     return insets;
   }
