@@ -195,11 +195,6 @@ void NativeEngine::GameLoop() {
     mApp->userData = this;
     mApp->onAppCmd = _handle_cmd_proxy;
     //mApp->onInputEvent = _handle_input_proxy;
-    mApp->textInputState = 0;
-    mApp->currentInputBuffer = 0;
-
-    android_app_clear_motion_events(&mApp->inputBuffers[mApp->currentInputBuffer]);
-    android_app_clear_key_events(&mApp->inputBuffers[mApp->currentInputBuffer]);
 
     while (1) {
         int events;
