@@ -18,10 +18,10 @@ package com.prefabulated.bouncyball;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Trace;
 import androidx.preference.PreferenceManager;
 import android.text.Layout;
 import android.util.Log;
@@ -80,6 +80,14 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         cell.setText("0");
     }
 
+    private static GridLayout.Spec apiAgnosticSpec(int start) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            return GridLayout.spec(start, 1.0f);
+        } else {
+            return GridLayout.spec(start);
+        }
+    }
+
     private void buildChoreographerInfoGrid() {
         GridLayout infoGrid = findViewById(R.id.choreographer_info_grid);
 
@@ -87,7 +95,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         GridLayout.Spec headerRowSpec = GridLayout.spec(0);
         for (int column = 0; column < mChoreographerInfoGrid[0].length; ++column) {
             AppCompatTextView cell = new AppCompatTextView(getApplicationContext());
-            GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+            GridLayout.Spec colSpec = apiAgnosticSpec(column);
             cell.setLayoutParams(new GridLayout.LayoutParams(headerRowSpec, colSpec));
             configureGridCell(cell);
 
@@ -106,7 +114,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
 
             for (int column = 0; column < mChoreographerInfoGrid[row].length; ++column) {
                 AppCompatTextView cell = new AppCompatTextView(getApplicationContext());
-                GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+                GridLayout.Spec colSpec = apiAgnosticSpec(column);
                 cell.setLayoutParams(new GridLayout.LayoutParams(rowSpec, colSpec));
                 cell.setTextAppearance(getApplicationContext(), R.style.InfoTextSmall);
                 configureGridCell(cell);
@@ -146,7 +154,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         GridLayout.Spec headerRowSpec = GridLayout.spec(0);
         for (int column = 0; column < mSwappyGrid[0].length; ++column) {
             AppCompatTextView cell = new AppCompatTextView(getApplicationContext());
-            GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+            GridLayout.Spec colSpec = apiAgnosticSpec(column);
             cell.setLayoutParams(new GridLayout.LayoutParams(headerRowSpec, colSpec));
             configureGridCell(cell);
 
@@ -165,7 +173,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
 
             for (int column = 0; column < mSwappyGrid[row].length; ++column) {
                 AppCompatTextView cell = new AppCompatTextView(getApplicationContext());
-                GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+                GridLayout.Spec colSpec = apiAgnosticSpec(column);
                 cell.setLayoutParams(new GridLayout.LayoutParams(rowSpec, colSpec));
                 cell.setTextAppearance(getApplicationContext(), R.style.InfoTextSmall);
                 configureGridCell(cell);
@@ -274,10 +282,13 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         float refreshRateHz = display.getRefreshRate();
         Log.i(LOG_TAG, String.format("Refresh rate: %.1f Hz", refreshRateHz));
         long refreshPeriodNanos = (long) (ONE_S_IN_NS / refreshRateHz);
-        long appVsyncOffsetNanos = display.getAppVsyncOffsetNanos();
-        long sfVsyncOffsetNanos = refreshPeriodNanos
-                                  - (display.getPresentationDeadlineNanos() - ONE_MS_IN_NS);
-
+        long appVsyncOffsetNanos = 0;
+        long sfVsyncOffsetNanos = 0;
+        if (Build.VERSION.SDK_INT >= 21) {
+            appVsyncOffsetNanos = display.getAppVsyncOffsetNanos();
+            sfVsyncOffsetNanos = refreshPeriodNanos
+                - (display.getPresentationDeadlineNanos() - ONE_MS_IN_NS);
+        }
         // Initialize UI
 
         SurfaceView surfaceView = findViewById(R.id.surface_view);
@@ -432,21 +443,14 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     }
 
     private void dumpBins() {
-        Trace.beginSection("dumpBins");
-
-        Trace.beginSection("addToQueues");
         mArrivalBinQueue.add(mArrivalBinsLastSecond.clone());
         mTimestampBinQueue.add(mTimestampBinsLastSecond.clone());
-        Trace.endSection();
 
-        Trace.beginSection("updateMinuteBins");
         for (int bin = 0; bin < CHOREOGRAPHER_INFO_BIN_COUNT; ++bin) {
             mArrivalBinsLastMinute[bin] += mArrivalBinsLastSecond[bin];
             mTimestampBinsLastMinute[bin] += mTimestampBinsLastSecond[bin];
         }
-        Trace.endSection();
 
-        Trace.beginSection("pruneQueue");
         if (mArrivalBinQueue.size() > 60) {
             int[] oldestArrivalBin = mArrivalBinQueue.remove();
             int[] oldestTimestampBin = mTimestampBinQueue.remove();
@@ -455,18 +459,14 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
                 mTimestampBinsLastMinute[bin] -= oldestTimestampBin[bin];
             }
         }
-        Trace.endSection();
 
-        Trace.beginSection("updateInfoGrid");
         for (int bin = 0; bin < CHOREOGRAPHER_INFO_BIN_COUNT; ++bin) {
             updateChoregrapherInfoBin(1, bin, mArrivalBinsLastSecond[bin]);
             updateChoregrapherInfoBin(2, bin, mTimestampBinsLastSecond[bin]);
             updateChoregrapherInfoBin(3, bin, mArrivalBinsLastMinute[bin]);
             updateChoregrapherInfoBin(4, bin, mTimestampBinsLastMinute[bin]);
         }
-        Trace.endSection();
 
-        Trace.beginSection("updateSwappyStatsGrid");
         for (int stat = 0; stat < 4; ++stat) {
             for (int bin = 0; bin < SWAPPY_STATS_BIN_COUNT; ++bin) {
                 updateSwappyStatsBin(stat +1, bin, nGetSwappyStats(stat, bin));
@@ -475,22 +475,15 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         TextView appOffsetView = findViewById(R.id.swappy_stats);
         appOffsetView.setText(String.format(Locale.US, "SwappyStats: %d Total Frames",
                 nGetSwappyStats(-1, 0)));
-        Trace.endSection();
 
-        Trace.beginSection("clearSecondBins");
         for (int bin = 0; bin < CHOREOGRAPHER_INFO_BIN_COUNT; ++bin) {
             mArrivalBinsLastSecond[bin] = 0;
             mTimestampBinsLastSecond[bin] = 0;
         }
-        Trace.endSection();
-
-        Trace.endSection();
     }
 
     @Override
     public void doFrame(long frameTimeNanos) {
-        Trace.beginSection("doFrame");
-
         TextView fpsView = findViewById(R.id.fps);
         float fps = nGetAverageFps();
         fpsView.setText(String.format(Locale.US, "Frame rate: %.1f Hz (%.2f ms)", fps, 1e3f/fps));
@@ -511,9 +504,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         long now = System.nanoTime();
 
         if (mIsRunning) {
-            Trace.beginSection("Requesting callback");
             Choreographer.getInstance().postFrameCallback(this);
-            Trace.endSection();
         }
 
         long arrivalDelta = now - mLastArrivalTime;
@@ -532,7 +523,6 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
             mLastDumpTime = now - (now % 1000000000);
         }
 
-        Trace.endSection();
     }
 
     @Override
