@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea6d1894_7bced5e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-11T09:41:48Z",
+      "side": 1,
+      "message": "This fixes the original bug but doesn\u0027t give an API to customize the keys that are ignored within android_native_app_glue. LMK if you think we need that too.",
+      "revId": "98515f96387a447b68b6d0a26444e795d8a356ad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
