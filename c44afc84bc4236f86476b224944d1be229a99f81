@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1c4cd31_d14367d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-10-11T14:02:36Z",
+      "side": 1,
+      "message": "These values are already zeroed in the native_app_glue create function, so don\u0027t need a second initialization, unsynchronized with the UI thread.",
+      "revId": "c44afc84bc4236f86476b224944d1be229a99f81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
