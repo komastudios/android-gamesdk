@@ -1067,29 +1067,29 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getKeyCode)};
 }
 
-static void onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
+static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
                                 jlong handle, jobject motionEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
-    if (code->callbacks.onTouchEvent == nullptr) return;
+    if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
-    code->callbacks.onTouchEvent(code, &c_event);
+    return code->callbacks.onTouchEvent(code, &c_event);
 }
 
-static void onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
+static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
                            jobject keyEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
-    if (code->callbacks.onKeyUp == nullptr) return;
+    if (code->callbacks.onKeyUp == nullptr) return false;
 
     static GameActivityKeyEvent c_event;
     GameActivityKeyEvent_fromJava(env, keyEvent, &c_event);
-    code->callbacks.onKeyUp(code, &c_event);
+    return code->callbacks.onKeyUp(code, &c_event);
 }
 
-static void onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
+static bool onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
                              jlong handle, jobject keyEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
@@ -1097,7 +1097,7 @@ static void onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
 
     static GameActivityKeyEvent c_event;
     GameActivityKeyEvent_fromJava(env, keyEvent, &c_event);
-    code->callbacks.onKeyDown(code, &c_event);
+    return code->callbacks.onKeyDown(code, &c_event);
 }
 
 static void onTextInput_native(JNIEnv *env, jobject activity, jlong handle,
@@ -1160,11 +1160,11 @@ static const JNINativeMethod g_methods[] = {
     {"onSurfaceRedrawNeededNative", "(JLandroid/view/Surface;)V",
      (void *)onSurfaceRedrawNeeded_native},
     {"onSurfaceDestroyedNative", "(J)V", (void *)onSurfaceDestroyed_native},
-    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)V",
+    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)Z",
      (void *)onTouchEvent_native},
-    {"onKeyDownNative", "(JLandroid/view/KeyEvent;)V",
+    {"onKeyDownNative", "(JLandroid/view/KeyEvent;)Z",
      (void *)onKeyDown_native},
-    {"onKeyUpNative", "(JLandroid/view/KeyEvent;)V", (void *)onKeyUp_native},
+    {"onKeyUpNative", "(JLandroid/view/KeyEvent;)Z", (void *)onKeyUp_native},
     {"onTextInputEventNative",
      "(JLcom/google/androidgamesdk/gametextinput/State;)V",
      (void *)onTextInput_native},

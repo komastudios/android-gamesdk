@@ -86,26 +86,22 @@ public class GameActivity
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    onTouchEventNative(mNativeHandle, event);
-    return true;
+    return onTouchEventNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onGenericMotionEvent(MotionEvent event) {
-    onTouchEventNative(mNativeHandle, event);
-    return true;
+    return onTouchEventNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onKeyUp(final int keyCode, KeyEvent event) {
-    onKeyUpNative(mNativeHandle, event);
-    return true;
+    return onKeyUpNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onKeyDown(final int keyCode, KeyEvent event) {
-    onKeyDownNative(mNativeHandle, event);
-    return true;
+    return onKeyDownNative(mNativeHandle, event);
   }
 
   // Called when the IME has changed the input
@@ -170,11 +166,11 @@ public class GameActivity
 
   protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
-  protected native void onTouchEventNative(long handle, MotionEvent motionEvent);
+  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent);
 
-  protected native void onKeyDownNative(long handle, KeyEvent keyEvent);
+  protected native boolean onKeyDownNative(long handle, KeyEvent keyEvent);
 
-  protected native void onKeyUpNative(long handle, KeyEvent keyEvent);
+  protected native boolean onKeyUpNative(long handle, KeyEvent keyEvent);
 
   protected native void onTextInputEventNative(long handle, State softKeyboardEvent);
 
@@ -412,7 +408,6 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    Log.v(LOG_TAG, "onApplyWindowInsets in GameActivity");
     onWindowInsetsChangedNative(mNativeHandle);
     return insets;
   }
