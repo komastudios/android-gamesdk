@@ -16,6 +16,23 @@
       "message": "These values are already zeroed in the native_app_glue create function, so don\u0027t need a second initialization, unsynchronized with the UI thread.",
       "revId": "c44afc84bc4236f86476b224944d1be229a99f81",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6042a795_d2c6c38f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400311
+      },
+      "writtenOn": "2021-10-12T22:17:03Z",
+      "side": 1,
+      "message": "LGTM but for the record could you please quickly comment on what\u0027s this race condition and how deleting this code avoids it?",
+      "revId": "c44afc84bc4236f86476b224944d1be229a99f81",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
