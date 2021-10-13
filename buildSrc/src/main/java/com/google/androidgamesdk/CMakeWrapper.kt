@@ -51,14 +51,19 @@ class CMakeWrapper {
                 buildFolders.projectFolder,
                 "-DCMAKE_BUILD_TYPE=" + buildOptions.buildType,
                 "-DANDROID_PLATFORM=android-$androidVersion",
-                "-DANDROID_NDK=$ndkPath",
+                "-DCMAKE_ANDROID_NDK=$ndkPath",
                 "-DANDROID_STL=" + buildOptions.stl,
                 "-DANDROID_ABI=" + buildOptions.arch,
                 "-DANDROID_UNIFIED_HEADERS=1",
                 "-DCMAKE_CXX_FLAGS=$cxx_flags",
+                "-DCMAKE_C_COMPILER_WORKS=1",
+                "-DCMAKE_CXX_COMPILER_WORKS=1",
+                "-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY",
+                "-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang",
+                "-DCMAKE_ANDROID_STL_TYPE=" + buildOptions.stl,
                 "-DCMAKE_TOOLCHAIN_FILE=$toolchainFilePath",
                 "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=" + buildFolders.outputFolder,
-                "-DGAMESDK_THREAD_CHECKS=" +
+                "-DGAMESDK_THREAD_CHECKS="+
                     (if (buildOptions.threadChecks) "1" else "0"),
                 "-DCMAKE_MAKE_PROGRAM=" + toolchain.getNinjaPath(),
                 "-GNinja"
@@ -110,7 +115,7 @@ class CMakeWrapper {
             } catch (makeException: Throwable) {
                 throw Exception(
                     "Error when building with " +
-                        toolchain + " in " + workingFolder
+                        toolchain + " in " + workingFolder + ". Exception: " + makeException
                 )
             }
         }
