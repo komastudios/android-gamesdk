@@ -51,7 +51,7 @@ class CMakeWrapper {
                 buildFolders.projectFolder,
                 "-DCMAKE_BUILD_TYPE=" + buildOptions.buildType,
                 "-DANDROID_PLATFORM=android-$androidVersion",
-                "-DANDROID_NDK=$ndkPath",
+                "-DCMAKE_ANDROID_NDK=$ndkPath",
                 "-DANDROID_STL=" + buildOptions.stl,
                 "-DANDROID_ABI=" + buildOptions.arch,
                 "-DANDROID_UNIFIED_HEADERS=1",
