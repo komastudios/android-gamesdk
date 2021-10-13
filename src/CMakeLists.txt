@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.18.1)
 
 if ("swappy" IN_LIST GAMESDK_LIBRARIES)
   add_subdirectory( ./swappy )
