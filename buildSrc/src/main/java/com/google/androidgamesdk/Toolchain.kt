@@ -81,7 +81,7 @@ abstract class Toolchain {
 
     fun getCMakePath(): String {
         return File(
-            "${project_.projectDir}/../prebuilts/cmake/" +
+            "${project_.projectDir}/../prebuilts/cmake_temp/" +
                 osFolderName(ExternalToolName.CMAKE) +
                 "/bin/cmake" + osExecutableSuffix()
         ).path
@@ -89,9 +89,9 @@ abstract class Toolchain {
 
     fun getNinjaPath(): String {
         return File(
-            "${project_.projectDir}/../prebuilts/cmake/" +
+            "${project_.projectDir}/../prebuilts/ninja/" +
                 osFolderName(ExternalToolName.CMAKE) +
-                "/bin/ninja" + osExecutableSuffix()
+                "/ninja" + osExecutableSuffix()
         ).path
     }
 
