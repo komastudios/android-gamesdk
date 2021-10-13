@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.18.1)
+project(tuningfork-testing C CXX)
+set(CMAKE_CXX_STANDARD 14)
 
 set (TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../../..")
 add_subdirectory( "${TEST_DIR}" test_dir)
