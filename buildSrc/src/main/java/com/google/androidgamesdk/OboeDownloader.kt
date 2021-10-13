@@ -72,7 +72,7 @@ class OboeDownloader(val project: Project) {
         cmakeListsContent = cmakeListsContent.replace(
             "add_library(oboe \${oboe_sources})",
             "add_library(oboe_static STATIC \${oboe_sources})\n" +
-                "add_library(oboe SHARED)\n"
+                "add_library(oboe SHARED \${oboe_sources})\n"
         )
         cmakeListsContent = cmakeListsContent.replace(
             "target_include_directories(oboe\n" +
