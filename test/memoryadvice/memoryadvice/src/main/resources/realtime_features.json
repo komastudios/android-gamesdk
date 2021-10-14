@@ -1,7 +1,5 @@
 [
-  "/baseline/constant/MemoryInfo/totalMem",
-  "/baseline/debug/Pss",
-  "/baseline/meminfo/SwapTotal",
+  "/baseline/meminfo/Active(file)",
   "/sample/MemoryInfo/availMem",
   "/sample/proc/oom_score"
 ]
