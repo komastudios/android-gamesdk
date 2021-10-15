@@ -12,7 +12,7 @@ repositories {
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.12.3'
-    implementation 'com.google.android.games:memory-advice-common:0.23'
+    implementation 'com.google.android.games:memory-advice-common:0.24'
     implementation 'com.google.cloud:google-cloud-storage:1.113.14'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.31.2'
     implementation 'org.json:json:20210307'
