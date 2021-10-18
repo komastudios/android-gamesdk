@@ -30,6 +30,7 @@
 #include <android/asset_manager.h>
 #include <android/input.h>
 #include <android/native_window.h>
+#include <android/rect.h>
 #include <jni.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -747,10 +748,11 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
  * Get the current window insets of the particular component. See
  * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
  * for more details.
+ * You can use these insets to influence what you show on the screen.
  */
 void GameActivity_getWindowInsets(GameActivity* activity,
-                                  enum GameCommonInsetsType type,
-                                  GameCommonInsets* insets);
+                                  GameCommonInsetsType type,
+                                  ARect* insets);
 
 #ifdef __cplusplus
 }

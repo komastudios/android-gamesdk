@@ -354,7 +354,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
             break;
         case APP_CMD_WINDOW_INSETS_CHANGED:
             VLOGD("NativeEngine: APP_CMD_WINDOW_INSETS_CHANGED");
-            GameCommonInsets insets;
+            ARect insets;
             GameActivity_getWindowInsets(mApp->activity, GAMECOMMON_INSETS_TYPE_IME, &insets);
             VLOGD("IME insets: left=%d right=%d top=%d bottom=%d",
                   insets.left, insets.right, insets.top, insets.bottom);

@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <android/rect.h>
 #include <jni.h>
 #include <stdint.h>
 
@@ -227,7 +228,7 @@ void GameTextInput_setEventCallback(GameTextInput *input,
  * during the callback.
  */
 typedef void (*GameTextInputImeInsetsCallback)(
-    void *context, const GameCommonInsets *current_insets);
+    void *context, const ARect *current_insets);
 
 /**
  * Optionally set a callback to be called whenever the IME insets change.
@@ -247,7 +248,7 @@ void GameTextInput_setImeInsetsCallback(GameTextInput *input,
  * @param insets Filled with the current insets by this function.
  */
 void GameTextInput_getImeInsets(const GameTextInput *input,
-                                GameCommonInsets *insets);
+                                ARect *insets);
 
 /**
  * Unless using GameActivity, it is required to call this function from your
@@ -258,7 +259,7 @@ void GameTextInput_getImeInsets(const GameTextInput *input,
  * @param eventState A Java gametextinput.State object.
  */
 void GameTextInput_processImeInsets(GameTextInput *input,
-                                    const GameCommonInsets *insets);
+                                    const ARect *insets);
 
 /**
  * Convert a GameTextInputState struct to a Java gametextinput.State object.
