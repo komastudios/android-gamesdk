@@ -55,8 +55,8 @@ struct GameTextInput {
                        void *context) const;
     void setImeInsetsCallback(GameTextInputImeInsetsCallback callback,
                               void *context);
-    void processImeInsets(const GameCommonInsets *insets);
-    const GameCommonInsets &getImeInsets() const { return currentInsets_; }
+    void processImeInsets(const ARect *insets);
+    const ARect &getImeInsets() const { return currentInsets_; }
 
    private:
     // Copy string and set other fields
@@ -77,8 +77,8 @@ struct GameTextInput {
                            const struct GameTextInputState *state) = nullptr;
     void *eventCallbackContext_ = nullptr;
     void (*insetsCallback_)(void *context,
-                            const struct GameCommonInsets *insets) = nullptr;
-    GameCommonInsets currentInsets_ = {};
+                            const struct ARect *insets) = nullptr;
+    ARect currentInsets_ = {};
     void *insetsCallbackContext_ = nullptr;
     StateClassInfo stateClassInfo_ = {};
     // Constant-sized buffer used to store state text.
@@ -153,7 +153,7 @@ void GameTextInput_processEvent(GameTextInput *input, jobject textInputEvent) {
 }
 
 void GameTextInput_processImeInsets(GameTextInput *input,
-                                    const GameCommonInsets *insets) {
+                                    const ARect *insets) {
     input->processImeInsets(insets);
 }
 
@@ -178,7 +178,7 @@ void GameTextInput_setImeInsetsCallback(struct GameTextInput *input,
 }
 
 void GameTextInput_getImeInsets(const GameTextInput *input,
-                                GameCommonInsets *insets) {
+                                ARect *insets) {
     *insets = input->getImeInsets();
 }
 
@@ -298,7 +298,7 @@ void GameTextInput::setImeInsetsCallback(
     insetsCallbackContext_ = context;
 }
 
-void GameTextInput::processImeInsets(const GameCommonInsets *insets) {
+void GameTextInput::processImeInsets(const ARect *insets) {
     currentInsets_ = *insets;
     if (insetsCallback_) {
         insetsCallback_(insetsCallbackContext_, &currentInsets_);
