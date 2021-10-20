@@ -81,7 +81,7 @@ abstract class Toolchain {
 
     fun getCMakePath(): String {
         return File(
-            "${project_.projectDir}/../prebuilts/cmake_temp/" +
+            "${project_.projectDir}/../prebuilts/cmake/" +
                 osFolderName(ExternalToolName.CMAKE) +
                 "/bin/cmake" + osExecutableSuffix()
         ).path

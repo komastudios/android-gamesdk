@@ -14,7 +14,7 @@ set -e # Exit on error
 export ANDROID_HOME=$(pwd)/../prebuilts/sdk
 export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r20
 export BUILDBOT_SCRIPT=true
-export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake_temp/linux-x86
+export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake/linux-x86
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
 # Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,

@@ -1,7 +1,7 @@
 set ANDROID_HOME=C:\win_build_extras\sdk
 set ANDROID_NDK_HOME=C:\win_build_extras\ndk\r21
 set BUILDBOT_SCRIPT=true
-set BUILDBOT_CMAKE="%CD%\..\prebuilts\cmake_temp\windows-x86"
+set BUILDBOT_CMAKE="%CD%\..\prebuilts\cmake\windows-x86"
 
 if not defined DIST_DIR set DIST_DIR="%CD%\..\package"
 
