@@ -100,6 +100,9 @@ LoaderScene::LoaderScene() {
 }
 
 LoaderScene::~LoaderScene() {
+    _totalLoadCount = 0;
+    _currentLoadIndex = 0;
+    _remainingLoadCount = 0;
 }
 
 void LoaderScene::DoFrame() {

@@ -17,6 +17,10 @@ package com.google.sample.agdktunnel;
 
 import android.os.Bundle;
 
+import android.view.View;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
 
 public class AGDKTunnelActivity extends GameActivity {
@@ -35,8 +39,22 @@ public class AGDKTunnelActivity extends GameActivity {
         System.loadLibrary("game");
     }
 
+    private void hideSystemUI() {
+        // From API 30 onwards, this is the recommended way to hide the system UI, rather than
+        // using View.setSystemUiVisibility
+        View decorView = getWindow().getDecorView();
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(), decorView);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
+        controller.hide(WindowInsetsCompat.Type.displayCutout());
+        controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // When true, the app will fit inside any system UI windows.
+        // When false, we render behind any system UI windows.
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        hideSystemUI();
         super.onCreate(savedInstanceState);
     }
 }

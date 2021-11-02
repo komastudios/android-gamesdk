@@ -87,6 +87,24 @@ void WelcomeScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
 }
 
+const char* WelcomeScene::AboutMessage() {
+    static std::string aboutMessage;
+    std::stringstream aboutStream;
+    aboutStream << BLURB_ABOUT;
+    // Add window insets to help debugging
+    aboutStream << "\n\n[Debug Insets (left, right, top, bottom)]\n";
+    auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
+    ARect insets;
+    GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_SYSTEM_BARS, &insets);
+    aboutStream << "System bars: (" << insets.left << ", " << insets.right << ", " << insets.top << ", " << insets.bottom << ")\n";
+    GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_DISPLAY_CUTOUT, &insets);
+    aboutStream << "Cutout: (" << insets.left << ", " << insets.right << ", " << insets.top << ", " << insets.bottom << ")\n";
+    GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_WATERFALL, &insets);
+    aboutStream << "Waterfall: (" << insets.left << ", " << insets.right << ", " << insets.top << ", " << insets.bottom << ")";
+    aboutMessage = aboutStream.str();
+    return aboutMessage.c_str();
+}
+
 void WelcomeScene::OnButtonClicked(int id) {
     SceneManager *mgr = SceneManager::GetInstance();
 
@@ -96,7 +114,7 @@ void WelcomeScene::OnButtonClicked(int id) {
         mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mAboutButtonId) {
-        mgr->RequestNewScene((new DialogScene())->SetText(BLURB_ABOUT)->SetSingleButton(S_OK,
+        mgr->RequestNewScene((new DialogScene())->SetText(AboutMessage())->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mNameEdit->GetId()) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
