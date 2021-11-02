@@ -261,6 +261,19 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
     return mAppJniEnv;
 }
 
+static char sInsetsTypeName[][32] = {
+    "CAPTION_BAR",
+    "DISPLAY_CUTOUT",
+    "IME",
+    "MANDATORY_SYSTEM_GESTURES",
+    "NAVIGATION_BARS",
+    "STATUS_BARS",
+    "SYSTEM_BARS",
+    "SYSTEM_GESTURES",
+    "TAPABLE_ELEMENT",
+    "WATERFALL",
+};
+
 void NativeEngine::HandleCommand(int32_t cmd) {
     SceneManager *mgr = SceneManager::GetInstance();
 
@@ -355,9 +368,12 @@ void NativeEngine::HandleCommand(int32_t cmd) {
         case APP_CMD_WINDOW_INSETS_CHANGED:
             VLOGD("NativeEngine: APP_CMD_WINDOW_INSETS_CHANGED");
             ARect insets;
-            GameActivity_getWindowInsets(mApp->activity, GAMECOMMON_INSETS_TYPE_IME, &insets);
-            VLOGD("IME insets: left=%d right=%d top=%d bottom=%d",
-                  insets.left, insets.right, insets.top, insets.bottom);
+            // Log all the insets types
+            for (int type = 0; type < GAMECOMMON_INSETS_TYPE_COUNT; ++type) {
+                GameActivity_getWindowInsets(mApp->activity, (GameCommonInsetsType)type, &insets);
+                VLOGD("%s insets: left=%d right=%d top=%d bottom=%d",
+                      sInsetsTypeName[type], insets.left, insets.right, insets.top, insets.bottom);
+            }
             break;
         default:
             VLOGD("NativeEngine: (unknown command).");

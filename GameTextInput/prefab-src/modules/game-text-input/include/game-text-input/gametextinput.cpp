@@ -152,8 +152,7 @@ void GameTextInput_processEvent(GameTextInput *input, jobject textInputEvent) {
     input->processEvent(textInputEvent);
 }
 
-void GameTextInput_processImeInsets(GameTextInput *input,
-                                    const ARect *insets) {
+void GameTextInput_processImeInsets(GameTextInput *input, const ARect *insets) {
     input->processImeInsets(insets);
 }
 
@@ -177,8 +176,7 @@ void GameTextInput_setImeInsetsCallback(struct GameTextInput *input,
     input->setImeInsetsCallback(callback, context);
 }
 
-void GameTextInput_getImeInsets(const GameTextInput *input,
-                                ARect *insets) {
+void GameTextInput_getImeInsets(const GameTextInput *input, ARect *insets) {
     *insets = input->getImeInsets();
 }
 
