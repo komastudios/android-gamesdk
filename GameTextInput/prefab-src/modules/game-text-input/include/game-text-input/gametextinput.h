@@ -227,8 +227,8 @@ void GameTextInput_setEventCallback(GameTextInput *input,
  * @param current_insets Current IME insets, owned by the library and valid
  * during the callback.
  */
-typedef void (*GameTextInputImeInsetsCallback)(
-    void *context, const ARect *current_insets);
+typedef void (*GameTextInputImeInsetsCallback)(void *context,
+                                               const ARect *current_insets);
 
 /**
  * Optionally set a callback to be called whenever the IME insets change.
@@ -247,8 +247,7 @@ void GameTextInput_setImeInsetsCallback(GameTextInput *input,
  * @param input A valid GameTextInput library handle.
  * @param insets Filled with the current insets by this function.
  */
-void GameTextInput_getImeInsets(const GameTextInput *input,
-                                ARect *insets);
+void GameTextInput_getImeInsets(const GameTextInput *input, ARect *insets);
 
 /**
  * Unless using GameActivity, it is required to call this function from your
@@ -258,8 +257,7 @@ void GameTextInput_getImeInsets(const GameTextInput *input,
  * @param input A valid GameTextInput library handle.
  * @param eventState A Java gametextinput.State object.
  */
-void GameTextInput_processImeInsets(GameTextInput *input,
-                                    const ARect *insets);
+void GameTextInput_processImeInsets(GameTextInput *input, const ARect *insets);
 
 /**
  * Convert a GameTextInputState struct to a Java gametextinput.State object.
