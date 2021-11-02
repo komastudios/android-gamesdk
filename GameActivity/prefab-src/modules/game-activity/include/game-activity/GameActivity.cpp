@@ -368,7 +368,7 @@ struct NativeCode : public GameActivity {
     OwnedGameTextInputState gameTextInputState;
     std::mutex gameTextInputStateMutex;
 
-    GameCommonInsets insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
+    ARect insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -410,8 +410,8 @@ extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
 }
 
 extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
-                                             enum GameCommonInsetsType type,
-                                             GameCommonInsets *insets) {
+                                             GameCommonInsetsType type,
+                                             ARect *insets) {
     if (type < 0 || type >= GAMECOMMON_INSETS_TYPE_COUNT) return;
     NativeCode *code = static_cast<NativeCode *>(activity);
     *insets = code->insetsState[type];
@@ -1119,7 +1119,7 @@ static void onWindowInsetsChanged_native(JNIEnv *env, jobject activity,
         jobject jinsets = env->CallObjectMethod(
             code->javaGameActivity, gGameActivityClassInfo.getWindowInsets,
             jtype);
-        GameCommonInsets &insets = code->insetsState[type];
+        ARect &insets = code->insetsState[type];
         insets.left = env->GetIntField(jinsets, gInsetsClassInfo.left);
         insets.right = env->GetIntField(jinsets, gInsetsClassInfo.right);
         insets.top = env->GetIntField(jinsets, gInsetsClassInfo.top);

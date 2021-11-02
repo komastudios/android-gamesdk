@@ -23,20 +23,10 @@
 #pragma once
 
 /**
- * This struct holds a set of window insets.
- */
-typedef struct GameCommonInsets {
-    uint32_t left;
-    uint32_t right;
-    uint32_t top;
-    uint32_t bottom;
-} GameCommonInsets;
-
-/**
  * The type of a component for which to retrieve insets. See
  * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
  */
-enum GameCommonInsetsType {
+typedef enum GameCommonInsetsType {
     GAMECOMMON_INSETS_TYPE_CAPTION_BAR = 0,
     GAMECOMMON_INSETS_TYPE_DISPLAY_CUTOUT,
     GAMECOMMON_INSETS_TYPE_IME,
@@ -47,4 +37,4 @@ enum GameCommonInsetsType {
     GAMECOMMON_INSETS_TYPE_SYSTEM_GESTURES,
     GAMECOMMON_INSETS_TYPE_TAPABLE_ELEMENT,
     GAMECOMMON_INSETS_TYPE_COUNT
-};
+} GameCommonInsetsType;
