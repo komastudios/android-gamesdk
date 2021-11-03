@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f7f0de5_973a3706",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-03T12:19:04Z",
+      "side": 1,
+      "message": "Rerunning presubmits - the failed test looks spurious as when I click through it says it passed",
+      "revId": "91259b6af4a7ab4d875d89491ede40788e50a56e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
