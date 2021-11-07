@@ -5,6 +5,7 @@ import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
 import com.google.androidgamesdk.OboeDownloader
+import com.google.androidgamesdk.TensorflowPatcher
 import com.google.androidgamesdk.BuildInfoFile
 import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.ToolchainSet
@@ -120,6 +121,7 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
+    .setUsesTensorflow()
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
@@ -202,6 +204,13 @@ task prepare_third_party_libraries {
     doLast {
         def oboeDownloader = new OboeDownloader(project)
         oboeDownloader.fetchAndInstall();
+    }
+}
+
+task prepare_tensorflow {
+    doLast {
+        def tensorflowPatcher = new TensorflowPatcher(project)
+        tensorflowPatcher.patch();
     }
 }
 
@@ -799,6 +808,7 @@ tasks.withType(BuildTask) {
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -877,6 +887,7 @@ task buildAarStructure {
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
