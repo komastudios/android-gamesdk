@@ -6,6 +6,8 @@ include("../../samples/gamesdk.cmake")
 
 set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
 set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
+set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/tensorflow")
+set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -14,14 +16,19 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
 
+set( CPUINFO_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/cpuinfo")
+set( CLOG_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/cpuinfo")
+set( PTHREADPOOL_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/pthreadpool")
+set( FXDIV_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FXdiv")
+set( FP16_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FP16")
+set( PSIMD_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/psimd")
+
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-s")
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--hash-style=both" )
 
-file(READ "${MEMORYADVICE_ASSETS_DIR}/lookup.json" LOOKUP_TABLE)
 set(LOOKUP_STRING "namespace memory_advice {\nconst char* lookup_string = R\"LOOKUP(\n")
-string(APPEND LOOKUP_STRING "${LOOKUP_TABLE}")
 string(APPEND LOOKUP_STRING "\n )LOOKUP\";\n}\n")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/device_profiler_lookup.cpp" "${LOOKUP_STRING}")
 
@@ -36,6 +43,18 @@ include_directories( ../../include )
 include_directories( ../common )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${THIRD_PARTY_DIR} )
+
+add_subdirectory(
+  "${EXTERNAL_SOURCE_DIR}/abseil-cpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/abseil-cpp"
+  EXCLUDE_FROM_ALL
+)
+
+add_subdirectory(
+  "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
+  "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite"
+  EXCLUDE_FROM_ALL
+)
 
 
 set(MEMORY_ADVICE_SRCS
@@ -59,4 +78,6 @@ add_library(memory_advice SHARED ${MEMORY_ADVICE_SRCS})
 target_link_libraries(memory_advice
   android
   log
+  absl::flags
+  tensorflow-lite
 )
