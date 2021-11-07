@@ -29,6 +29,8 @@ data class NativeLibrary(
         private set
     var usesProtobuf = false
         private set
+    var usesTensorflow = false
+        private set
 
     fun addSampleAndroidProject(
         sampleAndroidProject: ExternalAndroidProject
@@ -76,6 +78,11 @@ data class NativeLibrary(
 
     fun setUsesProtobuf(): NativeLibrary {
         this.usesProtobuf = true
+        return this
+    }
+
+    fun setUsesTensorflow(): NativeLibrary {
+        this.usesTensorflow = true
         return this
     }
 
