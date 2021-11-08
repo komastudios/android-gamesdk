@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e763958_d056fd04",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/TensorflowPatcher.kt",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-08T13:06:18Z",
+      "side": 1,
+      "message": "nit: can you limit line length in this file to \u003c100 chars please",
+      "revId": "16b44f076437f724b1dbd0319fc2aea0fdbadb41",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
