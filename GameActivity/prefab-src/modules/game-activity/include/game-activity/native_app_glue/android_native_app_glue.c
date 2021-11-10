@@ -366,16 +366,6 @@ static void onConfigurationChanged(GameActivity* activity) {
     android_app_write_cmd(ToApp(activity), APP_CMD_CONFIG_CHANGED);
 }
 
-static void onContentRectChanged(GameActivity* activity, const ARect* r) {
-    LOGV("ContentRectChanged: l=%d,t=%d,r=%d,b=%d", r->left, r->top, r->right,
-         r->bottom);
-    struct android_app* android_app = ToApp(activity);
-    pthread_mutex_lock(&android_app->mutex);
-    android_app->contentRect = *r;
-    pthread_mutex_unlock(&android_app->mutex);
-    android_app_write_cmd(ToApp(activity), APP_CMD_CONTENT_RECT_CHANGED);
-}
-
 static void onTrimMemory(GameActivity* activity, int level) {
     LOGV("TrimMemory: %p %d", activity, level);
     android_app_write_cmd(ToApp(activity), APP_CMD_LOW_MEMORY);
@@ -533,7 +523,6 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onNativeWindowRedrawNeeded =
         onNativeWindowRedrawNeeded;
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
-    activity->callbacks->onContentRectChanged = onContentRectChanged;
     activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
     LOGV("Callbacks set: %p", activity->callbacks);
 
