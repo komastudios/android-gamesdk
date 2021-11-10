@@ -66,6 +66,9 @@ void Renderer::setWindow(ANativeWindow *window, int32_t width, int32_t height) {
 }
 
 void Renderer::start() {
+
+    mSwappyEnabled = SwappyGL_isEnabled();
+
     mWorkerThread.run([this](ThreadState *threadState) {
         threadState->isStarted = true;
         // Reset time to avoid super-large update of position
@@ -212,7 +215,10 @@ void Renderer::setWorkload(int load) {
 }
 
 void Renderer:: setSwappyEnabled(bool enabled) {
-    mSwappyEnabled = enabled;
+    mSwappyEnabled = enabled && SwappyGL_isEnabled();
+    if (mSwappyEnabled != enabled) {
+        ALOGW("Warning: Swappy couldn't be enabled, check the device API version");
+    }
 }
 
 void Renderer::draw(ThreadState *threadState) {

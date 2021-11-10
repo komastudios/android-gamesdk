@@ -20,6 +20,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.games:memory-advice:0.22'
+    implementation 'com.google.android.games:memory-advice:0.24'
 
 }

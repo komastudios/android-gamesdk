@@ -178,10 +178,6 @@ static bool decodeHistograms(pb_istream_t* stream, const pb_field_t* field,
     // Override API key if passed from c_settings.
     if (settings->c_settings.api_key != nullptr)
         settings->api_key = settings->c_settings.api_key;
-    // Override aggregation strategy interval too.
-    if (settings->c_settings.aggregation_strategy_intervalms_or_count > 0)
-        settings->aggregation_strategy.intervalms_or_count =
-            settings->c_settings.aggregation_strategy_intervalms_or_count;
     return TUNINGFORK_ERROR_OK;
 }
 

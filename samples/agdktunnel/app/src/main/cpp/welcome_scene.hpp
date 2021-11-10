@@ -67,6 +67,9 @@ public:
     virtual void OnKillGraphics() override;
 
     virtual void DoFrame() override;
+
+ private:
+    const char* AboutMessage();
 };
 
 #endif
