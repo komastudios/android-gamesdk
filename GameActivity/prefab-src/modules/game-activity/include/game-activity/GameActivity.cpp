@@ -198,6 +198,7 @@ static struct {
     jmethodID finish;
     jmethodID setWindowFlags;
     jmethodID getWindowInsets;
+    jmethodID getWaterfallInsets;
 } gGameActivityClassInfo;
 
 /*
@@ -292,6 +293,7 @@ struct NativeCode : public GameActivity {
     NativeCode(void *_dlhandle, GameActivity_createFunc *_createFunc) {
         memset((GameActivity *)this, 0, sizeof(GameActivity));
         memset(&callbacks, 0, sizeof(callbacks));
+        memset(&insetsState, 0, sizeof(insetsState));
         dlhandle = _dlhandle;
         createActivityFunc = _createFunc;
         nativeWindow = NULL;
@@ -368,7 +370,7 @@ struct NativeCode : public GameActivity {
     OwnedGameTextInputState gameTextInputState;
     std::mutex gameTextInputStateMutex;
 
-    GameCommonInsets insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
+    ARect insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
 };
 
 extern "C" void GameActivity_finish(GameActivity *activity) {
@@ -410,8 +412,8 @@ extern "C" void GameActivity_hideSoftInput(GameActivity *activity,
 }
 
 extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
-                                             enum GameCommonInsetsType type,
-                                             GameCommonInsets *insets) {
+                                             GameCommonInsetsType type,
+                                             ARect *insets) {
     if (type < 0 || type >= GAMECOMMON_INSETS_TYPE_COUNT) return;
     NativeCode *code = static_cast<NativeCode *>(activity);
     *insets = code->insetsState[type];
@@ -805,23 +807,6 @@ static void onSurfaceDestroyed_native(JNIEnv *env, jobject javaGameActivity,
     }
 }
 
-static void onContentRectChanged_native(JNIEnv *env, jobject clazz,
-                                        jlong handle, jint x, jint y, jint w,
-                                        jint h) {
-    LOG_TRACE("onContentRectChanged_native");
-    if (handle != 0) {
-        NativeCode *code = (NativeCode *)handle;
-        if (code->callbacks.onContentRectChanged != NULL) {
-            ARect rect;
-            rect.left = x;
-            rect.top = y;
-            rect.right = x + w;
-            rect.bottom = y + h;
-            code->callbacks.onContentRectChanged(code, &rect);
-        }
-    }
-}
-
 static bool enabledAxes[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT] = {
     /* AMOTION_EVENT_AXIS_X */ true,
     /* AMOTION_EVENT_AXIS_Y */ true,
@@ -1067,29 +1052,29 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getKeyCode)};
 }
 
-static void onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
+static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
                                 jlong handle, jobject motionEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
-    if (code->callbacks.onTouchEvent == nullptr) return;
+    if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
-    code->callbacks.onTouchEvent(code, &c_event);
+    return code->callbacks.onTouchEvent(code, &c_event);
 }
 
-static void onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
+static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
                            jobject keyEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
-    if (code->callbacks.onKeyUp == nullptr) return;
+    if (code->callbacks.onKeyUp == nullptr) return false;
 
     static GameActivityKeyEvent c_event;
     GameActivityKeyEvent_fromJava(env, keyEvent, &c_event);
-    code->callbacks.onKeyUp(code, &c_event);
+    return code->callbacks.onKeyUp(code, &c_event);
 }
 
-static void onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
+static bool onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
                              jlong handle, jobject keyEvent) {
     if (handle == 0) return;
     NativeCode *code = (NativeCode *)handle;
@@ -1097,7 +1082,7 @@ static void onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
 
     static GameActivityKeyEvent c_event;
     GameActivityKeyEvent_fromJava(env, keyEvent, &c_event);
-    code->callbacks.onKeyDown(code, &c_event);
+    return code->callbacks.onKeyDown(code, &c_event);
 }
 
 static void onTextInput_native(JNIEnv *env, jobject activity, jlong handle,
@@ -1113,17 +1098,32 @@ static void onWindowInsetsChanged_native(JNIEnv *env, jobject activity,
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onWindowInsetsChanged == nullptr) return;
     for (int type = 0; type < GAMECOMMON_INSETS_TYPE_COUNT; ++type) {
-        int jtype = env->CallStaticIntMethod(
-            gWindowInsetsCompatTypeClassInfo.clazz,
-            gWindowInsetsCompatTypeClassInfo.methods[type]);
-        jobject jinsets = env->CallObjectMethod(
-            code->javaGameActivity, gGameActivityClassInfo.getWindowInsets,
-            jtype);
-        GameCommonInsets &insets = code->insetsState[type];
-        insets.left = env->GetIntField(jinsets, gInsetsClassInfo.left);
-        insets.right = env->GetIntField(jinsets, gInsetsClassInfo.right);
-        insets.top = env->GetIntField(jinsets, gInsetsClassInfo.top);
-        insets.bottom = env->GetIntField(jinsets, gInsetsClassInfo.bottom);
+        jobject jinsets;
+        // Note that waterfall insets are handled differently on the Java side.
+        if (type == GAMECOMMON_INSETS_TYPE_WATERFALL) {
+            jinsets = env->CallObjectMethod(
+                code->javaGameActivity,
+                gGameActivityClassInfo.getWaterfallInsets);
+        } else {
+            jint jtype = env->CallStaticIntMethod(
+                gWindowInsetsCompatTypeClassInfo.clazz,
+                gWindowInsetsCompatTypeClassInfo.methods[type]);
+            jinsets = env->CallObjectMethod(
+                code->javaGameActivity, gGameActivityClassInfo.getWindowInsets,
+                jtype);
+        }
+        ARect &insets = code->insetsState[type];
+        if (jinsets == nullptr) {
+            insets.left = 0;
+            insets.right = 0;
+            insets.top = 0;
+            insets.bottom = 0;
+        } else {
+            insets.left = env->GetIntField(jinsets, gInsetsClassInfo.left);
+            insets.right = env->GetIntField(jinsets, gInsetsClassInfo.right);
+            insets.top = env->GetIntField(jinsets, gInsetsClassInfo.top);
+            insets.bottom = env->GetIntField(jinsets, gInsetsClassInfo.bottom);
+        }
     }
     GameTextInput_processImeInsets(
         code->gameTextInput, &code->insetsState[GAMECOMMON_INSETS_TYPE_IME]);
@@ -1160,11 +1160,11 @@ static const JNINativeMethod g_methods[] = {
     {"onSurfaceRedrawNeededNative", "(JLandroid/view/Surface;)V",
      (void *)onSurfaceRedrawNeeded_native},
     {"onSurfaceDestroyedNative", "(J)V", (void *)onSurfaceDestroyed_native},
-    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)V",
+    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)Z",
      (void *)onTouchEvent_native},
-    {"onKeyDownNative", "(JLandroid/view/KeyEvent;)V",
+    {"onKeyDownNative", "(JLandroid/view/KeyEvent;)Z",
      (void *)onKeyDown_native},
-    {"onKeyUpNative", "(JLandroid/view/KeyEvent;)V", (void *)onKeyUp_native},
+    {"onKeyUpNative", "(JLandroid/view/KeyEvent;)Z", (void *)onKeyUp_native},
     {"onTextInputEventNative",
      "(JLcom/google/androidgamesdk/gametextinput/State;)V",
      (void *)onTextInput_native},
@@ -1173,8 +1173,6 @@ static const JNINativeMethod g_methods[] = {
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
-    {"onContentRectChangedNative", "(JIIII)V",
-     (void *)onContentRectChanged_native},
 };
 
 static const char *const kGameActivityPathName =
@@ -1235,6 +1233,8 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                   "setWindowFlags", "(II)V");
     GET_METHOD_ID(gGameActivityClassInfo.getWindowInsets, activity_class,
                   "getWindowInsets", "(I)Landroidx/core/graphics/Insets;");
+    GET_METHOD_ID(gGameActivityClassInfo.getWaterfallInsets, activity_class,
+                  "getWaterfallInsets", "()Landroidx/core/graphics/Insets;");
     jclass insets_class;
     FIND_CLASS(insets_class, kInsetsPathName);
     GET_FIELD_ID(gInsetsClassInfo.left, insets_class, "left", "I");
@@ -1246,7 +1246,9 @@ extern "C" int GameActivity_register(JNIEnv *env) {
     gWindowInsetsCompatTypeClassInfo.clazz =
         (jclass)env->NewGlobalRef(windowInsetsCompatType_class);
     // These names must match, in order, the GameCommonInsetsType enum fields
-    const char *methodNames[GAMECOMMON_INSETS_TYPE_COUNT] = {
+    // Note that waterfall is handled differently by the insets API, so we
+    // exclude it here.
+    const char *methodNames[GAMECOMMON_INSETS_TYPE_WATERFALL] = {
         "captionBar",
         "displayCutout",
         "ime",
@@ -1256,7 +1258,7 @@ extern "C" int GameActivity_register(JNIEnv *env) {
         "systemBars",
         "systemGestures",
         "tappableElement"};
-    for (int i = 0; i < GAMECOMMON_INSETS_TYPE_COUNT; ++i) {
+    for (int i = 0; i < GAMECOMMON_INSETS_TYPE_WATERFALL; ++i) {
         GET_STATIC_METHOD_ID(gWindowInsetsCompatTypeClassInfo.methods[i],
                              windowInsetsCompatType_class, methodNames[i],
                              "()I");

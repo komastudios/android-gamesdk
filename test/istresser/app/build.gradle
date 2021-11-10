@@ -28,9 +28,9 @@ dependencies {
     api 'com.google.guava:guava:28.0-android'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
-    implementation 'com.google.android.games:memory-advice:0.22'
-    implementation 'com.google.android.games:memory-advice-common:0.22'
-    implementation 'com.google.android.games:memory-test:0.22'
+    implementation 'com.google.android.games:memory-advice:0.24'
+    implementation 'com.google.android.games:memory-advice-common:0.24'
+    implementation 'com.google.android.games:memory-test:0.24'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.core:core:1.3.2'

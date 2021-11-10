@@ -68,18 +68,24 @@ class OboeDownloader(val project: Project) {
             "src/", ""
         )
 
+        cmakeListsContent = cmakeListsContent.replace(
+          "cmake_minimum_required(VERSION 3.4.1)",
+          "cmake_minimum_required(VERSION 3.18.1)\n" +
+            "set(CMAKE_CXX_STANDARD 14)\n"
+          )
+
         // Add a static library version of Oboe and patch the include paths.
         cmakeListsContent = cmakeListsContent.replace(
             "add_library(oboe \${oboe_sources})",
             "add_library(oboe_static STATIC \${oboe_sources})\n" +
-                "add_library(oboe SHARED)\n"
+                "add_library(oboe SHARED \${oboe_sources})\n"
         )
         cmakeListsContent = cmakeListsContent.replace(
             "target_include_directories(oboe\n" +
                 "        PRIVATE src\n" +
                 "        PUBLIC include)\n",
             "target_include_directories(oboe_static\n" +
-                "        PRIVATE .\n" +
+                "        PUBLIC .\n" +
                 "        PUBLIC ../../include)\n"
         )
         cmakeListsContent = cmakeListsContent.replace(

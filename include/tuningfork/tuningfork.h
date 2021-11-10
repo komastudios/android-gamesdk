@@ -362,11 +362,6 @@ typedef struct TuningFork_Settings {
      * tuningfork_settings.bin file. See tuningfork.proto for more information.
      */
     const char* api_key;
-    /**
-     * Override of the aggregation strategy's intervalms_or_count in
-     * tungingfork.proto. Ignored if zero.
-     */
-    uint32_t aggregation_strategy_intervalms_or_count;
 } TuningFork_Settings;
 
 /**
@@ -708,6 +703,7 @@ typedef enum TuningFork_Submission {
  * initialized.
  * @return TUNINGFORK_ERROR_BAD_PARAMETER if method is not TIME_BASED or
  * TICK_BASED or if interval_ms_or_count is 0 or greater than one day.
+ * @see TuningFork_frameTick
  */
 TuningFork_ErrorCode TuningFork_setAggregationStrategyInterval(
     TuningFork_Submission method, uint32_t interval_ms_or_count);

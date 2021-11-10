@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
+project(tuningfork C CXX)
+set(CMAKE_CXX_STANDARD 14)
 
 option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
 
@@ -6,7 +8,7 @@ include("../protobuf/protobuf.cmake")
 set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/modp_b64")
 set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )

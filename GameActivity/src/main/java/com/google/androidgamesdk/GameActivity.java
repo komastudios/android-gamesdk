@@ -39,10 +39,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.gametextinput.InputConnection;
 import com.google.androidgamesdk.gametextinput.GameTextInput;
 import com.google.androidgamesdk.gametextinput.Listener;
@@ -53,8 +55,7 @@ import java.io.File;
 
 public class GameActivity
     extends AppCompatActivity
-    implements SurfaceHolder.Callback2, OnGlobalLayoutListener, Listener,
-    OnApplyWindowInsetsListener {
+    implements SurfaceHolder.Callback2, Listener, OnApplyWindowInsetsListener {
   private static final String LOG_TAG = "GameActivity";
 
   /**
@@ -86,26 +87,22 @@ public class GameActivity
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    onTouchEventNative(mNativeHandle, event);
-    return true;
+    return onTouchEventNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onGenericMotionEvent(MotionEvent event) {
-    onTouchEventNative(mNativeHandle, event);
-    return true;
+    return onTouchEventNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onKeyUp(final int keyCode, KeyEvent event) {
-    onKeyUpNative(mNativeHandle, event);
-    return true;
+    return onKeyUpNative(mNativeHandle, event);
   }
 
   @Override
   public boolean onKeyDown(final int keyCode, KeyEvent event) {
-    onKeyDownNative(mNativeHandle, event);
-    return true;
+    return onKeyDownNative(mNativeHandle, event);
   }
 
   // Called when the IME has changed the input
@@ -129,10 +126,6 @@ public class GameActivity
   private SurfaceHolder mCurSurfaceHolder;
 
   protected final int[] mLocation = new int[2];
-  protected int mLastContentX;
-  protected int mLastContentY;
-  protected int mLastContentWidth;
-  protected int mLastContentHeight;
 
   protected boolean mDestroyed;
 
@@ -168,13 +161,11 @@ public class GameActivity
 
   protected native void onSurfaceDestroyedNative(long handle);
 
-  protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
+  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent);
 
-  protected native void onTouchEventNative(long handle, MotionEvent motionEvent);
+  protected native boolean onKeyDownNative(long handle, KeyEvent keyEvent);
 
-  protected native void onKeyDownNative(long handle, KeyEvent keyEvent);
-
-  protected native void onKeyUpNative(long handle, KeyEvent keyEvent);
+  protected native boolean onKeyUpNative(long handle, KeyEvent keyEvent);
 
   protected native void onTextInputEventNative(long handle, State softKeyboardEvent);
 
@@ -207,14 +198,16 @@ public class GameActivity
 
     setContentView(frameLayout);
     frameLayout.requestFocus();
-    frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
     mSurfaceView.getHolder().addCallback(
         this); // Register as a callback for the rendering of the surface, so that we can pass this
                // surface to the native code
 
+    // Note that in order for system window inset changes to be useful, the activity must call
+    // WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+    // Otherwise, the view will always be inside any system windows.
+
     // Listen for insets changes
-    WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
     ViewCompat.setOnApplyWindowInsetsListener(mSurfaceView, this);
 
   }
@@ -383,25 +376,6 @@ public class GameActivity
     }
   }
 
-  public void onGlobalLayout() {
-    if (mSurfaceView == null) return;
-
-    mSurfaceView.getLocationInWindow(mLocation);
-    int w = mSurfaceView.getWidth();
-    int h = mSurfaceView.getHeight();
-    if (mLocation[0] != mLastContentX || mLocation[1] != mLastContentY || w != mLastContentWidth
-        || h != mLastContentHeight) {
-      mLastContentX = mLocation[0];
-      mLastContentY = mLocation[1];
-      mLastContentWidth = w;
-      mLastContentHeight = h;
-      if (!mDestroyed) {
-        onContentRectChangedNative(mNativeHandle, mLastContentX,
-                mLastContentY, mLastContentWidth, mLastContentHeight);
-      }
-    }
-  }
-
   void setWindowFlags(int flags, int mask) {
     getWindow().setFlags(flags, mask);
   }
@@ -412,14 +386,28 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    Log.v(LOG_TAG, "onApplyWindowInsets in GameActivity");
     onWindowInsetsChangedNative(mNativeHandle);
+    // Pass through to the view - we don't want to handle the insets, just observe them.
+    v.onApplyWindowInsets(insets.toWindowInsets());
     return insets;
   }
 
   public Insets getWindowInsets(int type) {
+    WindowInsetsCompat allInsets = ViewCompat.getRootWindowInsets(mSurfaceView);
+    Insets insets = allInsets.getInsets(type);
+    if (insets == Insets.NONE)
+      return null;
+    else
+      return insets;
+  }
+
+  public Insets getWaterfallInsets() {
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mSurfaceView);
-    return insets.getInsets(type);
+    DisplayCutoutCompat cutout = insets.getDisplayCutout();
+    if (cutout != null)
+      return cutout.getWaterfallInsets();
+    else
+      return null;
   }
 
   // From the text input Listener.

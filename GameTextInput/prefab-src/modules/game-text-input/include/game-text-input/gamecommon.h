@@ -23,6 +23,7 @@
 #pragma once
 
 /**
+<<<<<<< HEAD   (91cc40 Merge cherrypicks of [1846516] into android-games-sdk-releas)
  * This struct holds a set of window insets.
  */
 typedef struct GameCommonInsets {
@@ -48,3 +49,21 @@ enum GameCommonInsetsType {
     GAMECOMMON_INSETS_TYPE_TAPABLE_ELEMENT,
     GAMECOMMON_INSETS_TYPE_COUNT
 };
+=======
+ * The type of a component for which to retrieve insets. See
+ * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
+ */
+typedef enum GameCommonInsetsType {
+    GAMECOMMON_INSETS_TYPE_CAPTION_BAR = 0,
+    GAMECOMMON_INSETS_TYPE_DISPLAY_CUTOUT,
+    GAMECOMMON_INSETS_TYPE_IME,
+    GAMECOMMON_INSETS_TYPE_MANDATORY_SYSTEM_GESTURES,
+    GAMECOMMON_INSETS_TYPE_NAVIGATION_BARS,
+    GAMECOMMON_INSETS_TYPE_STATUS_BARS,
+    GAMECOMMON_INSETS_TYPE_SYSTEM_BARS,
+    GAMECOMMON_INSETS_TYPE_SYSTEM_GESTURES,
+    GAMECOMMON_INSETS_TYPE_TAPABLE_ELEMENT,
+    GAMECOMMON_INSETS_TYPE_WATERFALL,
+    GAMECOMMON_INSETS_TYPE_COUNT
+} GameCommonInsetsType;
+>>>>>>> BRANCH (e465b3 Merge "NDK review changes (remove onContentRect and fix wate)

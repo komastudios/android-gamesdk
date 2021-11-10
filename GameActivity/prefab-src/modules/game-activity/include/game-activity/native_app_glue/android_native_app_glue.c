@@ -366,16 +366,6 @@ static void onConfigurationChanged(GameActivity* activity) {
     android_app_write_cmd(ToApp(activity), APP_CMD_CONFIG_CHANGED);
 }
 
-static void onContentRectChanged(GameActivity* activity, const ARect* r) {
-    LOGV("ContentRectChanged: l=%d,t=%d,r=%d,b=%d", r->left, r->top, r->right,
-         r->bottom);
-    struct android_app* android_app = ToApp(activity);
-    pthread_mutex_lock(&android_app->mutex);
-    android_app->contentRect = *r;
-    pthread_mutex_unlock(&android_app->mutex);
-    android_app_write_cmd(ToApp(activity), APP_CMD_CONTENT_RECT_CHANGED);
-}
-
 static void onTrimMemory(GameActivity* activity, int level) {
     LOGV("TrimMemory: %p %d", activity, level);
     android_app_write_cmd(ToApp(activity), APP_CMD_LOW_MEMORY);
@@ -411,7 +401,7 @@ static void onNativeWindowResized(GameActivity* activity,
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_RESIZED);
 }
 
-static void onTouchEvent(GameActivity* activity,
+static bool onTouchEvent(GameActivity* activity,
                          const GameActivityMotionEvent* event) {
     struct android_app* android_app = ToApp(activity);
     pthread_mutex_lock(&android_app->mutex);
@@ -428,6 +418,7 @@ static void onTouchEvent(GameActivity* activity,
         ++inputBuffer->motionEventsCount;
     }
     pthread_mutex_unlock(&android_app->mutex);
+    return true;
 }
 
 struct android_input_buffer* android_app_swap_input_buffers(
@@ -455,8 +446,26 @@ void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
     inputBuffer->motionEventsCount = 0;
 }
 
-static void onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
+// Codes from https://developer.android.com/reference/android/view/KeyEvent
+#define KEY_EVENT_KEYCODE_VOLUME_DOWN 25
+#define KEY_EVENT_KEYCODE_VOLUME_MUTE 164
+#define KEY_EVENT_KEYCODE_VOLUME_UP 24
+#define KEY_EVENT_KEYCODE_CAMERA 27
+#define KEY_EVENT_KEYCODE_ZOOM_IN 168
+#define KEY_EVENT_KEYCODE_ZOOM_OUT 169
+
+static bool onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
     struct android_app* android_app = ToApp(activity);
+
+    // Ignore camera, volume, etc. buttons
+    if (event->keyCode == KEY_EVENT_KEYCODE_VOLUME_DOWN ||
+        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_MUTE ||
+        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_UP ||
+        event->keyCode == KEY_EVENT_KEYCODE_CAMERA ||
+        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_IN ||
+        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_OUT)
+        return false;
+
     pthread_mutex_lock(&android_app->mutex);
 
     struct android_input_buffer* inputBuffer =
@@ -471,6 +480,7 @@ static void onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
     }
 
     pthread_mutex_unlock(&android_app->mutex);
+    return true;
 }
 
 void android_app_clear_key_events(struct android_input_buffer* inputBuffer) {
@@ -513,7 +523,6 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onNativeWindowRedrawNeeded =
         onNativeWindowRedrawNeeded;
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
-    activity->callbacks->onContentRectChanged = onContentRectChanged;
     activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
     LOGV("Callbacks set: %p", activity->callbacks);
 

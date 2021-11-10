@@ -30,6 +30,7 @@
 #include <android/asset_manager.h>
 #include <android/input.h>
 #include <android/native_window.h>
+#include <android/rect.h>
 #include <jni.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -361,12 +362,6 @@ typedef struct GameActivityCallbacks {
                                     ANativeWindow* window);
 
     /**
-     * The rectangle in the window in which content should be placed has
-     * changed.
-     */
-    void (*onContentRectChanged)(GameActivity* activity, const ARect* rect);
-
-    /**
      * The current device AConfiguration has changed.  The new configuration can
      * be retrieved from assetManager.
      */
@@ -384,7 +379,7 @@ typedef struct GameActivityCallbacks {
      * SurfaceView. Ownership of `event` is maintained by the library and it is
      * only valid during the callback.
      */
-    void (*onTouchEvent)(GameActivity* activity,
+    bool (*onTouchEvent)(GameActivity* activity,
                          const GameActivityMotionEvent* event);
 
     /**
@@ -392,7 +387,7 @@ typedef struct GameActivityCallbacks {
      * Ownership of `event` is maintained by the library and it is only valid
      * during the callback.
      */
-    void (*onKeyDown)(GameActivity* activity,
+    bool (*onKeyDown)(GameActivity* activity,
                       const GameActivityKeyEvent* event);
 
     /**
@@ -400,7 +395,7 @@ typedef struct GameActivityCallbacks {
      * Ownership of `event` is maintained by the library and it is only valid
      * during the callback.
      */
-    void (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
+    bool (*onKeyUp)(GameActivity* activity, const GameActivityKeyEvent* event);
 
     /**
      * Callback called for every soft-keyboard text input event.
@@ -747,10 +742,10 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
  * Get the current window insets of the particular component. See
  * https://developer.android.com/reference/androidx/core/view/WindowInsetsCompat.Type
  * for more details.
+ * You can use these insets to influence what you show on the screen.
  */
 void GameActivity_getWindowInsets(GameActivity* activity,
-                                  enum GameCommonInsetsType type,
-                                  GameCommonInsets* insets);
+                                  GameCommonInsetsType type, ARect* insets);
 
 #ifdef __cplusplus
 }
