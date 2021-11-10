@@ -120,6 +120,8 @@ PlayScene::PlayScene() : Scene() {
 
     mCheckpointSignPending = false;
 
+    mActiveWallTextureCount = 0;
+
     SetScore(0);
 
     /*
@@ -301,6 +303,7 @@ void PlayScene::OnKillGraphics() {
     for (int i = 0; i < mActiveWallTextureCount; ++i) {
         CleanUp(&mWallTextures[i]);
     }
+    mActiveWallTextureCount = 0;
     CleanUp(&mLifeGeom);
 }
 

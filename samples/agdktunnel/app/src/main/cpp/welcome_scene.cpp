@@ -87,8 +87,7 @@ void WelcomeScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
 }
 
-const char* WelcomeScene::AboutMessage() {
-    static std::string aboutMessage;
+std::string WelcomeScene::AboutMessage() {
     std::stringstream aboutStream;
     aboutStream << BLURB_ABOUT;
     // Add window insets to help debugging
@@ -104,8 +103,7 @@ const char* WelcomeScene::AboutMessage() {
     GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_WATERFALL, &insets);
     aboutStream << "Waterfall: (" << insets.left << ", " << insets.right << ", "
                 << insets.top << ", " << insets.bottom << ")";
-    aboutMessage = aboutStream.str();
-    return aboutMessage.c_str();
+    return aboutStream.str();
 }
 
 void WelcomeScene::OnButtonClicked(int id) {
@@ -117,7 +115,8 @@ void WelcomeScene::OnButtonClicked(int id) {
         mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mAboutButtonId) {
-        mgr->RequestNewScene((new DialogScene())->SetText(AboutMessage())->SetSingleButton(S_OK,
+        std::string aboutText = AboutMessage();
+        mgr->RequestNewScene((new DialogScene())->SetText(aboutText.c_str())->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mNameEdit->GetId()) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
