@@ -16,6 +16,86 @@
       "message": "Michael, since John is out, would you mind passing your eye over this CL, which we\u0027d like to get in for the next jetpad release?",
       "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15f7a8fc_2a7a8fac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2021-11-10T10:42:50Z",
+      "side": 1,
+      "message": "Sorry for the delayed review, got side tracked with SDK finalization for most of yesterday. Some comments inline, but actual NDK changes LGTM.",
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c47ec09d_4fe62f61",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2021-11-10T10:42:50Z",
+      "side": 1,
+      "message": "Why are these values globals and not instance variables given this only seems to support one LoaderScene at a time? Do these need to be deallocated?",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 0
+      },
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48b5d484_1dbaff4e",
+        "filename": "samples/agdktunnel/app/src/main/cpp/welcome_scene.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2021-11-10T10:42:50Z",
+      "side": 1,
+      "message": "This is a fairly dangerous pattern, IMO. Every call to AboutMessage() will invalidate the previous call\u0027s pointer, so you need to be 100% certain that all references to the pointer obtained from call N are no longer in use before making call N+1. Otherwise you\u0027ve got undefined behavior since the previous pointer is now pointing at free\u0027d memory.\n\nMaybe this is a common pattern in the games world but definitely not obvious from a caller\u0027s perspective in my experience.",
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a56ad0db_079c9bb0",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2021-11-10T10:42:50Z",
+      "side": 1,
+      "message": "nit: use the version code\n\n  if (VERSION.SDK_INT \u003e\u003d VERSION_CODES.P) {",
+      "range": {
+        "startLine": 47,
+        "startChar": 31,
+        "endLine": 47,
+        "endChar": 33
+      },
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
