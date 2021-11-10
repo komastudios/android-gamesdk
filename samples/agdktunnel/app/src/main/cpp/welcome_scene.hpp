@@ -69,7 +69,7 @@ public:
     virtual void DoFrame() override;
 
  private:
-    const char* AboutMessage();
+    std::string AboutMessage();
 };
 
 #endif

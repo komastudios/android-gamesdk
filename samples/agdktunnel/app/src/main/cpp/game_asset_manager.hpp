@@ -103,7 +103,7 @@ public:
     // file data into the specified buffer. Callback will be called when load completes.
     // returns true if async load began successfully
     bool LoadGameAssetAsync(const char *assetName, const size_t bufferSize, void *loadBuffer,
-                            LoadingCompleteCallback callback);
+                            LoadingCompleteCallback callback, void* userData);
 
     // Returns an array of filenames of files present in the specified asset pack,
     // returns NULL if the asset pack name was not found

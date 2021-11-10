@@ -36,14 +36,15 @@ DialogScene::DialogScene() {
     mTextBoxId = -1;
     mLeftButtonAction = mRightButtonAction = ACTION_RETURN;
     mButtonY = 0.5f;
-    mText = mLeftButtonText = mRightButtonText = NULL;
+    mLeftButtonText = mRightButtonText = NULL;
 }
 
 DialogScene::~DialogScene() {
 }
 
 void DialogScene::CreateWidgetsSetText() {
-    const char *text = mText;
+    std::lock_guard<std::mutex> lock(mTextMutex);
+    const char *text = mText.c_str();
     float center = 0.5f * SceneManager::GetInstance()->GetScreenAspect();
 
     if (mTextBoxId < 0) {

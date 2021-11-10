@@ -44,6 +44,7 @@ struct LoadingCompleteMessage {
     size_t bytesRead;
     void *loadBuffer;
     bool loadSuccessful;
+    void* userData;
 };
 
 typedef void (*LoadingCompleteCallback)(const LoadingCompleteMessage *message);
@@ -55,7 +56,8 @@ public:
     ~LoadingThread();
 
     void StartAssetLoad(const char *assetName, const char *assetPath, const size_t bufferSize,
-                        void *loadBuffer, LoadingCompleteCallback callback, bool useAssetManager);
+                        void *loadBuffer, LoadingCompleteCallback callback, bool useAssetManager,
+                        void* userData);
 
 private:
     void LaunchThread();
@@ -73,6 +75,7 @@ private:
         void *loadBuffer;
         LoadingCompleteCallback callback;
         bool useAssetManager;
+        void* userData;
     };
 
     std::mutex mThreadMutex;

@@ -16,6 +16,7 @@
 package com.google.sample.agdktunnel;
 
 import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import android.view.View;
@@ -44,7 +45,7 @@ public class AGDKTunnelActivity extends GameActivity {
     private void hideSystemUI() {
         // This will put the game behind any cutouts and waterfalls on devices which have
         // them, so the corresponding insets will be non-zero.
-        if (VERSION.SDK_INT >= 28) {
+        if (VERSION.SDK_INT >= VERSION_CODES.P) {
             getWindow().getAttributes().layoutInDisplayCutoutMode
                 = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
         }
