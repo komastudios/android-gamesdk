@@ -16,6 +16,24 @@
       "message": "Please add some documentation about userData, here and elsewhere it is used.",
       "revId": "5995ed0201cf051ea2cf8999da6124b360875fd8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "790da275_21be9277",
+        "filename": "samples/agdktunnel/app/src/main/cpp/game_asset_manager.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-10T15:16:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bcdcaae9_095af7bd",
+      "revId": "5995ed0201cf051ea2cf8999da6124b360875fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
