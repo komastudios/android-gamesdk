@@ -60,6 +60,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c0a433e2_a9967120",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-10T11:15:19Z",
+      "side": 1,
+      "message": "This just fixes a crash I was seeing but you\u0027re right that it should be rearchitected. I\u0027ll do that in a follow-up CL.",
+      "parentUuid": "c47ec09d_4fe62f61",
+      "range": {
+        "startLine": 103,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 0
+      },
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "48b5d484_1dbaff4e",
         "filename": "samples/agdktunnel/app/src/main/cpp/welcome_scene.cpp",
         "patchSetId": 3
@@ -71,6 +95,24 @@
       "writtenOn": "2021-11-10T10:42:50Z",
       "side": 1,
       "message": "This is a fairly dangerous pattern, IMO. Every call to AboutMessage() will invalidate the previous call\u0027s pointer, so you need to be 100% certain that all references to the pointer obtained from call N are no longer in use before making call N+1. Otherwise you\u0027ve got undefined behavior since the previous pointer is now pointing at free\u0027d memory.\n\nMaybe this is a common pattern in the games world but definitely not obvious from a caller\u0027s perspective in my experience.",
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38adf4d6_bd36d4c9",
+        "filename": "samples/agdktunnel/app/src/main/cpp/welcome_scene.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-10T11:15:19Z",
+      "side": 1,
+      "message": "I think we can be sure in this case that we\u0027re ok, but yes, in general it\u0027s dangerous, so I\u0027ll fix in the follow-up.",
+      "parentUuid": "48b5d484_1dbaff4e",
       "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -88,6 +130,30 @@
       "writtenOn": "2021-11-10T10:42:50Z",
       "side": 1,
       "message": "nit: use the version code\n\n  if (VERSION.SDK_INT \u003e\u003d VERSION_CODES.P) {",
+      "range": {
+        "startLine": 47,
+        "startChar": 31,
+        "endLine": 47,
+        "endChar": 33
+      },
+      "revId": "ea866c3db7b61c2d67d729bcd9d36d0f4615b09b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40656a0a_3b7f0102",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-10T11:15:19Z",
+      "side": 1,
+      "message": "Thanks - will fix in follow-up CL.",
+      "parentUuid": "a56ad0db_079c9bb0",
       "range": {
         "startLine": 47,
         "startChar": 31,
