@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bcdcaae9_095af7bd",
+        "filename": "samples/agdktunnel/app/src/main/cpp/game_asset_manager.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2021-11-10T15:00:07Z",
+      "side": 1,
+      "message": "Please add some documentation about userData, here and elsewhere it is used.",
+      "revId": "5995ed0201cf051ea2cf8999da6124b360875fd8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
