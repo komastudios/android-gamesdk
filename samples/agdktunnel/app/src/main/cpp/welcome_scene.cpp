@@ -24,6 +24,9 @@
 
 #include "game-text-input/gametextinput.h"
 
+// from samples/common/include
+#include "Versions.h"
+
 #include <string>
 #include <android/window.h>
 
@@ -87,11 +90,25 @@ void WelcomeScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
 }
 
-std::string WelcomeScene::AboutMessage() {
+static std::string sAboutStartText;
+
+void WelcomeScene::InitAboutText(JNIEnv* env, jobject context) {
     std::stringstream aboutStream;
     aboutStream << BLURB_ABOUT;
+    std::string versionName;
+    agdk_samples_util::GetAppVersionInfo(env, context, nullptr, &versionName);
+    aboutStream << "\nApp Version: " << versionName;
+    aboutStream << "\nTarget SDK Version: "
+                << android_get_application_target_sdk_version();
+    aboutStream << "\nDevice OS Version: " << android_get_device_api_level();
+    sAboutStartText = aboutStream.str();
+}
+
+std::string WelcomeScene::AboutMessage() {
+    std::stringstream aboutStream;
+    aboutStream << sAboutStartText;
     // Add window insets to help debugging
-    aboutStream << "\n\n[Debug Insets (left, right, top, bottom)]\n";
+    aboutStream << "\n[Debug Insets (left, right, top, bottom)]\n";
     auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
     ARect insets;
     GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_SYSTEM_BARS, &insets);

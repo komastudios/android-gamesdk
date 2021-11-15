@@ -68,8 +68,13 @@ public:
 
     virtual void DoFrame() override;
 
+    // Static info, including app and sdk versions.
+    static void InitAboutText(JNIEnv* env, jobject context);
+
  private:
+    // Complete about text, including insets.
     std::string AboutMessage();
+
 };
 
 #endif
