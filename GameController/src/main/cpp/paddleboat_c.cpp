@@ -23,7 +23,7 @@ extern "C" {
 
 // Internal macros to track Paddleboat version, do not use directly.
 #define PADDLEBOAT_MAJOR_VERSION 1
-#define PADDLEBOAT_MINOR_VERSION 0
+#define PADDLEBOAT_MINOR_VERSION 1
 #define PADDLEBOAT_BUGFIX_VERSION 0
 
 #define PADDLEBOAT_PACKED_VERSION                                          \
@@ -96,6 +96,11 @@ void Paddleboat_setControllerStatusCallback(
                                                        userData);
 }
 
+void Paddleboat_setMotionDataCallback(
+    Paddleboat_MotionDataCallback motionDataCallback, void *userData) {
+    GameControllerManager::setMotionDataCallback(motionDataCallback, userData);
+}
+
 void Paddleboat_setMouseStatusCallback(
     Paddleboat_MouseStatusCallback statusCallback, void *userData) {
     GameControllerManager::setMouseStatusCallback(statusCallback, userData);
@@ -125,12 +130,20 @@ Paddleboat_ControllerStatus Paddleboat_getControllerStatus(
     return GameControllerManager::getControllerStatus(controllerIndex);
 }
 
+Paddleboat_ErrorCode Paddleboat_setControllerLight(
+    const int32_t controllerIndex, const Paddleboat_LightType lightType,
+    const uint32_t lightData, JNIEnv *env) {
+    return GameControllerManager::setControllerLight(controllerIndex,
+                                                     lightType, lightData, env);
+}
+
 Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(
     const int32_t controllerIndex,
     const Paddleboat_Vibration_Data *vibrationData, JNIEnv *env) {
     return GameControllerManager::setControllerVibrationData(
         controllerIndex, vibrationData, env);
 }
+
 
 Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData) {
     return GameControllerManager::getMouseData(mouseData);
@@ -167,4 +180,4 @@ void PADDLEBOAT_VERSION_SYMBOL() {
     // In case of mismatch, a linker error will be triggered because of an
     // undefined symbol, as the name of the function depends on the version.
 }
-}  // extern "C" {
+} // extern "C" {

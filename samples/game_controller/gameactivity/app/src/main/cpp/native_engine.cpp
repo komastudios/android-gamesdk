@@ -71,7 +71,7 @@ NativeEngine::NativeEngine(struct android_app *app) {
 
     Paddleboat_init(GetJniEnv(), app->activity->javaGameActivity); //clazz);
 
-            VLOGD("NativeEngine: querying API level.");
+    VLOGD("NativeEngine: querying API level.");
     ALOGI("NativeEngine: API version %d.", mApiVersion);
     ALOGI("NativeEngine: Density %d", mScreenDensity);
 }
@@ -82,7 +82,7 @@ NativeEngine *NativeEngine::GetInstance() {
 }
 
 NativeEngine::~NativeEngine() {
-            VLOGD("NativeEngine: destructor running");
+    VLOGD("NativeEngine: destructor running");
     Paddleboat_destroy(mJniEnv);
     ControllerUIData::UnloadControllerUIData();
     KillContext();
@@ -102,16 +102,6 @@ static void _handle_cmd_proxy(struct android_app *app, int32_t cmd) {
     NativeEngine *engine = (NativeEngine *) app->userData;
     engine->HandleCommand(cmd);
 }
-#if 0
-static int _handle_input_proxy(struct android_app *app, AInputEvent *event) {
-    NativeEngine *engine = (NativeEngine *) app->userData;
-    //int gcHandled = Paddleboat_processInputEvent(event);
-    //if (gcHandled == 1) {
-    //    return gcHandled;
-    //}
-    return engine->HandleInput(event) ? 1 : 0;
-}
-#endif
 
 bool NativeEngine::IsAnimating() {
     return mHasFocus && mIsVisible && mHasWindow;
@@ -144,96 +134,52 @@ static bool _cooked_event_callback(struct CookedEvent *event) {
     }
 }
 
-void NativeEngine::CheckForNewAxis() {
-    // Tell GameActivity about any new axis ids so it reports
-    // their events
-    const uint64_t activeAxisIds = Paddleboat_getActiveAxisMask();
-    uint64_t newAxisIds = activeAxisIds ^ mActiveAxisIds;
-    if (newAxisIds != 0) {
-        mActiveAxisIds = activeAxisIds;
-        int32_t currentAxisId = 0;
-        while(newAxisIds != 0) {
-            if ((newAxisIds & 1) != 0) {
-                ALOGI("Enable Axis: %d", currentAxisId);
-                GameActivityPointerAxes_enableAxis(currentAxisId);
+// This is here and not in input_util.cpp due to being specific to the GameActivity version
+static bool _cook_game_activity_motion_event(GameActivityMotionEvent *motionEvent,
+                                             CookedEventCallback callback) {
+    if (motionEvent->pointerCount > 0) {
+        int action = motionEvent->action;
+        int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
+        int ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
+                                                                          AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+
+        if (ptrIndex < motionEvent->pointerCount) {
+            struct CookedEvent ev;
+            memset(&ev, 0, sizeof(ev));
+
+            if (actionMasked == AMOTION_EVENT_ACTION_DOWN || actionMasked ==
+                                                             AMOTION_EVENT_ACTION_POINTER_DOWN) {
+                ev.type = COOKED_EVENT_TYPE_POINTER_DOWN;
+            } else if (actionMasked == AMOTION_EVENT_ACTION_UP || actionMasked ==
+                                                                  AMOTION_EVENT_ACTION_POINTER_UP) {
+                ev.type = COOKED_EVENT_TYPE_POINTER_UP;
+            } else {
+                ev.type = COOKED_EVENT_TYPE_POINTER_MOVE;
             }
-            ++currentAxisId;
-            newAxisIds >>= 1;
-        }
-    }
-}
 
-void NativeEngine::ProcessKeyEvents() {
-    if (mApp->keyDownEventsCount != 0) {
-        for (uint64_t i = 0; i < mApp->keyDownEventsCount; ++i) {
-            GameActivityKeyEvent *keyEvent = &mApp->keyDownEvents[i];
-            Paddleboat_processGameActivityKeyInputEvent(keyEvent, sizeof(GameActivityKeyEvent));
-        }
-        android_app_clear_key_down_events(mApp);
-    }
+            ev.motionPointerId = motionEvent->pointers[ptrIndex].id;
+            ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
+            ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[ptrIndex]);
+            ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[ptrIndex]);
 
-    if (mApp->keyUpEventsCount != 0) {
-        for (uint64_t i = 0; i < mApp->keyUpEventsCount; ++i) {
-            GameActivityKeyEvent *keyEvent = &mApp->keyUpEvents[i];
-            Paddleboat_processGameActivityKeyInputEvent(keyEvent, sizeof(GameActivityKeyEvent));
-        }
-        android_app_clear_key_up_events(mApp);
-    }
-}
-
-void NativeEngine::ProcessMotionEvents() {
-    if (mApp->motionEventsCount != 0) {
-        //ALOGI("Motion Event Count %d", (int)mApp->motionEventsCount);
-        for (uint64_t i = 0; i < mApp->motionEventsCount; ++i) {
-            GameActivityMotionEvent *motionEvent = &mApp->motionEvents[i];
-            int gcHandled = Paddleboat_processGameActivityMotionInputEvent(motionEvent,
-                    sizeof(GameActivityMotionEvent));
-            if (gcHandled == 0) {
-                // Paddleboat didn't process and consume it, probably a touch event
-                int action = motionEvent->action;
-                int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
-                int ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
-                        AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
-
-                struct CookedEvent ev;
-                memset(&ev, 0, sizeof(ev));
-
-                if (actionMasked == AMOTION_EVENT_ACTION_DOWN || actionMasked ==
-                        AMOTION_EVENT_ACTION_POINTER_DOWN) {
-                    ev.type = COOKED_EVENT_TYPE_POINTER_DOWN;
-                } else if (actionMasked == AMOTION_EVENT_ACTION_UP || actionMasked ==
-                        AMOTION_EVENT_ACTION_POINTER_UP) {
-                    ev.type = COOKED_EVENT_TYPE_POINTER_UP;
-                } else {
-                    ev.type = COOKED_EVENT_TYPE_POINTER_MOVE;
-                }
-
-                ev.motionPointerId = motionEvent->pointers[ptrIndex].id;
-                ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
-                ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[ptrIndex]);
-                ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[ptrIndex]);
-
-                if (ev.motionIsOnScreen) {
-                    // use screen size as the motion range
-                    ev.motionMinX = 0.0f;
-                    ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
-                    ev.motionMinY = 0.0f;
-                    ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
-                }
-
-                _cooked_event_callback(&ev);
+            if (ev.motionIsOnScreen) {
+                // use screen size as the motion range
+                ev.motionMinX = 0.0f;
+                ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
+                ev.motionMinY = 0.0f;
+                ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
             }
+
+            return callback(&ev);
         }
-        android_app_clear_motion_events(mApp);
     }
+    return false;
 }
 
 void NativeEngine::GameLoop() {
     mApp->userData = this;
     mApp->onAppCmd = _handle_cmd_proxy;
     //mApp->onInputEvent = _handle_input_proxy;
-    mApp->motionEventsCount = 0;
-    mApp->textInputState = 0;
 
     while (1) {
         int events;
@@ -253,9 +199,7 @@ void NativeEngine::GameLoop() {
             }
         }
 
-        CheckForNewAxis();
-        ProcessKeyEvents();
-        ProcessMotionEvents();
+        HandleGameActivityInput();
 
         if (IsAnimating()) {
             DoFrame();
@@ -277,14 +221,28 @@ JNIEnv *NativeEngine::GetJniEnv() {
     return mJniEnv;
 }
 
+JNIEnv *NativeEngine::GetAppJniEnv() {
+    if (!mAppJniEnv) {
+        ALOGI("Attaching current thread to JNI.");
+        if (0 != mApp->activity->vm->AttachCurrentThread(&mAppJniEnv, NULL)) {
+            ALOGE("*** FATAL ERROR: Failed to attach thread to JNI.");
+            ABORT_GAME;
+        }
+        MY_ASSERT(mAppJniEnv != NULL);
+        ALOGI("Attached current thread to JNI, %p", mAppJniEnv);
+    }
+
+    return mAppJniEnv;
+}
+
 void NativeEngine::HandleCommand(int32_t cmd) {
     SceneManager *mgr = SceneManager::GetInstance();
 
-            VLOGD("NativeEngine: handling command %d.", cmd);
+    VLOGD("NativeEngine: handling command %d.", cmd);
     switch (cmd) {
         case APP_CMD_SAVE_STATE:
             // The system has asked us to save our current state.
-                    VLOGD("NativeEngine: APP_CMD_SAVE_STATE");
+            VLOGD("NativeEngine: APP_CMD_SAVE_STATE");
             mState.mHasFocus = mHasFocus;
             mApp->savedState = malloc(sizeof(mState));
             *((NativeEngineSavedState *) mApp->savedState) = mState;
@@ -292,7 +250,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
             break;
         case APP_CMD_INIT_WINDOW:
             // We have a window!
-                    VLOGD("NativeEngine: APP_CMD_INIT_WINDOW");
+            VLOGD("NativeEngine: APP_CMD_INIT_WINDOW");
             if (mApp->window != NULL) {
                 mHasWindow = true;
                 if (mApp->savedStateSize == sizeof(mState) && mApp->savedState != nullptr) {
@@ -304,73 +262,120 @@ void NativeEngine::HandleCommand(int32_t cmd) {
                     mHasFocus = appState.mHasFocus;
                 }
             }
-                    VLOGD("HandleCommand(%d): hasWindow = %d, hasFocus = %d", cmd,
-                          mHasWindow ? 1 : 0, mHasFocus ? 1 : 0);
+            VLOGD("HandleCommand(%d): hasWindow = %d, hasFocus = %d", cmd,
+                  mHasWindow ? 1 : 0, mHasFocus ? 1 : 0);
             break;
         case APP_CMD_TERM_WINDOW:
             // The window is going away -- kill the surface
-                    VLOGD("NativeEngine: APP_CMD_TERM_WINDOW");
+            VLOGD("NativeEngine: APP_CMD_TERM_WINDOW");
             KillSurface();
             mHasWindow = false;
             break;
         case APP_CMD_GAINED_FOCUS:
-                    VLOGD("NativeEngine: APP_CMD_GAINED_FOCUS");
+            VLOGD("NativeEngine: APP_CMD_GAINED_FOCUS");
             mHasFocus = true;
             mState.mHasFocus = appState.mHasFocus = mHasFocus;
             break;
         case APP_CMD_LOST_FOCUS:
-                    VLOGD("NativeEngine: APP_CMD_LOST_FOCUS");
+            VLOGD("NativeEngine: APP_CMD_LOST_FOCUS");
             mHasFocus = false;
             mState.mHasFocus = appState.mHasFocus = mHasFocus;
             break;
         case APP_CMD_PAUSE:
-                    VLOGD("NativeEngine: APP_CMD_PAUSE");
+            VLOGD("NativeEngine: APP_CMD_PAUSE");
             mgr->OnPause();
             break;
         case APP_CMD_RESUME:
-                    VLOGD("NativeEngine: APP_CMD_RESUME");
+            VLOGD("NativeEngine: APP_CMD_RESUME");
             mgr->OnResume();
             break;
         case APP_CMD_STOP:
-                    VLOGD("NativeEngine: APP_CMD_STOP");
+            VLOGD("NativeEngine: APP_CMD_STOP");
             Paddleboat_onStop(mJniEnv);
             mIsVisible = false;
             break;
         case APP_CMD_START:
-                    VLOGD("NativeEngine: APP_CMD_START");
+            VLOGD("NativeEngine: APP_CMD_START");
             Paddleboat_onStart(mJniEnv);
             mIsVisible = true;
             break;
         case APP_CMD_WINDOW_RESIZED:
         case APP_CMD_CONFIG_CHANGED:
-                    VLOGD("NativeEngine: %s", cmd == APP_CMD_WINDOW_RESIZED ?
-                                              "APP_CMD_WINDOW_RESIZED" : "APP_CMD_CONFIG_CHANGED");
+            VLOGD("NativeEngine: %s", cmd == APP_CMD_WINDOW_RESIZED ?
+                                      "APP_CMD_WINDOW_RESIZED" : "APP_CMD_CONFIG_CHANGED");
             // Window was resized or some other configuration changed.
             // Note: we don't handle this event because we check the surface dimensions
             // every frame, so that's how we know it was resized. If you are NOT doing that,
             // then you need to handle this event!
             break;
         case APP_CMD_LOW_MEMORY:
-                    VLOGD("NativeEngine: APP_CMD_LOW_MEMORY");
+            VLOGD("NativeEngine: APP_CMD_LOW_MEMORY");
             // system told us we have low memory. So if we are not visible, let's
             // cooperate by deallocating all of our graphic resources.
             if (!mHasWindow) {
-                        VLOGD("NativeEngine: trimming memory footprint (deleting GL objects).");
+                VLOGD("NativeEngine: trimming memory footprint (deleting GL objects).");
                 KillGLObjects();
             }
             break;
         default:
-                    VLOGD("NativeEngine: (unknown command).");
+            VLOGD("NativeEngine: (unknown command).");
             break;
     }
 
-            VLOGD("NativeEngine: STATUS: F%d, V%d, W%d, EGL: D %p, S %p, CTX %p, CFG %p",
-                  mHasFocus, mIsVisible, mHasWindow, mEglDisplay, mEglSurface, mEglContext,
-                  mEglConfig);
+    VLOGD("NativeEngine: STATUS: F%d, V%d, W%d, EGL: D %p, S %p, CTX %p, CFG %p",
+          mHasFocus, mIsVisible, mHasWindow, mEglDisplay, mEglSurface, mEglContext,
+          mEglConfig);
 }
 
 bool NativeEngine::HandleInput(AInputEvent *event) {
-    return CookEvent(event, _cooked_event_callback);
+    return false;
+}
+
+void NativeEngine::HandleGameActivityInput() {
+    CheckForNewAxis();
+    // Swap input buffers so we don't miss any events while processing inputBuffer.
+    android_input_buffer* inputBuffer = android_app_swap_input_buffers(mApp);
+    // Early exit if no events.
+    if (inputBuffer == nullptr) return;
+
+    if (inputBuffer->keyEventsCount != 0) {
+        for (uint64_t i = 0; i < inputBuffer->keyEventsCount; ++i) {
+            GameActivityKeyEvent* keyEvent = &inputBuffer->keyEvents[i];
+            Paddleboat_processGameActivityKeyInputEvent(keyEvent, sizeof(GameActivityKeyEvent));
+        }
+        android_app_clear_key_events(inputBuffer);
+    }
+    if (inputBuffer->motionEventsCount != 0) {
+        for (uint64_t i = 0; i < inputBuffer->motionEventsCount; ++i) {
+            GameActivityMotionEvent* motionEvent = &inputBuffer->motionEvents[i];
+
+            if (!Paddleboat_processGameActivityMotionInputEvent(motionEvent,
+                                                               sizeof(GameActivityMotionEvent))) {
+                // Didn't belong to a game controller, process it ourselves if it is a touch event
+                _cook_game_activity_motion_event(motionEvent, _cooked_event_callback);
+            }
+        }
+        android_app_clear_motion_events(inputBuffer);
+    }
+}
+
+void NativeEngine::CheckForNewAxis() {
+    // Tell GameActivity about any new axis ids so it reports
+    // their events
+    const uint64_t activeAxisIds = Paddleboat_getActiveAxisMask();
+    uint64_t newAxisIds = activeAxisIds ^mActiveAxisIds;
+    if (newAxisIds != 0) {
+        mActiveAxisIds = activeAxisIds;
+        int32_t currentAxisId = 0;
+        while (newAxisIds != 0) {
+            if ((newAxisIds & 1) != 0) {
+                ALOGI("Enable Axis: %d", currentAxisId);
+                GameActivityPointerAxes_enableAxis(currentAxisId);
+            }
+            ++currentAxisId;
+            newAxisIds >>= 1;
+        }
+    }
 }
 
 bool NativeEngine::InitDisplay() {
@@ -484,7 +489,7 @@ bool NativeEngine::PrepareToRender() {
         }
 
         ALOGI("NativeEngine: binding surface and context (display %p, surface %p, context %p)",
-             mEglDisplay, mEglSurface, mEglContext);
+              mEglDisplay, mEglSurface, mEglContext);
 
         // bind them
         if (EGL_FALSE == eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
@@ -622,7 +627,7 @@ void NativeEngine::DoFrame() {
     // prepare to render (create context, surfaces, etc, if needed)
     if (!PrepareToRender()) {
         // not ready
-                VLOGD("NativeEngine: preparation to render failed.");
+        VLOGD("NativeEngine: preparation to render failed.");
         return;
     }
 
@@ -637,7 +642,7 @@ void NativeEngine::DoFrame() {
     if (width != mSurfWidth || height != mSurfHeight) {
         // notify scene manager that the surface has changed size
         ALOGI("NativeEngine: surface changed size %dx%d --> %dx%d", mSurfWidth, mSurfHeight,
-             width, height);
+              width, height);
         mSurfWidth = width;
         mSurfHeight = height;
         mgr->SetScreenSize(mSurfWidth, mSurfHeight);
@@ -691,4 +696,3 @@ bool NativeEngine::InitGLObjects() {
     }
     return true;
 }
-

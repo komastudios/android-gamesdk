@@ -54,11 +54,11 @@ android.lintOptions {
 }
 
 dependencies {
-    implementation "androidx.games:games-controller:1.0.0"
+    //implementation "androidx.games:games-controller:1.1.0"
     implementation "com.android.ndk.thirdparty:libpng:1.6.37-alpha-1"
 
     // Example of using local .aar files in libs/ directory.
     // Comment out the androidx.games implementation lines if
     // you use a local lib.
-    // implementation fileTree(dir: 'libs', include: ['GameController.aar'])
+    implementation fileTree(dir: 'libs', include: ['GameController.aar'])
 }
