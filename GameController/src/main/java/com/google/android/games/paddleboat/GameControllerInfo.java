@@ -13,6 +13,7 @@
 // limitations under the License.
 package com.google.android.games.paddleboat;
 
+import android.os.Build;
 import android.view.InputDevice;
 
 import java.util.List;
@@ -37,14 +38,14 @@ public class GameControllerInfo {
     private static final int DEVICEFLAG_VIBRATION_DUAL_MOTOR = 0x10000000;
     private static final int DEVICEFLAG_VIRTUAL_MOUSE = 0x40000000;
 
-    private int[] mGameControllerDeviceInfoArray;
-    private float[] mGameControllerAxisMinArray;
-    private float[] mGameControllerAxisMaxArray;
-    private float[] mGameControllerAxisFlatArray;
-    private float[] mGameControllerAxisFuzzArray;
-    private String mGameControllerNameString;
+    private final int[] mGameControllerDeviceInfoArray;
+    private final float[] mGameControllerAxisMinArray;
+    private final float[] mGameControllerAxisMaxArray;
+    private final float[] mGameControllerAxisFlatArray;
+    private final float[] mGameControllerAxisFuzzArray;
+    private final String mGameControllerNameString;
 
-    GameControllerInfo(InputDevice inputDevice, boolean hasVirtualMouse) {
+    GameControllerInfo(InputDevice inputDevice) {
         mGameControllerDeviceInfoArray = new int[DEVICEINFO_ARRAY_SIZE];
         mGameControllerAxisMinArray = new float[MAX_AXIS_COUNT];
         mGameControllerAxisMaxArray = new float[MAX_AXIS_COUNT];
@@ -64,11 +65,15 @@ public class GameControllerInfo {
 
         mGameControllerNameString = inputDevice.getName();
         EnumerateAxis(inputDevice);
-        EnumerateInfoArray(inputDevice, hasVirtualMouse);
+        EnumerateInfoArray(inputDevice);
     }
 
     public int GetGameControllerDeviceId() {
         return mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEID];
+    }
+
+    public int GetGameControllerFlags() {
+        return mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEFLAGS];
     }
 
     public int[] GetGameControllerDeviceInfoArray() {
@@ -102,13 +107,13 @@ public class GameControllerInfo {
             if (axisIndex >= 0 && axisIndex < MAX_AXIS_COUNT) {
                 int axisSource = motionRange.getSource();
                 if (axisSource == InputDevice.SOURCE_JOYSTICK ||
-                    axisSource == InputDevice.SOURCE_GAMEPAD) {
+                        axisSource == InputDevice.SOURCE_GAMEPAD) {
                     if (axisIndex <= AXIS_COUNT_LOW) {
                         mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_AXISBITS_LOW] |=
-                            (1 << axisIndex);
+                                (1 << axisIndex);
                     } else {
                         mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_AXISBITS_HIGH] |=
-                            (1 << (axisIndex - (AXIS_COUNT_LOW + 1)));
+                                (1 << (axisIndex - (AXIS_COUNT_LOW + 1)));
                     }
                     mGameControllerAxisMinArray[axisIndex] = motionRange.getMin();
                     mGameControllerAxisMaxArray[axisIndex] = motionRange.getMax();
@@ -119,19 +124,15 @@ public class GameControllerInfo {
         }
     }
 
-    private void EnumerateInfoArray(InputDevice inputDevice, boolean hasVirtualMouse) {
+    private void EnumerateInfoArray(InputDevice inputDevice) {
         mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEID] = inputDevice.getId();
-        mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_VENDORID] = inputDevice.getVendorId();
-        mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_PRODUCTID] = inputDevice.getProductId();
-        mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_CONTROLLERNUMBER] =
-            inputDevice.getControllerNumber();
-        if (hasVirtualMouse) {
-            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEFLAGS] = DEVICEFLAG_VIRTUAL_MOUSE;
-        } else {
-            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEFLAGS] = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_VENDORID] = inputDevice.getVendorId();
+            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_PRODUCTID] = inputDevice.getProductId();
+            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_CONTROLLERNUMBER] =
+                    inputDevice.getControllerNumber();
         }
-        if (GameControllerManager.isVibrationSupportedForDevice(inputDevice.getVibrator())) {
-            mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEFLAGS] |= DEVICEFLAG_VIBRATION;
-        }
+        mGameControllerDeviceInfoArray[DEVICEINFO_INDEX_DEVICEFLAGS] =
+                GameControllerManager.getControllerFlagsForDevice(inputDevice);
     }
 }

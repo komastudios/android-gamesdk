@@ -122,11 +122,9 @@ private:
 
     bool IsAnimating();
 
+    void HandleGameActivityInput();
+
     void CheckForNewAxis();
-
-    void ProcessKeyEvents();
-
-    void ProcessMotionEvents();
 
 public:
     // these are public for simplicity because we have internal static callbacks
