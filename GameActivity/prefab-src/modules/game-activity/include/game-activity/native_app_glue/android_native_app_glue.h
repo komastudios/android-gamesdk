@@ -142,6 +142,44 @@ struct android_input_buffer {
 };
 
 /**
+ * Function pointer declaration for the filtering of key events.
+ * A function with this signature should be passed to
+ * android_app_set_key_event_filter and return false for any events that should
+ * not be handled by android_native_app_glue. These events will be handled by
+ * the system instead.
+ */
+typedef bool (*android_key_event_filter)(const GameActivityKeyEvent*);
+
+/**
+ * Set the filter to use when processing key events.
+ * Any events for which the filter returns false will be ignored by
+ * android_native_app_glue. If filter is set to NULL, no filtering is done.
+ *
+ * The default key filter will filter out volume and camera button presses.
+ */
+void android_app_set_key_event_filter(android_key_event_filter filter);
+
+/**
+ * Function pointer definition for the filtering of motion events.
+ * A function with this signature should be passed to
+ * android_app_set_motion_event_filter and return false for any events that
+ * should not be handled by android_native_app_glue. These events will be
+ * handled by the system instead.
+ */
+typedef bool (*android_motion_event_filter)(const GameActivityMotionEvent*);
+
+/**
+ * Set the filter to use when processing touch and motion events.
+ * Any events for which the filter returns false will be ignored by
+ * android_native_app_glue. If filter is set to NULL, no filtering is done.
+ *
+ * Note that the default motion event filter will only allow touchscreen events
+ * through, in order to mimic NativeActivity's behaviour, so for controller
+ * events to be passed to the app, set the filter to NULL.
+ */
+void android_app_set_motion_event_filter(android_motion_event_filter filter);
+
+/**
  * This is the interface for the standard glue code of a threaded
  * application.  In this model, the application's code is running
  * in its own thread separate from the main thread of the process.

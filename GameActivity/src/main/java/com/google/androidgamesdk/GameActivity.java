@@ -418,11 +418,6 @@ public class GameActivity
   }
 
   protected class InputEnabledSurfaceView extends SurfaceView {
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-      onTouchEventNative(mNativeHandle, event);
-      return true;
-    }
 
     public InputEnabledSurfaceView(GameActivity context) {
       super(context);

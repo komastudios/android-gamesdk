@@ -401,8 +401,25 @@ static void onNativeWindowResized(GameActivity* activity,
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_RESIZED);
 }
 
+// See
+// https://developer.android.com/reference/android/view/InputDevice#SOURCE_TOUCHSCREEN
+#define SOURCE_TOUCHSCREEN 0x00001002
+
+static bool default_motion_filter(const GameActivityMotionEvent* event) {
+    // Ignore any non-touch events.
+    return event->source == SOURCE_TOUCHSCREEN;
+}
+
+static android_motion_event_filter sMotionEventFilter = default_motion_filter;
+
+void android_app_set_motion_event_filter(android_motion_event_filter filter) {
+    sMotionEventFilter = filter;
+}
+
 static bool onTouchEvent(GameActivity* activity,
                          const GameActivityMotionEvent* event) {
+    if (sMotionEventFilter != NULL && !sMotionEventFilter(event)) return false;
+
     struct android_app* android_app = ToApp(activity);
     pthread_mutex_lock(&android_app->mutex);
 
@@ -454,17 +471,26 @@ void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
 #define KEY_EVENT_KEYCODE_ZOOM_IN 168
 #define KEY_EVENT_KEYCODE_ZOOM_OUT 169
 
+static bool default_key_filter(const GameActivityKeyEvent* event) {
+    // Ignore camera, volume, etc. buttons
+    return !(event->keyCode == KEY_EVENT_KEYCODE_VOLUME_DOWN ||
+             event->keyCode == KEY_EVENT_KEYCODE_VOLUME_MUTE ||
+             event->keyCode == KEY_EVENT_KEYCODE_VOLUME_UP ||
+             event->keyCode == KEY_EVENT_KEYCODE_CAMERA ||
+             event->keyCode == KEY_EVENT_KEYCODE_ZOOM_IN ||
+             event->keyCode == KEY_EVENT_KEYCODE_ZOOM_OUT);
+}
+
+static android_key_event_filter sKeyEventFilter = default_key_filter;
+
+void android_app_set_key_event_filter(android_key_event_filter filter) {
+    sKeyEventFilter = filter;
+}
+
 static bool onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
     struct android_app* android_app = ToApp(activity);
 
-    // Ignore camera, volume, etc. buttons
-    if (event->keyCode == KEY_EVENT_KEYCODE_VOLUME_DOWN ||
-        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_MUTE ||
-        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_UP ||
-        event->keyCode == KEY_EVENT_KEYCODE_CAMERA ||
-        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_IN ||
-        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_OUT)
-        return false;
+    if (sKeyEventFilter != NULL && !sKeyEventFilter(event)) return false;
 
     pthread_mutex_lock(&android_app->mutex);
 

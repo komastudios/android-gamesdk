@@ -112,6 +112,11 @@ NativeEngine::NativeEngine(struct android_app *app) {
     mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
 
     WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
+
+    // This is need to allow controller events through to us.
+    // By default, only touch-screen events are passed through, to match the
+    // behaviour of NativeActivity.
+    android_app_set_motion_event_filter(nullptr);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -769,4 +774,3 @@ bool NativeEngine::InitGLObjects() {
     }
     return true;
 }
-
