@@ -37,6 +37,10 @@ class GameControllerManager {
     static constexpr int32_t INVALID_MOUSE_ID = -1;
     static constexpr int32_t MAX_REMAP_TABLE_SIZE = 256;
 
+    // Assuming update is getting called at 60Hz, wait one minute in between
+    // checking battery status
+    static constexpr int32_t BATTERY_REFRESH_WAIT = 60 * 60;
+
    public:
     GameControllerManager(JNIEnv *env, jobject jcontext, ConstructorTag);
 
@@ -58,8 +62,15 @@ class GameControllerManager {
 
     static void setBackButtonConsumed(bool consumed);
 
+    static Paddleboat_ErrorCode setControllerLight(
+        const int32_t controllerIndex, const Paddleboat_LightType lightType,
+        const uint32_t lightData, JNIEnv *env);
+
     static void setControllerStatusCallback(
         Paddleboat_ControllerStatusCallback statusCallback, void *userData);
+
+    static void setMotionDataCallback(
+	    Paddleboat_MotionDataCallback motionDataCallback, void *userData);
 
     static void setMouseStatusCallback(
         Paddleboat_MouseStatusCallback statusCallback, void *userData);
@@ -116,6 +127,10 @@ class GameControllerManager {
 
     static void onDisconnection(const int32_t deviceId);
 
+    static void onMotionData(const int32_t deviceId, const int32_t motionType,
+                             const uint64_t timestamp, const float dataX,
+                             const float dataY, const float dataZ);
+
     static void onMouseConnection(const int32_t deviceId);
 
     static void onMouseDisconnection(const int32_t deviceId);
@@ -129,6 +144,11 @@ class GameControllerManager {
 
    private:
     static GameControllerManager *getInstance();
+
+    Paddleboat_ErrorCode initMethods(JNIEnv *env);
+
+    bool isLightTypeSupported(const Paddleboat_Controller_Info &controllerInfo,
+                              const Paddleboat_LightType lightType);
 
     int32_t processControllerKeyEvent(const AInputEvent *event,
                                       GameController &gameController);
@@ -145,6 +165,8 @@ class GameControllerManager {
 
     void rescanVirtualMouseControllers();
 
+    void updateBattery(JNIEnv *env);
+
     void updateMouseDataTimestamp();
 
     void releaseGlobals(JNIEnv *env);
@@ -155,18 +177,29 @@ class GameControllerManager {
     bool mInitialized = false;
     bool mGCMClassInitialized = false;
     bool mBackButtonConsumed = true;
+    bool mMotionEventReporting = false;
 
     int32_t mApiLevel = 16;
+    int32_t mBatteryWait = BATTERY_REFRESH_WAIT;
     jobject mContext = NULL;
     jclass mGameControllerClass = NULL;
     jobject mGameControllerObject = NULL;
+    jmethodID mInitMethodId = NULL;
     jmethodID mGetApiLevelMethodId = NULL;
+    jmethodID mGetBatteryLevelMethodId = NULL;
+    jmethodID mGetBatteryStatusMethodId = NULL;
+    jmethodID mSetLightMethodId = NULL;
+    jmethodID mSetNativeReadyMethodId = NULL;
+    jmethodID mSetReportMotionEventsMethodId = NULL;
     jmethodID mSetVibrationMethodId = NULL;
 
     uint64_t mActiveAxisMask = 0;
 
     int32_t mRemapEntryCount = 0;
     Paddleboat_Controller_Mapping_Data mMappingTable[MAX_REMAP_TABLE_SIZE];
+
+    Paddleboat_MotionDataCallback  mMotionDataCallback = nullptr;
+    void *mMotionDataCallbackUserData = nullptr;
 
     GameController mGameControllers[PADDLEBOAT_MAX_CONTROLLERS];
     Paddleboat_ControllerStatusCallback mStatusCallback = nullptr;
