@@ -16,11 +16,11 @@
 
 /*
  * This is the main interface to the Android Game Controller library, also known
- as Paddleboat.
+   as Paddleboat.
 
    See the documentation at
    https://developer.android.com/games/sdk/game-controller for more information
- on using this library in a native Android game.
+   on using this library in a native Android game.
  */
 
 /**
@@ -223,6 +223,38 @@ enum Paddleboat_Controller_Flags {
     PADDLEBOAT_CONTROLLER_FLAG_GENERIC_PROFILE = (0x0000000010),
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
+     * If set, this controller device supports reporting accelerometer
+     * motion axis data
+     */
+    PADDLEBOAT_CONTROLLER_FLAG_ACCELEROMETER = (0x00400000),
+    /**
+     * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
+     * If set, this controller device supports reporting gyroscope
+     * motion axis data
+     */
+    PADDLEBOAT_CONTROLLER_FLAG_GYROSCOPE = (0x00800000),
+    /**
+     * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
+     * If set, this controller device supports setting a player number
+     * light using the ::Paddleboat_setControllerLight function
+     * with the `PADDLEBOAT_LIGHT_PLAYER_NUMBER` light type
+     */
+    PADDLEBOAT_CONTROLLER_FLAG_LIGHT_PLAYER = (0x01000000),
+    /**
+     * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
+     * If set, this controller device supports setting a RGB light
+     * color using the ::Paddleboat_setControllerLight function
+     * with the `PADDLEBOAT_LIGHT_RGB` light type
+     */
+    PADDLEBOAT_CONTROLLER_FLAG_LIGHT_RGB = (0x02000000),
+    /**
+     * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
+     * If set, this controller device supports reporting the battery
+     * status information in the controller data structure
+     */
+    PADDLEBOAT_CONTROLLER_FLAG_BATTERY = (0x04000000),
+    /**
+     * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device supports vibration effects
      * using the ::Paddleboat_setControllerVibrationData function
      */
@@ -365,6 +397,17 @@ enum Paddleboat_Ignored_Buttons {
 };
 
 /**
+ * @brief Battery status of a controller
+ */
+enum Paddleboat_BatteryStatus {
+    PADDLEBOAT_CONTROLLER_BATTERY_UNKNOWN = 0, ///< Battery status is unknown
+    PADDLEBOAT_CONTROLLER_BATTERY_CHARGING = 1, ///< Controller battery is charging
+    PADDLEBOAT_CONTROLLER_BATTERY_DISCHARGING = 2, ///< Controller battery is discharging
+    PADDLEBOAT_CONTROLLER_BATTERY_NOT_CHARGING = 3, ///< Controller battery is not charging
+    PADDLEBOAT_CONTROLLER_BATTERY_FULL = 4 ///< Controller battery is completely charged
+};
+
+/**
  * @brief Current status of a controller (at a specified controller index)
  */
 enum Paddleboat_ControllerStatus {
@@ -405,6 +448,25 @@ enum Paddleboat_ControllerButtonLayout {
 };
 
 /**
+ * @brief The type of light being specified by a call to
+ * ::Paddleboat_setControllerLight
+ */
+enum Paddleboat_LightType {
+    PADDLEBOAT_LIGHT_PLAYER_NUMBER = 0, ///< Light is a player index,
+                                        ///< `lightData` is the player number
+    PADDLEBOAT_LIGHT_RGB = 1 ///< Light is a color light,
+                             ///< `lightData` is a ARGB (8888) light value.
+};
+
+/**
+ * @brief The type of motion data being reported in a Paddleboat_Motion_Data structure
+ */
+enum Paddleboat_Motion_Type {
+    PADDLEBOAT_MOTION_ACCELEROMETER = 0, ///< Accelerometer motion data
+    PADDLEBOAT_MOTION_GYROSCOPE = 1 ///< Gyroscope motion data
+};
+
+/**
  * @brief The status of the mouse device
  */
 enum Paddleboat_MouseStatus {
@@ -436,6 +498,16 @@ enum Paddleboat_Remap_Addition_Mode {
                                            ///< This change only persists for
                                            ///< the current session.
 };
+
+/**
+ * @brief A structure that describes the current battery state of a controller. This structure
+ * will only be populated if a controller has `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
+ * `Paddleboat_Controller_Info.controllerFlags`
+ */
+typedef struct Paddleboat_Controller_Battery {
+    Paddleboat_BatteryStatus batteryStatus; /** @brief The current status of the battery */
+    float batteryLevel; /** @brief The current charge level of the battery, from 0.0 to 1.0 */
+} Paddleboat_Controller_Battery;
 
 /**
  * @brief A structure that contains virtual pointer position data.
@@ -507,6 +579,12 @@ typedef struct Paddleboat_Controller_Data {
      * 0,0.
      */
     Paddleboat_Controller_Pointer virtualPointer;
+    /**
+     * @brief Battery status. This structure will only be populated if the controller
+     * has `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
+     * `Paddleboat_Controller_Info.controllerFlags`
+     */
+    Paddleboat_Controller_Battery battery;
 } Paddleboat_Controller_Data;
 
 /**
@@ -530,6 +608,23 @@ typedef struct Paddleboat_Controller_Info {
     /** @brief the flat and fuzz precision values of the right thumbstick */
     Paddleboat_Controller_Thumbstick_Precision rightStickPrecision;
 } Paddleboat_Controller_Info;
+
+/**
+ * @brief A structure that contains input data for the mouse device.
+ */
+typedef struct Paddleboat_Motion_Data {
+    /** @brief Timestamp of when the motion data event occurred, timestamp is
+     * microseconds elapsed since clock epoch. */
+    uint64_t timestamp;
+    /** @brief The type of motion event data */
+    Paddleboat_Motion_Type motionType;
+    /** @brief Motion X axis data. */
+    float motionX;
+    /** @brief Motion Y axis data. */
+    float motionY;
+    /** @brief Motion Z axis data. */
+    float motionZ;
+} Paddleboat_Motion_Data;
 
 /**
  * @brief A structure that contains input data for the mouse device.
@@ -642,6 +737,21 @@ typedef void (*Paddleboat_ControllerStatusCallback)(
  */
 typedef void (*Paddleboat_MouseStatusCallback)(
     const Paddleboat_MouseStatus mouseStatus, void *userData);
+
+/**
+ * @brief Signature of a function that can be passed to
+ * ::Paddleboat_setMotionDataCallback to receive information about motion data events
+ * sent by connected controllers
+
+ * @param controllerIndex Index of the controller reporting the motion event,
+ * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
+ * @param motionData The motion data. Pointer is only valid until the callback returns.
+ * @param userData The value of the userData parameter passed
+ * to ::Paddleboat_setMotionDataCallback
+ *
+ */
+typedef void (*Paddleboat_MotionDataCallback)(const int32_t controllerIndex,
+    const Paddleboat_Motion_Data *motionData, void *userData);
 
 /**
  * @brief Initialize Paddleboat, constructing internal resources via JNI. This
@@ -763,6 +873,19 @@ void Paddleboat_setControllerStatusCallback(
     Paddleboat_ControllerStatusCallback statusCallback, void *userData);
 
 /**
+ * @brief Set a callback which is called whenever a controller managed by
+ * Paddleboat reports a motion data event.
+ * @param motionDataCallback function pointer to the motion data callback,
+ * passing NULL or nullptr will remove any currently registered callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data
+ * that will be passed as a parameter to the status callback. A reference
+ * to this pointer will be retained internally until changed by a future
+ * call to ::Paddleboat_setMotionDataCallback
+ */
+void Paddleboat_setMotionDataCallback(
+    Paddleboat_MotionDataCallback motionDataCallback, void *userData);
+
+/**
  * @brief Set a callback to be called when the mouse status changes. This is
  * used to inform of physical or virual mouse device connections and
  * disconnections.
@@ -827,6 +950,21 @@ Paddleboat_ErrorCode Paddleboat_getControllerName(const int32_t controllerIndex,
  */
 Paddleboat_ControllerStatus Paddleboat_getControllerStatus(
     const int32_t controllerIndex);
+
+/**
+ * @brief Configures a light on the controller with the specified index.
+ * @param controllerIndex The index of the controller to read from, must be
+ * between 0 and PADDLEBOAT_MAX_CONTROLLERS - 1
+ * @param lightType Specifies the type of light on the controller to configure.
+ * @param lightData Light configuration data. For player index lights, this is
+ * a number indicating the player index (usually between 1 and 4). For RGB
+ * lights, this is a 8888 ARGB value.
+ * @param env The JNIEnv attached to the thread calling the function.
+ * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code.
+ */
+Paddleboat_ErrorCode Paddleboat_setControllerLight(
+    const int32_t controllerIndex, const Paddleboat_LightType lightType,
+    const uint32_t lightData, JNIEnv *env);
 
 /**
  * @brief Set vibration data for the controller with the specified index.
