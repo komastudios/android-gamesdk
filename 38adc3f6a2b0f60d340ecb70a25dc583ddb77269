@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e4525e4_6ec8a3f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Hey Nate,\n\nThis would probably have been better as 3 or 4 CLs: change listener usage, add battery, add lights.\n\nCurrently we seem to have both the controller sample and the agdk_tunnel sample being updated concurrently, e.g. there were a few subtle fixes that went into agdk_tunnel recently that I don\u0027t know if you have in the game_controller demo. Do you think we can settle on agdk_tunnel or refactor out the common code rather than merging changes across? I\u0027ll set up a quick meeting to discuss.\n",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a3fd377_0f5196ae",
+        "filename": "GameController/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Is this update tied to the screen refresh? If so, we can\u0027t assume 60Hz.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39a80d61_7a757139",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Comment what this controller is, please.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c7b653a_e2bd8d5c",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 674,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Please comment what controller this is.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d5f6202_13ab6062",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "the mouse device -\u003e motion events?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ba7938c_05bd7f21",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Please comment why the motion listener not lazily initialized like the lights.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e752f1f9_989c44c3",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "Do we need to set the managers, sessions and listeners to null here, too?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f151bf9_4b12321c",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "If the listener and controller info are always in 1-1 correspondence, you could make a new class or use an android.util.Pair that holds them both in order to avoid having to keep these two arrays in sync.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e918da55_d09073ec",
+        "filename": "samples/game_controller/gameactivity/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "I think we want to keep the checked-in version referring to jetpack, not local?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d24380d8_25883ac6",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "A lot of these changes in this file look like they come from changes already made to agdk_tunnel. Why are we maintaining two samples?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1db85c3c_6b51bde2",
+        "filename": "samples/game_controller/nativeactivity/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-18T12:49:08Z",
+      "side": 1,
+      "message": "I think we want to keep the checked-in version referring to jetpack, not local?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
