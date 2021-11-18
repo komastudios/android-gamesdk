@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99bcea9d_2d4dba8c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Think I addressed everything from the first round, updated patch incoming. Thanks for the eyes.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3a3fd377_0f5196ae",
@@ -31,6 +48,24 @@
       "writtenOn": "2021-11-18T12:49:08Z",
       "side": 1,
       "message": "Is this update tied to the screen refresh? If so, we can\u0027t assume 60Hz.",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5db24f32_7ca6333f",
+        "filename": "GameController/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "It isn\u0027t. It\u0027s just a mechanism to avoid querying the battery status constantly. I could implement it as an actual time check versus every X calls to Paddleboat_update, but even a 120hz title is only going to trigger a refresh every 30 seconds.",
+      "parentUuid": "3a3fd377_0f5196ae",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +87,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ebd57ba_20f48a6c",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 547,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39a80d61_7a757139",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c7b653a_e2bd8d5c",
@@ -69,6 +122,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fabce62_d8f964cc",
+        "filename": "GameController/src/main/cpp/InternalControllerTable.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 674,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c7b653a_e2bd8d5c",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2d5f6202_13ab6062",
@@ -82,6 +153,24 @@
       "writtenOn": "2021-11-18T12:49:08Z",
       "side": 1,
       "message": "the mouse device -\u003e motion events?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a55df9dd_f41e586a",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 613,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d5f6202_13ab6062",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -105,6 +194,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4f2dbb4c_9f128db6",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "If the user has registered a motion callback, we want to start reporting motion events for the controller as soon as it has connected.\n\nThe only reason the lights are lazily initialized is due to something I probably need to open a bug about in the API 31 light session code. If you open a light session but never actually send any light commands, you end up with a null reference exception during finalize because it assumed an array got initialized. This scenario was regularly triggered by the PS4 controller which likes to send a onDeviceConnected/onDeviceChanged causing a teardown/rebuild of the listener. The workaround ended up being not opening a light session until a light command is sent by the user.",
+      "parentUuid": "0ba7938c_05bd7f21",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e752f1f9_989c44c3",
         "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
         "patchSetId": 3
@@ -116,6 +223,24 @@
       "writtenOn": "2021-11-18T12:49:08Z",
       "side": 1,
       "message": "Do we need to set the managers, sessions and listeners to null here, too?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e6d4c29_577901a7",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Those should be nulled by the shutdownListener call at the top of the function.",
+      "parentUuid": "e752f1f9_989c44c3",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -137,6 +262,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfbe3436_38cf488e",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Good point. I moved the listener into GameControllerInfo and refactored.",
+      "parentUuid": "9f151bf9_4b12321c",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e918da55_d09073ec",
@@ -150,6 +293,24 @@
       "writtenOn": "2021-11-18T12:49:08Z",
       "side": 1,
       "message": "I think we want to keep the checked-in version referring to jetpack, not local?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88a6ef77_e4378b94",
+        "filename": "samples/game_controller/gameactivity/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Per discussion, updated the comments to reflect local libs being default and a pointer to readme on building local libraries.",
+      "parentUuid": "e918da55_d09073ec",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -171,6 +332,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3120babf_f7a2fbbc",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Per meeting, this is a future TODO to try and reduce duplication.",
+      "parentUuid": "d24380d8_25883ac6",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1db85c3c_6b51bde2",
@@ -184,6 +363,24 @@
       "writtenOn": "2021-11-18T12:49:08Z",
       "side": 1,
       "message": "I think we want to keep the checked-in version referring to jetpack, not local?",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c1f04e2_8d2c8552",
+        "filename": "samples/game_controller/nativeactivity/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2021-11-18T21:13:02Z",
+      "side": 1,
+      "message": "Per discussion, updated comments to explain local lib default and point to readme build instructions.",
+      "parentUuid": "1db85c3c_6b51bde2",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
