@@ -70,6 +70,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cdf1ff9c_2ddac7eb",
+        "filename": "GameController/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-22T12:12:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5db24f32_7ca6333f",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "39a80d61_7a757139",
@@ -210,6 +228,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ed43df4_ed96e433",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-22T12:12:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f2dbb4c_9f128db6",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e752f1f9_989c44c3",
@@ -241,6 +277,24 @@
       "side": 1,
       "message": "Those should be nulled by the shutdownListener call at the top of the function.",
       "parentUuid": "e752f1f9_989c44c3",
+      "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b8ccf51_dc0616c4",
+        "filename": "GameController/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-11-22T12:12:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e6d4c29_577901a7",
       "revId": "38adc3f6a2b0f60d340ecb70a25dc583ddb77269",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
