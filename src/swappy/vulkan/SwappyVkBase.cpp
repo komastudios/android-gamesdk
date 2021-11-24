@@ -424,7 +424,11 @@ std::chrono::nanoseconds SwappyVkBase::getSwapInterval() {
 }
 
 void SwappyVkBase::addTracer(const SwappyTracer* tracer) {
-    mCommonBase.addTracerCallbacks(*tracer);
+    mCommonBase.addTracerCallbacks(tracer);
+}
+
+void SwappyVkBase::removeTracer(const SwappyTracer* tracer) {
+    mCommonBase.removeTracerCallbacks(tracer);
 }
 
 }  // namespace swappy
