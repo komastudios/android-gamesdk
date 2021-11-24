@@ -747,6 +747,13 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
 void GameActivity_getWindowInsets(GameActivity* activity,
                                   GameCommonInsetsType type, ARect* insets);
 
+/**
+ * Set options on how the IME behaves when it is requested for text input.
+ * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo
+ * for the meaning of inputType, actionId and imeOptions.
+ */
+void GameActivity_setImeEditorInfo(GameActivity* activity, int inputType, int actionId, int imeOptions);
+
 #ifdef __cplusplus
 }
 #endif

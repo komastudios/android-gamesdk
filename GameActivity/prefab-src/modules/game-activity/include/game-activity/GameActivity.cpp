@@ -199,6 +199,7 @@ static struct {
     jmethodID setWindowFlags;
     jmethodID getWindowInsets;
     jmethodID getWaterfallInsets;
+    jmethodID setImeEditorInfoFields;
 } gGameActivityClassInfo;
 
 /*
@@ -830,6 +831,16 @@ extern "C" void GameActivityPointerAxes_disableAxis(int32_t axis) {
     enabledAxes[axis] = false;
 }
 
+extern "C" void GameActivity_setImeEditorInfo(GameActivity* activity,
+                                              int inputType, int actionId, int imeOptions) {
+  JNIEnv* env;
+  if (activity->vm->AttachCurrentThread(&env, NULL) == JNI_OK) {
+    env->CallVoidMethod(activity->javaGameActivity,
+                        gGameActivityClassInfo.setImeEditorInfoFields,
+                        inputType, actionId, imeOptions);
+  }
+}
+
 static struct {
     jmethodID getDeviceId;
     jmethodID getSource;
@@ -1235,6 +1246,8 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                   "getWindowInsets", "(I)Landroidx/core/graphics/Insets;");
     GET_METHOD_ID(gGameActivityClassInfo.getWaterfallInsets, activity_class,
                   "getWaterfallInsets", "()Landroidx/core/graphics/Insets;");
+    GET_METHOD_ID(gGameActivityClassInfo.setImeEditorInfoFields, activity_class,
+                  "setImeEditorInfoFields", "(III)V");
     jclass insets_class;
     FIND_CLASS(insets_class, kInsetsPathName);
     GET_FIELD_ID(gInsetsClassInfo.left, insets_class, "left", "I");
