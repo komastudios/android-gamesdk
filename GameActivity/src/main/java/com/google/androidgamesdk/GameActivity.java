@@ -17,6 +17,8 @@ package com.google.androidgamesdk;
 
 import static android.view.inputmethod.EditorInfo.IME_ACTION_GO;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
+import static android.view.inputmethod.EditorInfo.IME_MASK_ACTION;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -76,6 +78,8 @@ public class GameActivity
   private static final String KEY_NATIVE_SAVED_STATE = "android:native_state";
 
   protected int contentViewId;
+
+  private EditorInfo imeEditorInfo;
 
   /**
    * The SurfaceView used by default for displaying the game and getting a text input.
@@ -417,23 +421,53 @@ public class GameActivity
     Log.v(LOG_TAG, "onImeInsetsChanged from Text Listener");
   }
 
+  /**
+   * Get the EditorInfo structure used to initialize the IME when it is requested.
+   * The default is to forward key requests to the app (InputType.TYPE_NULL) and to
+   * have no action button (IME_ACTION_NONE).
+   * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo.
+   */
+  public EditorInfo getImeEditorInfo() {
+    if (imeEditorInfo==null) {
+      imeEditorInfo = new EditorInfo();
+      imeEditorInfo.inputType = InputType.TYPE_NULL;
+      imeEditorInfo.actionId = IME_ACTION_NONE;
+      imeEditorInfo.imeOptions = IME_FLAG_NO_ENTER_ACTION;
+    }
+    return imeEditorInfo;
+  }
+
+  /**
+   * Set the EditorInfo structure used to initialize the IME when it is requested.
+   * Set the inputType and actionId in order to customize how the IME behaves.
+   * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo.
+   */
+  public void setImeEditorInfo(EditorInfo info) {
+    imeEditorInfo = info;
+  }
+
+  /**
+   * Set the inpuType and actionId fields of the EditorInfo structure used to
+   * initialize the IME when it is requested.
+   * This is called from the native side by GameActivity_setImeEditorInfo.
+   * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo.
+   */
+  public void setImeEditorInfoFields(int inputType, int actionId, int imeOptions) {
+    EditorInfo info = getImeEditorInfo();
+    info.inputType = inputType;
+    info.actionId = actionId;
+    info.imeOptions = imeOptions;
+  }
+
   protected class InputEnabledSurfaceView extends SurfaceView {
 
     public InputEnabledSurfaceView(GameActivity context) {
       super(context);
-      EditorInfo editorInfo = new EditorInfo();
-      // TODO (b/187147751): these need to be set-able externally.
-      // Note that if you use TYPE_CLASS_TEXT, the IME may fill the whole window because we
-      // are in landscape and the events aren't reflected back to it, so you can't see what
-      // you're typing. This needs fixing.
-      //            editorInfo.inputType = InputType.TYPE_CLASS_TEXT |
-      //            InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
-      editorInfo.inputType = InputType.TYPE_NULL; // For keys only
-      editorInfo.actionId = IME_ACTION_NONE;
+      EditorInfo editorInfo = context.getImeEditorInfo();
       mInputConnection = new InputConnection(context, this,
           new Settings(editorInfo,
               // Handle key events for InputType.TYPE_NULL:
-              /*forwardKeyEvents=*/true))
+              /*forwardKeyEvents=*/editorInfo.inputType==InputType.TYPE_NULL))
                              .setListener(context);
     }
 
