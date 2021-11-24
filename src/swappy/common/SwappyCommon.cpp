@@ -633,28 +633,51 @@ bool SwappyCommon::updateSwapInterval() {
 template <typename Tracers, typename Func>
 void addToTracers(Tracers& tracers, Func func, void* userData) {
     if (func != nullptr) {
-        tracers.push_back(
-            [func, userData](auto... params) { func(userData, params...); });
+        tracers.push_back({func, userData});
     }
 }
 
-void SwappyCommon::addTracerCallbacks(SwappyTracer tracer) {
-    addToTracers(mInjectedTracers.preWait, tracer.preWait, tracer.userData);
-    addToTracers(mInjectedTracers.postWait, tracer.postWait, tracer.userData);
-    addToTracers(mInjectedTracers.preSwapBuffers, tracer.preSwapBuffers,
-                 tracer.userData);
-    addToTracers(mInjectedTracers.postSwapBuffers, tracer.postSwapBuffers,
-                 tracer.userData);
-    addToTracers(mInjectedTracers.startFrame, tracer.startFrame,
-                 tracer.userData);
+template <typename Tracers, typename Func>
+void removeFromTracers(Tracers& tracers, Func func) {
+    if (func != nullptr) {
+        for (auto it = tracers.begin(); it != tracers.end();) {
+            auto jt = it;
+            it++;
+            if (jt->function == func) {
+                tracers.erase(jt);
+            }
+        }
+    }
+}
+
+void SwappyCommon::addTracerCallbacks(const SwappyTracer* tracer) {
+    addToTracers(mInjectedTracers.preWait, tracer->preWait, tracer->userData);
+    addToTracers(mInjectedTracers.postWait, tracer->postWait, tracer->userData);
+    addToTracers(mInjectedTracers.preSwapBuffers, tracer->preSwapBuffers,
+                 tracer->userData);
+    addToTracers(mInjectedTracers.postSwapBuffers, tracer->postSwapBuffers,
+                 tracer->userData);
+    addToTracers(mInjectedTracers.startFrame, tracer->startFrame,
+                 tracer->userData);
     addToTracers(mInjectedTracers.swapIntervalChanged,
-                 tracer.swapIntervalChanged, tracer.userData);
+                 tracer->swapIntervalChanged, tracer->userData);
+}
+
+void SwappyCommon::removeTracerCallbacks(const SwappyTracer* tracer) {
+    removeFromTracers(mInjectedTracers.preWait, tracer->preWait);
+    removeFromTracers(mInjectedTracers.postWait, tracer->postWait);
+    removeFromTracers(mInjectedTracers.preSwapBuffers, tracer->preSwapBuffers);
+    removeFromTracers(mInjectedTracers.postSwapBuffers,
+                      tracer->postSwapBuffers);
+    removeFromTracers(mInjectedTracers.startFrame, tracer->startFrame);
+    removeFromTracers(mInjectedTracers.swapIntervalChanged,
+                      tracer->swapIntervalChanged);
 }
 
 template <typename T, typename... Args>
 void executeTracers(T& tracers, Args... args) {
     for (const auto& tracer : tracers) {
-        tracer(std::forward<Args>(args)...);
+        tracer.function(tracer.userData, std::forward<Args>(args)...);
     }
 }
 

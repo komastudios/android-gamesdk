@@ -81,6 +81,7 @@ class SwappyVk {
     std::chrono::nanoseconds GetSwapInterval(VkSwapchainKHR swapchain);
 
     void addTracer(const SwappyTracer* t);
+    void removeTracer(const SwappyTracer* t);
 
     void SetFunctionProvider(const SwappyVkFunctionProvider* pFunctionProvider);
     bool InitFunctions();

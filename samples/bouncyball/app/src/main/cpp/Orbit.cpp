@@ -103,6 +103,9 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nInit(JNIEnv *env, jobject activi
     tracers.swapIntervalChanged = swapIntervalChangedCallback;
 
     SwappyGL_injectTracer(&tracers);
+    // Test uninject tracer function
+    SwappyGL_uninjectTracer(&tracers);
+    SwappyGL_injectTracer(&tracers);
 }
 
 JNIEXPORT void JNICALL
