@@ -215,6 +215,8 @@ class Simulator : public ITimeProvider {
           gpuTimeSum_(0),
           cpuTimeCount_(0) {
         commonBase_->addTracerCallbacks(tracers_);
+        commonBase_->removeTracerCallbacks(tracers_);
+        commonBase_->addTracerCallbacks(tracers_);
     }
     void setParameters(const Parameters& p) {
         if (p.autoModeEnabled)
