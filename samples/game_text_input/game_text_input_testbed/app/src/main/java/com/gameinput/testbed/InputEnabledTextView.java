@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.core.graphics.Insets;
 import com.google.androidgamesdk.gametextinput.GameTextInput;
 import com.google.androidgamesdk.gametextinput.InputConnection;
 import com.google.androidgamesdk.gametextinput.Listener;
@@ -27,6 +28,7 @@ import com.google.androidgamesdk.gametextinput.Settings;
 import com.google.androidgamesdk.gametextinput.State;
 
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
 public class InputEnabledTextView extends View implements Listener {
     public InputConnection mInputConnection;
@@ -46,6 +48,9 @@ public class InputEnabledTextView extends View implements Listener {
         // you're typing. This needs fixing.
         editorInfo.inputType = inputType;
         editorInfo.actionId = IME_ACTION_NONE;
+        // IME_FLAG_NO_FULLSCREEN is needed to avoid the IME UI covering the whole display
+        // and presenting an 'Execute' button in landscape mode.
+        editorInfo.imeOptions = IME_FLAG_NO_FULLSCREEN;
         mInputConnection = new InputConnection(
                 this.getContext(),
                 this,
@@ -66,6 +71,11 @@ public class InputEnabledTextView extends View implements Listener {
     public void stateChanged(State newState, boolean dismissed) {
         System.out.println("stateChanged: " + newState + " dismissed: " + dismissed);
         onTextInputEventNative(newState);
+    }
+
+    @Override
+    public void onImeInsetsChanged(Insets insets) {
+        System.out.println("insetsChanged: " + insets);
     }
 
     private native void onTextInputEventNative(State softKeyboardEvent);
