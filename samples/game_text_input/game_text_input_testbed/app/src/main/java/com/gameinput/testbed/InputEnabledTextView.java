@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.core.graphics.Insets;
 import com.google.androidgamesdk.gametextinput.GameTextInput;
 import com.google.androidgamesdk.gametextinput.InputConnection;
 import com.google.androidgamesdk.gametextinput.Listener;
@@ -66,6 +67,11 @@ public class InputEnabledTextView extends View implements Listener {
     public void stateChanged(State newState, boolean dismissed) {
         System.out.println("stateChanged: " + newState + " dismissed: " + dismissed);
         onTextInputEventNative(newState);
+    }
+
+    @Override
+    public void onImeInsetsChanged(Insets insets) {
+        System.out.println("insetsChanged: " + insets);
     }
 
     private native void onTextInputEventNative(State softKeyboardEvent);
