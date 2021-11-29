@@ -54,6 +54,8 @@ class SwappyGL {
     // Pass callbacks for tracing within the swap function
     static void addTracer(const SwappyTracer *tracer);
 
+    static void removeTracer(const SwappyTracer *tracer);
+
     static std::chrono::nanoseconds getSwapDuration();
 
     static void setAutoSwapInterval(bool enabled);

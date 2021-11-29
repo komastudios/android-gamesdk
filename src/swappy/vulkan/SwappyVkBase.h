@@ -148,6 +148,7 @@ class SwappyVkBase {
     std::chrono::nanoseconds getSwapInterval();
 
     void addTracer(const SwappyTracer* tracer);
+    void removeTracer(const SwappyTracer* tracer);
 
     VkDevice getDevice() const { return mDevice; }
 
