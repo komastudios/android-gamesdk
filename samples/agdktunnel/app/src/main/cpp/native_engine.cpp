@@ -117,6 +117,14 @@ NativeEngine::NativeEngine(struct android_app *app) {
     // By default, only touch-screen events are passed through, to match the
     // behaviour of NativeActivity.
     android_app_set_motion_event_filter(nullptr);
+
+    // Flags to control how the IME behaves.
+    constexpr int InputType_dot_TYPE_CLASS_TEXT = 1;
+    constexpr int IME_ACTION_NONE = 1;
+    constexpr int IME_FLAG_NO_FULLSCREEN = 33554432;
+
+    GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
+                                  IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
