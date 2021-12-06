@@ -113,10 +113,10 @@ NativeEngine::NativeEngine(struct android_app *app) {
 
     WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
 
-    // This is need to allow controller events through to us.
+    // This is needed to allow controller events through to us.
     // By default, only touch-screen events are passed through, to match the
     // behaviour of NativeActivity.
-    android_app_set_motion_event_filter(nullptr);
+    android_app_set_motion_event_filter(app, nullptr);
 
     // Flags to control how the IME behaves.
     constexpr int InputType_dot_TYPE_CLASS_TEXT = 1;
