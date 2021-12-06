@@ -22,6 +22,7 @@ Java_com_memory_1advice_hogger_MainActivity_getAdvice(
     ALOGE("Advice is: %s", advice.json);
     jstring ret = env->NewStringUTF(advice.json);
     MemoryAdvice_JsonSerialization_free(&advice);
-    MemoryAdvice_setWatcher(1000, callback);
+    // TODO(bkaya): Reintroduce this line after state logic is fixed
+    //MemoryAdvice_setWatcher(1000, callback);
     return ret;
 }

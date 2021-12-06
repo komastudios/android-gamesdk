@@ -64,16 +64,17 @@ function(add_gamesdk_target)
     # Set up the "gamesdk" libraries
     set(BUILD_NAME ${ANDROID_ABI}_API${GAMESDK_ANDROID_API_LEVEL}_NDK${GAMESDK_ANDROID_NDK_MAJOR_VERSION}_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
     set(GAMESDK_LIBS_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
+    set(GAMESDK_SHARED_LIBS_DIR "${GAMESDK_PACKAGE_DIR}/libs/${ANDROID_ABI}")
 
     include_directories( "${GAMESDK_PACKAGE_DIR}/include" ) # Games SDK Public Includes
 
     get_filename_component(SWAPPY_DEP_LIB "${GAMESDK_LIBS_DIR}/libswappy_static.a" REALPATH)
     get_filename_component(TUNINGFORK_DEP_LIB "${GAMESDK_LIBS_DIR}/libtuningfork_static.a" REALPATH)
-    get_filename_component(MEMORY_ADVICE_DEP_LIB "${GAMESDK_LIBS_DIR}/libmemory_advice_static.a" REALPATH)
+    get_filename_component(MEMORY_ADVICE_DEP_LIB "${GAMESDK_SHARED_LIBS_DIR}/lib/memory_advice/libmemory_advice.so" REALPATH)
     get_filename_component(OBOE_DEP_LIB "${GAMESDK_LIBS_DIR}/liboboe_static.a" REALPATH)
     add_library(swappy STATIC IMPORTED GLOBAL)
     add_library(tuningfork STATIC IMPORTED GLOBAL)
-    add_library(memory_advice STATIC IMPORTED GLOBAL)
+    add_library(memory_advice SHARED IMPORTED GLOBAL)
     add_library(oboe STATIC IMPORTED GLOBAL)
 
     if(GAMESDK_DO_LOCAL_BUILD)
