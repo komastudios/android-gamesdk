@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b552e69_814fdff7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-06T16:44:47Z",
+      "side": 1,
+      "message": "There\u0027s another CL in-flight to update version numbers. Sorry Nate, I should have CC\u0027d you on that one.",
+      "revId": "559ab9b2d7b4896b081b4c676db4b757647ef184",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
