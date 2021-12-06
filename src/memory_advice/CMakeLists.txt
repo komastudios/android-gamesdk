@@ -4,10 +4,15 @@ set(CMAKE_CXX_STANDARD 14)
 
 include("../../samples/gamesdk.cmake")
 
+#find_package(tensorflow-lite REQUIRED)
+
+
 set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
+set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/resources")
 set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
 set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/tensorflow")
 set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external")
+set( TFLITE_FLATBUFFERS_SCHEMA_DIR "${CMAKE_CURRENT_BINARY_DIR}/../flatbuffers/include")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -50,6 +55,18 @@ add_subdirectory(
   EXCLUDE_FROM_ALL
 )
 
+set(TFLITE_INCLUDE_DIRS
+  "${TENSORFLOW_SOURCE_DIR}"
+  "${TFLITE_FLATBUFFERS_SCHEMA_DIR}"
+)
+include_directories(
+  BEFORE
+    ${TFLITE_INCLUDE_DIRS}
+)
+#include_directories( ${TENSORFLOW_SOURCE_DIR} )
+#include_directories( ${TFLITE_FLATBUFFERS_SCHEMA_DIR} )
+
+
 add_subdirectory(
   "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
   "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite"
@@ -65,17 +82,31 @@ set(MEMORY_ADVICE_SRCS
   core/memory_advice_c.cpp
   core/metrics_provider.cpp
   core/state_watcher.cpp
+  core/predictor.cpp
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
+  ../common/apk_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   device_profiler_lookup.cpp
   advisor_parameters.cpp
+  ${MEMORYADVICE_RESOURCES_DIR}/realtime.tflite
+  ${MEMORYADVICE_RESOURCES_DIR}/oom_features.json
+  #${TENSORFLOW_SOURCE_DIR}/tensorflow/lite
 )
 
 add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})
 add_library(memory_advice SHARED ${MEMORY_ADVICE_SRCS})
 target_link_libraries(memory_advice
+  PUBLIC
+  android
+  log
+  absl::flags
+  tensorflow-lite
+)
+
+target_link_libraries(memory_advice_static
+  PUBLIC
   android
   log
   absl::flags

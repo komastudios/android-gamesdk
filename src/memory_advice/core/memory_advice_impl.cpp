@@ -24,9 +24,22 @@ using namespace json11;
 
 MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     metrics_provider_ = std::make_unique<MetricsProvider>();
-    device_profiler_ = std::make_unique<DeviceProfiler>();
+    realtime_predictor_ = std::make_unique<Predictor>();
+    available_predictor_ = std::make_unique<Predictor>();
+    oom_predictor_ = std::make_unique<Predictor>();
 
-    initialization_error_code_ = device_profiler_->Init();
+    initialization_error_code_ =
+        realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
+    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
+        return;
+    }
+    initialization_error_code_ = available_predictor_->Init(
+        "available.tflite", "available_features.json");
+    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
+        return;
+    }
+    initialization_error_code_ =
+        oom_predictor_->Init("oom.tflite", "oom_features.json");
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -34,9 +47,8 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
-    baseline_ = GenerateVariableMetrics();
+    baseline_ = GenerateBaselineMetrics();
     baseline_["constant"] = GenerateConstantMetrics();
-    device_profile_ = device_profiler_->GetDeviceProfile();
 }
 
 MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
@@ -52,7 +64,7 @@ MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
 }
 
 MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
-    Json::object advice = GetAdvice();
+    Json::object advice = GetAdviceDeprecated();
     if (advice.find("warnings") != advice.end()) {
         Json::array warnings = advice["warnings"].array_items();
         for (auto& it : warnings) {
@@ -66,7 +78,7 @@ MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
 }
 
 int64_t MemoryAdviceImpl::GetAvailableMemory() {
-    Json::object advice = GetAdvice();
+    Json::object advice = GetAdviceDeprecated();
     if (advice.find("predictions") != advice.end()) {
         int64_t smallest_estimate = 0;
         Json::object predictions = advice["predictions"].object_items();
@@ -82,6 +94,38 @@ int64_t MemoryAdviceImpl::GetAvailableMemory() {
 }
 
 Json::object MemoryAdviceImpl::GetAdvice() {
+    std::lock_guard<std::mutex> lock(advice_mutex_);
+    double start_time = MillisecondsSinceEpoch();
+    Json::object advice;
+    Json::object data;
+    Json::object variable_spec = advisor_parameters_.at("metrics")
+                                     .object_items()
+                                     .at("variable")
+                                     .object_items();
+    Json::object variable_metrics = GenerateVariableMetrics();
+
+    data["baseline"] = baseline_;
+    data["sample"] = variable_metrics;
+    // TODO(bkaya): add build info here
+    // data["build"] = build_;
+
+    if (variable_spec.find("predictRealtime") != variable_spec.end() &&
+        variable_spec.at("predictRealtime").bool_value()) {
+        variable_metrics["predictedUsage"] =
+            Json(realtime_predictor_->Predict(data));
+    }
+
+    if (variable_spec.find("availableRealtime") != variable_spec.end() &&
+        variable_spec.at("availableRealtime").bool_value()) {
+        variable_metrics["predictedAvailable"] =
+            Json(realtime_predictor_->Predict(data));
+    }
+
+    advice["metrics"] = variable_metrics;
+    return advice;
+}
+
+Json::object MemoryAdviceImpl::GetAdviceDeprecated() {
     std::lock_guard<std::mutex> lock(advice_mutex_);
     double start_time = MillisecondsSinceEpoch();
     Json::object advice;
@@ -317,6 +361,13 @@ Json::object MemoryAdviceImpl::GenerateVariableMetrics() {
     return GenerateMetricsFromFields(advisor_parameters_.at("metrics")
                                          .object_items()
                                          .at("variable")
+                                         .object_items());
+}
+
+Json::object MemoryAdviceImpl::GenerateBaselineMetrics() {
+    return GenerateMetricsFromFields(advisor_parameters_.at("metrics")
+                                         .object_items()
+                                         .at("baseline")
                                          .object_items());
 }
 
