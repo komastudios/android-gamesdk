@@ -14,12 +14,23 @@
 
 package com.google.android.games.paddleboat;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.hardware.BatteryState;
 import android.hardware.input.InputManager;
+import android.hardware.lights.Light;
+import android.hardware.lights.LightState;
+import android.hardware.lights.LightsManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
@@ -35,19 +46,34 @@ public class GameControllerManager {
     // devices that have MOUSE sources for simulating a mouse are not included. We support
     // 2 for the use case of a laptop with a touchpad and an external mouse connected.
     public static final int MAX_MICE = 2;
-    public static final int VIBRATION_EFFECT_MIN_API = 26;
+    public static final int VIBRATION_EFFECT_MIN_API = Build.VERSION_CODES.O;
+    // Must match paddleboat.h flags/enums
+    public static final int DEVICEFLAG_BATTERY = 0x04000000;
+    public static final int DEVICEFLAG_ACCELEROMETER = 0x00400000;
+    public static final int DEVICEFLAG_GYROSCOPE = 0x00800000;
+    public static final int DEVICEFLAG_LIGHT_PLAYER = 0x01000000;
+    public static final int DEVICEFLAG_LIGHT_RGB = 0x02000000;
+    public static final int DEVICEFLAG_VIBRATION = 0x08000000;
+    public static final int DEVICEFLAG_VIBRATION_DUAL_MOTOR = 0x10000000;
+    public static final int DEVICEFLAG_VIRTUAL_MOUSE = 0x40000000;
+    public static final int LIGHT_TYPE_PLAYER = 0;
+    public static final int LIGHT_TYPE_RGB = 1;
+    public static final int MOTION_ACCELEROMETER = 0;
+    public static final int MOTION_GYROSCOPE = 1;
+    private static final int VIBRATOR_MANAGER_MIN_API = Build.VERSION_CODES.S;
+    private static final String FINGERPRINT_DEVICE_NAME = "uinput-fpc";
     private static final String TAG = "GameControllerManager";
     private static final int GAMECONTROLLER_SOURCE_MASK =
-        InputDevice.SOURCE_DPAD | InputDevice.SOURCE_JOYSTICK | InputDevice.SOURCE_GAMEPAD;
+            InputDevice.SOURCE_DPAD | InputDevice.SOURCE_JOYSTICK | InputDevice.SOURCE_GAMEPAD;
     private static final int MOUSE_SOURCE_MASK = InputDevice.SOURCE_MOUSE;
-    private static final int VIBRATOR_MANAGER_MIN_API = 31;
     private boolean nativeReady;
-    private boolean printControllerInfo;
-    private InputManager inputManager;
-    private ArrayList<Integer> mouseDeviceIds;
-    private ArrayList<Integer> pendingControllerDeviceIds;
-    private ArrayList<Integer> pendingMouseDeviceIds;
-    private ArrayList<GameControllerInfo> gameControllers;
+    private final boolean printControllerInfo;
+    private boolean reportMotionEvents;
+    private final InputManager inputManager;
+    private final ArrayList<Integer> mouseDeviceIds;
+    private final ArrayList<Integer> pendingControllerDeviceIds;
+    private final ArrayList<Integer> pendingMouseDeviceIds;
+    private final ArrayList<GameControllerInfo> gameControllers;
     private GameControllerThread gameControllerThread;
 
     public GameControllerManager(Context appContext, boolean appPrintControllerInfo) {
@@ -62,6 +88,7 @@ public class GameControllerManager {
         }
 
         nativeReady = false;
+        reportMotionEvents = false;
         inputManager = (InputManager) appContext.getSystemService(Context.INPUT_SERVICE);
         printControllerInfo = appPrintControllerInfo;
         mouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
@@ -74,15 +101,97 @@ public class GameControllerManager {
         scanDevices();
     }
 
-    static public boolean isVibrationSupportedForDevice(Vibrator deviceVibrator) {
-        if (Build.VERSION.SDK_INT >= GameControllerManager.VIBRATION_EFFECT_MIN_API) {
-            if (deviceVibrator != null) {
-                if (deviceVibrator.hasVibrator()) {
-                    return true;
+    static public int getControllerFlagsForDevice(InputDevice inputDevice) {
+        int controllerFlags = 0;
+
+        boolean hasVirtualMouse = isDeviceOfSource(inputDevice.getId(), MOUSE_SOURCE_MASK);
+        if (hasVirtualMouse) {
+            controllerFlags |= DEVICEFLAG_VIRTUAL_MOUSE;
+        }
+
+        int vibratorCount = getVibratorCount(inputDevice);
+        if (vibratorCount > 0) {
+            controllerFlags |= DEVICEFLAG_VIBRATION;
+            if (vibratorCount > 1) {
+                controllerFlags |= DEVICEFLAG_VIBRATION_DUAL_MOTOR;
+            }
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            SensorManager sensorManager = inputDevice.getSensorManager();
+            if (sensorManager != null) {
+                if (sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() > 0) {
+                    controllerFlags |= DEVICEFLAG_ACCELEROMETER;
+                }
+                if (sensorManager.getSensorList(Sensor.TYPE_GYROSCOPE).size() > 0) {
+                    controllerFlags |= DEVICEFLAG_GYROSCOPE;
+                }
+            }
+
+            LightsManager lightsManager = inputDevice.getLightsManager();
+            if (lightsManager != null) {
+                for (Light currentLight : lightsManager.getLights()) {
+                    if (currentLight.getType() == Light.LIGHT_TYPE_PLAYER_ID) {
+                        controllerFlags |= DEVICEFLAG_LIGHT_PLAYER;
+                    } else if (currentLight.hasRgbControl()) {
+                        controllerFlags |= DEVICEFLAG_LIGHT_RGB;
+                    }
+                }
+            }
+
+            BatteryState batteryState = inputDevice.getBatteryState();
+            if (batteryState != null) {
+                if (batteryState.isPresent()) {
+                    controllerFlags |= DEVICEFLAG_BATTERY;
                 }
             }
         }
-        return false;
+        return controllerFlags;
+    }
+
+    static public int getVibratorCount(InputDevice inputDevice) {
+        if (inputDevice != null) {
+            if (Build.VERSION.SDK_INT >= VIBRATOR_MANAGER_MIN_API) {
+                VibratorManager vibratorManager = inputDevice.getVibratorManager();
+                if (vibratorManager != null) {
+                    int[] vibratorIds = vibratorManager.getVibratorIds();
+                    int vibratorCount = vibratorIds.length;
+                    if (vibratorCount > 0) {
+                        return vibratorCount;
+                    }
+                }
+            } else if (Build.VERSION.SDK_INT >= GameControllerManager.VIBRATION_EFFECT_MIN_API) {
+                Vibrator deviceVibrator = inputDevice.getVibrator();
+                if (deviceVibrator != null) {
+                    if (deviceVibrator.hasVibrator()) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    private static boolean isDeviceOfSource(int deviceId, int matchingSourceMask) {
+        boolean isSource = false;
+        InputDevice inputDevice = InputDevice.getDevice(deviceId);
+        int inputDeviceSources = inputDevice.getSources();
+        int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
+
+        if (inputDevice.isVirtual() == false) {
+            if ((inputDeviceSources & sourceMask) != 0) {
+                List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
+                if (motionRanges.size() > 0) {
+                    isSource = true;
+                }
+            }
+        }
+
+        return isSource;
+    }
+
+    public boolean getPrintControllerInfo() {
+        return printControllerInfo;
     }
 
     public InputManager getAppInputManager() {
@@ -166,7 +275,6 @@ public class GameControllerManager {
     }
 
     void processControllerAddition(int deviceId) {
-        Log.d(TAG, "processControllerAddition deviceId: " + deviceId);
         boolean foundDevice = false;
         if (!nativeReady) {
             for (int index = 0; index < pendingControllerDeviceIds.size(); ++index) {
@@ -186,7 +294,7 @@ public class GameControllerManager {
                 }
             }
             if (!foundDevice) {
-                onGameControllerAdded(deviceId, isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK));
+                onGameControllerAdded(deviceId);
             }
         }
     }
@@ -209,11 +317,25 @@ public class GameControllerManager {
                     foundDevice = true;
                     break;
                 }
-                if (!foundDevice) {
-                    onMouseAdded(deviceId);
+            }
+            if (!foundDevice) {
+                onMouseAdded(deviceId);
+            }
+        }
+    }
+
+    boolean getIsGameController(int deviceId) {
+        boolean isGameController = false;
+        if (isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK)) {
+            InputDevice inputDevice = InputDevice.getDevice(deviceId);
+            if (inputDevice != null) {
+                String deviceName = inputDevice.getName();
+                if (deviceName.equalsIgnoreCase(FINGERPRINT_DEVICE_NAME) == false) {
+                    isGameController = true;
                 }
             }
         }
+        return isGameController;
     }
 
     void scanDevices() {
@@ -223,7 +345,7 @@ public class GameControllerManager {
 
         // Scan for additions
         for (int deviceId : deviceIds) {
-            boolean isGameController = isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK);
+            boolean isGameController = getIsGameController(deviceId);
             boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK);
 
             if (isMouse && !isGameController) {
@@ -238,15 +360,18 @@ public class GameControllerManager {
         checkForMouseRemovals(deviceIds);
     }
 
-    GameControllerInfo onGameControllerAdded(int deviceId, boolean hasVirtualMouse) {
+    GameControllerInfo onGameControllerAdded(int deviceId) {
         GameControllerInfo gameControllerInfo = null;
         if (gameControllers.size() < MAX_GAMECONTROLLERS) {
             if (printControllerInfo) {
                 Log.d(TAG, "onGameControllerDeviceAdded");
                 logControllerInfo(deviceId);
             }
-            gameControllerInfo = new GameControllerInfo(InputDevice.getDevice(deviceId),
-                hasVirtualMouse);
+            InputDevice newDevice = InputDevice.getDevice(deviceId);
+            gameControllerInfo = new GameControllerInfo(newDevice);
+            GameControllerListener gameControllerListener = new GameControllerListener(this,
+                    newDevice, gameControllerInfo.GetGameControllerFlags(), reportMotionEvents);
+            gameControllerInfo.SetListener(gameControllerListener);
             gameControllers.add(gameControllerInfo);
             notifyNativeConnection(gameControllerInfo);
         }
@@ -257,7 +382,7 @@ public class GameControllerManager {
         if (mouseDeviceIds.size() < MAX_MICE) {
             if (printControllerInfo) {
                 Log.d(TAG, "onMouseDeviceAdded id: " + deviceId + " name: " +
-                    InputDevice.getDevice(deviceId).getName());
+                        InputDevice.getDevice(deviceId).getName());
                 logControllerInfo(deviceId);
             }
             mouseDeviceIds.add(deviceId);
@@ -269,16 +394,19 @@ public class GameControllerManager {
         // Remove from pending connected if it hadn't been processed yet
         for (int index = 0; index < pendingControllerDeviceIds.size(); ++index) {
             if (pendingControllerDeviceIds.get(index) == deviceId) {
-                pendingControllerDeviceIds.remove(index--);
+                pendingControllerDeviceIds.remove(index);
                 break;
             }
         }
 
         for (int index = 0; index < gameControllers.size(); ++index) {
-            if (gameControllers.get(index).GetGameControllerDeviceId() == deviceId) {
+            GameControllerInfo controller = gameControllers.get(index);
+            if (controller.GetGameControllerDeviceId() == deviceId) {
                 if (nativeReady) {
                     onControllerDisconnected(deviceId);
                 }
+                controller.GetListener().shutdownListener();
+                controller.SetListener(null);
                 gameControllers.remove(index);
                 break;
             }
@@ -290,7 +418,7 @@ public class GameControllerManager {
         // Remove from pending connected if it hadn't been processed yet
         for (int index = 0; index < pendingMouseDeviceIds.size(); ++index) {
             if (pendingMouseDeviceIds.get(index) == deviceId) {
-                pendingMouseDeviceIds.remove(index--);
+                pendingMouseDeviceIds.remove(index);
                 removed = true;
                 break;
             }
@@ -310,7 +438,7 @@ public class GameControllerManager {
     }
 
     public void onInputDeviceAdded(int deviceId) {
-        boolean isGameController = isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK);
+        boolean isGameController = getIsGameController(deviceId);
         boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK);
 
         if (isMouse && !isGameController) {
@@ -321,9 +449,8 @@ public class GameControllerManager {
     }
 
     public void onInputDeviceRemoved(int deviceId) {
-        if (!onMouseDeviceRemoved(deviceId) ) {
-            onGameControllerDeviceRemoved(deviceId);
-        }
+        onMouseDeviceRemoved(deviceId);
+        onGameControllerDeviceRemoved(deviceId);
     }
 
     public void onInputDeviceChanged(int deviceId) {
@@ -331,7 +458,7 @@ public class GameControllerManager {
         as a game controller. If we weren't previously tracking it as a game controller,
         make sure we run the controller connection flow to notify the client.
          */
-        boolean isGameController = isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK);
+        boolean isGameController = getIsGameController(deviceId);
         if (isGameController) {
             boolean foundDeviceId = false;
             for (int pendingDeviceId : pendingControllerDeviceIds) {
@@ -341,9 +468,15 @@ public class GameControllerManager {
                 }
             }
             if (!foundDeviceId) {
-                for (GameControllerInfo gameController : gameControllers) {
-                    if (gameController.GetGameControllerDeviceId() == deviceId) {
+                for (int index = 0; index < gameControllers.size(); ++index) {
+                    GameControllerInfo controller = gameControllers.get(index);
+                    if (controller.GetGameControllerDeviceId() == deviceId) {
                         foundDeviceId = true;
+                        // If an existing game controller got a changed message, reset
+                        // our listener in case any of the controller capabilities changed.
+                        InputDevice inputDevice = inputManager.getInputDevice(deviceId);
+                        int controllerFlags = controller.GetGameControllerFlags();
+                        controller.GetListener().resetListener(inputDevice, controllerFlags);
                         break;
                     }
                 }
@@ -365,8 +498,7 @@ public class GameControllerManager {
 
         // Send any pending notifications about connected devices now that native side is ready
         for (int deviceId : pendingControllerDeviceIds) {
-            GameControllerInfo gcInfo = onGameControllerAdded(deviceId,
-                isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK));
+            GameControllerInfo gcInfo = onGameControllerAdded(deviceId);
             if (gcInfo != null) {
                 if (printControllerInfo) {
                     Log.d(TAG, "setNativeReady notifyNativeConnection for deviceId: " + deviceId);
@@ -380,18 +512,99 @@ public class GameControllerManager {
         }
     }
 
+    public void setReportMotionEvents() {
+        reportMotionEvents = true;
+        for (GameControllerInfo controller : gameControllers) {
+            controller.GetListener().setReportMotionEvents();
+        }
+    }
+
+    public float getBatteryLevel(int deviceId) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            InputDevice inputDevice = inputManager.getInputDevice(deviceId);
+            if (inputDevice != null) {
+                BatteryState batteryState = inputDevice.getBatteryState();
+                if (batteryState != null) {
+                    if (batteryState.isPresent()) {
+                        final float batteryLevel = batteryState.getCapacity();
+                        return batteryLevel;
+                    }
+                }
+            }
+        }
+        return 1.0f;
+    }
+
+    public int getBatteryStatus(int deviceId) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            InputDevice inputDevice = inputManager.getInputDevice(deviceId);
+            if (inputDevice != null) {
+                BatteryState batteryState = inputDevice.getBatteryState();
+                if (batteryState != null) {
+                    if (batteryState.isPresent()) {
+                        final int batteryStatus = batteryState.getStatus();
+                        return batteryStatus;
+                    }
+                }
+            }
+        }
+        return BatteryManager.BATTERY_STATUS_UNKNOWN;
+    }
+
+    public void setLight(int deviceId, int lightType, int lightValue) {
+        for (int index = 0; index < gameControllers.size(); ++index) {
+            GameControllerInfo controller = gameControllers.get(index);
+            if (controller.GetGameControllerDeviceId() == deviceId) {
+                controller.GetListener().setLight(lightType, lightValue);
+                break;
+            }
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void updateVibrator(Vibrator vibrator, int intensity, int duration) {
+        if (vibrator != null) {
+            if (intensity == 0) {
+                vibrator.cancel();
+            } else if (duration > 0) {
+                vibrator.vibrate(VibrationEffect.createOneShot((long) duration, intensity));
+            }
+        }
+    }
+
+    void setVibrationMultiChannel(InputDevice inputDevice, int leftIntensity, int leftDuration,
+                                  int rightIntensity, int rightDuration) {
+        if (Build.VERSION.SDK_INT >= VIBRATOR_MANAGER_MIN_API) {
+            VibratorManager vibratorManager = inputDevice.getVibratorManager();
+            if (vibratorManager != null) {
+                int[] vibratorIds = vibratorManager.getVibratorIds();
+                int vibratorCount = vibratorIds.length;
+                Log.d(TAG, "Vibrator Count: " + vibratorCount);
+                if (vibratorCount > 0) {
+                    // We have an assumption that game controllers have two vibrators
+                    // corresponding to a left motor and a right motor, and the left
+                    // motor will be first.
+                    updateVibrator(vibratorManager.getVibrator(vibratorIds[0]), leftIntensity,
+                            leftDuration);
+                    if (vibratorCount > 1) {
+                        updateVibrator(vibratorManager.getVibrator(vibratorIds[1]),
+                                rightIntensity, rightDuration);
+                    }
+                }
+            }
+        }
+    }
+
     public void setVibration(int deviceId, int leftIntensity, int leftDuration, int rightIntensity,
-        int rightDuration) {
+                             int rightDuration) {
         InputDevice inputDevice = inputManager.getInputDevice(deviceId);
         if (inputDevice != null) {
-            Vibrator deviceVibrator = inputDevice.getVibrator();
-            if (isVibrationSupportedForDevice(deviceVibrator)) {
-                if (leftIntensity == 0) {
-                    deviceVibrator.cancel();
-                } else {
-                    deviceVibrator.vibrate(VibrationEffect.createOneShot((long) leftDuration,
-                        leftIntensity));
-                }
+            if (Build.VERSION.SDK_INT >= VIBRATOR_MANAGER_MIN_API) {
+                setVibrationMultiChannel(inputDevice, leftIntensity, leftDuration, rightIntensity,
+                        rightDuration);
+            } else if (Build.VERSION.SDK_INT >= VIBRATION_EFFECT_MIN_API) {
+                Vibrator deviceVibrator = inputDevice.getVibrator();
+                updateVibrator(deviceVibrator, leftIntensity, leftDuration);
             }
         }
     }
@@ -410,24 +623,6 @@ public class GameControllerManager {
                 gcInfo.GetGameControllerAxisMaxArray(),
                 gcInfo.GetGameControllerAxisFlatArray(),
                 gcInfo.GetGameControllerAxisFuzzArray());
-    }
-
-    private boolean isDeviceOfSource(int deviceId, int matchingSourceMask) {
-        boolean isSource = false;
-        InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        int inputDeviceSources = inputDevice.getSources();
-        int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
-
-        if (inputDevice.isVirtual() == false) {
-            if ((inputDeviceSources & sourceMask) != 0) {
-                List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
-                if (motionRanges.size() > 0) {
-                    isSource = true;
-                }
-            }
-        }
-
-        return isSource;
     }
 
     private String generateSourceString(int source) {
@@ -632,6 +827,9 @@ public class GameControllerManager {
                                              float[] axisFlatArray, float[] axisFloorArray);
 
     public native void onControllerDisconnected(int deviceId);
+
+    public native void onMotionData(int deviceId, int motionType, long timestamp,
+                                    float dataX, float dataY, float dataZ);
 
     public native void onMouseConnected(int deviceId);
 

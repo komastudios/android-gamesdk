@@ -129,7 +129,17 @@ void SwappyGL::addTracer(const SwappyTracer *tracer) {
     if (!swappy) {
         return;
     }
-    if (swappy->enabled()) swappy->mCommonBase.addTracerCallbacks(*tracer);
+    if (swappy->enabled() && tracer != nullptr)
+        swappy->mCommonBase.addTracerCallbacks(*tracer);
+}
+
+void SwappyGL::removeTracer(const SwappyTracer *tracer) {
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    if (swappy->enabled() && tracer != nullptr)
+        swappy->mCommonBase.removeTracerCallbacks(*tracer);
 }
 
 nanoseconds SwappyGL::getSwapDuration() {

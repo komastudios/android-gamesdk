@@ -211,6 +211,34 @@ static void* android_app_entry(void* param) {
     return NULL;
 }
 
+// Codes from https://developer.android.com/reference/android/view/KeyEvent
+#define KEY_EVENT_KEYCODE_VOLUME_DOWN 25
+#define KEY_EVENT_KEYCODE_VOLUME_MUTE 164
+#define KEY_EVENT_KEYCODE_VOLUME_UP 24
+#define KEY_EVENT_KEYCODE_CAMERA 27
+#define KEY_EVENT_KEYCODE_ZOOM_IN 168
+#define KEY_EVENT_KEYCODE_ZOOM_OUT 169
+
+// Double-buffer the key event filter to avoid race condition.
+static bool default_key_filter(const GameActivityKeyEvent* event) {
+    // Ignore camera, volume, etc. buttons
+    return !(event->keyCode == KEY_EVENT_KEYCODE_VOLUME_DOWN ||
+             event->keyCode == KEY_EVENT_KEYCODE_VOLUME_MUTE ||
+             event->keyCode == KEY_EVENT_KEYCODE_VOLUME_UP ||
+             event->keyCode == KEY_EVENT_KEYCODE_CAMERA ||
+             event->keyCode == KEY_EVENT_KEYCODE_ZOOM_IN ||
+             event->keyCode == KEY_EVENT_KEYCODE_ZOOM_OUT);
+}
+
+// See
+// https://developer.android.com/reference/android/view/InputDevice#SOURCE_TOUCHSCREEN
+#define SOURCE_TOUCHSCREEN 0x00001002
+
+static bool default_motion_filter(const GameActivityMotionEvent* event) {
+    // Ignore any non-touch events.
+    return event->source == SOURCE_TOUCHSCREEN;
+}
+
 // --------------------------------------------------------------------
 // Native activity interaction (called from main thread)
 // --------------------------------------------------------------------
@@ -240,6 +268,9 @@ static struct android_app* android_app_create(GameActivity* activity,
     }
     android_app->msgread = msgpipe[0];
     android_app->msgwrite = msgpipe[1];
+
+    android_app->keyEventFilter = default_key_filter;
+    android_app->motionEventFilter = default_motion_filter;
 
     LOGV("Launching android_app_entry in a thread");
     pthread_attr_t attr;
@@ -401,10 +432,23 @@ static void onNativeWindowResized(GameActivity* activity,
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_RESIZED);
 }
 
+void android_app_set_motion_event_filter(struct android_app* app,
+                                         android_motion_event_filter filter) {
+    pthread_mutex_lock(&app->mutex);
+    app->motionEventFilter = filter;
+    pthread_mutex_unlock(&app->mutex);
+}
+
 static bool onTouchEvent(GameActivity* activity,
                          const GameActivityMotionEvent* event) {
     struct android_app* android_app = ToApp(activity);
     pthread_mutex_lock(&android_app->mutex);
+
+    if (android_app->motionEventFilter != NULL &&
+        !android_app->motionEventFilter(event)) {
+        pthread_mutex_unlock(&android_app->mutex);
+        return false;
+    }
 
     struct android_input_buffer* inputBuffer =
         &android_app->inputBuffers[android_app->currentInputBuffer];
@@ -446,27 +490,22 @@ void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
     inputBuffer->motionEventsCount = 0;
 }
 
-// Codes from https://developer.android.com/reference/android/view/KeyEvent
-#define KEY_EVENT_KEYCODE_VOLUME_DOWN 25
-#define KEY_EVENT_KEYCODE_VOLUME_MUTE 164
-#define KEY_EVENT_KEYCODE_VOLUME_UP 24
-#define KEY_EVENT_KEYCODE_CAMERA 27
-#define KEY_EVENT_KEYCODE_ZOOM_IN 168
-#define KEY_EVENT_KEYCODE_ZOOM_OUT 169
+void android_app_set_key_event_filter(struct android_app* app,
+                                      android_key_event_filter filter) {
+    pthread_mutex_lock(&app->mutex);
+    app->keyEventFilter = filter;
+    pthread_mutex_unlock(&app->mutex);
+}
 
 static bool onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
     struct android_app* android_app = ToApp(activity);
-
-    // Ignore camera, volume, etc. buttons
-    if (event->keyCode == KEY_EVENT_KEYCODE_VOLUME_DOWN ||
-        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_MUTE ||
-        event->keyCode == KEY_EVENT_KEYCODE_VOLUME_UP ||
-        event->keyCode == KEY_EVENT_KEYCODE_CAMERA ||
-        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_IN ||
-        event->keyCode == KEY_EVENT_KEYCODE_ZOOM_OUT)
-        return false;
-
     pthread_mutex_lock(&android_app->mutex);
+
+    if (android_app->keyEventFilter != NULL &&
+        !android_app->keyEventFilter(event)) {
+        pthread_mutex_unlock(&android_app->mutex);
+        return false;
+    }
 
     struct android_input_buffer* inputBuffer =
         &android_app->inputBuffers[android_app->currentInputBuffer];

@@ -115,4 +115,8 @@ void SwappyGL_setBufferStuffingFixWait(int32_t n_frames) {
     SwappyGL::setBufferStuffingFixWait(n_frames);
 }
 
+void SwappyGL_uninjectTracer(const SwappyTracer *t) {
+    SwappyGL::removeTracer(t);
+}
+
 }  // extern "C" {

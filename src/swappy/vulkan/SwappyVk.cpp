@@ -291,4 +291,10 @@ void SwappyVk::addTracer(const SwappyTracer* t) {
     }
 }
 
+void SwappyVk::removeTracer(const SwappyTracer* t) {
+    for (auto i : perSwapchainImplementation) {
+        i.second->removeTracer(t);
+    }
+}
+
 }  // namespace swappy
