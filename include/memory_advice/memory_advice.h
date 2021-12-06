@@ -72,6 +72,8 @@ typedef enum MemoryAdvice_ErrorCode {
     MEMORYADVICE_ERROR_WATCHER_ALREADY_SET =
         5,  ///< SetWatcher function was called while there was already a
             ///< watcher in place.
+    MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID =
+        6,  ///< A correct TFLite model was not provided.
 } MemoryAdvice_ErrorCode;
 
 /**

@@ -21,6 +21,7 @@
 
 #include "device_profiler.h"
 #include "metrics_provider.h"
+#include "predictor.h"
 
 namespace memory_advice {
 
@@ -30,6 +31,8 @@ class MemoryAdviceImpl {
    private:
     std::unique_ptr<MetricsProvider> metrics_provider_;
     std::unique_ptr<DeviceProfiler> device_profiler_;
+    std::unique_ptr<Predictor> realtime_predictor_, available_predictor_,
+        oom_predictor_;
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object device_profile_;
@@ -65,9 +68,13 @@ class MemoryAdviceImpl {
    public:
     MemoryAdviceImpl(const char* params);
     /** @brief Creates an advice object by reading variable metrics and
-     * comparing them to baseline values and values provided by device profiler.
+     * feeding them into the provided machine learning model.
      */
     Json::object GetAdvice();
+    /** @brief Creates an advice object by reading variable metrics and
+     * comparing them to baseline values and values provided by device profiler.
+     */
+    Json::object GetAdviceDeprecated();
     /** @brief Evaluates information from the current metrics and returns a
      * memory state.
      */
@@ -79,6 +86,9 @@ class MemoryAdviceImpl {
     /** @brief Reads the variable part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateVariableMetrics();
+    /** @brief Reads the baseline part of the advisor_parameters_ and reports
+     * metrics for those fields. */
+    Json::object GenerateBaselineMetrics();
     /** @brief Reads the constant part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateConstantMetrics();
