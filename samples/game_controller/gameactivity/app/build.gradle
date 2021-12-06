@@ -57,14 +57,19 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
     implementation "androidx.lifecycle:lifecycle-livedata:2.2.0"
     implementation "androidx.lifecycle:lifecycle-runtime:2.2.0"
+    implementation "androidx.core:core:1.5.0"
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation 'androidx.fragment:fragment:1.2.5'
-    implementation "androidx.games:games-activity:1.0.0"
-    implementation "androidx.games:games-controller:1.0.0"
     implementation "com.android.ndk.thirdparty:libpng:1.6.37-alpha-1"
 
-    // Example of using local .aar files in libs/ directory.
-    // Comment out the androidx.games implementation lines if
-    // you use a local lib.
-    // implementation fileTree(dir: 'libs', include: ['GameActivity.aar', 'GameController.aar'])
+    // A locally built GameController.aar and GameActivity.aar 
+    // are expected to be located in app/libs/
+    // See the gamesdk README for information on generating a local build
+    // You can comment out this line and uncomment the androidx
+    // implementations to use Maven. Be aware that this may target a future
+    // release which does not yet exist, which is why a locally build
+    // library is the default option.
+    implementation fileTree(dir: 'libs', include: ['GameActivity.aar', 'GameController.aar'])
+    //implementation "androidx.games:games-activity:1.1.0"
+    //implementation "androidx.games:games-controller:1.1.0"
 }
