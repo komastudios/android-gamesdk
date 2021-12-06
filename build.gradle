@@ -353,7 +353,7 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     // TODO: including the dynamic library
     // errors because no proper library can be found for module swappy (the shared version),
     // probably because we're using c++_static in samples?
-    def buildSharedLibrary = false
+    def buildSharedLibrary = true
     def buildStaticLibrary = true
 
     // 1. Copy dynamic library
