@@ -24,6 +24,9 @@
 
 #include "game-text-input/gametextinput.h"
 
+// from samples/common/include
+#include "Versions.h"
+
 #include <string>
 #include <android/window.h>
 
@@ -87,12 +90,25 @@ void WelcomeScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
 }
 
-const char* WelcomeScene::AboutMessage() {
-    static std::string aboutMessage;
+static std::string sAboutStartText;
+
+void WelcomeScene::InitAboutText(JNIEnv* env, jobject context) {
     std::stringstream aboutStream;
     aboutStream << BLURB_ABOUT;
+    std::string versionName;
+    agdk_samples_util::GetAppVersionInfo(env, context, nullptr, &versionName);
+    aboutStream << "\nApp Version: " << versionName;
+    aboutStream << "\nTarget SDK Version: "
+                << android_get_application_target_sdk_version();
+    aboutStream << "\nDevice OS Version: " << android_get_device_api_level();
+    sAboutStartText = aboutStream.str();
+}
+
+std::string WelcomeScene::AboutMessage() {
+    std::stringstream aboutStream;
+    aboutStream << sAboutStartText;
     // Add window insets to help debugging
-    aboutStream << "\n\n[Debug Insets (left, right, top, bottom)]\n";
+    aboutStream << "\n[Debug Insets (left, right, top, bottom)]\n";
     auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
     ARect insets;
     GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_SYSTEM_BARS, &insets);
@@ -104,8 +120,7 @@ const char* WelcomeScene::AboutMessage() {
     GameActivity_getWindowInsets(activity, GAMECOMMON_INSETS_TYPE_WATERFALL, &insets);
     aboutStream << "Waterfall: (" << insets.left << ", " << insets.right << ", "
                 << insets.top << ", " << insets.bottom << ")";
-    aboutMessage = aboutStream.str();
-    return aboutMessage.c_str();
+    return aboutStream.str();
 }
 
 void WelcomeScene::OnButtonClicked(int id) {
@@ -117,7 +132,8 @@ void WelcomeScene::OnButtonClicked(int id) {
         mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mAboutButtonId) {
-        mgr->RequestNewScene((new DialogScene())->SetText(AboutMessage())->SetSingleButton(S_OK,
+        std::string aboutText = AboutMessage();
+        mgr->RequestNewScene((new DialogScene())->SetText(aboutText.c_str())->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
     } else if (id == mNameEdit->GetId()) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;

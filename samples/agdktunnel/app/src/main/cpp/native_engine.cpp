@@ -24,6 +24,7 @@
 #include "game-activity/GameActivity.h"
 #include "paddleboat/paddleboat.h"
 #include "swappy/swappyGL.h"
+#include "welcome_scene.hpp"
 
 // verbose debug logs on?
 #define VERBOSE_LOGGING 1
@@ -109,6 +110,21 @@ NativeEngine::NativeEngine(struct android_app *app) {
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
 
     mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
+
+    WelcomeScene::InitAboutText(GetJniEnv(), app->activity->javaGameActivity);
+
+    // This is needed to allow controller events through to us.
+    // By default, only touch-screen events are passed through, to match the
+    // behaviour of NativeActivity.
+    android_app_set_motion_event_filter(app, nullptr);
+
+    // Flags to control how the IME behaves.
+    constexpr int InputType_dot_TYPE_CLASS_TEXT = 1;
+    constexpr int IME_ACTION_NONE = 1;
+    constexpr int IME_FLAG_NO_FULLSCREEN = 33554432;
+
+    GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
+                                  IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -766,4 +782,3 @@ bool NativeEngine::InitGLObjects() {
     }
     return true;
 }
-

@@ -86,8 +86,14 @@ class SwappyCommon {
     PipelineMode getCurrentPipelineMode() { return mPipelineMode; }
 
     template <typename... T>
-    using Tracer = std::function<void(T...)>;
-    void addTracerCallbacks(SwappyTracer tracer);
+    struct Tracer {
+        void (*function)(void*, T...);
+        void* userData;
+    };
+
+    void addTracerCallbacks(const SwappyTracer& tracer);
+
+    void removeTracerCallbacks(const SwappyTracer& tracer);
 
     void setAutoSwapInterval(bool enabled);
     void setAutoPipelineMode(bool enabled);
@@ -290,7 +296,7 @@ class SwappyCommon {
         std::list<Tracer<int64_t, int64_t>> postWait;
         std::list<Tracer<>> preSwapBuffers;
         std::list<Tracer<int64_t>> postSwapBuffers;
-        std::list<Tracer<int32_t, long>> startFrame;
+        std::list<Tracer<int32_t, int64_t>> startFrame;
         std::list<Tracer<>> swapIntervalChanged;
     };
 

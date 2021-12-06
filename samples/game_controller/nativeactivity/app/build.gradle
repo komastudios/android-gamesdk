@@ -54,11 +54,17 @@ android.lintOptions {
 }
 
 dependencies {
-    implementation "androidx.games:games-controller:1.0.0"
+    // A locally built GameController.aar is expected to be located
+    // in app/libs/
+    // See the gamesdk README for information on generating a local build
+    // You can comment out this line and uncomment the androidx
+    // implementation to use Maven. Be aware that this may target a future
+    // release which does not yet exist, which is why a locally build
+    // library is the default option.
+    implementation fileTree(dir: 'libs', include: ['GameController.aar'])
+    //implementation "androidx.games:games-controller:1.1.0"
+
+    // libpng via maven
     implementation "com.android.ndk.thirdparty:libpng:1.6.37-alpha-1"
 
-    // Example of using local .aar files in libs/ directory.
-    // Comment out the androidx.games implementation lines if
-    // you use a local lib.
-    // implementation fileTree(dir: 'libs', include: ['GameController.aar'])
 }

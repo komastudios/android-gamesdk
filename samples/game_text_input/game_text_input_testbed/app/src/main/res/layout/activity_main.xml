@@ -19,7 +19,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@+id/input_enabled_text_view">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,27 +55,20 @@
                 android:id="@+id/selection_start_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
                 android:text="...to start" />
 
             <Button
                 android:id="@+id/selection_end_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
                 android:text="...to end" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/displayed_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Click on Show Keyboard and start typing" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,6 +93,13 @@
                 android:layout_height="wrap_content"
                 android:text="Set Type Number" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/displayed_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Click on Show Keyboard and start typing" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
