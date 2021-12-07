@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000018132257",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1911455?revision\u003d2",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bb76c998_690b4352",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2021-12-07T15:25:13Z",
+      "side": 1,
+      "message": "TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.",
+      "range": {
+        "startLine": 25,
+        "startChar": 7,
+        "endLine": 25,
+        "endChar": 18
+      },
+      "revId": "f3be9eae06e59768b4b4c0f554623015d7463afc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
