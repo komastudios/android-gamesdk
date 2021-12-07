@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd49ea85_787d9418",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "The gamesdk-samples target is passing in presubmit, and I was able to build and run bouncyball with no problems.",
+      "parentUuid": "dccd6a10_c040cd7a",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a7e411d1_44bbed89",
@@ -42,6 +60,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4ade779_73749791",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "I added a single bug to track the progress on native memory advice library, and linked them on the TODO\u0027s.",
+      "parentUuid": "a7e411d1_44bbed89",
+      "range": {
+        "startLine": 25,
+        "startChar": 7,
+        "endLine": 25,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eecd310a_db7093ba",
@@ -55,6 +97,24 @@
       "writtenOn": "2021-12-07T12:05:32Z",
       "side": 1,
       "message": "Missing AOSP header",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d89dd45e_56c22ae2",
+        "filename": "src/common/apk_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eecd310a_db7093ba",
       "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -111,6 +171,42 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1db9f9af_950047d0",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f73a9aee_a7fde254",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc7c3674_adc66523",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b610fefc_14413eff",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb04b2aa_105a9d78",
@@ -124,6 +220,24 @@
       "writtenOn": "2021-12-07T12:05:32Z",
       "side": 1,
       "message": "Please comment what this class does",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e810430_c21820bd",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb04b2aa_105a9d78",
       "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -145,6 +259,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb2b4182_0386f6ec",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f6dc7dd_b75c9c06",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5ecd1cd4_ea6bea72",
@@ -162,6 +294,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d98142b_b66b99ee",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ecd1cd4_ea6bea72",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5045fed4_aefff715",
@@ -175,6 +325,24 @@
       "writtenOn": "2021-12-07T12:05:32Z",
       "side": 1,
       "message": "Remove commented-out code?",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82e1ecdd_f5b14c05",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5045fed4_aefff715",
       "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -203,6 +371,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "efc1668c_cc23e7c2",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90dfbd3a_ebf26905",
+      "range": {
+        "startLine": 109,
+        "startChar": 7,
+        "endLine": 109,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a36127ad_99e2f9ae",
@@ -217,6 +409,30 @@
       "side": 1,
       "message": "\u003e TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.\n\nPlease fix.",
       "parentUuid": "445541b8_ecc0334b",
+      "range": {
+        "startLine": 111,
+        "startChar": 7,
+        "endLine": 111,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63e18b24_51975538",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-07T15:29:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a36127ad_99e2f9ae",
       "range": {
         "startLine": 111,
         "startChar": 7,
