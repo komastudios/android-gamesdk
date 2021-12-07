@@ -1,0 +1,212 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dccd6a10_c040cd7a",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Are you sure this doesn\u0027t break the swappy samples? If it doesn\u0027t, can you remove the TODO above, please.",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7e411d1_44bbed89",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "\u003e TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.\n\nPlease fix.",
+      "parentUuid": "c83258ef_72598aca",
+      "range": {
+        "startLine": 25,
+        "startChar": 7,
+        "endLine": 25,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eecd310a_db7093ba",
+        "filename": "src/common/apk_utils.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Missing AOSP header",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b610fefc_14413eff",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Missing AOSP header",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b68b2db8_f490b5ab",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "This code is duplicated from TuningFork, I think?\nCan you remove it from there add a bug to do so, please?",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb04b2aa_105a9d78",
+        "filename": "src/common/apk_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Please comment what this class does",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f6dc7dd_b75c9c06",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Remove commented-out code?",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ecd1cd4_ea6bea72",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Remove commented-out code?",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5045fed4_aefff715",
+        "filename": "src/memory_advice/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "Remove commented-out code?",
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90dfbd3a_ebf26905",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "\u003e TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.\n\nPlease fix.",
+      "parentUuid": "e55b3bb6_08701205",
+      "range": {
+        "startLine": 109,
+        "startChar": 7,
+        "endLine": 109,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a36127ad_99e2f9ae",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-07T12:05:32Z",
+      "side": 1,
+      "message": "\u003e TODO statements should not reference a specific human; consider using a bug number instead; see https://source.android.com/setup/contribute/code-style#use-todo-comments for more details.\n\nPlease fix.",
+      "parentUuid": "445541b8_ecc0334b",
+      "range": {
+        "startLine": 111,
+        "startChar": 7,
+        "endLine": 111,
+        "endChar": 18
+      },
+      "revId": "633429c5592b43f78fecb687a60a370c87f79af6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
