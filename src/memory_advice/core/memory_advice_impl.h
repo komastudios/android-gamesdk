@@ -16,12 +16,15 @@
 
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <mutex>
 
 #include "device_profiler.h"
+#include "memory_advice_utils.h"
 #include "metrics_provider.h"
 #include "predictor.h"
+#include "system_utils.h"
 
 namespace memory_advice {
 
@@ -36,6 +39,7 @@ class MemoryAdviceImpl {
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object device_profile_;
+    Json::object build_;
     std::mutex advice_mutex_;
 
     MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;
