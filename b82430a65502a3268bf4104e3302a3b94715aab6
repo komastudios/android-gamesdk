@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c5aa4359_b8ceacf2",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-13T17:34:43Z",
+      "side": 1,
+      "message": "Are these extra includes needed in the header or just the source?",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "225024e5_f072629c",
+        "filename": "src/memory_advice/core/memory_advice_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-13T17:34:43Z",
+      "side": 1,
+      "message": "Do you need to strip whitespace here or is that done elsewhere?",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fe3439c_e9d75a6e",
+        "filename": "src/memory_advice/core/memory_advice_utils.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-13T17:34:43Z",
+      "side": 1,
+      "message": "Please comment what these functions do and what the requirements on \u0027formula\u0027 are.",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
