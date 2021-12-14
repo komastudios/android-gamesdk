@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ff4fb8a4_baad90ed",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-14T15:17:51Z",
+      "side": 1,
+      "message": "Just the source. Is it fine if they stay here or should I move them to the source?",
+      "parentUuid": "c5aa4359_b8ceacf2",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "225024e5_f072629c",
         "filename": "src/memory_advice/core/memory_advice_utils.cpp",
         "patchSetId": 2
@@ -31,6 +49,24 @@
       "writtenOn": "2021-12-13T17:34:43Z",
       "side": 1,
       "message": "Do you need to strip whitespace here or is that done elsewhere?",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d47fbd83_fbb609f7",
+        "filename": "src/memory_advice/core/memory_advice_utils.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-14T15:17:51Z",
+      "side": 1,
+      "message": "It is done elsewhere",
+      "parentUuid": "225024e5_f072629c",
       "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -48,6 +84,24 @@
       "writtenOn": "2021-12-13T17:34:43Z",
       "side": 1,
       "message": "Please comment what these functions do and what the requirements on \u0027formula\u0027 are.",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1974ee5a_cbceafe7",
+        "filename": "src/memory_advice/core/memory_advice_utils.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2021-12-14T15:17:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fe3439c_e9d75a6e",
       "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
