@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2fc08413_4573ff5a",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2021-12-14T15:33:03Z",
+      "side": 1,
+      "message": "It\u0027s best to not pollute headers with includes that are only needed for the implementation",
+      "parentUuid": "ff4fb8a4_baad90ed",
+      "revId": "b82430a65502a3268bf4104e3302a3b94715aab6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "225024e5_f072629c",
         "filename": "src/memory_advice/core/memory_advice_utils.cpp",
         "patchSetId": 2
