@@ -74,6 +74,7 @@ set(MEMORY_ADVICE_SRCS
   core/memory_advice.cpp
   core/memory_advice_impl.cpp
   core/memory_advice_c.cpp
+  core/memory_advice_utils.cpp
   core/metrics_provider.cpp
   core/state_watcher.cpp
   core/predictor.cpp
@@ -81,6 +82,7 @@ set(MEMORY_ADVICE_SRCS
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
   ../common/apk_utils.cpp
+  ../common/system_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   device_profiler_lookup.cpp
   advisor_parameters.cpp

@@ -36,6 +36,7 @@ class MemoryAdviceImpl {
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object device_profile_;
+    Json::object build_;
     std::mutex advice_mutex_;
 
     MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;

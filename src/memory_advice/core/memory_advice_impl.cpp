@@ -16,7 +16,11 @@
 
 #include "memory_advice_impl.h"
 
+#include <algorithm>
 #include <chrono>
+
+#include "memory_advice_utils.h"
+#include "system_utils.h"
 
 namespace memory_advice {
 
@@ -49,6 +53,7 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     }
     baseline_ = GenerateBaselineMetrics();
     baseline_["constant"] = GenerateConstantMetrics();
+    build_ = utils::GetBuildInfo();
 }
 
 MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
@@ -59,12 +64,11 @@ MemoryAdvice_ErrorCode MemoryAdviceImpl::ProcessAdvisorParameters(
         ALOGE("Error while parsing advisor parameters: %s", err.c_str());
         return MEMORYADVICE_ERROR_ADVISOR_PARAMETERS_INVALID;
     }
-
     return MEMORYADVICE_ERROR_OK;
 }
 
 MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
-    Json::object advice = GetAdviceDeprecated();
+    Json::object advice = GetAdvice();
     if (advice.find("warnings") != advice.end()) {
         Json::array warnings = advice["warnings"].array_items();
         for (auto& it : warnings) {
@@ -78,19 +82,15 @@ MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
 }
 
 int64_t MemoryAdviceImpl::GetAvailableMemory() {
-    Json::object advice = GetAdviceDeprecated();
-    if (advice.find("predictions") != advice.end()) {
-        int64_t smallest_estimate = 0;
-        Json::object predictions = advice["predictions"].object_items();
-        for (auto& it : predictions) {
-            if (smallest_estimate == 0 ||
-                it.second.number_value() < smallest_estimate) {
-                smallest_estimate = it.second.number_value();
-            }
+    Json::object advice = GetAdvice();
+    if (advice.find("metrics") != advice.end()) {
+        Json::object metrics = advice["metrics"].object_items();
+        if (metrics.find("predictedAvailable") != metrics.end()) {
+            return static_cast<int64_t>(
+                metrics["predictedAvailable"].number_value());
         }
-        return smallest_estimate;
     }
-    return 0;
+    return 0L;
 }
 
 Json::object MemoryAdviceImpl::GetAdvice() {
@@ -106,8 +106,7 @@ Json::object MemoryAdviceImpl::GetAdvice() {
 
     data["baseline"] = baseline_;
     data["sample"] = variable_metrics;
-    // TODO(b/209602631): add build info here
-    // data["build"] = build_;
+    data["build"] = build_;
 
     if (variable_spec.find("predictRealtime") != variable_spec.end() &&
         variable_spec.at("predictRealtime").bool_value()) {
@@ -119,6 +118,30 @@ Json::object MemoryAdviceImpl::GetAdvice() {
         variable_spec.at("availableRealtime").bool_value()) {
         variable_metrics["predictedAvailable"] =
             Json(realtime_predictor_->Predict(data));
+    }
+    Json::array warnings;
+    Json::object heuristics =
+        advisor_parameters_.at("heuristics").object_items();
+
+    if (heuristics.find("formulas") != heuristics.end()) {
+        for (auto& entry : heuristics["formulas"].object_items()) {
+            for (auto& formula_object : entry.second.array_items()) {
+                std::string formula = formula_object.string_value();
+                formula.erase(std::remove_if(formula.begin(), formula.end(),
+                                             (int (*)(int))std::isspace),
+                              formula.end());
+                if (utils::EvaluateBoolean(formula, variable_metrics)) {
+                    Json::object warning;
+                    warning["formula"] = formula;
+                    warning["level"] = entry.first;
+                    warnings.push_back(warning);
+                }
+            }
+        }
+    }
+
+    if (!warnings.empty()) {
+        advice["warnings"] = warnings;
     }
 
     advice["metrics"] = variable_metrics;
