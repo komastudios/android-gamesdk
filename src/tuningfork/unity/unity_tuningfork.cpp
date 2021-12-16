@@ -135,6 +135,12 @@ TuningFork_ErrorCode Unity_TuningFork_init_with_settings(
         settings->swappy_tracer_fn = s_swappy_tracer_fn;
     }
     settings->swappy_version = s_swappy_version;
+    // In API <= 23, the memory portion of the api_key sent from C#
+    // becomes corrupted for some reason and it results in failure
+    // to connect to the endpoint.
+    // Introducing this workaround to correctly read the api_key
+    // set in tuningfork_settings.bin.
+    settings->api_key = nullptr;
     return TuningFork_init(settings, jni::Env(), jni::AppContextGlobalRef());
 }
 
