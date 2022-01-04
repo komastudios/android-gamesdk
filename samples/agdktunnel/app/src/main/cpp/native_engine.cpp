@@ -319,7 +319,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
                 }
             }
             VLOGD("HandleCommand(%d): hasWindow = %d, hasFocus = %d", cmd,
-                          mHasWindow ? 1 : 0, mHasFocus ? 1 : 0);
+                  mHasWindow ? 1 : 0, mHasFocus ? 1 : 0);
             break;
         case APP_CMD_TERM_WINDOW:
             // The window is going away -- kill the surface
@@ -396,9 +396,9 @@ void NativeEngine::HandleCommand(int32_t cmd) {
             break;
     }
 
-            VLOGD("NativeEngine: STATUS: F%d, V%d, W%d, EGL: D %p, S %p, CTX %p, CFG %p",
-                  mHasFocus, mIsVisible, mHasWindow, mEglDisplay, mEglSurface, mEglContext,
-                  mEglConfig);
+    VLOGD("NativeEngine: STATUS: F%d, V%d, W%d, EGL: D %p, S %p, CTX %p, CFG %p",
+          mHasFocus, mIsVisible, mHasWindow, mEglDisplay, mEglSurface, mEglContext,
+          mEglConfig);
 }
 
 bool NativeEngine::HandleInput(AInputEvent *event) {
@@ -586,7 +586,7 @@ bool NativeEngine::PrepareToRender() {
         }
 
         ALOGI("NativeEngine: binding surface and context (display %p, surface %p, context %p)",
-             mEglDisplay, mEglSurface, mEglContext);
+              mEglDisplay, mEglSurface, mEglContext);
 
         // bind them
         if (EGL_FALSE == eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
@@ -718,7 +718,7 @@ void NativeEngine::DoFrame() {
     // prepare to render (create context, surfaces, etc, if needed)
     if (!PrepareToRender()) {
         // not ready
-                VLOGD("NativeEngine: preparation to render failed.");
+        VLOGD("NativeEngine: preparation to render failed.");
         return;
     }
 
@@ -733,7 +733,7 @@ void NativeEngine::DoFrame() {
     if (width != mSurfWidth || height != mSurfHeight) {
         // notify scene manager that the surface has changed size
         ALOGI("NativeEngine: surface changed size %dx%d --> %dx%d", mSurfWidth, mSurfHeight,
-             width, height);
+              width, height);
         mSurfWidth = width;
         mSurfHeight = height;
         mgr->SetScreenSize(mSurfWidth, mSurfHeight);
