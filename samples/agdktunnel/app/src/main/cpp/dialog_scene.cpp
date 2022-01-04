@@ -152,4 +152,3 @@ void DialogScene::OnButtonClicked(int id) {
             break;
     }
 }
-
