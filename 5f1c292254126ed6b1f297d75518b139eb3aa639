@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a506541_723802f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-05T19:09:28Z",
+      "side": 1,
+      "message": "Second half of the format cleanup merge.",
+      "revId": "5f1c292254126ed6b1f297d75518b139eb3aa639",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
