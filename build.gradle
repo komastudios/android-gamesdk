@@ -121,7 +121,9 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
-    .setUsesTensorflow()
+        .setUsesTensorflow()
+        .setMinimumNdkVersion(20)
+        .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
@@ -337,6 +339,7 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
     def buildFolder = prefabBuildFolder(outFolder)
+    def assetsFolder = joinPath(buildFolder, 'assets')
     def prefabRoot = prefabDir(outFolder, libraryName)
     def sharedLibBuildFolder = joinPath(prefabRoot, 'libs',
             'android.' + buildKey)
@@ -423,6 +426,16 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     if (buildStaticLibrary) {
         def jsonStaticModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'module.json'))
         jsonStaticModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
+    }
+    // 6. Create assets folder
+    if (library.getAssetsDirectory() != null) {
+        copy {
+            from file(library.getAssetsDirectory())
+            //from file("src")
+            include "*.*"
+            into file(assetsFolder)
+            includeEmptyDirs = false
+        }
     }
 }
 
