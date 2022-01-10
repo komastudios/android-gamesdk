@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "997b3a9a_33d5c610",
+        "filename": "build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-01-10T13:18:52Z",
+      "side": 1,
+      "message": "Should the assets be under \u0027test\u0027? Presumably they are not just used for testing?",
+      "revId": "74ea364129c47fb71ee6740b5570c915ad77ee7c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
