@@ -755,7 +755,15 @@ Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
 class BuildTask extends DefaultTask {
 }
 
-task build(type: BuildTask) {
+task build(type: DefaultTask) {
+    doFirst {
+        throw new GradleException("""
+Do not use the default build task for building the AGDK.
+Use buildLocal, buildSpecific or one of the packaging tasks.
+""")
+    }
+}
+task buildit(type: BuildTask) {
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
@@ -799,7 +807,6 @@ task buildSpecific(type: BuildTask) {
 tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-
     dependsOn ':extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
@@ -821,6 +828,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
     }
 
     doLast {
+	println "BuildTask.doLast"
         def packageName = getPackageName()
 
         // Clear the package path to ensure the task zip is not polluted
@@ -1105,7 +1113,7 @@ task packageMavenZip(type: Zip) {
 }
 
 addZipTask("packageUnityZip", buildUnity, "builds.zip")
-addZipTask("packageZip", build, getAGDKZipName())
+addZipTask("packageZip", buildit, getAGDKZipName())
 addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
 addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
 addZipTask("packageAar", buildAarStructure, "gamesdk.aar")

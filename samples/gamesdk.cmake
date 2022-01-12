@@ -135,5 +135,5 @@ endfunction()
 # sources to your project - allowing the IDE to provide autocompletions and
 # debugging.
 function(add_gamesdk_sources)
-    add_subdirectory("${_MY_DIR}/../src")
+    add_subdirectory("${_MY_DIR}/../src" "${_MY_DIR}/../src")
 endfunction()
