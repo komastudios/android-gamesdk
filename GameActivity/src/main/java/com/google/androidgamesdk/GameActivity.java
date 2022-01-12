@@ -391,8 +391,10 @@ public class GameActivity
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
     onWindowInsetsChangedNative(mNativeHandle);
-    // Pass through to the view - we don't want to handle the insets, just observe them.
-    v.onApplyWindowInsets(insets.toWindowInsets());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+      // Pass through to the view - we don't want to handle the insets, just observe them.
+      v.onApplyWindowInsets(insets.toWindowInsets());
+    }
     return insets;
   }
 
