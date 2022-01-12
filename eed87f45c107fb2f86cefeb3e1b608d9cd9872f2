@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07dd5f00_4d478792",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 766,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-01-12T16:02:48Z",
+      "side": 1,
+      "message": "Any chance we can give this a more meaningful name than just buildit? Maybe buildAll or buildAgdk?",
+      "range": {
+        "startLine": 766,
+        "startChar": 5,
+        "endLine": 766,
+        "endChar": 12
+      },
+      "revId": "eed87f45c107fb2f86cefeb3e1b608d9cd9872f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba1ae59a_b55a5690",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 831,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-01-12T16:02:48Z",
+      "side": 1,
+      "message": "Is this print supposed to be here or did you forget to remove a print statement after debugging?",
+      "range": {
+        "startLine": 831,
+        "startChar": 0,
+        "endLine": 831,
+        "endChar": 27
+      },
+      "revId": "eed87f45c107fb2f86cefeb3e1b608d9cd9872f2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
