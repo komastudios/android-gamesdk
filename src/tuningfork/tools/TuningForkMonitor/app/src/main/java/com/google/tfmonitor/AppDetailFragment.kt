@@ -132,7 +132,7 @@ class AppDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
             modeGroup.check(R.id.scaledButton)
         }
 
-        datastore = Datastore(this.context!!)
+        datastore = Datastore(this.context!!, getString(R.string.database_name))
 
         getViewModel().getActiveAppTelemetry()?.observe(this, Observer<AppTelemetry> { data ->
             updateFromDatabase(this.view!!)
