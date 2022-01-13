@@ -16,19 +16,18 @@
 
 package com.google.tuningfork
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.content.ContentValues
-import android.database.Cursor
+import java.util.ArrayList
+import java.util.Date
 import org.json.JSONArray
-import java.util.*
-
 
 class Datastore : SQLiteOpenHelper {
     companion object {
         val DATABASE_VERSION = 7
-        val DATABASE_NAME = "tuningfork_monitor"
 
         val HIST_TABLE_NAME = "histograms"
         val HIST_COLUMN_ID = "_id"
@@ -55,37 +54,37 @@ class Datastore : SQLiteOpenHelper {
 
     }
 
-    constructor(context: Context) : super(context, DATABASE_NAME, null, DATABASE_VERSION) {
+    constructor(context: Context, dbname: String) : super(context, dbname, null, DATABASE_VERSION) {
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
             "CREATE TABLE " + HIST_TABLE_NAME + " (" +
-                    HIST_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    HIST_COLUMN_TIME + " INTEGER, " +
-                    HIST_COLUMN_INSTRUMENT_KEY + " INTEGER, " +
-                    HIST_COLUMN_ANNOTATION + " BLOB," +
-                    HIST_COLUMN_FIDELITY_PARAMS + " BLOB," +
-                    HIST_COLUMN_COUNTS + " TEXT"
-                    + ")"
+                HIST_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                HIST_COLUMN_TIME + " INTEGER, " +
+                HIST_COLUMN_INSTRUMENT_KEY + " INTEGER, " +
+                HIST_COLUMN_ANNOTATION + " BLOB," +
+                HIST_COLUMN_FIDELITY_PARAMS + " BLOB," +
+                HIST_COLUMN_COUNTS + " TEXT"
+                + ")"
         )
         db?.execSQL(
             "CREATE TABLE " + APP_TABLE_NAME + " (" +
-                    APP_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    APP_COLUMN_TIME + " INTEGER, " +
-                    APP_COLUMN_NAME + " TEXT, " +
-                    APP_COLUMN_VERSION + " INTEGER," +
-                    APP_COLUMN_DESCRIPTOR + " BLOB," +
-                    APP_COLUMN_SETTINGS + " BLOB"
-                    + ")"
+                APP_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                APP_COLUMN_TIME + " INTEGER, " +
+                APP_COLUMN_NAME + " TEXT, " +
+                APP_COLUMN_VERSION + " INTEGER," +
+                APP_COLUMN_DESCRIPTOR + " BLOB," +
+                APP_COLUMN_SETTINGS + " BLOB"
+                + ")"
         )
         db?.execSQL(
             "CREATE INDEX " + HIST_INDEX_TIME + " ON " + HIST_TABLE_NAME + " ("
-                    + HIST_COLUMN_TIME + ")"
+                + HIST_COLUMN_TIME + ")"
         )
         db?.execSQL(
             "CREATE INDEX " + APP_INDEX_TIME + " ON " + APP_TABLE_NAME + " ("
-                    + APP_COLUMN_TIME + ")"
+                + APP_COLUMN_TIME + ")"
         )
     }
 
@@ -153,7 +152,7 @@ class Datastore : SQLiteOpenHelper {
     }
 
     private fun <T> makeArrayRequest(request: String, processItem: (cursor: Cursor) -> T)
-            : ArrayList<T> {
+        : ArrayList<T> {
         var result = ArrayList<T>()
         makeRequest(request, { cursor ->
             result.add(processItem(cursor))
@@ -163,7 +162,7 @@ class Datastore : SQLiteOpenHelper {
     }
 
     private fun <T> makeSingleItemRequest(request: String, processItem: (cursor: Cursor) -> T)
-            : T? {
+        : T? {
         var ret: T? = null
         makeRequest(request, { cursor ->
             ret = processItem(cursor)
@@ -184,8 +183,8 @@ class Datastore : SQLiteOpenHelper {
 
     fun getLatestSettingsForApp(app: AppKey): Tuningfork.Settings? {
         val request = "SELECT " + APP_COLUMN_SETTINGS + " FROM " + APP_TABLE_NAME +
-                " WHERE " + APP_COLUMN_NAME + "='" + app.name + "' AND " + APP_COLUMN_VERSION +
-                "=" + app.version.toString() + " ORDER BY " + APP_COLUMN_TIME + " DESC LIMIT 1"
+            " WHERE " + APP_COLUMN_NAME + "='" + app.name + "' AND " + APP_COLUMN_VERSION +
+            "=" + app.version.toString() + " ORDER BY " + APP_COLUMN_TIME + " DESC LIMIT 1"
         return makeSingleItemRequest(request, { cursor ->
             Tuningfork.Settings.parseFrom(
                 cursor.getBlob(
@@ -200,7 +199,7 @@ class Datastore : SQLiteOpenHelper {
     fun getLatestHistogramForInstrumentKey(instrumentKey: Int): Pair<Date, RenderTimeHistogram>? {
         val request =
             "SELECT * FROM " + HIST_TABLE_NAME + " WHERE " + HIST_COLUMN_INSTRUMENT_KEY + "=" +
-                    instrumentKey.toString() + " ORDER BY " + HIST_COLUMN_TIME + " DESC LIMIT 1"
+                instrumentKey.toString() + " ORDER BY " + HIST_COLUMN_TIME + " DESC LIMIT 1"
         return makeSingleItemRequest(request, { cursor ->
             val arr_json =
                 JSONArray(cursor.getString(cursor.getColumnIndex(HIST_COLUMN_COUNTS)))
