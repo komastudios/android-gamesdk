@@ -779,7 +779,9 @@ public class GameControllerManager {
         float axisMax = motionRange.getMax();
         float axisMin = motionRange.getMin();
         float axisRange = motionRange.getRange();
-        float axisResolution = motionRange.getResolution();
+        float axisResolution = -1;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR2)
+            axisResolution = motionRange.getResolution();
 
         Log.d(TAG, "MotionRange:" +
                 "\n" + axisString +
@@ -794,12 +796,18 @@ public class GameControllerManager {
 
     private void logControllerInfo(int deviceId) {
         InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        int controllerNumber = inputDevice.getControllerNumber();
+        int controllerNumber = -1;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+            controllerNumber = inputDevice.getControllerNumber();
         String deviceDescriptor = inputDevice.getDescriptor();
         String deviceName = inputDevice.getName();
-        int deviceProductId = inputDevice.getProductId();
+        int deviceProductId = -1;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+          deviceProductId = inputDevice.getProductId();
         int deviceSources = inputDevice.getSources();
-        int deviceVendorId = inputDevice.getVendorId();
+        int deviceVendorId = -1;
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT)
+          deviceVendorId = inputDevice.getVendorId();
         boolean hasVibrator = inputDevice.getVibrator().hasVibrator();
         boolean isVirtual = inputDevice.isVirtual();
 

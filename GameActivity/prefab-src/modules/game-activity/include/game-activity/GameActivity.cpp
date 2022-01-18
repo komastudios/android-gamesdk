@@ -750,6 +750,10 @@ static void onSurfaceChanged_native(JNIEnv *env, jobject javaGameActivity,
     if (handle != 0) {
         NativeCode *code = (NativeCode *)handle;
         ANativeWindow *oldNativeWindow = code->nativeWindow;
+        // Fix for window being destroyed behind the scenes on older Android versions.
+        if (oldNativeWindow != NULL) {
+            ANativeWindow_acquire(oldNativeWindow);
+        }
         code->setSurface(surface);
         if (oldNativeWindow != code->nativeWindow) {
             if (oldNativeWindow != NULL &&
@@ -778,6 +782,10 @@ static void onSurfaceChanged_native(JNIEnv *env, jobject javaGameActivity,
                         code, code->nativeWindow, newWidth, newHeight);
                 }
             }
+        }
+        // Release the window we acquired earlier.
+        if (oldNativeWindow != NULL) {
+            ANativeWindow_release(oldNativeWindow);
         }
     }
 }
