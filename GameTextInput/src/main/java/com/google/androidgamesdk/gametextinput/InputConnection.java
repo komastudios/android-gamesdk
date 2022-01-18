@@ -37,7 +37,7 @@ import java.util.BitSet;
 public class InputConnection
     extends BaseInputConnection
     implements View.OnKeyListener, OnApplyWindowInsetsListener {
-  private static final String TAG = "gametextinput.InputConnection";
+  private static final String TAG = "gti.InputConnection";
   // TODO: (b/183179971) We should react to most of these events rather than ignoring them? Plus
   // there are others that should be ignored.
   private static final int[] notInsertedKeyCodes = {KeyEvent.KEYCODE_DEL,
@@ -67,7 +67,7 @@ public class InputConnection
     super(targetView, settings.mEditorInfo.inputType != 0);
     this.targetView = targetView;
     this.settings = settings;
-    Object imm = ctx.getSystemService("input_method");
+    Object imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
     if (imm == null) {
       throw new java.lang.RuntimeException("Can't get IMM");
     } else {
