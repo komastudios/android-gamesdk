@@ -426,9 +426,10 @@ static void onNativeWindowRedrawNeeded(GameActivity* activity,
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_REDRAW_NEEDED);
 }
 
-static void onNativeWindowResized(GameActivity* activity,
-                                  ANativeWindow* window) {
-    LOGV("NativeWindowResized: %p -- %p", activity, window);
+static void onNativeWindowResized(GameActivity* activity, ANativeWindow* window,
+                                  int32_t width, int32_t height) {
+    LOGV("NativeWindowResized: %p -- %p ( %d x %d )", activity, window, width,
+         height);
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_RESIZED);
 }
 
