@@ -31,8 +31,7 @@ class MemoryAdviceImpl {
    private:
     std::unique_ptr<MetricsProvider> metrics_provider_;
     std::unique_ptr<DeviceProfiler> device_profiler_;
-    std::unique_ptr<Predictor> realtime_predictor_, available_predictor_,
-        oom_predictor_;
+    std::unique_ptr<Predictor> realtime_predictor_, available_predictor_;
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object device_profile_;

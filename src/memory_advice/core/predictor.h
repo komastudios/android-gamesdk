@@ -16,10 +16,14 @@
 
 #pragma once
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "apk_utils.h"
 #include "json11/json11.hpp"
 #include "memory_advice/memory_advice.h"
 #include "tensorflow/lite/create_op_resolver.h"
@@ -40,6 +44,13 @@ class Predictor {
    private:
     std::unique_ptr<tflite::Interpreter> interpreter;
     std::vector<std::string> features;
+    std::unique_ptr<tflite::FlatBufferModel> model;
+    std::unique_ptr<tflite::OpResolver> resolver;
+    tflite::StderrReporter error_reporter;
+    std::unique_ptr<apk_utils::NativeAsset> model_asset;
+    const char* model_buffer;
+    size_t model_capacity;
+
     float GetFromPath(std::string feature, Json::object data);
 
    public:

@@ -22,6 +22,8 @@
 #include "memory_advice_utils.h"
 #include "system_utils.h"
 
+constexpr double BYTES_IN_GB = 1024 * 1024 * 1024;
+
 namespace memory_advice {
 
 using namespace json11;
@@ -30,7 +32,6 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     metrics_provider_ = std::make_unique<MetricsProvider>();
     realtime_predictor_ = std::make_unique<Predictor>();
     available_predictor_ = std::make_unique<Predictor>();
-    oom_predictor_ = std::make_unique<Predictor>();
 
     initialization_error_code_ =
         realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
@@ -39,11 +40,6 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
     }
     initialization_error_code_ = available_predictor_->Init(
         "available.tflite", "available_features.json");
-    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
-        return;
-    }
-    initialization_error_code_ =
-        oom_predictor_->Init("oom.tflite", "oom_features.json");
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -117,7 +113,7 @@ Json::object MemoryAdviceImpl::GetAdvice() {
     if (variable_spec.find("availableRealtime") != variable_spec.end() &&
         variable_spec.at("availableRealtime").bool_value()) {
         variable_metrics["predictedAvailable"] =
-            Json(realtime_predictor_->Predict(data));
+            Json(BYTES_IN_GB * available_predictor_->Predict(data));
     }
     Json::array warnings;
     Json::object heuristics =
