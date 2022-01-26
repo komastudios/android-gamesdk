@@ -77,6 +77,13 @@ static int32_t _checkControllerButton(const uint32_t buttonsDown, const InputAct
     return 0;
 }
 
+bool isMovementKey(int keyCode) {
+    return keyCode == KEYCODE_W ||
+           keyCode == KEYCODE_A ||
+           keyCode == KEYCODE_S ||
+           keyCode == KEYCODE_D;
+}
+
 bool CookGameActivityKeyEvent(GameActivityKeyEvent *keyEvent, CookedEventCallback callback) {
     if (keyEvent->keyCode == AKEYCODE_BACK && 0 == keyEvent->action) {
         // back key was pressed
@@ -84,6 +91,18 @@ bool CookGameActivityKeyEvent(GameActivityKeyEvent *keyEvent, CookedEventCallbac
         memset(&ev, 0, sizeof(ev));
         ev.type = COOKED_EVENT_TYPE_BACK;
         return callback(&ev);
+    } else if (isMovementKey(keyEvent -> keyCode)) {
+        struct CookedEvent ev;
+        memset(&ev, 0, sizeof(ev));
+        ev.keyCode = keyEvent -> keyCode;
+
+        if (keyEvent -> action == KEY_ACTION_DOWN) {
+            ev.type = COOKED_EVENT_TYPE_KEY_DOWN;
+            return callback(&ev);
+        } else if (keyEvent -> action == KEY_ACTION_UP) {
+            ev.type = COOKED_EVENT_TYPE_KEY_UP;
+            return callback(&ev);
+        }
     }
     return false;
 }
