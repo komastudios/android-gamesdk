@@ -84,6 +84,53 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c00a3730_d13bca44",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-26T20:00:16Z",
+      "side": 1,
+      "message": "androidx.games:games-activity:1.1.0-beta03 should be hitting Jetpack tomorrow. At that point it is probably best to update that line to beta-03, uncomment it and comment out the local \u0027GameActivity.aar\u0027 include below, which will eliminate the need for any locally built AGDK libraries.\n\nWe may switch it back in the future if we get ahead of GMaven Jetpack releases again, but if we can use GMaven we might as well.",
+      "parentUuid": "e6e3b9a1_3c8cf02b",
+      "range": {
+        "startLine": 85,
+        "startChar": 56,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "781d07e9_c40b1999",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-26T20:00:16Z",
+      "side": 1,
+      "message": "So, I\u0027m a little uncertain about directly including the inputmapping aar in the gamesdk repo. My understanding was it was going to be included via a GMaven dependency.",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5f01ff57_3cd086cd",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
         "patchSetId": 2
