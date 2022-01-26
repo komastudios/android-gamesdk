@@ -18,6 +18,7 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -29,6 +30,9 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
+import com.google.android.libraries.play.games.inputmapping.InputMappingClient;
+import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
+import com.google.android.libraries.play.games.inputmapping.Input;
 
 public class AGDKTunnelActivity extends GameActivity {
 
@@ -75,5 +79,29 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+
+        PackageManager pm = getPackageManager();
+        boolean isPlayGameWindows =
+            pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+
+        if (isPlayGameWindows) {
+            InputMappingProvider inputMappingProvider = new InputSDKProvider();
+            InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+            inputMappingClient.setInputMappingProvider(inputMappingProvider);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        PackageManager pm = getPackageManager();
+        boolean isPlayGameWindows =
+                pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+
+        if (isPlayGameWindows) {
+            InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+            inputMappingClient.clearInputMappingProvider();
+        }
+
+        super.onDestroy();
     }
 }
