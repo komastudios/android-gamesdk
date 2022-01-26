@@ -1,0 +1,56 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000019771862",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1960861?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9795b712_695c34e7",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-01-26T20:46:16Z",
+      "side": 1,
+      "message": "Avoid referring to Google; the Android platform is an open-source project and aims to be vendor neutral. The API should be generic and equally usable by system integrators or applications with the requisite permissions. See https://android.googlesource.com/platform/developers/docs/+/refs/heads/master/api-guidelines/index.md#mentions-google for more details.",
+      "range": {
+        "startLine": 85,
+        "startChar": 32,
+        "endLine": 85,
+        "endChar": 44
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000019771862",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1960861?revision\u003d3",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9dcd4735_87b200a7",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-01-26T20:46:16Z",
+      "side": 1,
+      "message": "Avoid referring to Google; the Android platform is an open-source project and aims to be vendor neutral. The API should be generic and equally usable by system integrators or applications with the requisite permissions. See https://android.googlesource.com/platform/developers/docs/+/refs/heads/master/api-guidelines/index.md#mentions-google for more details.",
+      "range": {
+        "startLine": 98,
+        "startChar": 36,
+        "endLine": 98,
+        "endChar": 48
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
