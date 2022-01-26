@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9053acc0_ba8578d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T19:06:42Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90dea497_8da83786",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T19:06:42Z",
+      "side": 1,
+      "message": "JFYI I couldn\u0027t build the app with 1.1.0-beta01 but with 1.1.0-beta02 due to\n\nsamples\\agdktunnel\\app\\src\\main\\cpp\\native_engine.cpp:119:5: error: use of undeclared identifier \u0027android_app_set_motion_event_filter\u0027\n\nsamples\\agdktunnel\\app\\src\\main\\cpp\\native_engine.cpp:126:5: error: use of undeclared identifier \u0027GameActivity_setImeEditorInfo\u0027",
+      "range": {
+        "startLine": 85,
+        "startChar": 56,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
