@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 package com.google.sample.agdktunnel;
-
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
-
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
@@ -29,9 +26,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
-
 public class AGDKTunnelActivity extends GameActivity {
-
     // Some code to load our native library:
     static {
         // Load the STL first to workaround issues on old Android versions:
@@ -41,11 +36,9 @@ public class AGDKTunnelActivity extends GameActivity {
         // library that depends on it."
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
-
         // Load the game library:
         System.loadLibrary("game");
     }
-
     private void hideSystemUI() {
         // This will put the game behind any cutouts and waterfalls on devices which have
         // them, so the corresponding insets will be non-zero.
@@ -63,7 +56,6 @@ public class AGDKTunnelActivity extends GameActivity {
         controller.setSystemBarsBehavior(
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // When true, the app will fit inside any system UI windows.
