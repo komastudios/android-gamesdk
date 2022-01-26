@@ -29,8 +29,13 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
+import com.google.android.libraries.play.games.inputmapping.InputMappingClient;
+import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
+import com.google.android.libraries.play.games.inputmapping.Input;
 
 public class AGDKTunnelActivity extends GameActivity {
+
+    private final InputMappingProvider provider = new InputSDKProvider();
 
     // Some code to load our native library:
     static {
@@ -75,5 +80,16 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+
+        InputMappingClient client = Input.getInputMappingClient(this);
+        client.setInputMappingProvider(provider);
+    }
+
+    @Override
+    protected void onDestroy() {
+        InputMappingClient client = Input.getInputMappingClient(this);
+        client.clearInputMappingProvider();
+
+        super.onDestroy();
     }
 }
