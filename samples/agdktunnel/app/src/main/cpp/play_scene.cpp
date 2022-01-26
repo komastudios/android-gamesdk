@@ -66,6 +66,7 @@ PlayScene::PlayScene() : Scene() {
     mShapeRenderer = NULL;
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
+    mMotionKeyBitmask = 0;
 
     mPlayerPos = glm::vec3(0.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3(0.0f, 1.0f, 0.0f); // forward
@@ -372,6 +373,11 @@ void PlayScene::DoFrame() {
     }
     mPlayerSpeed = Approach(mPlayerSpeed, targetSpeed, deltaT * accel);
 
+    // apply movement if key is pressed
+    if (mSteering == STEERING_KEY) {
+        OnMovementKey();
+    }
+
     // apply noise filter on steering
     mFilteredSteerX = (mFilteredSteerX * (NOISE_FILTER_SAMPLES - 1) + mShipSteerX)
                       / NOISE_FILTER_SAMPLES;
@@ -387,6 +393,10 @@ void PlayScene::DoFrame() {
             mPlayerPos.z = Approach(mPlayerPos.z, steerZ, PLAYER_MAX_LAT_SPEED * deltaT);
         } else if (mSteering == STEERING_JOY) {
             // joystick steering
+            mPlayerPos.x += deltaT * steerX;
+            mPlayerPos.z += deltaT * steerZ;
+        } else if (mSteering == STEERING_KEY) {
+            // keyboard steering
             mPlayerPos.x += deltaT * steerX;
             mPlayerPos.z += deltaT * steerZ;
         }
@@ -810,7 +820,68 @@ void PlayScene::OnJoy(float joyX, float joyY) {
     }
 }
 
+void PlayScene::OnMovementKey() {
+    float deltaX = 0, deltaY = 0;
+    if (mMotionKeyBitmask & UP_MOVEMENT_BIT) {
+        deltaY -= KEY_CONTROL_VERTICAL_SENSIVITY;
+    }
+    if (mMotionKeyBitmask & LEFT_MOVEMENT_BIT) {
+        deltaX -= KEY_CONTROL_HORIZONTAL_SENSIVITY;
+    }
+    if (mMotionKeyBitmask & DOWN_MOVEMENT_BIT) {
+        deltaY += KEY_CONTROL_VERTICAL_SENSIVITY;
+    }
+    if (mMotionKeyBitmask & RIGHT_MOVEMENT_BIT) {
+        deltaX += KEY_CONTROL_HORIZONTAL_SENSIVITY;
+    }
+
+    float rotatedDx = cos(-mRollAngle) * deltaX - sin(-mRollAngle) * deltaY;
+    float rotatedDy = sin(-mRollAngle) * deltaX + cos(-mRollAngle) * deltaY;
+    mShipSteerX = rotatedDx;
+    mShipSteerZ = -rotatedDy;
+
+    // If player is going faster than the reference speed, PLAYER_SPEED, adjust it.
+    // This makes the steering react faster as the ship accelerates in more difficult
+    // levels.
+    if (mPlayerSpeed > PLAYER_SPEED) {
+        mShipSteerX *= mPlayerSpeed / PLAYER_SPEED;
+        mShipSteerZ *= mPlayerSpeed / PLAYER_SPEED;
+    }
+}
+
+void PlayScene::OnKeyUp(int keyCode) {
+    if (isMovementKey(keyCode) && mSteering == STEERING_KEY) {
+        if (keyCode == KEYCODE_W) {
+            mMotionKeyBitmask &= ~UP_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_A) {
+            mMotionKeyBitmask &= ~LEFT_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_S) {
+            mMotionKeyBitmask &= ~DOWN_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_D) {
+            mMotionKeyBitmask &= ~RIGHT_MOVEMENT_BIT;
+        }
+
+        if (!mMotionKeyBitmask) {
+            mSteering = STEERING_NONE;
+        }
+    }
+}
+
 void PlayScene::OnKeyDown(int keyCode) {
+    if (isMovementKey(keyCode)) {
+        mSteering = STEERING_KEY;
+
+        if (keyCode == KEYCODE_W) {
+            mMotionKeyBitmask |= UP_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_A) {
+            mMotionKeyBitmask |= LEFT_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_S) {
+            mMotionKeyBitmask |= DOWN_MOVEMENT_BIT;
+        } else if (keyCode == KEYCODE_D) {
+            mMotionKeyBitmask |= RIGHT_MOVEMENT_BIT;
+        }
+    }
+
     if (mMenu) {
         if (keyCode == OURKEY_UP) {
             mMenuSel = mMenuSel > 0 ? mMenuSel - 1 : mMenuSel;
