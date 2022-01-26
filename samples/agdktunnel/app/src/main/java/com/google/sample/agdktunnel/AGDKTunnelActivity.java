@@ -18,6 +18,7 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -62,6 +63,11 @@ public class AGDKTunnelActivity extends GameActivity {
         controller.hide(WindowInsetsCompat.Type.displayCutout());
         controller.setSystemBarsBehavior(
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    }
+
+    private boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
     }
 
     @Override
