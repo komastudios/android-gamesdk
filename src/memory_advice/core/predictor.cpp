@@ -16,8 +16,6 @@
 
 #include "predictor.h"
 
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
 #include <stdlib.h>
 
 #include <algorithm>
@@ -42,7 +40,6 @@ using namespace json11;
 
 MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
                                        std::string features_file) {
-    StderrReporter error_reporter;
 
     apk_utils::NativeAsset features_asset(features_file.c_str());
     std::string features_string(
@@ -59,12 +56,13 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
         features_string = features_string.substr(pos + 1);
     }
 
-    apk_utils::NativeAsset model_asset(model_file.c_str());
+    model_asset = std::make_unique<apk_utils::NativeAsset>(model_file.c_str());
     const char* model_buffer =
-        static_cast<const char*>(AAsset_getBuffer(model_asset));
+        static_cast<const char*>(AAsset_getBuffer(*model_asset));
     const size_t model_capacity =
-        static_cast<size_t>(AAsset_getLength(model_asset));
-    auto model = tflite::FlatBufferModel::BuildFromBuffer(
+        static_cast<size_t>(AAsset_getLength(*model_asset));
+
+    model = tflite::FlatBufferModel::BuildFromBuffer(
         model_buffer, model_capacity, &error_reporter);
     std::unique_ptr<OpResolver> resolver = tflite::CreateOpResolver();
 
@@ -107,7 +105,7 @@ float Predictor::Predict(Json::object data) {
         interpreter->typed_input_tensor<float>(0)[idx] =
             GetFromPath(features[idx], data);
     }
-    // TODO(b/209602631): Fix Invoke() returning incorrect values.
+
     interpreter->Invoke();
 
     return *(interpreter->typed_output_tensor<float>(0));
