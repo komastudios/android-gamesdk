@@ -15,7 +15,6 @@
  */
 package com.google.sample.agdktunnel;
 
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.google.android.libraries.play.games.inputmapping.InputMappingClient;
@@ -24,16 +23,11 @@ import com.google.android.libraries.play.games.inputmapping.Input;
 
 public class PlayGamesPCActivity extends AGDKTunnelActivity {
 
-    private boolean isGooglePlayGames() {
-        PackageManager pm = getPackageManager();
-        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isGooglePlayGames()) {
+        if (super.isGooglePlayGames()) {
             InputMappingProvider inputMappingProvider = new InputSDKProvider();
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.setInputMappingProvider(inputMappingProvider);
@@ -42,7 +36,7 @@ public class PlayGamesPCActivity extends AGDKTunnelActivity {
 
     @Override
     protected void onDestroy() {
-        if (isGooglePlayGames()) {
+        if (super.isGooglePlayGames()) {
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.clearInputMappingProvider();
         }
