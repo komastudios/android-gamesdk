@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "783e29d2_4a430ef3",
+        "filename": "src/memory_advice/core/predictor.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-01-26T15:06:53Z",
+      "side": 1,
+      "message": "Please comment who owns this buffer (the platform, I think, otherwise it needs deleting in a destructor). Do these model_ values need to be stored in the Predictor object at all?",
+      "revId": "342570aca121fa28521e057cf118e735c7fcc2b0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
