@@ -54,6 +54,20 @@ android {
             multiDexEnabled true
         }
     }
+    // Specifies one flavor dimension.
+    flavorDimensions "platform"
+    productFlavors {
+        playGames {
+            dimension "platform"
+            applicationIdSuffix ".playGames"
+            versionNameSuffix "-playGames"
+        }
+        mobile {
+            dimension "platform"
+            applicationIdSuffix ".mobile"
+            versionNameSuffix "-mobile"
+        }
+    }
     externalNativeBuild {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
@@ -82,10 +96,13 @@ dependencies {
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
     implementation "androidx.games:games-controller:1.0.0"
-    //    implementation "androidx.games:games-activity:1.1.0-beta01"
+    implementation "androidx.games:games-activity:1.1.0-beta03"
 
+    // Google Play Games dependencies
+    // TODO(b/215589030): make the input sdk public to GMaven
+    playGamesImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
-    implementation fileTree(dir: 'libs', include: ['GameActivity.aar'])
+    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
     //                                               'GameController.aar',
     //                                               'games-frame-pacing-1.9.0.aar',
     //                                               'games-performance-tuner-1.5.0.aar'])

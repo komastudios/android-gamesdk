@@ -18,6 +18,7 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
 
 public class AGDKTunnelActivity extends GameActivity {
+
+    private final PlayGamesUtils playGamesUtils = new PlayGamesUtilsImpl();
 
     // Some code to load our native library:
     static {
@@ -64,6 +67,11 @@ public class AGDKTunnelActivity extends GameActivity {
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
+    public boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // When true, the app will fit inside any system UI windows.
@@ -75,5 +83,18 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+
+        if (isGooglePlayGames()) {
+            playGamesUtils.init(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isGooglePlayGames()) {
+            playGamesUtils.close(this);
+        }
+
+        super.onDestroy();
     }
 }
