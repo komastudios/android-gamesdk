@@ -131,6 +131,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eed6ef86_18fe3ce0",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:18:37Z",
+      "side": 1,
+      "message": "Indeed it will be included via GMaven dependency. The plan of make the Input SDK public to GMaven is heads up, right now we are only waiting for the Unity version to be ready to make it public.\n\nWe can wait for androidx.games:games-activity:1.1.0-beta03 and inputmapping-1.0.0-beta to be available on GMaven before submitting this CL.",
+      "parentUuid": "781d07e9_c40b1999",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5f01ff57_3cd086cd",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
         "patchSetId": 2
@@ -234,6 +258,30 @@
       "writtenOn": "2022-01-26T19:38:16Z",
       "side": 1,
       "message": "Why do we need these emptyLists? Is this required based on how InputControls.create works?",
+      "range": {
+        "startLine": 72,
+        "startChar": 62,
+        "endLine": 73,
+        "endChar": 39
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f37fca0_57448402",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:18:37Z",
+      "side": 1,
+      "message": "Taken from https://developer.android.com/games/preview/multiplatform/input-java-integration-guide\n\nInputControls.create takes two parameters to create the inputs associated with an action:\n\nkeycodes is a list of integers representing keyboard inputs associated with an action. These are defined in the KeyEvent class.\nmouseActions is a list of integers representing mouse inputs associated with this action. These are defined in InputControls itself.\n\nI had already open a bug for an issue I found yesterday regarding this (b/216496313). I will just close it.",
+      "parentUuid": "e9101683_5488c0b8",
       "range": {
         "startLine": 72,
         "startChar": 62,
