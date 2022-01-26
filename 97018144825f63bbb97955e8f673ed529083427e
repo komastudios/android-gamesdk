@@ -200,6 +200,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "09d43a51_aa2c46ae",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:46:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f01ff57_3cd086cd",
+      "range": {
+        "startLine": 38,
+        "startChar": 39,
+        "endLine": 38,
+        "endChar": 48
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95d2b170_6eab731f",
@@ -213,6 +237,30 @@
       "writtenOn": "2022-01-26T19:16:06Z",
       "side": 1,
       "message": "We can be a little more defensive here:\n\n    PackageManager pm \u003d getPackageManager();\n    boolean isPlayGameWindows \u003d pm.hasSystemFeature(\"com.google.android.play.feature.HPE_EXPERIENCE\");\n    if (isPlayGameWindows) { // input sdk stuff }",
+      "range": {
+        "startLine": 84,
+        "startChar": 8,
+        "endLine": 84,
+        "endChar": 33
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd38e296_101533c9",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:46:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95d2b170_6eab731f",
       "range": {
         "startLine": 84,
         "startChar": 8,
@@ -246,6 +294,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a50d5fb9_c7757f2d",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:46:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "df5c8f86_7c5b2c3b",
+      "range": {
+        "startLine": 85,
+        "startChar": 39,
+        "endLine": 85,
+        "endChar": 47
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9cf26238_5a72e935",
@@ -259,6 +331,30 @@
       "writtenOn": "2022-01-26T19:16:06Z",
       "side": 1,
       "message": "Same here, can check isPlayGameWindows",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 27
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20cc29dc_ec91fa74",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:46:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cf26238_5a72e935",
       "range": {
         "startLine": 90,
         "startChar": 8,
