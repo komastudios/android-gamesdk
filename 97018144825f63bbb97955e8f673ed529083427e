@@ -108,6 +108,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6dab363c_908c4837",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-26T20:29:00Z",
+      "side": 1,
+      "message": "I will hold off for the beta-03 version to be available on GMaven to take action on this. Thanks.",
+      "parentUuid": "c00a3730_d13bca44",
+      "range": {
+        "startLine": 85,
+        "startChar": 56,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "781d07e9_c40b1999",
         "filename": "samples/agdktunnel/app/build.gradle",
         "patchSetId": 2
