@@ -57,6 +57,9 @@ public:
     // This is the env for the app thread. It's different to the main thread.
     JNIEnv *GetAppJniEnv();
 
+    // Returns if the game is running in Google Play Games
+    bool GetRunningOnGooglePlayGames();
+
 private:
     // variables to track Android lifecycle:
     bool mHasFocus, mIsVisible, mHasWindow;
@@ -105,6 +108,9 @@ private:
 
     // is this the first frame we're drawing?
     bool mIsFirstFrame;
+
+    // is the game running on Google Play Games?
+    bool mRunningOnGooglePlayGames;
 
     // initialize the display
     bool InitDisplay();
