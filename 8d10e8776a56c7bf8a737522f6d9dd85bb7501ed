@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13c1ac6b_3e4726b9",
+        "filename": "src/memory_advice/core/metrics_provider.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-01-27T16:23:11Z",
+      "side": 0,
+      "message": "I think you could have probably made this work if you got a global ref to the ActivityManager, but the way it is done now is equally as good.",
+      "revId": "8d10e8776a56c7bf8a737522f6d9dd85bb7501ed",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
