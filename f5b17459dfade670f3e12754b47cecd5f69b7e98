@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6cb2b904_00389f2c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-27T18:49:33Z",
+      "side": 1,
+      "message": "I believe that one of the purposes of AGDK is to manage the connected devices, for example, this game already supports joystick movement if a joystick is connected\n\nDo you think that having this under a B* flag can be a good example of how to do it from a C++ game even if it is not completely necessary?",
+      "parentUuid": "eb719fe3_a201cff4",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
