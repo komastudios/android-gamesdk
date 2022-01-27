@@ -16,6 +16,93 @@
       "message": "PTAL\n\nPlatform detection on EAP documentation (https://developer.android.com/games/preview/multiplatform/platform_req#platform_detection) do not have an option to detect Battlestar using C++, what can be the best option to detect the platform? Is it possible to get the package manager from C++ Game Activity? Using include guards is a good option for us?\n\nAlso, which other good practices we can follow for C++ development? (i.e. create a single file for new Google Play Games code)\n\nudam@ natetrost@ what are your thoughts?",
       "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf92ea61_2b3ebe1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-27T17:43:58Z",
+      "side": 1,
+      "message": "For AGDKTunnel specifically, if you were going to add this, I would probably add a isGooglePlayGames function to AGDKTunnelActivity which does the platform check. This would be called from native_engine.cpp during initialization and would just set a mRunningOnGooglePlayGames member variable in native_engine. If you were going to check it from somewhere else in the code, maybe adding a GetRunningOnGooglePlayGames() accessor.",
+      "parentUuid": "560c328c_d5d10d86",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf1a9e49_f3ebdd0e",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-27T17:43:58Z",
+      "side": 1,
+      "message": "nit: const int32_t",
+      "range": {
+        "startLine": 80,
+        "startChar": 19,
+        "endLine": 80,
+        "endChar": 22
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6fc5efa_db492349",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-27T17:43:58Z",
+      "side": 1,
+      "message": "nit: const int32_t",
+      "range": {
+        "startLine": 74,
+        "startChar": 19,
+        "endLine": 74,
+        "endChar": 22
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a395186c_afd7facc",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 825,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-01-27T17:43:58Z",
+      "side": 1,
+      "message": "I\u0027d recommend defining mask constants instead of using 1/2/4/8 literals",
+      "range": {
+        "startLine": 825,
+        "startChar": 28,
+        "endLine": 825,
+        "endChar": 29
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
