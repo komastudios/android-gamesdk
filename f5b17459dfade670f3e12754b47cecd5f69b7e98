@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "560c328c_d5d10d86",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-27T00:00:56Z",
+      "side": 1,
+      "message": "PTAL\n\nPlatform detection on EAP documentation (https://developer.android.com/games/preview/multiplatform/platform_req#platform_detection) do not have an option to detect Battlestar using C++, what can be the best option to detect the platform? Is it possible to get the package manager from C++ Game Activity? Using include guards is a good option for us?\n\nAlso, which other good practices we can follow for C++ development? (i.e. create a single file for new Google Play Games code)\n\nudam@ natetrost@ what are your thoughts?",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
