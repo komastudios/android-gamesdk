@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eb719fe3_a201cff4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1579844
+      },
+      "writtenOn": "2022-01-27T18:36:43Z",
+      "side": 1,
+      "message": "+1, but I\u0027m not sure if keyboard controls itself should be behind a B* flag. Some Android devices do have a keyboard. It could be worth a comment or maybe behind a flag that detects if a keyboard is available.",
+      "parentUuid": "bf92ea61_2b3ebe1e",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
