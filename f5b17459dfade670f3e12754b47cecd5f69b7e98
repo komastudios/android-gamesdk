@@ -92,6 +92,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "441afad4_1afe8598",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-28T00:59:57Z",
+      "side": 1,
+      "message": "I have added the B* flag on CookGameActivityKeyEvent (input_util.cpp), preventing to cook movement keyboard events if the game is not running on GooglePlayGames and hence disabling keyboard controls, is there another place in code where I should add the B* flag?",
+      "parentUuid": "46c1ef78_a12bcf7c",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
@@ -103,6 +121,30 @@
       "writtenOn": "2022-01-27T17:43:58Z",
       "side": 1,
       "message": "nit: const int32_t",
+      "range": {
+        "startLine": 80,
+        "startChar": 19,
+        "endLine": 80,
+        "endChar": 22
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "411f14bc_1d35063b",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-28T00:59:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf1a9e49_f3ebdd0e",
       "range": {
         "startLine": 80,
         "startChar": 19,
@@ -136,6 +178,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c7baaf0_63cdeb80",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-28T00:59:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6fc5efa_db492349",
+      "range": {
+        "startLine": 74,
+        "startChar": 19,
+        "endLine": 74,
+        "endChar": 22
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a395186c_afd7facc",
@@ -149,6 +215,30 @@
       "writtenOn": "2022-01-27T17:43:58Z",
       "side": 1,
       "message": "I\u0027d recommend defining mask constants instead of using 1/2/4/8 literals",
+      "range": {
+        "startLine": 825,
+        "startChar": 28,
+        "endLine": 825,
+        "endChar": 29
+      },
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1b76790_e0f5d222",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 825,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-01-28T00:59:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a395186c_afd7facc",
       "range": {
         "startLine": 825,
         "startChar": 28,
