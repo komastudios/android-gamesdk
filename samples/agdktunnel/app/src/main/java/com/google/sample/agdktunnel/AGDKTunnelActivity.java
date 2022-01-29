@@ -30,6 +30,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.androidgamesdk.GameActivity;
 
+
+// If you are building for google play games for windows, some APIs modules are are not supported.
+// For example, references to the following modules will fail silently at runtime.
+// import com.google.android.gms.analytics; // NOT SUPPORTED
+// import com.google.android.gms.location.places; // NOT SUPPORTED
+
 public class AGDKTunnelActivity extends GameActivity {
 
     // Some code to load our native library:
