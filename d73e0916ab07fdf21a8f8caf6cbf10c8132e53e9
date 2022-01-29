@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0b7954f_65f5bd68",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-01-29T05:01:41Z",
+      "side": 1,
+      "message": "Will add a link to the full list of unsupported features. Same as the permissions below.",
+      "range": {
+        "startLine": 49,
+        "startChar": 58,
+        "endLine": 49,
+        "endChar": 71
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc69e466_639cd67a",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-01-29T05:01:41Z",
+      "side": 1,
+      "message": "Will add a link to the full list of unsupported modules.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 66
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
