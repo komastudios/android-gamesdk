@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f90da31a_8a4764ad",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-01-31T01:46:38Z",
+      "side": 1,
+      "message": "Is it possible that we use conditional compiling like build flavors to conditionally include the B* aars?\nhttps://developer.android.com/studio/build/build-variants#product-flavors",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
