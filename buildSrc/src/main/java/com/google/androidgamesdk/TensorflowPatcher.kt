@@ -72,6 +72,10 @@ class TensorflowPatcher(val project: Project) {
                 "\"utils/hash/farmhash.h\"",
                 "\"farmhash.h\""
         );
+        serializationContent = serializationContent.replace(
+                "O_RDONLY | O_CLOEXEC,",
+                "O_RDONLY | O_CLOEXEC | O_CREAT,"
+        );
         serialization.writeText(serializationContent);
     }
 }
