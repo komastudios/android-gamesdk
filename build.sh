@@ -30,14 +30,15 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
@@ -45,14 +46,15 @@ then
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PdistPath="$dist_dir"
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
 # Calculate hash of the zip file
