@@ -37,6 +37,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "d6d65948_7c292186",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-01T00:15:31Z",
+      "side": 1,
+      "message": "I tested the app on a real mobile device. I will testing this way before submitting.",
+      "parentUuid": "97bcc529_99bb6ad6",
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "90dea497_8da83786",
         "filename": "samples/agdktunnel/app/build.gradle",
         "patchSetId": 2

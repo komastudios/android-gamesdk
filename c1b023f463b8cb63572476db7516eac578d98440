@@ -22,6 +22,30 @@
       },
       "revId": "c1b023f463b8cb63572476db7516eac578d98440",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebf0c0db_9c98ddff",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-01T00:15:31Z",
+      "side": 1,
+      "message": "Patch #4 handles appropriately build flavors",
+      "parentUuid": "f90da31a_8a4764ad",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
