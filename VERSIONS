@@ -6,10 +6,22 @@
 # Nickname      JetPackName             ProjectName    Version  JetPackSubscript
 #
 AGDK            NA                      NA             2021.0.0
+<<<<<<< HEAD   (2bd6ef Merge cherrypicks of [1918190, 1924081, 1927437, 1945477, 19)
 swappy          games-frame-pacing      None           1.10.0   beta01
 tuningfork      games-performance-tuner None           1.5.0    rc01
+=======
+swappy          games-frame-pacing      None           1.10.0   rc01
+tuningfork      games-performance-tuner None           1.5.0
+>>>>>>> BRANCH (95ae20 Merge cherrypicks of [1966679] into sparse-8089770-L34000000)
 oboe            oboe                    None           1.0.0
+<<<<<<< HEAD   (2bd6ef Merge cherrypicks of [1918190, 1924081, 1927437, 1945477, 19)
 game_activity   games-activity          GameActivity   1.1.0    beta03
 game_text_input games-text-input        GameTextInput  1.1.0    rc01
 paddleboat      games-controller        GameController 1.1.0    beta01
 memory_advice   games-memory-advice     None           1.0.0
+=======
+game_activity   games-activity          GameActivity   1.1.0    rc01
+game_text_input games-text-input        GameTextInput  1.1.0
+paddleboat      games-controller        GameController 1.1.0    rc01
+memory_advice   games-memory-advice     None           1.0.0    alpha01
+>>>>>>> BRANCH (95ae20 Merge cherrypicks of [1966679] into sparse-8089770-L34000000)
