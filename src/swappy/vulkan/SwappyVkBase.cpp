@@ -139,8 +139,8 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
     const VkCommandPoolCreateInfo cmd_pool_info = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .pNext = NULL,
-        .queueFamilyIndex = queueFamilyIndex,
         .flags = 0,
+        .queueFamilyIndex = queueFamilyIndex,
     };
 
     VkResult res = vkCreateCommandPool(mDevice, &cmd_pool_info, NULL,
