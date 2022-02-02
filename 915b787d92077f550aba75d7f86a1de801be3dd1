@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b198ce0_14e1f0a7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-02-02T22:02:37Z",
+      "side": 1,
+      "message": "Minor CL to fix issues QA was having, and make GameActivity version real fullscreen.",
+      "revId": "915b787d92077f550aba75d7f86a1de801be3dd1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
