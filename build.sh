@@ -30,7 +30,9 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
+    express_package_name=expressfullsdk
     ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -41,11 +43,15 @@ then
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
+    express_package_name=expressgamesdk
     ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
 else
     package_name=gamesdk
+    express_package_name=expressgamesdk
     ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PdistPath="$dist_dir"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat -PincludeSampleSources -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -62,6 +68,13 @@ sha256sum $ZIPNAME > $ZIPNAME.sha256
 popd
 
 pushd "$dist_dir/$package_name"
+# Remove intermediate files that would be very costly to store
+rm -rf libs prefab
+# Remove other files that we don't care about and are polluting the output
+rm -rf external third_party src include samples aar
+popd
+
+pushd "$dist_dir/$express_package_name"
 # Remove intermediate files that would be very costly to store
 rm -rf libs prefab
 # Remove other files that we don't care about and are polluting the output
