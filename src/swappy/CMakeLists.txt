@@ -30,8 +30,21 @@ include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
 
+# Dex linking requires an extra option for later versions of clang lld
+if (ANDROID_NDK_MAJOR GREATER 22)
+  if ( ANDROID_NDK_ABI_NAME MATCHES "armeabi-v7a")
+    set (LINKER_TARGET_EMULATION_OPTION "-m" "armelf_linux_eabi")
+  elseif(ANDROID_NDK_ABI_NAME MATCHES "arm64-v8a")
+    set (LINKER_TARGET_EMULATION_OPTION "-m" "aarch64linux")
+  elseif(ANDROID_NDK_ABI_NAME MATCHES "x86_64")
+    set (LINKER_TARGET_EMULATION_OPTION "-m" "elf_x86_64")
+  elseif(ANDROID_NDK_ABI_NAME MATCHES "x86")
+      set (LINKER_TARGET_EMULATION_OPTION "-m" "elf_i386")
+  endif()
+endif()
+
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     COMMAND cd ../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
      WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
      )
 

@@ -60,7 +60,7 @@ if (buildScript) {
 def versions = new LibraryVersions(project.rootProject.file('VERSIONS').getPath())
 
 ext.getAGDKZipName = { ->
-    return "agdk-libraries-"+ versions["AGDK"].version + ".zip"
+    return "agdk-libraries-"+ versions["AGDK"].version + (isExpressPackage() ? "_express" : "") + ".zip"
 }
 
 def getGitCommit() {
@@ -776,13 +776,33 @@ Use buildLocal, buildSpecific or one of the packaging tasks.
     }
 }
 
+def isExpressPackage() {
+    return project.hasProperty("express")
+}
+
+def getToolchainSet() {
+    if (isExpressPackage()) {
+        return ToolchainSet.EXPRESS
+    } else {
+        return ToolchainSet.ALL
+    }
+}
+
+def getAarToolchainSet() {
+    if (isExpressPackage()) {
+        return ToolchainSet.EXPRESS_AAR
+    } else {
+        return ToolchainSet.AAR
+    }
+}
+
 task buildAll(type: BuildTask) {
     ext.flattenLibs = false
-    ext.withSharedLibs = true
+    ext.withSharedLibs = !isExpressPackage()
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.nativeBuild = { ->
-        buildNativeLibraries(filterNativeLibraries(allLibraries), getBuildType()) }
+        buildNativeLibraries(filterNativeLibraries(allLibraries), getBuildType(), getToolchainSet()) }
 }
 
 task buildUnity(type: BuildTask) {
@@ -867,7 +887,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 // Patch aar with native libraries.
                 // Use a temporary dir to avoid pollution with other prefab libraries.
                 def tempPrefabDir = getPackageName()+"_"+library.hybridProjectDir
-                buildNativeLibraries([library], getBuildType(), ToolchainSet.AAR).each { buildInfo ->
+                buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
                     copyNativeLibraryToPrefabDir(buildInfo, tempPrefabDir, library)
                     copyHybridClassesFromAar(tempPrefabDir, library, true)
                 }
@@ -926,7 +946,7 @@ task buildAarStructure {
 
         // Build native libraries, and add them to the AAR
         nativeLibraries.each { library ->
-            buildNativeLibraries([library], getBuildType(), ToolchainSet.AAR).each { buildInfo ->
+            buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
                 copyNativeLibraryToPrefabDir(buildInfo, packageName, library)
                 if (library.isHybridLibrary()) {
                     copyHybridClassesFromAar(packageName, library, true)

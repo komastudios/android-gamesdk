@@ -23,19 +23,19 @@ class ToolchainEnumeratorTest {
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
             // 4 abis, 2 STLs, pre17 ndk/sdks:
-            (11 + 11 + 12 + 13 + 11 + 11 + 11 + 12) * 4 * 2,
+            (11 + 11 + 12 + 13 + 11 + 11 + 11 + 12 + 14) * 4 * 2,
             allToolchains.size
         )
         assertEquals(
-            184,
+            212,
             allToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
-            368,
+            424,
             allToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            368,
+            424,
             allToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
@@ -61,15 +61,15 @@ class ToolchainEnumeratorTest {
             // 2 32bits abis, 1 STLs, pre17 ndk/sdks:
             2 * 1 * (11 + 11 + 12 + 13) +
                 // 2 32bits abis, 1 STL, post17 ndk/sdks:
-                2 * 1 * (11 + 11 + 11 + 12) +
+                2 * 1 * (11 + 11 + 11 + 12 + 14) +
                 // 2 64bits abis, 1 STLs, pre17 64 bits ndk/sdks:
                 2 * 1 * (4 + 5 + 6 + 7) +
                 // 2 64bits abis, 1 STL, post17 64bits ndk/sdks:
-                2 * 1 * (7 + 7 + 7 + 8),
+                2 * 1 * (7 + 7 + 7 + 8 + 10),
             allAarToolchains.size
         )
         assertEquals(
-            92,
+            106,
             allAarToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
@@ -77,7 +77,7 @@ class ToolchainEnumeratorTest {
             allAarToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            286,
+            334,
             allAarToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
