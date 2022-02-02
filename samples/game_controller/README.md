@@ -20,7 +20,10 @@ performed:
 
 1. Open a terminal and set the working directory to `samples/game_controller/`
 2. `cd third-party` (mkdir if it doesn't exist)
-3. `git clone -b v1.80 https://github.com/ocornut/imgui`
+3. `git clone https://github.com/ocornut/imgui`
+4. `cd imgui`
+5. `git fetch --all --tags`
+6. `git checkout tags/v1.80 -b v1.80`
 
 ## Building
 
