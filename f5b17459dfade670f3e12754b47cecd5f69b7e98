@@ -128,6 +128,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "35db1c75_9c3f2a7a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1579844
+      },
+      "writtenOn": "2022-02-03T17:58:49Z",
+      "side": 1,
+      "message": "I believe Google Play Games on PC should return that it has a hardware keyboard. If not, I think we should file a bug on our team to fix this. Ideally, we shouldn\u0027t have too many \"isGooglePlayGames\" and try to fit pretty nicely with the standard android ecosystem.",
+      "parentUuid": "cb5304bb_a163123e",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
