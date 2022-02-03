@@ -70,7 +70,7 @@ class GameControllerManager {
         Paddleboat_ControllerStatusCallback statusCallback, void *userData);
 
     static void setMotionDataCallback(
-	    Paddleboat_MotionDataCallback motionDataCallback, void *userData);
+        Paddleboat_MotionDataCallback motionDataCallback, void *userData);
 
     static void setMouseStatusCallback(
         Paddleboat_MouseStatusCallback statusCallback, void *userData);
@@ -198,7 +198,7 @@ class GameControllerManager {
     int32_t mRemapEntryCount = 0;
     Paddleboat_Controller_Mapping_Data mMappingTable[MAX_REMAP_TABLE_SIZE];
 
-    Paddleboat_MotionDataCallback  mMotionDataCallback = nullptr;
+    Paddleboat_MotionDataCallback mMotionDataCallback = nullptr;
     void *mMotionDataCallbackUserData = nullptr;
 
     GameController mGameControllers[PADDLEBOAT_MAX_CONTROLLERS];

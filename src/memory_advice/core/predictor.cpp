@@ -40,7 +40,6 @@ using namespace json11;
 
 MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
                                        std::string features_file) {
-
     apk_utils::NativeAsset features_asset(features_file.c_str());
     std::string features_string(
         static_cast<const char*>(AAsset_getBuffer(features_asset)));
