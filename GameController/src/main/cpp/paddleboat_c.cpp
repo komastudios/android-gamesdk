@@ -133,8 +133,8 @@ Paddleboat_ControllerStatus Paddleboat_getControllerStatus(
 Paddleboat_ErrorCode Paddleboat_setControllerLight(
     const int32_t controllerIndex, const Paddleboat_LightType lightType,
     const uint32_t lightData, JNIEnv *env) {
-    return GameControllerManager::setControllerLight(controllerIndex,
-                                                     lightType, lightData, env);
+    return GameControllerManager::setControllerLight(controllerIndex, lightType,
+                                                     lightData, env);
 }
 
 Paddleboat_ErrorCode Paddleboat_setControllerVibrationData(
@@ -179,4 +179,4 @@ void PADDLEBOAT_VERSION_SYMBOL() {
     // In case of mismatch, a linker error will be triggered because of an
     // undefined symbol, as the name of the function depends on the version.
 }
-} // extern "C" {
+}  // extern "C" {
