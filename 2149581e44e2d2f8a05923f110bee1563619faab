@@ -1,0 +1,4285 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "aa051796_9d410958",
+          "description": "Change to \"third_party/XNNPACK/bench/f32-gemm.cc\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/bench/f32-gemm.cc",
+              "range": {
+                "startLine": 308,
+                "startChar": 62,
+                "endLine": 308,
+                "endChar": 71
+              },
+              "replacement": "perceived"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "4133fd56_5a229fd2",
+        "filename": "third_party/XNNPACK/bench/f32-gemm.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"percieved\" -- should it be \"perceived\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 308,
+        "startChar": 62,
+        "endLine": 308,
+        "endChar": 71
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "4f2c4be7_0342cf32",
+          "description": "Change to \"third_party/XNNPACK/bench/qs8-gemm.cc\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/bench/qs8-gemm.cc",
+              "range": {
+                "startLine": 163,
+                "startChar": 62,
+                "endLine": 163,
+                "endChar": 71
+              },
+              "replacement": "perceived"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "4a3c5691_d4a0591f",
+        "filename": "third_party/XNNPACK/bench/qs8-gemm.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"percieved\" -- should it be \"perceived\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 163,
+        "startChar": 62,
+        "endLine": 163,
+        "endChar": 71
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "e41fb837_159d44dd",
+          "description": "Change to \"third_party/XNNPACK/bench/qu8-gemm.cc\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/bench/qu8-gemm.cc",
+              "range": {
+                "startLine": 260,
+                "startChar": 62,
+                "endLine": 260,
+                "endChar": 71
+              },
+              "replacement": "perceived"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "f926135c_71156f19",
+        "filename": "third_party/XNNPACK/bench/qu8-gemm.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"percieved\" -- should it be \"perceived\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 260,
+        "startChar": 62,
+        "endLine": 260,
+        "endChar": 71
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "26c4a0dc_83d10277",
+          "description": "Change to \"third_party/XNNPACK/include/xnnpack.h\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/include/xnnpack.h",
+              "range": {
+                "startLine": 87,
+                "startChar": 6,
+                "endLine": 87,
+                "endChar": 14
+              },
+              "replacement": "@return"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "3ac32f8b_c6f15989",
+        "filename": "third_party/XNNPACK/include/xnnpack.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"@returns\" -- should it be \"@return\"?\ngo/javastyle, go/jsstyle and go/tsstyle prefer @return, while go/cppstyle prefers plain English in comments\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 87,
+        "startChar": 6,
+        "endLine": 87,
+        "endChar": 14
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "2b1ef403_ac121d4a",
+          "description": "Change to \"third_party/XNNPACK/include/xnnpack.h\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/include/xnnpack.h",
+              "range": {
+                "startLine": 98,
+                "startChar": 6,
+                "endLine": 98,
+                "endChar": 14
+              },
+              "replacement": "@return"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "2357618f_aabe0edd",
+        "filename": "third_party/XNNPACK/include/xnnpack.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"@returns\" -- should it be \"@return\"?\ngo/javastyle, go/jsstyle and go/tsstyle prefer @return, while go/cppstyle prefers plain English in comments\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 98,
+        "startChar": 6,
+        "endLine": 98,
+        "endChar": 14
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "25c55986_609fffcd",
+          "description": "Change to \"third_party/XNNPACK/include/xnnpack.h\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/include/xnnpack.h",
+              "range": {
+                "startLine": 114,
+                "startChar": 6,
+                "endLine": 114,
+                "endChar": 14
+              },
+              "replacement": "@return"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "f161948a_fefac446",
+        "filename": "third_party/XNNPACK/include/xnnpack.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"@returns\" -- should it be \"@return\"?\ngo/javastyle, go/jsstyle and go/tsstyle prefer @return, while go/cppstyle prefers plain English in comments\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 114,
+        "startChar": 6,
+        "endLine": 114,
+        "endChar": 14
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "e658f149_34d70d66",
+          "description": "Change to \"third_party/XNNPACK/include/xnnpack.h\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/include/xnnpack.h",
+              "range": {
+                "startLine": 884,
+                "startChar": 56,
+                "endLine": 884,
+                "endChar": 63
+              },
+              "replacement": "the"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "a8a9e097_62576f92",
+        "filename": "third_party/XNNPACK/include/xnnpack.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 884,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"the the\" -- should it be \"the\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 884,
+        "startChar": 56,
+        "endLine": 884,
+        "endChar": 63
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "342ad3fb_b14cc943",
+          "description": "Change to \"third_party/XNNPACK/include/xnnpack.h\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/include/xnnpack.h",
+              "range": {
+                "startLine": 886,
+                "startChar": 57,
+                "endLine": 886,
+                "endChar": 64
+              },
+              "replacement": "the"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "16c720eb_221f4050",
+        "filename": "third_party/XNNPACK/include/xnnpack.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 886,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"the the\" -- should it be \"the\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 886,
+        "startChar": 57,
+        "endLine": 886,
+        "endChar": 64
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7d799298_975cecb5",
+        "filename": "third_party/XNNPACK/models/qc8-mobilenet-v1.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "938ab337_cbf2a935",
+        "filename": "third_party/XNNPACK/src/f16-f32-vcvt/gen/vcvt-f16c-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cbc15df4_17e12b7b",
+        "filename": "third_party/XNNPACK/src/f16-gemm/4x16-aarch64-neonfp16arith-ld32.S.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5e3bfe6c_6e7da599",
+        "filename": "third_party/XNNPACK/src/f16-gemm/gen-inc/6x16inc-minmax-neonfp16arith-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "003f6b68_239cc237",
+        "filename": "third_party/XNNPACK/src/f16-gemm/gen/6x16-minmax-aarch64-neonfp16arith-cortex-a55.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "39a07398_1a7b5116",
+        "filename": "third_party/XNNPACK/src/f16-gemm/gen/8x16-minmax-neonfp16arith-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0960789d_459034f1",
+        "filename": "third_party/XNNPACK/src/f16-igemm/gen/4x16-minmax-neonfp16arith-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9b63d24e_64ab53cb",
+        "filename": "third_party/XNNPACK/src/f16-spmm/neonfp16arith.c.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "98bde9a6_fc122e54",
+        "filename": "third_party/XNNPACK/src/f16-vbinary/gen/vmax-f16c-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "43210d17_23a0eb78",
+        "filename": "third_party/XNNPACK/src/f16-vbinary/gen/vsqrdiff-f16c-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e3bceaf6_686476fa",
+        "filename": "third_party/XNNPACK/src/f32-dwconv/gen/up16x4-minmax-fma3-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "29c3614e_3445b292",
+        "filename": "third_party/XNNPACK/src/f32-dwconv/gen/up2x25-minmax-wasm-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2a8fa487_50bca935",
+        "filename": "third_party/XNNPACK/src/f32-dwconv/gen/up4x4-minmax-neonfma.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c2de3c2f_75f4ad3b",
+        "filename": "third_party/XNNPACK/src/f32-dwconv/gen/up8x4-minmax-wasmsimd-x86.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2e695e49_77b21c58",
+        "filename": "third_party/XNNPACK/src/f32-dwconv/gen/up8x9-minmax-sse-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8b51e0bc_bc1f65a2",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/3x3p1-minmax-neonfma-1x4-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bfa51b24_057869a9",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/3x3p1-minmax-sse-2x4-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "22352d1d_24f21c41",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/3x3p1-minmax-wasmsimd-x86-loadsplat-1x4-acc2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "15c5df87_bb954316",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/3x3p1-minmax-wasmsimd-x86-loadsplat-5x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "82b67930_f3b4bf1a",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/3x3s2p1-minmax-wasmsimd-arm-loadsplat-1x4-acc3.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8466abeb_17b335c6",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/5x5p2-minmax-sse-1x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0288ecdc_56a9d8dc",
+        "filename": "third_party/XNNPACK/src/f32-dwconv2d-chw/gen/5x5p2-minmax-wasmsimd-x86-loadsplat-1x4-acc3.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e55f73a1_66c1a28f",
+        "filename": "third_party/XNNPACK/src/f32-f16-vcvt/gen/vcvt-avx-x32.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "93092afb_cf5b03b0",
+        "filename": "third_party/XNNPACK/src/f32-gemm/4x8-aarch32-neon-cortex-a55.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4a21ec6d_6bafd54c",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen-inc/4x8inc-minmax-sse-dup.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "32fd22b2_5fdb429c",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen-inc/4x8s4inc-minmax-wasmsimd-arm.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d9d4f864_e5615cb8",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen/3x16-minmax-fma3-broadcast.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9c41565e_560d7177",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen/4x8-minmax-sse-load1.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "62eb47be_15c37b08",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen/6x8-minmax-neon-dup-ld128.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9104bd60_f74d311c",
+        "filename": "third_party/XNNPACK/src/f32-gemm/gen/6x8s4-minmax-wasmsimd-x86.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "84dee9ed_9621e16f",
+        "filename": "third_party/XNNPACK/src/f32-ibilinear/gen/scalar-c4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "069d02fd_40f11335",
+        "filename": "third_party/XNNPACK/src/f32-igemm/gen/1x16-minmax-avx512f-broadcast.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "db873514_4920e04a",
+        "filename": "third_party/XNNPACK/src/f32-igemm/gen/4x8-minmax-fma3-broadcast.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1a443ac4_c5fc45a0",
+        "filename": "third_party/XNNPACK/src/f32-igemm/gen/7x16-minmax-avx512f-broadcast.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "09fc6c93_2610abd4",
+        "filename": "third_party/XNNPACK/src/f32-prelu/gen/neon-4x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f507a6cc_707e8cf6",
+        "filename": "third_party/XNNPACK/src/f32-qs8-vcvt/gen/vcvt-sse41-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cfb7320f_56a2f911",
+        "filename": "third_party/XNNPACK/src/f32-qu8-vcvt/gen/vcvt-scalar-fmagic-x2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "203e79fb_df5acea6",
+        "filename": "third_party/XNNPACK/src/f32-raddstoreexpminusmax/gen/scalar-rr2-lut64-p2-x4-acc4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "51a8a372_cba2d1d4",
+        "filename": "third_party/XNNPACK/src/f32-raddstoreexpminusmax/gen/scalar-rr2-lut64-p2-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "dfa5ecba_8a1ebaf6",
+        "filename": "third_party/XNNPACK/src/f32-spmm/gen/8x1-minmax-wasmsimd-x86-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2ee60c48_235941d3",
+        "filename": "third_party/XNNPACK/src/f32-spmm/sse.c.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f2862fd4_f1263657",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vadd-minmax-neon-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "34a2726a_2f23d9ec",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vaddc-minmax-wasmsimd-arm-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f2d4f893_00693781",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vdiv-relu-wasmsimd-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5773b16c_d62fb610",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vdivc-minmax-neon-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "42c65193_82e47daf",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vdivc-minmax-scalar-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ccd588a9_4794addf",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vdivc-relu-scalar-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c0d52d61_af788d7e",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vmax-sse-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d73f5a4a_0730521b",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vmulc-minmax-wasmsimd-x86-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9ba2834d_39c80c25",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vrdivc-wasmsimd-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c3afadd6_9421c615",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vsub-relu-wasm-x2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f2e34fec_702bc5f8",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vsub-wasmsimd-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Too many findings have been generated by \"Copyright\". Please view remaining findings at https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b117b306_9350d3ca",
+        "filename": "third_party/XNNPACK/src/f32-vbinary/gen/vsubc-minmax-neon-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fbb17eff_c2f4f8f0",
+        "filename": "third_party/XNNPACK/src/f32-vclamp/gen/vclamp-avx512f-x32.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "90e445a1_0d5b1c46",
+        "filename": "third_party/XNNPACK/src/f32-velu/avx2-rr1-p6.c.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b07729f4_ab6a5622",
+        "filename": "third_party/XNNPACK/src/f32-vhswish/gen/vhswish-wasmsimd-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bca2af93_6ac51252",
+        "filename": "third_party/XNNPACK/src/f32-vlrelu/gen/vlrelu-wasmsimd-minmax-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "780a65e4_d36a6abb",
+        "filename": "third_party/XNNPACK/src/f32-vrelu/wasm_shr_x4.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 42,
+        "endLine": 3,
+        "endChar": 59
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e0fac603_fa498e58",
+        "filename": "third_party/XNNPACK/src/f32-vrnd/gen/vrndd-wasmsimd-addsub-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1ae98f61_508d0b80",
+        "filename": "third_party/XNNPACK/src/f32-vrnd/gen/vrndz-sse2-x4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "e43558b2_140c08a1",
+        "filename": "third_party/XNNPACK/src/f32-vrnd/vrndne-neon.c.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4952f27d_9629faaf",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-avx2-rr1-p5-nr1fma-x40.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fb4e4bb9_45a0aa62",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-avx2-rr1-p5-nr1fma-x64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3b7bbea5_28fbd1ea",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-avx512f-rr1-lut16-p3-perm-scalef-div-x96.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8787e64e_ab4b30d3",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-avx512f-rr1-p5-scalef-div-x112.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "fa907dd7_e9297748",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-neonfma-rr1-p5-div-x12.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8166ec4b_42c4fc2d",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-neonfma-rr1-p5-nr2fma-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9a7a0e08_45eb6e33",
+        "filename": "third_party/XNNPACK/src/f32-vsigmoid/gen/vsigmoid-neonfma-rr1-p5-nr2recps-x20.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c5a6a146_c25704aa",
+        "filename": "third_party/XNNPACK/src/math/cvt-f32-f16-neonfp16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f789585f_80d04818",
+        "filename": "third_party/XNNPACK/src/math/expminus-avx2-rr2-p5.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1a8fda2d_38e658d9",
+        "filename": "third_party/XNNPACK/src/math/roundz-scalar-addsub.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "73f9feb1_8b4b04cd",
+        "filename": "third_party/XNNPACK/src/math/sigmoid-avx512f-rr1-lut64-p2-gather-scalef-div.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1aeef59a_5c1e54e9",
+        "filename": "third_party/XNNPACK/src/math/sigmoid-avx512f-rr1-p5-scalef-nr1fma.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "dc4daeda_e54e8b46",
+        "filename": "third_party/XNNPACK/src/math/sigmoid-wasmsimd-rr2-p5-div.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7118c78d_08d6f65a",
+        "filename": "third_party/XNNPACK/src/math/sqrt-fma3-nr1fma1adj.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b648aff4_f167055f",
+        "filename": "third_party/XNNPACK/src/operators/global-average-pooling-nwc.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 6,
+        "startChar": 43,
+        "endLine": 6,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d2be041e_de12140d",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up1x25-minmax-fp32-scalar-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b4e7b628_81dc8f6c",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up1x9-minmax-fp32-scalar-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "cbf09cdf_6d73433d",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up1x9-minmax-fp32-scalar-imagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2bfdc81e_f8d31ddc",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up2x9-minmax-fp32-scalar-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9c51e313_9193acb4",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up2x9-minmax-fp32-scalar-imagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b3dd2f6d_6d5037a0",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up32x25-minmax-fp32-neon-mul16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "7cf5b21e_cb48e1e3",
+        "filename": "third_party/XNNPACK/src/qc8-dwconv/gen/up8x25-minmax-fp32-sse41-mul16-add16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "07a4326e_1b3b837f",
+        "filename": "third_party/XNNPACK/src/qc8-gemm/gen/1x4c8-minmax-fp32-sse2-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "db363bdb_b26c55b5",
+        "filename": "third_party/XNNPACK/src/qc8-gemm/gen/4x16c4-minmax-fp32-aarch64-neondot-ld32.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "13d878f6_f857aa3b",
+        "filename": "third_party/XNNPACK/src/qc8-gemm/gen/6x8-minmax-fp32-neon-mlal-lane-prfm.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "35f1039f_c8480641",
+        "filename": "third_party/XNNPACK/src/qc8-gemm/gen/6x8-minmax-fp32-neonv8-mlal-lane-prfm.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "35ec7ff5_8e513327",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/1x16-minmax-fp32-neonv8-mlal-lane-prfm.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ebfae296_20d27680",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/1x4c8-minmax-fp32-sse41-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "61a6f21d_b2dffbcb",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/1x8-minmax-fp32-neonv8-mlal-lane.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "352c77a6_3d4d8c7e",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/1x8c2-minmax-fp32-neon-mlal-dup.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "14211145_0d1ccc84",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/1x8c2-minmax-fp32-neon-mlal-ld1r.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "04c400ce_81617e01",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/2x2-minmax-fp32-scalar-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ff040e98_51eeaafc",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/3x4c8-minmax-fp32-wasmsimd-dot16x2-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5bd76d3a_099c88b2",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/4x16-minmax-fp32-aarch64-neon-mlal-lane-prfm-cortex-a53.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c424ec2f_0620b299",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/4x4c2-minmax-fp32-sse2-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0f196bfe_18e31271",
+        "filename": "third_party/XNNPACK/src/qc8-igemm/gen/6x8-minmax-fp32-neonv8-mlal-lane.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "6a927d8c_43e4f1cd",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up16x25-minmax-fp32-xop-mul16-add16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bc69f301_d0e57261",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up16x9-minmax-fp32-avx-mul16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "654fc3e3_be4a8254",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up1x25-minmax-fp32-scalar-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "93f8d29e_423a17ee",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up1x25-minmax-fp32-wasm-fmagic.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4a6b114a_cce2f198",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up8x25-minmax-fp32-wasmsimd-mul16-add16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "39cfe527_62e6c895",
+        "filename": "third_party/XNNPACK/src/qs8-dwconv/gen/up8x9-minmax-rndnu-neon-mul16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c9438511_69abd8de",
+        "filename": "third_party/XNNPACK/src/qs8-f32-vcvt/sse4.c.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "5cabe344_d581fa7b",
+        "filename": "third_party/XNNPACK/src/qs8-gavgpool/gen/7p7x-minmax-fp32-wasmsimd-c16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "a9489a6b_2e81db06",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/1x16c4-minmax-rndnu-neon-mlal-ld1r.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "f0bd11a9_3d8f5652",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/1x4c2-minmax-fp32-sse41-ld128.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "64cacb5b_2923efee",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/1x8c8-minmax-fp32-aarch64-neon-mlal-prfm.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0fcb430f_e024d1c3",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/2x4c8-minmax-fp32-xop-ld128.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bbcf0d1a_f4b61b20",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/2x8c4-minmax-rndnu-neon-mlal-ld2r.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c132f4eb_4e6700b8",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/3x16c2-minmax-rndnu-neon-mull-dup.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "03668024_4f47c681",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/4x4c2-minmax-fp32-wasmsimd-dot16x2-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d01df815_c95fb688",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/4x8c2-minmax-rndnu-neon-mull-dup.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "611f073e_99cb6fba",
+        "filename": "third_party/XNNPACK/src/qs8-gemm/gen/4x8c4-minmax-rndnu-aarch32-neondot-ld64.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "132dc70c_6bc3f5a3",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/2x8c8-aarch64-neon-mlal.S.in",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d409f3a5_183661ba",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/gen/2x16c8-minmax-fp32-avx512skx.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "89e55734_bc74f439",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/gen/3x16-minmax-rndnu-neon-mlal-lane-prfm.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "58738db4_8add6c83",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/gen/3x4c8-minmax-fp32-wasmsimd-mul16-ld128.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1e94af76_1e58c4ee",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/gen/3x8c4-minmax-rndnu-neon-mull-ld2r.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "411710c2_bf70c588",
+        "filename": "third_party/XNNPACK/src/qs8-igemm/gen/4x8-minmax-rndnu-aarch32-neon-mlal-lane-ld64.S",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "11978d1f_cc5b57cc",
+        "filename": "third_party/XNNPACK/src/qs8-vadd/gen/minmax-avx-mul16-ld64-x24.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c1d57f5d_56e0a9cc",
+        "filename": "third_party/XNNPACK/src/qs8-vmul/gen/minmax-fp32-neon-ld64-x8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "1305e920_13fe4097",
+        "filename": "third_party/XNNPACK/src/qs8-vmulc/gen/minmax-fp32-avx-mul16-ld64-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b6eed227_ab19c207",
+        "filename": "third_party/XNNPACK/src/qu8-gemm/gen/1x4c2-minmax-fp32-sse2-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8d959c60_c55e6772",
+        "filename": "third_party/XNNPACK/src/qu8-gemm/gen/3x4c2-minmax-fp32-avx-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9bd51747_71e7aa5a",
+        "filename": "third_party/XNNPACK/src/qu8-igemm/gen/1x4c2-minmax-fp32-xop-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4ee49f48_b10333d8",
+        "filename": "third_party/XNNPACK/src/qu8-igemm/gen/1x4c8-minmax-fp32-avx-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4748d92c_17c6dab6",
+        "filename": "third_party/XNNPACK/src/qu8-igemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ced29cab_f51fc8a7",
+        "filename": "third_party/XNNPACK/src/qu8-igemm/gen/2x4c8-minmax-fp32-wasmsimd-dot16x2-ld128.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "bbcc1c25_a59e57ed",
+        "filename": "third_party/XNNPACK/src/qu8-vmul/gen/minmax-fp32-wasmsimd-mul32-ld64-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "20dfb612_03f73c8c",
+        "filename": "third_party/XNNPACK/src/qu8-vmulc/gen/minmax-fp32-neon-ld64-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "076fedd0_65ab5c2f",
+        "filename": "third_party/XNNPACK/src/qu8-vmulc/gen/minmax-fp32-wasmsimd-mul32-ld64-x16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020066364",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "d80fb116_e1ff25b5",
+          "description": "Change to \"third_party/XNNPACK/src/subgraph.c\"",
+          "replacements": [
+            {
+              "path": "third_party/XNNPACK/src/subgraph.c",
+              "range": {
+                "startLine": 420,
+                "startChar": 62,
+                "endLine": 420,
+                "endChar": 68
+              },
+              "replacement": "until"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "6a55458d_f44635f2",
+        "filename": "third_party/XNNPACK/src/subgraph.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Common typo found: \"untill\" -- should it be \"until\"?\nNote: a line containing \"common_typos_disable\" or \"common_typos_enable\" will turn off or on (respectively) the linter for subsequent lines in the file. Alternatively include the token \"NOTYPO\" within a line to skip typo linting that line or include \u0027No-Typo-Check: \u003creason\u003e\u0027in the commit message.",
+      "range": {
+        "startLine": 420,
+        "startChar": 62,
+        "endLine": 420,
+        "endChar": 68
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d377a778_31f6916f",
+        "filename": "third_party/XNNPACK/src/tables/exp2minus-k-over-16.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8cc33b33_2b2a97af",
+        "filename": "third_party/XNNPACK/src/u8-ibilinear/gen/wasmsimd-mul32-c8.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4a7d04bb_17345245",
+        "filename": "third_party/XNNPACK/src/x16-transpose/gen/4x1-scalar-int.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "4ff22b0a_ae4554c9",
+        "filename": "third_party/XNNPACK/src/x16-transpose/gen/8x8-reuse-mov-sse2.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "9bb1fc54_0db47bc4",
+        "filename": "third_party/XNNPACK/src/x32-packx/x4-neon-st4.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "d7b7184d_99d85c16",
+        "filename": "third_party/XNNPACK/src/x32-transpose/gen/4x4-multi-multi-zip-neon.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b13e6376_9e20d7f9",
+        "filename": "third_party/XNNPACK/src/x64-transpose/gen/4x1-scalar-float.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "3d28b58c_350fc61f",
+        "filename": "third_party/XNNPACK/src/x8-lut/gen/lut-wasmsimd-x32.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "44316aa0_f35a03b3",
+        "filename": "third_party/XNNPACK/src/x8-transpose/gen/2x1-scalar-int.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "ea09aaee_780b533b",
+        "filename": "third_party/XNNPACK/src/x8-transpose/gen/2x2-scalar-int.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b22bd52c_b8809745",
+        "filename": "third_party/XNNPACK/test/f16-f32-vcvt.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 42,
+        "endLine": 3,
+        "endChar": 59
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "2e377d71_861f77fc",
+        "filename": "third_party/XNNPACK/test/f16-vdiv-minmax.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "dc8ab7d0_5cf09e60",
+        "filename": "third_party/XNNPACK/test/f32-igemm-relu.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 6,
+        "startChar": 43,
+        "endLine": 6,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "0cdc6275_be357fa3",
+        "filename": "third_party/XNNPACK/test/f32-spmm-minmax.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 42,
+        "endLine": 3,
+        "endChar": 59
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "8691cece_da697c37",
+        "filename": "third_party/XNNPACK/test/f32-vrdivc-relu.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 42,
+        "endLine": 3,
+        "endChar": 59
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "dca07d1f_67ad6ec2",
+        "filename": "third_party/XNNPACK/test/f32-vsubc-relu.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 42,
+        "endLine": 3,
+        "endChar": 59
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "54d60415_e78820dd",
+        "filename": "third_party/XNNPACK/test/qu8-vmul-minmax-rndnu.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020064635",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1970889?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "b0cda02e_b3bd812f",
+        "filename": "third_party/XNNPACK/test/vscale-microkernel-tester.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-03T16:08:22Z",
+      "side": 1,
+      "message": "Third-party license (BSD) disallowed in repository platform/frameworks/opt/gamesdk:\nBSD-style license\n",
+      "range": {
+        "startLine": 3,
+        "startChar": 43,
+        "endLine": 3,
+        "endChar": 60
+      },
+      "revId": "2149581e44e2d2f8a05923f110bee1563619faab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
