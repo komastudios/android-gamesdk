@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eaeeaec6_a9c42838",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-02-04T13:38:54Z",
+      "side": 1,
+      "message": "This cl should be submitted after XNNPACK has been updated in platform/external and the manifest file for android-games-sdk has been updated.",
+      "revId": "8f5e1eebfd11e6d7a065d35c52c9292c9573d26c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
