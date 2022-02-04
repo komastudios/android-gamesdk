@@ -18,7 +18,6 @@ add_gamesdk_target(
 )
 
 get_target_property(DEP_LIB memory_advice IMPORTED_LOCATION)
-file(COPY ${DEP_LIB} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI})
 
 file(GLOB TF_MODEL_FILES "${MEMORYADVICE_RESOURCES_DIR}/*.*")
 file(COPY ${TF_MODEL_FILES} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/assets)
@@ -39,3 +38,9 @@ target_link_libraries( native-lib
         GLESv2
         log
         )
+
+add_custom_command(
+        TARGET native-lib POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${DEP_LIB}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI})
