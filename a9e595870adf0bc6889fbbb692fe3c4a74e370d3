@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "758b33dd_c2615658",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-02-10T14:28:44Z",
+      "side": 1,
+      "message": "On some devices setting them all to \u00270\u0027 will still allow the device to compress them to zram. I use pseudorandom numbers to avoid this.",
+      "revId": "a9e595870adf0bc6889fbbb692fe3c4a74e370d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec649a48_5aaaf553",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-02-10T14:28:44Z",
+      "side": 1,
+      "message": "Formatting looks nonstanard.",
+      "range": {
+        "startLine": 66,
+        "startChar": 33,
+        "endLine": 66,
+        "endChar": 37
+      },
+      "revId": "a9e595870adf0bc6889fbbb692fe3c4a74e370d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
