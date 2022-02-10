@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eebeb9ae_a7ccd7d9",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T06:09:15Z",
+      "side": 1,
+      "message": "Given it a second thought, a manifest merge can be a good idea if the game actually use one of the features. I\u0027ll try to add one when we have the build flavor cl in. Will add a bug. I think this CL is good as-is.",
+      "parentUuid": "f535d8b2_ca740d52",
+      "range": {
+        "startLine": 49,
+        "startChar": 58,
+        "endLine": 49,
+        "endChar": 71
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cc69e466_639cd67a",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
         "patchSetId": 1
