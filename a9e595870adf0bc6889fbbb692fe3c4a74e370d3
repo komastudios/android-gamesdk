@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7341fbbd_21d8a8de",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-10T20:28:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "758b33dd_c2615658",
+      "revId": "a9e595870adf0bc6889fbbb692fe3c4a74e370d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ec649a48_5aaaf553",
@@ -31,6 +49,30 @@
       "writtenOn": "2022-02-10T14:28:44Z",
       "side": 1,
       "message": "Formatting looks nonstanard.",
+      "range": {
+        "startLine": 66,
+        "startChar": 33,
+        "endLine": 66,
+        "endChar": 37
+      },
+      "revId": "a9e595870adf0bc6889fbbb692fe3c4a74e370d3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d07feb33_ed373c43",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-10T20:28:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ec649a48_5aaaf553",
       "range": {
         "startLine": 66,
         "startChar": 33,
