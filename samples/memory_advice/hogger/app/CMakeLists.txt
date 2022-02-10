@@ -43,4 +43,4 @@ add_custom_command(
         TARGET native-lib POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ${DEP_LIB}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI})
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI}/libmemory_advice.so)
