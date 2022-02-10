@@ -94,6 +94,30 @@
       },
       "revId": "c1b023f463b8cb63572476db7516eac578d98440",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a5a56a7_67a1ec1b",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-02-10T20:12:47Z",
+      "side": 1,
+      "message": "I\u0027m fine with adding build flavors. I would just add a section in the README mentioning they exist and how to select the Play Games PC build flavor if desired.",
+      "parentUuid": "e4489158_281fde83",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
