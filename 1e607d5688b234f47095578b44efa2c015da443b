@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020315880",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1979468?revision\u003d1",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "c31e86ba_f72d5759",
+        "filename": "samples/memory_advice/hogger/app/src/main/java/com/memory_advice/hogger/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-10T13:33:58Z",
+      "side": 1,
+      "message": "Wrong casing for \"bytes_to_add\". static final variables should be ALL_UPPERCASE.",
+      "range": {
+        "startLine": 55,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 46
+      },
+      "revId": "1e607d5688b234f47095578b44efa2c015da443b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
