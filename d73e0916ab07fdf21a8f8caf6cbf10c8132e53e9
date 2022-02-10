@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f535d8b2_ca740d52",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T06:05:09Z",
+      "side": 1,
+      "message": "I don\u0027t think manifest merge will work in this case but I could be wrong.\n\nBTW, where was the quote from?",
+      "parentUuid": "8896f199_795cf00a",
+      "range": {
+        "startLine": 49,
+        "startChar": 58,
+        "endLine": 49,
+        "endChar": 71
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cc69e466_639cd67a",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
         "patchSetId": 1
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "Worth to mention that features that use these imports need to be removed and give the recommendation of following the good practice of delegate these dependencies to a different build flavor as we are doing in https://android-review.googlesource.com/c/platform/frameworks/opt/gamesdk/+/1960861",
       "parentUuid": "cc69e466_639cd67a",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 66
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c622d663_2f629fd9",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T06:05:09Z",
+      "side": 1,
+      "message": "Left some comments in the flavored CL. I believe it\u0027s better to add these AFTER your build flavor cl goes in.",
+      "parentUuid": "0e510eca_74eedee8",
       "range": {
         "startLine": 37,
         "startChar": 0,
