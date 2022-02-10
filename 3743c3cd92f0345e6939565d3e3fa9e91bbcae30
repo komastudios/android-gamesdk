@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "02e04ff0_df90135c",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a87f2d46_917dd6f3",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 38
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "02ed460f_62f2c09a",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-02-10T05:56:17Z",
       "side": 1,
       "message": "Do we want to call it play games or play games pc?",
+      "range": {
+        "startLine": 60,
+        "startChar": 8,
+        "endLine": 60,
+        "endChar": 18
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6cc0387_08173e55",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "Leave it as playGamesPC",
+      "parentUuid": "02ed460f_62f2c09a",
       "range": {
         "startLine": 60,
         "startChar": 8,
@@ -70,6 +118,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76ef3520_b9888cfb",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "No we don\u0027t. I thought it was needed to be public for the JNI call from the game, not I reviewed and can be private.",
+      "parentUuid": "9d0adf76_a55b4d3a",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 11
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b6761949_2d590b75",
@@ -93,6 +165,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1d5384c_036b9f15",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PlayGamesUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "True. Now is removed",
+      "parentUuid": "b6761949_2d590b75",
+      "range": {
+        "startLine": 10,
+        "startChar": 17,
+        "endLine": 10,
+        "endChar": 32
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b51127c2_8fd10e39",
@@ -106,6 +202,30 @@
       "writtenOn": "2022-02-10T05:56:17Z",
       "side": 1,
       "message": "I don\u0027t think we need this class.",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 32
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b778f72_3fee5b48",
+        "filename": "samples/agdktunnel/app/src/mobile/java/com/google/sample/agdktunnel/PlayGamesUtilsImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "True. Now is removed",
+      "parentUuid": "b51127c2_8fd10e39",
       "range": {
         "startLine": 8,
         "startChar": 13,

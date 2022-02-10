@@ -70,6 +70,30 @@
       },
       "revId": "c1b023f463b8cb63572476db7516eac578d98440",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4489158_281fde83",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T19:52:58Z",
+      "side": 1,
+      "message": "That approach is certainly better. PlayGamesUtils file is not needed. We can have our own build variant without moving the base AGDKTunnel code (for now)",
+      "parentUuid": "2acce8c2_8eaadf84",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
