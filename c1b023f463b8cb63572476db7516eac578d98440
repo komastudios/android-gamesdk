@@ -46,6 +46,30 @@
       },
       "revId": "c1b023f463b8cb63572476db7516eac578d98440",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2acce8c2_8eaadf84",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "Thanks for changing this to use flavors.\n\n@Nate, PTAL and let us know if using build flavors are good ideas.\n\nIf we use flavors, I don\u0027t think PlayGamesUtilsImpl is needed. Instead, I would suggest using a BaseAGDKTunnelActivity, and in 2 flavors, we\u0027ll have:\n\nclass MobileAGDKTunnelActivity : BaseAGDKTunnelActivity\nand\nclass PlayGamesAGDKTunnelActivity : BaseAGDKTunnelActivity\n\nYou may need a manifest flavor to point to different activity to start the game.\n\nThe makes the code cleaner in my view. What do you think?",
+      "parentUuid": "ebf0c0db_9c98ddff",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "c1b023f463b8cb63572476db7516eac578d98440",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

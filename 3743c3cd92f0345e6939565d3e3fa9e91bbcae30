@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a87f2d46_917dd6f3",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "Can we be more specific? The comments generally need to explain more details than code :)",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 38
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02ed460f_62f2c09a",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "Do we want to call it play games or play games pc?",
+      "range": {
+        "startLine": 60,
+        "startChar": 8,
+        "endLine": 60,
+        "endChar": 18
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d0adf76_a55b4d3a",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "Do we need public?",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 11
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6761949_2d590b75",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PlayGamesUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "I am not convinced we need this.",
+      "range": {
+        "startLine": 10,
+        "startChar": 17,
+        "endLine": 10,
+        "endChar": 32
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b51127c2_8fd10e39",
+        "filename": "samples/agdktunnel/app/src/mobile/java/com/google/sample/agdktunnel/PlayGamesUtilsImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-10T05:56:17Z",
+      "side": 1,
+      "message": "I don\u0027t think we need this class.",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 32
+      },
+      "revId": "3743c3cd92f0345e6939565d3e3fa9e91bbcae30",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
