@@ -1,0 +1,30 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000020330393",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/1960861?revision\u003d7",
+      "fixSuggestions": [],
+      "key": {
+        "uuid": "357d1a34_fcbfd020",
+        "filename": "samples/agdktunnel/app/src/playGamesPC/java/com/google/sample/agdktunnel/PlayGamesPCActivity.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-02-10T19:46:04Z",
+      "side": 1,
+      "message": "Avoid referring to Google; the Android platform is an open-source project and aims to be vendor neutral. The API should be generic and equally usable by system integrators or applications with the requisite permissions. See https://android.googlesource.com/platform/developers/docs/+/refs/heads/master/api-guidelines/index.md#mentions-google for more details.",
+      "range": {
+        "startLine": 29,
+        "startChar": 35,
+        "endLine": 29,
+        "endChar": 47
+      },
+      "revId": "695d00f72ecc9453857e12865f6cb2f50eb3a746",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
