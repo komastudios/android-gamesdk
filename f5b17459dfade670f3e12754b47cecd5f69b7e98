@@ -164,6 +164,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6e12da58_daf22b51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1579844
+      },
+      "writtenOn": "2022-02-10T00:35:17Z",
+      "side": 1,
+      "message": "You are correct in that assuming a hardware keyboard exists when Google Play Games on PC is being used. However, now the developer has to special case their build here, when just hasHardwareKeyboard is enough. This is counter a bit, to what we want to encourage overall for both the developer and for the android os experience as well. \n\nTom Cherry, and other leads from the Android side of Battlestar would also like to ensure we aren\u0027t special casing battlestar where it really isn\u0027t necessary.",
+      "parentUuid": "6ab4b96e_45b660ec",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
