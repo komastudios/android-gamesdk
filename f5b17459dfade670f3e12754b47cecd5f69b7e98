@@ -146,6 +146,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6ab4b96e_45b660ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-10T00:27:27Z",
+      "side": 1,
+      "message": "I think that adding a function hasHardwareKeyboard for Google Play Games is not a practice we want to show/foster for developers, I believe that we should provide the confidence of that if their game is running in B* then a hardware keyboard should be connected.\n\nJust to make sure it works I have tested the following code:\n```\npublic class AGDKTunnelActivity extends GameActivity {\n  ...\n  public boolean isGooglePlayGames() {\n    PackageManager pm \u003d getPackageManager();\n    boolean hasPlayGamesFeature \u003d pm\n        .hasSystemFeature(\"com.google.android.play.feature.HPE_EXPERIENCE\");\n    boolean hasHardwareKeyboard \u003d getResources()\n        .getConfiguration().keyboard \u003d\u003d Configuration.KEYBOARD_QWERTY;\n    return hasPlayGamesFeature \u0026\u0026 hasHardwareKeyboard;\n  }\n  ...\n}\n```\n\nAnd the keyboard is detected on the game in B*.\n\nStill this is a good place for the Game Controller 1.2 function hasHardwareKeyboard() when it gets ready.",
+      "parentUuid": "35db1c75_9c3f2a7a",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
         "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
         "patchSetId": 1
