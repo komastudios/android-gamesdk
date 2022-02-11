@@ -63,16 +63,17 @@ MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice) {
     return MEMORYADVICE_ERROR_OK;
 }
 
-MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state) {
-    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    *state = s_impl->GetMemoryState();
-    return MEMORYADVICE_ERROR_OK;
+MemoryAdvice_MemoryState GetMemoryState() {
+    if (s_impl == nullptr)
+        return static_cast<MemoryAdvice_MemoryState>(
+            MEMORYADVICE_ERROR_NOT_INITIALIZED);
+    return s_impl->GetMemoryState();
 }
 
-MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate) {
-    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    *estimate = s_impl->GetAvailableMemory();
-    return MEMORYADVICE_ERROR_OK;
+int64_t GetAvailableMemory() {
+    if (s_impl == nullptr)
+        return static_cast<int64_t>(MEMORYADVICE_ERROR_NOT_INITIALIZED);
+    return s_impl->GetAvailableMemory();
 }
 
 MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,

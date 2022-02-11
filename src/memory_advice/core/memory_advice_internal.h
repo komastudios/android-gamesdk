@@ -17,6 +17,33 @@
 #pragma once
 
 #include "memory_advice/memory_advice.h"
+#include "memory_advice/memory_advice_debug.h"
+
+// Memory advice version symbols for tracking the version.
+#define MEMORY_ADVICE_MAJOR_VERSION 1
+#define MEMORY_ADVICE_MINOR_VERSION 0
+#define MEMORY_ADVICE_BUGFIX_VERSION 0
+#define MEMORY_ADVICE_PACKED_VERSION                            \
+    ANDROID_GAMESDK_PACKED_VERSION(MEMORY_ADVICE_MAJOR_VERSION, \
+                                   MEMORY_ADVICE_MINOR_VERSION, \
+                                   MEMORY_ADVICE_BUGFIX_VERSION)
+
+// Internal macros to generate a symbol to track Memory Advice version, do not
+// use directly.
+#define MEMORY_ADVICE_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR) \
+    PREFIX##_##MAJOR##_##MINOR
+#define MEMORY_ADVICE_VERSION_CONCAT(PREFIX, MAJOR, MINOR) \
+    MEMORY_ADVICE_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR)
+#define MEMORY_ADVICE_VERSION_SYMBOL                          \
+    MEMORY_ADVICE_VERSION_CONCAT(MemoryAdvice_version,        \
+                                 MEMORY_ADVICE_MAJOR_VERSION, \
+                                 MEMORY_ADVICE_MINOR_VERSION)
+
+// Internal function to track MemoryAdvice version bundled in a binary. Do not
+// call directly. If you are getting linker errors related to
+// MemoryAdvice_version_x_y, you probably have a mismatch between the header
+// used at compilation and the actually library used by the linker.
+extern "C" void MEMORY_ADVICE_VERSION_SYMBOL();
 
 // These functions are implemented in memory_advice.cpp.
 // They are mostly the same as the C interface, but take C++ types.
@@ -26,8 +53,8 @@ namespace memory_advice {
 MemoryAdvice_ErrorCode Init();
 MemoryAdvice_ErrorCode Init(const char* params);
 MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice);
-MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state);
-MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate);
+MemoryAdvice_MemoryState GetMemoryState();
+int64_t GetAvailableMemory();
 MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
                                        MemoryAdvice_WatcherCallback callback,
                                        void* user_data);
