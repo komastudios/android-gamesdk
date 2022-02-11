@@ -16,21 +16,32 @@
 
 #include "state_watcher.h"
 
+#include "memory_advice_impl.h"
+
 namespace memory_advice {
 
 void StateWatcher::Looper() {
-    while (looping_) {
-        MemoryAdvice_MemoryState state = impl_->GetMemoryState();
-        if (state != MEMORYADVICE_STATE_OK) {
-            callback_(state);
-        }
+    thread_running_ = true;
+    while (!do_cancel_) {
         std::this_thread::sleep_for(std::chrono::milliseconds(interval_));
+        if (!do_cancel_) {
+            MemoryAdvice_MemoryState state = impl_->GetMemoryState();
+            if (state != MEMORYADVICE_STATE_OK && !do_cancel_) {
+                callback_(state, user_data_);
+            }
+        }
     }
+    thread_running_ = false;
 }
 
 StateWatcher::~StateWatcher() {
-    looping_ = false;
-    thread_->detach();
+    if (!do_cancel_) {
+        ALOGV(
+            "memory_advice::StateWatcher::Cancel not called before delete? "
+            "This can cause blocking on the main thread.");
+        do_cancel_ = true;
+    }
+    thread_->join();
 }
 
 }  // namespace memory_advice
