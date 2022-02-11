@@ -6,6 +6,7 @@
 #include <random>
 
 #include <memory_advice/memory_advice.h>
+#include <memory_advice/memory_advice_debug.h>
 
 #define LOG_TAG "Hogger"
 #include "Log.h"
@@ -35,7 +36,7 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_memory_1advice_hogger_MainActivity_initMemoryAdvice(
         JNIEnv* env,
         jobject activity) {
-    auto init_error_code = MemoryAdvice_initDefaultParams(env, activity);
+    auto init_error_code = MemoryAdvice_init(env, activity);
     if (init_error_code == MEMORYADVICE_ERROR_OK) {
         MemoryAdvice_registerWatcher(callback_waittime_ms, callback, &TEST_USER_DATA);
         MemoryAdvice_registerWatcher(callback2_waittime_ms, callback2, &TEST_USER_DATA2);
@@ -54,14 +55,18 @@ Java_com_memory_1advice_hogger_MainActivity_getMemoryAdvice(
     MemoryAdvice_JsonSerialization_free(&advice);
     return ret;
 }
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_memory_1advice_hogger_MainActivity_getMemoryAvailable(
+        JNIEnv* env,
+        jobject activity) {
+    return MemoryAdvice_getAvailableMemory();
+}
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_memory_1advice_hogger_MainActivity_getMemoryState(
         JNIEnv* env,
         jobject activity) {
-    MemoryAdvice_MemoryState state = MEMORYADVICE_STATE_UNKNOWN;
-    MemoryAdvice_getMemoryState(&state);
-    return state;
+    return MemoryAdvice_getMemoryState();
 }
 
 static std::list<std::unique_ptr<char[]>> allocated_bytes_list;

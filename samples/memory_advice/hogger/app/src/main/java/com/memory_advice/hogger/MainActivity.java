@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
             // Post a task to update the memory on the UI thread.
             getWindow().getDecorView().post(() -> {
                     showMemoryAdvice(getMemoryAdvice(), getMemoryState());
+                    showMemoryAvailable(getMemoryAvailable());
                 });
         }
     };
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         showMemoryAdvice(getMemoryAdvice(), getMemoryState());
+        showMemoryAvailable(getMemoryAvailable());
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new CheckMemoryAdviceTask(), 0, 1000);
@@ -54,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    static final long BYTES_TO_ADD = 100000000; // 100MB
+    static final long BYTES_PER_MEGABYTE = 1000000;
+    static final long BYTES_TO_ADD = 100*BYTES_PER_MEGABYTE;
     long memory_allocated;
 
     public void onAllocate() {
@@ -104,12 +107,18 @@ public class MainActivity extends AppCompatActivity {
     private void showMemoryAllocated() {
         // Example of a call to a native method
         TextView tv = findViewById(R.id.allocated_textview);
-        tv.setText(String.format("%d MB", memory_allocated/1000000));
+        tv.setText(String.format("Memory Allocated: %d MB", memory_allocated/BYTES_PER_MEGABYTE));
+    }
+
+    private void showMemoryAvailable(long amount) {
+        TextView tv = findViewById(R.id.available_textview);
+        tv.setText(String.format("Memory Available: %d MB", amount/BYTES_PER_MEGABYTE));
     }
 
     public native int initMemoryAdvice();
     public native String getMemoryAdvice();
     public native int getMemoryState();
+    public native long getMemoryAvailable();
     public native boolean allocate(long bytes);
     public native boolean deallocate();
 
