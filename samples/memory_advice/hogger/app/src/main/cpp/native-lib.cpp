@@ -55,11 +55,11 @@ Java_com_memory_1advice_hogger_MainActivity_getMemoryAdvice(
     MemoryAdvice_JsonSerialization_free(&advice);
     return ret;
 }
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_memory_1advice_hogger_MainActivity_getMemoryAvailable(
+extern "C" JNIEXPORT jfloat JNICALL
+Java_com_memory_1advice_hogger_MainActivity_getPercentageMemoryAvailable(
         JNIEnv* env,
         jobject activity) {
-    return MemoryAdvice_getAvailableMemory();
+    return MemoryAdvice_getPercentageAvailableMemory();
 }
 
 extern "C" JNIEXPORT jint JNICALL

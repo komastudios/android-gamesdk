@@ -93,6 +93,11 @@ class MemoryAdviceImpl {
      * estimate for how much more memory is available, in bytes.
      */
     int64_t GetAvailableMemory();
+    /** @brief Evaluates information from the current metrics and returns an
+     * estimate for how much more memory is available, as a percentage of the
+     * total memory.
+     */
+    float GetPercentageAvailableMemory();
     /** @brief Reads the variable part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateVariableMetrics();

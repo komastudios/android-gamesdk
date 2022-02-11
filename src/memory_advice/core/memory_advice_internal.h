@@ -54,7 +54,7 @@ MemoryAdvice_ErrorCode Init();
 MemoryAdvice_ErrorCode Init(const char* params);
 MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice);
 MemoryAdvice_MemoryState GetMemoryState();
-int64_t GetAvailableMemory();
+float GetPercentageAvailableMemory();
 MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
                                        MemoryAdvice_WatcherCallback callback,
                                        void* user_data);
