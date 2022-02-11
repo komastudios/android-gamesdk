@@ -243,6 +243,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "508b7722_c4122276",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-02-11T22:24:00Z",
+      "side": 1,
+      "message": "Yes, with the buildflavor addition so it isn\u0027t the default I\u0027m fine with that.",
+      "parentUuid": "cc3d5543_e7ecdcb7",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5f01ff57_3cd086cd",
