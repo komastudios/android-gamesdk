@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "576ce880_17b0282c",
+        "filename": "samples/memory_advice/hogger/app/src/main/java/com/memory_advice/hogger/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-02-11T17:07:01Z",
+      "side": 1,
+      "message": "Formatting looks non standard with no spaces around operator *.\n\nI would expect to see 100 * BYTES_PER_MEGABYTE.\n\nAnd throughout.",
+      "range": {
+        "startLine": 60,
+        "startChar": 39,
+        "endLine": 60,
+        "endChar": 41
+      },
+      "revId": "1ad03849e608d30c85c201b57a1701578afc8cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
