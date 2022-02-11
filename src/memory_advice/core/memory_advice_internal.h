@@ -28,8 +28,9 @@ MemoryAdvice_ErrorCode Init(const char* params);
 MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice);
 MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state);
 MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate);
-MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
-                                  MemoryAdvice_WatcherCallback callback);
-MemoryAdvice_ErrorCode RemoveWatcher();
+MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
+                                       MemoryAdvice_WatcherCallback callback,
+                                       void* user_data);
+MemoryAdvice_ErrorCode UnregisterWatcher(MemoryAdvice_WatcherCallback callback);
 
 }  // namespace memory_advice

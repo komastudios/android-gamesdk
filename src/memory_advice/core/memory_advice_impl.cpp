@@ -90,6 +90,8 @@ int64_t MemoryAdviceImpl::GetAvailableMemory() {
 }
 
 Json::object MemoryAdviceImpl::GetAdvice() {
+    CheckCancelledWatchers();
+
     std::lock_guard<std::mutex> lock(advice_mutex_);
     double start_time = MillisecondsSinceEpoch();
     Json::object advice;
@@ -395,6 +397,55 @@ Json::object MemoryAdviceImpl::GenerateConstantMetrics() {
                                          .object_items()
                                          .at("constant")
                                          .object_items());
+}
+
+MemoryAdvice_ErrorCode MemoryAdviceImpl::RegisterWatcher(
+    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback,
+    void* user_data) {
+    std::lock_guard<std::mutex> guard(active_watchers_mutex_);
+    active_watchers_.push_back(std::make_unique<StateWatcher>(
+        this, callback, user_data, intervalMillis));
+    return MEMORYADVICE_ERROR_OK;
+}
+
+MemoryAdvice_ErrorCode MemoryAdviceImpl::UnregisterWatcher(
+    MemoryAdvice_WatcherCallback callback) {
+    // We can't simply erase the watcher because the callback thread might still
+    // be running which would mean blocking here for it to finish. So signal to
+    // the thread to exit and put the StateWatcher object on a cancelled list
+    // that is checked periodically.
+    std::lock_guard<std::mutex> guard(active_watchers_mutex_);
+    std::vector<WatcherContainer::iterator> to_move;
+    // Search for watchers with the same callback.
+    for (auto it = active_watchers_.begin(); it != active_watchers_.end();
+         ++it) {
+        if ((*it)->Callback() == callback) {
+            to_move.push_back(it);
+        }
+    }
+
+    if (to_move.empty()) return MEMORYADVICE_ERROR_WATCHER_NOT_FOUND;
+
+    std::lock_guard<std::mutex> guard2(cancelled_watchers_mutex_);
+    for (auto it : to_move) {
+        (*it)->Cancel();
+        cancelled_watchers_.push_back(
+            std::move(*it));  // Put StateWatcher on cancelled list.
+        active_watchers_.erase(it);
+    }
+    return MEMORYADVICE_ERROR_OK;
+}
+
+void MemoryAdviceImpl::CheckCancelledWatchers() {
+    std::lock_guard<std::mutex> guard(cancelled_watchers_mutex_);
+    auto it = cancelled_watchers_.begin();
+    while (it != cancelled_watchers_.end()) {
+        if (!(*it)->ThreadRunning())
+            it = cancelled_watchers_.erase(
+                it);  // Calls destructor on StateWatcher
+        else
+            ++it;
+    }
 }
 
 }  // namespace memory_advice
