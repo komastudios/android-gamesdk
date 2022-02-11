@@ -45,13 +45,15 @@ MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(
     return memory_advice::GetAdvice(advice);
 }
 
-MemoryAdvice_ErrorCode MemoryAdvice_setWatcher(
-    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback) {
-    return memory_advice::SetWatcher(intervalMillis, callback);
+MemoryAdvice_ErrorCode MemoryAdvice_registerWatcher(
+    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback,
+    void *user_data) {
+    return memory_advice::RegisterWatcher(intervalMillis, callback, user_data);
 }
 
-MemoryAdvice_ErrorCode MemoryAdvice_removeWatcher() {
-    return memory_advice::RemoveWatcher();
+MemoryAdvice_ErrorCode MemoryAdvice_unregisterWatcher(
+    MemoryAdvice_WatcherCallback callback) {
+    return memory_advice::UnregisterWatcher(callback);
 }
 
 MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate) {

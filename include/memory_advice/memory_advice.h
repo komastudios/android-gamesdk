@@ -69,9 +69,8 @@ typedef enum MemoryAdvice_ErrorCode {
         3,  ///< The provided lookup table was not a valid json object.
     MEMORYADVICE_ERROR_ADVISOR_PARAMETERS_INVALID =
         4,  ///< The provided advisor parameters was not a valid json object.
-    MEMORYADVICE_ERROR_WATCHER_ALREADY_SET =
-        5,  ///< SetWatcher function was called while there was already a
-            ///< watcher in place.
+    MEMORYADVICE_ERROR_WATCHER_NOT_FOUND =
+        5,  ///< UnregisterWatcher was called with an invalid callback.
     MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID =
         6,  ///< A correct TFLite model was not provided.
 } MemoryAdvice_ErrorCode;
@@ -102,7 +101,8 @@ typedef struct MemoryAdvice_JsonSerialization {
     void (*dealloc)(struct MemoryAdvice_JsonSerialization *);
 } MemoryAdvice_JsonSerialization;
 
-typedef void (*MemoryAdvice_WatcherCallback)(MemoryAdvice_MemoryState);
+typedef void (*MemoryAdvice_WatcherCallback)(MemoryAdvice_MemoryState state,
+                                             void *user_data);
 
 // Internal init function. Do not call directly.
 MemoryAdvice_ErrorCode MemoryAdvice_initDefaultParams_internal(JNIEnv *env,
@@ -210,8 +210,8 @@ MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(
 MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate);
 
 /**
- * @brief Sets a watcher that polls the Memory Advice library periodically, and
- * invokes the watcher callback when the memory state goes critical.
+ * @brief Registers a watcher that polls the Memory Advice library periodically,
+ * and invokes the watcher callback when the memory state goes critical.
  *
  * This function creates another thread that calls MemoryAdvice_getMemoryState
  * every `intervalMillis` milliseconds. If the returned state is not
@@ -222,15 +222,15 @@ MemoryAdvice_ErrorCode MemoryAdvice_getAvailableMemory(int64_t *estimate);
  * polled
  * @param callback the callback function that will be invoked if memory goes
  * critical
+ * @param user_data context to pass to the callback function
  *
  * @return MEMORYADVICE_ERROR_OK if successful,
  * @return MEMORYADVICE_ERROR_NOT_INITIALIZED if Memory Advice was not yet
  * initialized,
- * @return MEMORYADVICE_ERROR_WATCHER_ALREADY_SET if there's already a watcher
- * in place.
  */
-MemoryAdvice_ErrorCode MemoryAdvice_setWatcher(
-    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback);
+MemoryAdvice_ErrorCode MemoryAdvice_registerWatcher(
+    uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback,
+    void *user_data);
 
 /**
  * @brief Deallocate any memory owned by the json serialization.
@@ -245,14 +245,18 @@ inline void MemoryAdvice_JsonSerialization_free(
 }
 
 /**
- * @brief Removes the watcher that has been set by the MemoryAdvice_setWatcher
- * function
+ * @brief Removes all watchers with the given callback that were previously
+ * registered using
+ * {@link MemoryAdvice_registerWatcher}.
  *
  * @return MEMORYADVICE_ERROR_OK if successful,
  * @return MEMORYADVICE_ERROR_NOT_INITIALIZED if Memory Advice was not yet
  * initialized.
+ * @return MEMORYADVICE_ERROR_WATCHER_NOT_FOUND if the given callback wasn't
+ * previously registered.
  */
-MemoryAdvice_ErrorCode MemoryAdvice_removeWatcher();
+MemoryAdvice_ErrorCode MemoryAdvice_unregisterWatcher(
+    MemoryAdvice_WatcherCallback callback);
 
 #ifdef __cplusplus
 }  // extern "C" {
