@@ -59,9 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAllocate() {
         new Thread(() ->  {
-                allocate(BYTES_TO_ADD);
-                memory_allocated += BYTES_TO_ADD;
-                updateMemoryAllocated();
+                if (allocate(BYTES_TO_ADD)) {
+                    memory_allocated += BYTES_TO_ADD;
+                    updateMemoryAllocated();
+                }
             }).start();
     }
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     public native int initMemoryAdvice();
     public native String getMemoryAdvice();
     public native int getMemoryState();
-    public native void allocate(long bytes);
+    public native boolean allocate(long bytes);
     public native boolean deallocate();
 
 }

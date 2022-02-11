@@ -22,6 +22,7 @@
 #include "device_profiler.h"
 #include "metrics_provider.h"
 #include "predictor.h"
+#include "state_watcher.h"
 
 namespace memory_advice {
 
@@ -37,6 +38,12 @@ class MemoryAdviceImpl {
     Json::object device_profile_;
     Json::object build_;
     std::mutex advice_mutex_;
+
+    typedef std::vector<std::unique_ptr<StateWatcher>> WatcherContainer;
+    WatcherContainer active_watchers_;
+    std::mutex active_watchers_mutex_;
+    WatcherContainer cancelled_watchers_;
+    std::mutex cancelled_watchers_mutex_;
 
     MemoryAdvice_ErrorCode initialization_error_code_ = MEMORYADVICE_ERROR_OK;
 
@@ -64,6 +71,9 @@ class MemoryAdviceImpl {
     /** @brief Find a value in a JSON object, even when it is nested in
      * sub-dictionaries in the object. */
     Json GetValue(Json::object object, std::string key);
+    /** @brief Delete any watchers that have finished their thread of execution
+     */
+    void CheckCancelledWatchers();
 
    public:
     MemoryAdviceImpl(const char* params);
@@ -92,6 +102,15 @@ class MemoryAdviceImpl {
     /** @brief Reads the constant part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateConstantMetrics();
+    /** @brief Register watcher callback
+     */
+    MemoryAdvice_ErrorCode RegisterWatcher(
+        uint64_t intervalMillis, MemoryAdvice_WatcherCallback callback,
+        void* user_data);
+    /** @brief Unregister watcher callback
+     */
+    MemoryAdvice_ErrorCode UnregisterWatcher(
+        MemoryAdvice_WatcherCallback callback);
 
     MemoryAdvice_ErrorCode InitializationErrorCode() const {
         return initialization_error_code_;

@@ -10,16 +10,24 @@
 #define LOG_TAG "Hogger"
 #include "Log.h"
 
-void callback(MemoryAdvice_MemoryState state) {
-    ALOGE("State is: %d", state);
-    MemoryAdvice_removeWatcher();
+static int TEST_USER_DATA;
+
+void callback(MemoryAdvice_MemoryState state, void* context) {
+    assert (context == &TEST_USER_DATA);
+    ALOGI("State is: %d", state);
+    // Test unregistering and registering
+    MemoryAdvice_unregisterWatcher(callback);
+    MemoryAdvice_registerWatcher(1000, callback, &TEST_USER_DATA);
 }
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_memory_1advice_hogger_MainActivity_initMemoryAdvice(
         JNIEnv* env,
         jobject activity) {
-    return MemoryAdvice_initDefaultParams(env, activity);
+    auto init_error_code = MemoryAdvice_initDefaultParams(env, activity);
+    if (init_error_code == MEMORYADVICE_ERROR_OK)
+        MemoryAdvice_registerWatcher(1000, callback, &TEST_USER_DATA);
+    return init_error_code;
 }
 
 extern "C" JNIEXPORT jstring JNICALL
@@ -31,7 +39,6 @@ Java_com_memory_1advice_hogger_MainActivity_getMemoryAdvice(
     ALOGE("Advice is: %s", advice.json);
     jstring ret = env->NewStringUTF(advice.json);
     MemoryAdvice_JsonSerialization_free(&advice);
-    MemoryAdvice_setWatcher(1000, callback);
     return ret;
 }
 
@@ -54,16 +61,22 @@ static void FillRandom(char* bytes, size_t size) {
     // Don't worry about filling the last few bytes if size isn't a multiple of 4.
 }
 
-extern "C" JNIEXPORT void JNICALL
+extern "C" JNIEXPORT bool JNICALL
 Java_com_memory_1advice_hogger_MainActivity_allocate(
         JNIEnv* env,
         jobject activity,
         jlong nbytes) {
     std::lock_guard<std::mutex> guard(allocated_mutex);
-    auto allocated_bytes = new char[nbytes];
-    // Note that without setting the memory, the available memory figure doesn't go down.
-    FillRandom(allocated_bytes, nbytes);
-    allocated_bytes_list.push_back(std::unique_ptr<char[]> {allocated_bytes });
+    try {
+        auto allocated_bytes = new char[nbytes];
+        // Note that without setting the memory, the available memory figure doesn't go down.
+        FillRandom(allocated_bytes, nbytes);
+        allocated_bytes_list.push_back(std::unique_ptr<char[]>{allocated_bytes});
+        return true;
+    } catch(std::bad_alloc& ex) {
+        ALOGE("Can't allocate any more memory");
+        return false;
+    }
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
