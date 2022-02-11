@@ -16,6 +16,23 @@
       "message": "Might want to switch the commit message to just reference Google Play Games instead of battlestar, not sure we are using that name at all externally.",
       "revId": "5193b7effb4c6fe7247ac8f29796377eb2840230",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "861d4d69_eb5e32e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-02-11T19:15:30Z",
+      "side": 1,
+      "message": "Adding Will, also, not sure why presubit is failing at the moment.",
+      "revId": "5193b7effb4c6fe7247ac8f29796377eb2840230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
