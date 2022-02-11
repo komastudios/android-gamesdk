@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6ab3dbd_33967b8a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-11T17:05:28Z",
+      "side": 1,
+      "message": "Yeah, at least one of them could be removed, I think.",
+      "parentUuid": "d93efdb2_dd254969",
+      "revId": "82ba46efc59c44e4972a4816cbb4b23e57b73846",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "051867a1_aa64b084",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-02-11T17:00:17Z",
       "side": 1,
       "message": "You could early-out to avoid the staircasing.\n\n if (advice.find(\"metrics\") \u003d\u003d advice.end()) {\n     return 0.0f;\n }\n \n //......",
+      "revId": "82ba46efc59c44e4972a4816cbb4b23e57b73846",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4206acd6_a07f7059",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-11T17:05:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "051867a1_aa64b084",
       "revId": "82ba46efc59c44e4972a4816cbb4b23e57b73846",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
