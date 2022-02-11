@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d93efdb2_dd254969",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-02-11T17:00:17Z",
+      "side": 1,
+      "message": "LGTM. That\u0027s a lot of layers to drill!",
+      "revId": "82ba46efc59c44e4972a4816cbb4b23e57b73846",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "051867a1_aa64b084",
+        "filename": "src/memory_advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-02-11T17:00:17Z",
+      "side": 1,
+      "message": "You could early-out to avoid the staircasing.\n\n if (advice.find(\"metrics\") \u003d\u003d advice.end()) {\n     return 0.0f;\n }\n \n //......",
+      "revId": "82ba46efc59c44e4972a4816cbb4b23e57b73846",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
