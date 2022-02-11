@@ -22,6 +22,30 @@
       },
       "revId": "1ad03849e608d30c85c201b57a1701578afc8cdd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89db03e2_49569542",
+        "filename": "samples/memory_advice/hogger/app/src/main/java/com/memory_advice/hogger/MainActivity.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-11T17:10:06Z",
+      "side": 1,
+      "message": "Yes, you\u0027re right. I ran \u0027gradle format\u0027 but it looks like the sample aren\u0027t included. I\u0027ll follow up in a separate CL since the formatting changes would make the other changes here difficult to find.",
+      "parentUuid": "576ce880_17b0282c",
+      "range": {
+        "startLine": 60,
+        "startChar": 39,
+        "endLine": 60,
+        "endChar": 41
+      },
+      "revId": "1ad03849e608d30c85c201b57a1701578afc8cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
