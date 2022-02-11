@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
             // Post a task to update the memory on the UI thread.
             getWindow().getDecorView().post(() -> {
                     showMemoryAdvice(getMemoryAdvice(), getMemoryState());
-                    showMemoryAvailable(getMemoryAvailable());
+                    showMemoryAvailable(getPercentageMemoryAvailable());
                 });
         }
     };
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         showMemoryAdvice(getMemoryAdvice(), getMemoryState());
-        showMemoryAvailable(getMemoryAvailable());
+        showMemoryAvailable(getPercentageMemoryAvailable());
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new CheckMemoryAdviceTask(), 0, 1000);
@@ -110,15 +110,15 @@ public class MainActivity extends AppCompatActivity {
         tv.setText(String.format("Memory Allocated: %d MB", memory_allocated/BYTES_PER_MEGABYTE));
     }
 
-    private void showMemoryAvailable(long amount) {
+    private void showMemoryAvailable(float percentage) {
         TextView tv = findViewById(R.id.available_textview);
-        tv.setText(String.format("Memory Available: %d MB", amount/BYTES_PER_MEGABYTE));
+        tv.setText(String.format("Memory Available: %.2f%%", percentage));
     }
 
     public native int initMemoryAdvice();
     public native String getMemoryAdvice();
     public native int getMemoryState();
-    public native long getMemoryAvailable();
+    public native float getPercentageMemoryAvailable();
     public native boolean allocate(long bytes);
     public native boolean deallocate();
 

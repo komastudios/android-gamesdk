@@ -121,13 +121,14 @@ MemoryAdvice_MemoryState MemoryAdvice_getMemoryState();
 
 /**
  * @brief Calculates an estimate for the amount of memory that can safely be
- * allocated, in bytes.
+ * allocated, as a percentage of the total memory.
  *
- * @return A positive number with an estimate of the number of bytes available.
+ * @return A positive number between 0 and 100 with an estimate of the
+ * percentage memory available.
  * @return MEMORYADVICE_ERROR_NOT_INITIALIZED (a negative number) if Memory
  * Advice was not yet initialized.
  */
-int64_t MemoryAdvice_getAvailableMemory();
+float MemoryAdvice_getPercentageAvailableMemory();
 
 /**
  * @brief Registers a watcher that polls the Memory Advice library periodically,

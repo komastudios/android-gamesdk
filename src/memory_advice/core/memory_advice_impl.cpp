@@ -78,6 +78,7 @@ MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
 }
 
 int64_t MemoryAdviceImpl::GetAvailableMemory() {
+    // TODO(bkaya): this is not a reliable/available number currently
     Json::object advice = GetAdvice();
     if (advice.find("metrics") != advice.end()) {
         Json::object metrics = advice["metrics"].object_items();
@@ -87,6 +88,19 @@ int64_t MemoryAdviceImpl::GetAvailableMemory() {
         }
     }
     return 0L;
+}
+
+float MemoryAdviceImpl::GetPercentageAvailableMemory() {
+    Json::object advice = GetAdvice();
+    if (advice.find("metrics") != advice.end()) {
+        Json::object metrics = advice["metrics"].object_items();
+        if (metrics.find("predictedUsage") != metrics.end()) {
+            return 100.0f *
+                   (1.0f - static_cast<float>(
+                               metrics["predictedUsage"].number_value()));
+        }
+    }
+    return 0.0f;
 }
 
 Json::object MemoryAdviceImpl::GetAdvice() {
