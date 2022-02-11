@@ -148,6 +148,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cee83ab4_4eb90377",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-11T22:14:16Z",
+      "side": 1,
+      "message": "Marked as resolved. Now we are using games-activity:1.1.0-beta03.",
+      "parentUuid": "6dab363c_908c4837",
+      "range": {
+        "startLine": 85,
+        "startChar": 56,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "781d07e9_c40b1999",
@@ -185,6 +209,30 @@
       "side": 1,
       "message": "Indeed it will be included via GMaven dependency. The plan of make the Input SDK public to GMaven is heads up, right now we are only waiting for the Unity version to be ready to make it public.\n\nWe can wait for androidx.games:games-activity:1.1.0-beta03 and inputmapping-1.0.0-beta to be available on GMaven before submitting this CL.",
       "parentUuid": "781d07e9_c40b1999",
+      "range": {
+        "startLine": 90,
+        "startChar": 52,
+        "endLine": 90,
+        "endChar": 79
+      },
+      "revId": "97018144825f63bbb97955e8f673ed529083427e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc3d5543_e7ecdcb7",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-11T22:14:16Z",
+      "side": 1,
+      "message": "Input SDK will take a couple more weeks to be released on GMaven. Can we submit this CL as is and submit an update when the Input SDK gets released?",
+      "parentUuid": "eed6ef86_18fe3ce0",
       "range": {
         "startLine": 90,
         "startChar": 52,
