@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21c0d7b8_6118b500",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-12T01:05:02Z",
+      "side": 1,
+      "message": "PTAL\n\nReference: https://developer.android.com/ndk/guides/abis#gradle",
+      "revId": "54b58ba2eef81907ea0d9565d68116be39f2316f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
