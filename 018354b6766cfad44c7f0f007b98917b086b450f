@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07fae674_214496b2",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-14T11:25:48Z",
+      "side": 1,
+      "message": "Will the sample still build without this artifact in GMaven?",
+      "revId": "018354b6766cfad44c7f0f007b98917b086b450f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
