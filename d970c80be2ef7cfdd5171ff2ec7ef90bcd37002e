@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "75a78565_0cb359ec",
+        "filename": "samples/memory_advice/hogger/app/src/main/cpp/native-lib.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-14T10:26:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ce9c5b3_62f09389",
+      "revId": "d970c80be2ef7cfdd5171ff2ec7ef90bcd37002e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ba05b64_1d4739e8",
@@ -48,6 +66,30 @@
       "writtenOn": "2022-02-11T17:09:34Z",
       "side": 1,
       "message": "Line break really needed here?",
+      "range": {
+        "startLine": 41,
+        "startChar": 7,
+        "endLine": 42,
+        "endChar": 25
+      },
+      "revId": "d970c80be2ef7cfdd5171ff2ec7ef90bcd37002e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "046e80e4_d46c0176",
+        "filename": "src/memory_advice/core/state_watcher.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-14T10:26:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ba05b64_1d4739e8",
       "range": {
         "startLine": 41,
         "startChar": 7,
