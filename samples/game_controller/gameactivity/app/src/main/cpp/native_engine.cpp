@@ -24,6 +24,8 @@
 
 #include "paddleboat/paddleboat.h"
 
+#include <android/window.h>
+
 // verbose debug logs on?
 #define VERBOSE_LOGGING 1
 
@@ -35,6 +37,11 @@
 
 // max # of GL errors to print before giving up
 #define MAX_GL_ERRORS 200
+
+static bool all_motion_filter(const GameActivityMotionEvent* event) {
+    // Process all motion events
+    return true;
+}
 
 static NativeEngine *_singleton = NULL;
 
@@ -59,6 +66,8 @@ NativeEngine::NativeEngine(struct android_app *app) {
     mImGuiManager = NULL;
     memset(&mState, 0, sizeof(mState));
     mIsFirstFrame = true;
+
+    app->motionEventFilter = all_motion_filter;
 
     if (app->savedState != NULL) {
         // we are starting with previously saved state -- restore it
@@ -180,6 +189,13 @@ void NativeEngine::GameLoop() {
     mApp->userData = this;
     mApp->onAppCmd = _handle_cmd_proxy;
     //mApp->onInputEvent = _handle_input_proxy;
+
+    auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
+    GameActivity_setWindowFlags(activity,
+                                AWINDOW_FLAG_KEEP_SCREEN_ON | AWINDOW_FLAG_TURN_SCREEN_ON |
+                                AWINDOW_FLAG_FULLSCREEN |
+                                AWINDOW_FLAG_SHOW_WHEN_LOCKED,
+                                0);
 
     while (1) {
         int events;
