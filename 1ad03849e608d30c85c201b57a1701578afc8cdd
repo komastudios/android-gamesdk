@@ -41,6 +41,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf143503_3da7432a",
+        "filename": "include/memory_advice/memory_advice.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-14T10:49:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b8209145_952201b9",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 3
+      },
+      "revId": "1ad03849e608d30c85c201b57a1701578afc8cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4bed4a23_b950d7c3",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-02-14T10:39:42Z",
       "side": 1,
       "message": "Remove this comment?",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 3
+      },
+      "revId": "1ad03849e608d30c85c201b57a1701578afc8cdd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bbfe30e_574aa9bf",
+        "filename": "include/memory_advice/memory_advice_debug.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-14T10:49:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4bed4a23_b950d7c3",
       "range": {
         "startLine": 17,
         "startChar": 0,
