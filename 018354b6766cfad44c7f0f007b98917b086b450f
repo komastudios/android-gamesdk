@@ -16,6 +16,24 @@
       "message": "Will the sample still build without this artifact in GMaven?",
       "revId": "018354b6766cfad44c7f0f007b98917b086b450f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "222362f1_97aabe24",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-14T19:41:41Z",
+      "side": 1,
+      "message": "The mobile build variant (default) will still build, however, the play Games PC won\u0027t build until the Input SDK gets released to GMaven.\n\nI plan to patch the app when the Input SDK is ready, but it will take a couple more weeks.\n\nPlease let me know if we should wait until all dependencies are released to submit this CL.",
+      "parentUuid": "07fae674_214496b2",
+      "revId": "018354b6766cfad44c7f0f007b98917b086b450f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
