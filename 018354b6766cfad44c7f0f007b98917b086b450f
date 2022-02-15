@@ -34,6 +34,24 @@
       "parentUuid": "07fae674_214496b2",
       "revId": "018354b6766cfad44c7f0f007b98917b086b450f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2feffb29_63dde604",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-02-15T10:46:40Z",
+      "side": 1,
+      "message": "Thanks for confirming. I think we can submit this before the GMaven artifacts are available.",
+      "parentUuid": "222362f1_97aabe24",
+      "revId": "018354b6766cfad44c7f0f007b98917b086b450f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
