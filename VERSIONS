@@ -5,11 +5,22 @@
 #
 # Nickname      JetPackName             ProjectName    Version  JetPackSubscript
 #
+<<<<<<< HEAD   (4f851e Merge cherrypicks of [1966679] into android-games-sdk-releas)
 AGDK            NA                      NA             2021.0.0
 swappy          games-frame-pacing      None           1.10.0   rc01
+=======
+AGDK            NA                      NA             2022.0.0
+swappy          games-frame-pacing      None           1.10.0
+>>>>>>> BRANCH (9f48ea Merge "AGDK: update versions for next release")
 tuningfork      games-performance-tuner None           1.5.0
 oboe            oboe                    None           1.0.0
+<<<<<<< HEAD   (4f851e Merge cherrypicks of [1966679] into android-games-sdk-releas)
 game_activity   games-activity          GameActivity   1.1.0    rc01
 game_text_input games-text-input        GameTextInput  1.1.0
 paddleboat      games-controller        GameController 1.1.0    rc01
+=======
+game_activity   games-activity          GameActivity   1.1.0
+game_text_input games-text-input        GameTextInput  1.1.0
+paddleboat      games-controller        GameController 1.1.0
+>>>>>>> BRANCH (9f48ea Merge "AGDK: update versions for next release")
 memory_advice   games-memory-advice     None           1.0.0    alpha01

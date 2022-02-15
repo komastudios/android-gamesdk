@@ -33,7 +33,6 @@ using namespace json11;
 extern const char* parameters_string;
 
 static MemoryAdviceImpl* s_impl;
-static std::unique_ptr<StateWatcher> s_watcher;
 
 MemoryAdvice_ErrorCode Init(const char* params) {
     if (s_impl != nullptr) return MEMORYADVICE_ERROR_ALREADY_INITIALIZED;
@@ -64,32 +63,30 @@ MemoryAdvice_ErrorCode GetAdvice(MemoryAdvice_JsonSerialization* advice) {
     return MEMORYADVICE_ERROR_OK;
 }
 
-MemoryAdvice_ErrorCode GetMemoryState(MemoryAdvice_MemoryState* state) {
-    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    *state = s_impl->GetMemoryState();
-    return MEMORYADVICE_ERROR_OK;
+MemoryAdvice_MemoryState GetMemoryState() {
+    if (s_impl == nullptr)
+        return static_cast<MemoryAdvice_MemoryState>(
+            MEMORYADVICE_ERROR_NOT_INITIALIZED);
+    return s_impl->GetMemoryState();
 }
 
-MemoryAdvice_ErrorCode GetAvailableMemory(int64_t* estimate) {
-    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    *estimate = s_impl->GetAvailableMemory();
-    return MEMORYADVICE_ERROR_OK;
+float GetPercentageAvailableMemory() {
+    if (s_impl == nullptr)
+        return static_cast<float>(MEMORYADVICE_ERROR_NOT_INITIALIZED);
+    return s_impl->GetPercentageAvailableMemory();
 }
 
-MemoryAdvice_ErrorCode SetWatcher(uint64_t intervalMillis,
-                                  MemoryAdvice_WatcherCallback callback) {
+MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
+                                       MemoryAdvice_WatcherCallback callback,
+                                       void* user_data) {
     if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    if (s_watcher.get() != nullptr)
-        return MEMORYADVICE_ERROR_WATCHER_ALREADY_SET;
-    s_watcher =
-        std::make_unique<StateWatcher>(s_impl, callback, intervalMillis);
-    return MEMORYADVICE_ERROR_OK;
+    return s_impl->RegisterWatcher(intervalMillis, callback, user_data);
 }
 
-MemoryAdvice_ErrorCode RemoveWatcher() {
+MemoryAdvice_ErrorCode UnregisterWatcher(
+    MemoryAdvice_WatcherCallback callback) {
     if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
-    if (s_watcher.get() != nullptr) s_watcher.reset();
-    return MEMORYADVICE_ERROR_OK;
+    return s_impl->UnregisterWatcher(callback);
 }
 
 }  // namespace memory_advice

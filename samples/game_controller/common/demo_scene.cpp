@@ -30,7 +30,6 @@ extern "C" {
 }
 
 #define ARRAY_COUNTOF(array) (sizeof(array) / sizeof(array[0]))
-#define LOG_TAG "DemoScene"
 
 namespace {
 
@@ -753,10 +752,10 @@ void DemoScene::RenderPanel_MotionTab(const int32_t controllerIndex,
         motionData[5] = mGyroscopeData[2];
     }
 
-    if (ImGui::BeginTable("##motiontable", 2, ImGuiTableFlags_ColumnsWidthFixed,
+    if (ImGui::BeginTable("##motiontable", 2, ImGuiTableColumnFlags_WidthFixed,
                           ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 4.5f))) {
-        ImGui::TableSetupColumn("Accelerometer   ", ImGuiTableColumnFlags_WidthAutoResize);
-        ImGui::TableSetupColumn("Gyroscope  ", ImGuiTableColumnFlags_WidthAutoResize);
+        ImGui::TableSetupColumn("Accelerometer   ", 0);
+        ImGui::TableSetupColumn("Gyroscope  ", 0);
         ImGui::TableHeadersRow();
         for (size_t i = 0; i < 4; ++i) {
             ImGui::TableNextRow();

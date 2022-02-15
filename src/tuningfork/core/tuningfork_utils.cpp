@@ -37,6 +37,7 @@
 #include <android/asset_manager_jni.h>
 
 #include "Log.h"
+#include "apk_utils.h"
 #include "jni/jni_wrap.h"
 
 namespace tuningfork {
@@ -54,38 +55,8 @@ std::string Base16(const std::vector<unsigned char>& bytes) {
 
 namespace apk_utils {
 
-class NativeAsset {
-    AAsset* asset;
-
-   public:
-    NativeAsset(const char* name) {
-        auto java_asset_manager = gamesdk::jni::AppContext().getAssets();
-        AAssetManager* mgr = AAssetManager_fromJava(
-            gamesdk::jni::Env(), (jobject)java_asset_manager.obj_);
-        asset = AAssetManager_open(mgr, name, AASSET_MODE_BUFFER);
-        if (asset == nullptr) {
-            ALOGW("Can't find %s in APK", name);
-        }
-    }
-    NativeAsset(NativeAsset&& a) : asset(a.asset) { a.asset = nullptr; }
-    NativeAsset& operator=(NativeAsset&& a) {
-        asset = a.asset;
-        a.asset = nullptr;
-        return *this;
-    }
-    NativeAsset(const NativeAsset& a) = delete;
-    NativeAsset& operator=(const NativeAsset& a) = delete;
-    ~NativeAsset() {
-        if (asset != nullptr) {
-            AAsset_close(asset);
-        }
-    }
-    bool IsValid() const { return asset != nullptr; }
-    operator AAsset*() { return asset; }
-};
-
 bool GetAssetAsSerialization(const char* name, ProtobufSerialization& out) {
-    NativeAsset asset(name);
+    ::apk_utils::NativeAsset asset(name);
     if (!asset.IsValid()) return false;
     uint64_t size = AAsset_getLength64(asset);
     out.resize(size);

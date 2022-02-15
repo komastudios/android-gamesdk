@@ -60,7 +60,7 @@ if (buildScript) {
 def versions = new LibraryVersions(project.rootProject.file('VERSIONS').getPath())
 
 ext.getAGDKZipName = { ->
-    return "agdk-libraries-"+ versions["AGDK"].version + ".zip"
+    return "agdk-libraries-"+ versions["AGDK"].version + (isExpressPackage() ? "_express" : "") + ".zip"
 }
 
 def getGitCommit() {
@@ -121,7 +121,9 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
-    .setUsesTensorflow()
+        .setUsesTensorflow()
+        .setMinimumNdkVersion(20)
+        .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
@@ -337,6 +339,7 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     def buildKey = buildInfo.buildKey
     def cmakeFolder = joinPath(getTempPath(), buildKey, '.cmake', libraryName)
     def buildFolder = prefabBuildFolder(outFolder)
+    def assetsFolder = joinPath(buildFolder, 'assets')
     def prefabRoot = prefabDir(outFolder, libraryName)
     def sharedLibBuildFolder = joinPath(prefabRoot, 'libs',
             'android.' + buildKey)
@@ -350,10 +353,7 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     def headerFolder = './include/' + libraryName
     def commonHeaderFolder = './include/common'
 
-    // TODO: including the dynamic library
-    // errors because no proper library can be found for module swappy (the shared version),
-    // probably because we're using c++_static in samples?
-    def buildSharedLibrary = false
+    def buildSharedLibrary = true
     def buildStaticLibrary = true
 
     // 1. Copy dynamic library
@@ -426,6 +426,15 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     if (buildStaticLibrary) {
         def jsonStaticModuleDescription = new File(joinPath(buildFolder, 'prefab', 'modules', libraryName + '_static', 'module.json'))
         jsonStaticModuleDescription.text = '{"library_name": "lib' + libraryName + '", "export_libraries": []}'
+    }
+    // 6. Create assets folder
+    if (library.getAssetsDirectory() != null) {
+        copy {
+            from file(library.getAssetsDirectory())
+            include "*.*"
+            into file(assetsFolder)
+            includeEmptyDirs = false
+        }
     }
 }
 
@@ -767,13 +776,36 @@ Use buildLocal, buildSpecific or one of the packaging tasks.
     }
 }
 
+<<<<<<< HEAD   (4f851e Merge cherrypicks of [1966679] into android-games-sdk-releas)
+=======
+def isExpressPackage() {
+    return project.hasProperty("express")
+}
+
+def getToolchainSet() {
+    if (isExpressPackage()) {
+        return ToolchainSet.EXPRESS
+    } else {
+        return ToolchainSet.ALL
+    }
+}
+
+def getAarToolchainSet() {
+    if (isExpressPackage()) {
+        return ToolchainSet.EXPRESS_AAR
+    } else {
+        return ToolchainSet.AAR
+    }
+}
+
+>>>>>>> BRANCH (9f48ea Merge "AGDK: update versions for next release")
 task buildAll(type: BuildTask) {
     ext.flattenLibs = false
-    ext.withSharedLibs = true
+    ext.withSharedLibs = !isExpressPackage()
     ext.withStaticLibs = true
     ext.withFullBuildKey = true
     ext.nativeBuild = { ->
-        buildNativeLibraries(filterNativeLibraries(allLibraries), getBuildType()) }
+        buildNativeLibraries(filterNativeLibraries(allLibraries), getBuildType(), getToolchainSet()) }
 }
 
 task buildUnity(type: BuildTask) {
@@ -858,7 +890,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 // Patch aar with native libraries.
                 // Use a temporary dir to avoid pollution with other prefab libraries.
                 def tempPrefabDir = getPackageName()+"_"+library.hybridProjectDir
-                buildNativeLibraries([library], getBuildType(), ToolchainSet.AAR).each { buildInfo ->
+                buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
                     copyNativeLibraryToPrefabDir(buildInfo, tempPrefabDir, library)
                     copyHybridClassesFromAar(tempPrefabDir, library, true)
                 }
@@ -917,7 +949,7 @@ task buildAarStructure {
 
         // Build native libraries, and add them to the AAR
         nativeLibraries.each { library ->
-            buildNativeLibraries([library], getBuildType(), ToolchainSet.AAR).each { buildInfo ->
+            buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
                 copyNativeLibraryToPrefabDir(buildInfo, packageName, library)
                 if (library.isHybridLibrary()) {
                     copyHybridClassesFromAar(packageName, library, true)

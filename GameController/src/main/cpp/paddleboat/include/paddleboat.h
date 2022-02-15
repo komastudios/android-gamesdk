@@ -400,11 +400,15 @@ enum Paddleboat_Ignored_Buttons {
  * @brief Battery status of a controller
  */
 enum Paddleboat_BatteryStatus {
-    PADDLEBOAT_CONTROLLER_BATTERY_UNKNOWN = 0, ///< Battery status is unknown
-    PADDLEBOAT_CONTROLLER_BATTERY_CHARGING = 1, ///< Controller battery is charging
-    PADDLEBOAT_CONTROLLER_BATTERY_DISCHARGING = 2, ///< Controller battery is discharging
-    PADDLEBOAT_CONTROLLER_BATTERY_NOT_CHARGING = 3, ///< Controller battery is not charging
-    PADDLEBOAT_CONTROLLER_BATTERY_FULL = 4 ///< Controller battery is completely charged
+    PADDLEBOAT_CONTROLLER_BATTERY_UNKNOWN = 0,  ///< Battery status is unknown
+    PADDLEBOAT_CONTROLLER_BATTERY_CHARGING =
+        1,  ///< Controller battery is charging
+    PADDLEBOAT_CONTROLLER_BATTERY_DISCHARGING =
+        2,  ///< Controller battery is discharging
+    PADDLEBOAT_CONTROLLER_BATTERY_NOT_CHARGING =
+        3,  ///< Controller battery is not charging
+    PADDLEBOAT_CONTROLLER_BATTERY_FULL =
+        4  ///< Controller battery is completely charged
 };
 
 /**
@@ -452,18 +456,19 @@ enum Paddleboat_ControllerButtonLayout {
  * ::Paddleboat_setControllerLight
  */
 enum Paddleboat_LightType {
-    PADDLEBOAT_LIGHT_PLAYER_NUMBER = 0, ///< Light is a player index,
-                                        ///< `lightData` is the player number
-    PADDLEBOAT_LIGHT_RGB = 1 ///< Light is a color light,
-                             ///< `lightData` is a ARGB (8888) light value.
+    PADDLEBOAT_LIGHT_PLAYER_NUMBER = 0,  ///< Light is a player index,
+                                         ///< `lightData` is the player number
+    PADDLEBOAT_LIGHT_RGB = 1             ///< Light is a color light,
+                              ///< `lightData` is a ARGB (8888) light value.
 };
 
 /**
- * @brief The type of motion data being reported in a Paddleboat_Motion_Data structure
+ * @brief The type of motion data being reported in a Paddleboat_Motion_Data
+ * structure
  */
 enum Paddleboat_Motion_Type {
-    PADDLEBOAT_MOTION_ACCELEROMETER = 0, ///< Accelerometer motion data
-    PADDLEBOAT_MOTION_GYROSCOPE = 1 ///< Gyroscope motion data
+    PADDLEBOAT_MOTION_ACCELEROMETER = 0,  ///< Accelerometer motion data
+    PADDLEBOAT_MOTION_GYROSCOPE = 1       ///< Gyroscope motion data
 };
 
 /**
@@ -500,13 +505,16 @@ enum Paddleboat_Remap_Addition_Mode {
 };
 
 /**
- * @brief A structure that describes the current battery state of a controller. This structure
- * will only be populated if a controller has `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
+ * @brief A structure that describes the current battery state of a controller.
+ * This structure will only be populated if a controller has
+ * `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
  * `Paddleboat_Controller_Info.controllerFlags`
  */
 typedef struct Paddleboat_Controller_Battery {
-    Paddleboat_BatteryStatus batteryStatus; /** @brief The current status of the battery */
-    float batteryLevel; /** @brief The current charge level of the battery, from 0.0 to 1.0 */
+    Paddleboat_BatteryStatus
+        batteryStatus;  /** @brief The current status of the battery */
+    float batteryLevel; /** @brief The current charge level of the battery, from
+                           0.0 to 1.0 */
 } Paddleboat_Controller_Battery;
 
 /**
@@ -580,8 +588,8 @@ typedef struct Paddleboat_Controller_Data {
      */
     Paddleboat_Controller_Pointer virtualPointer;
     /**
-     * @brief Battery status. This structure will only be populated if the controller
-     * has `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
+     * @brief Battery status. This structure will only be populated if the
+     * controller has `PADDLEBOAT_CONTROLLER_FLAG_BATTERY` set in
      * `Paddleboat_Controller_Info.controllerFlags`
      */
     Paddleboat_Controller_Battery battery;
@@ -740,18 +748,21 @@ typedef void (*Paddleboat_MouseStatusCallback)(
 
 /**
  * @brief Signature of a function that can be passed to
- * ::Paddleboat_setMotionDataCallback to receive information about motion data events
+ * ::Paddleboat_setMotionDataCallback to receive information about motion data
+ events
  * sent by connected controllers
 
  * @param controllerIndex Index of the controller reporting the motion event,
  * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
- * @param motionData The motion data. Pointer is only valid until the callback returns.
+ * @param motionData The motion data. Pointer is only valid until the callback
+ returns.
  * @param userData The value of the userData parameter passed
  * to ::Paddleboat_setMotionDataCallback
  *
  */
-typedef void (*Paddleboat_MotionDataCallback)(const int32_t controllerIndex,
-    const Paddleboat_Motion_Data *motionData, void *userData);
+typedef void (*Paddleboat_MotionDataCallback)(
+    const int32_t controllerIndex, const Paddleboat_Motion_Data *motionData,
+    void *userData);
 
 /**
  * @brief Initialize Paddleboat, constructing internal resources via JNI. This

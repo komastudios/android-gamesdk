@@ -104,9 +104,9 @@ void Java_com_google_android_games_paddleboat_GameControllerManager_onController
 
 void Java_com_google_android_games_paddleboat_GameControllerManager_onMotionData(
     JNIEnv *env, jobject gcmObject, jint deviceId, jint motionType,
-        jlong timestamp, jfloat dataX, jfloat dataY, jfloat dataZ) {
-    paddleboat::GameControllerManager::onMotionData(deviceId, motionType,
-        timestamp, dataX, dataY, dataZ);
+    jlong timestamp, jfloat dataX, jfloat dataY, jfloat dataZ) {
+    paddleboat::GameControllerManager::onMotionData(
+        deviceId, motionType, timestamp, dataX, dataY, dataZ);
 }
 
 void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseConnected(
@@ -307,15 +307,13 @@ Paddleboat_ErrorCode GameControllerManager::initMethods(JNIEnv *env) {
         {GCM_SETNATIVEREADY_METHOD_NAME, VOID_METHOD_SIGNATURE,
          &mSetNativeReadyMethodId},
         {GCM_SETREPORTMOTIONEVENTS_METHOD_NAME, VOID_METHOD_SIGNATURE,
-         &mSetReportMotionEventsMethodId}
-    };
+         &mSetReportMotionEventsMethodId}};
     const size_t methodTableCount = ARRAY_COUNTOF(methodTable);
 
     for (size_t i = 0; i < methodTableCount; ++i) {
         const MethodTableEntry &entry = methodTable[i];
-        jmethodID methodID = env->GetMethodID(mGameControllerClass,
-                                              entry.methodName,
-                                              entry.methodSignature);
+        jmethodID methodID = env->GetMethodID(
+            mGameControllerClass, entry.methodName, entry.methodSignature);
         if (methodID == NULL) {
             ALOGE("Failed to find %s init method", entry.methodName);
             return PADDLEBOAT_ERROR_INIT_GCM_FAILURE;
@@ -744,7 +742,7 @@ void GameControllerManager::update(JNIEnv *env) {
         // If a motion data callback is registered, tell the managed side to
         // start reporting motion event data
         env->CallVoidMethod(gcm->mGameControllerObject,
-            gcm->mSetReportMotionEventsMethodId);
+                            gcm->mSetReportMotionEventsMethodId);
         gcm->mMotionEventReporting = true;
     }
 
@@ -947,16 +945,15 @@ bool GameControllerManager::isLightTypeSupported(
     const Paddleboat_LightType lightType) {
     bool isSupported = false;
 
-    if (mGameControllerObject != NULL &&
-        mSetLightMethodId != NULL) {
+    if (mGameControllerObject != NULL && mSetLightMethodId != NULL) {
         if (lightType == PADDLEBOAT_LIGHT_RGB) {
             if ((controllerInfo.controllerFlags &
-                    PADDLEBOAT_CONTROLLER_FLAG_LIGHT_RGB) != 0) {
+                 PADDLEBOAT_CONTROLLER_FLAG_LIGHT_RGB) != 0) {
                 isSupported = true;
             }
         } else if (lightType == PADDLEBOAT_LIGHT_PLAYER_NUMBER) {
             if ((controllerInfo.controllerFlags &
-                    PADDLEBOAT_CONTROLLER_FLAG_LIGHT_PLAYER) != 0) {
+                 PADDLEBOAT_CONTROLLER_FLAG_LIGHT_PLAYER) != 0) {
                 isSupported = true;
             }
         }
@@ -979,10 +976,9 @@ Paddleboat_ErrorCode GameControllerManager::setControllerLight(
                 if (gcm->isLightTypeSupported(controllerInfo, lightType)) {
                     const jint jLightType = static_cast<jint>(lightType);
                     const jint jLightData = static_cast<jint>(lightData);
-                    env->CallVoidMethod(gcm->mGameControllerObject,
-                                        gcm->mSetLightMethodId,
-                                        controllerInfo.deviceId, jLightType,
-                                        jLightData);
+                    env->CallVoidMethod(
+                        gcm->mGameControllerObject, gcm->mSetLightMethodId,
+                        controllerInfo.deviceId, jLightType, jLightData);
                 } else {
                     errorCode = PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED;
                 }
@@ -1141,7 +1137,7 @@ void GameControllerManager::onMotionData(const int32_t deviceId,
             for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
                 if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
                     const GameControllerDeviceInfo &deviceInfo =
-                            gcm->mGameControllers[i].getDeviceInfo();
+                        gcm->mGameControllers[i].getDeviceInfo();
                     if (deviceInfo.getInfo().mDeviceId == deviceId) {
                         Paddleboat_Motion_Data motionData;
                         motionData.motionType =
@@ -1150,8 +1146,8 @@ void GameControllerManager::onMotionData(const int32_t deviceId,
                         motionData.motionX = dataX;
                         motionData.motionY = dataY;
                         motionData.motionZ = dataZ;
-                        gcm->mMotionDataCallback(i, &motionData,
-                            gcm->mMotionDataCallbackUserData);
+                        gcm->mMotionDataCallback(
+                            i, &motionData, gcm->mMotionDataCallbackUserData);
                         return;
                     }
                 }
@@ -1344,26 +1340,24 @@ void GameControllerManager::updateBattery(JNIEnv *env) {
         for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
             if (mGameControllers[i].getControllerStatus() ==
                 PADDLEBOAT_CONTROLLER_ACTIVE) {
-                const Paddleboat_Controller_Info& controllerInfo =
-                        mGameControllers[i].getControllerInfo();
+                const Paddleboat_Controller_Info &controllerInfo =
+                    mGameControllers[i].getControllerInfo();
                 if ((controllerInfo.controllerFlags &
-                    PADDLEBOAT_CONTROLLER_FLAG_BATTERY) != 0) {
-                    Paddleboat_Controller_Data& controllerData =
-                            mGameControllers[i].getControllerData();
+                     PADDLEBOAT_CONTROLLER_FLAG_BATTERY) != 0) {
+                    Paddleboat_Controller_Data &controllerData =
+                        mGameControllers[i].getControllerData();
                     const jint deviceId = controllerInfo.deviceId;
                     jfloat batteryLevel = env->CallFloatMethod(
-                                            mGameControllerObject,
-                                            mGetBatteryLevelMethodId,
-                                            deviceId);
-                    jint batteryStatus = env->CallIntMethod(
-                                            mGameControllerObject,
-                                            mGetBatteryStatusMethodId,
-                                            deviceId);
+                        mGameControllerObject, mGetBatteryLevelMethodId,
+                        deviceId);
+                    jint batteryStatus =
+                        env->CallIntMethod(mGameControllerObject,
+                                           mGetBatteryStatusMethodId, deviceId);
                     controllerData.battery.batteryLevel = batteryLevel;
                     // Java 'enum' starts at 1, not 0.
                     controllerData.battery.batteryStatus =
-                        static_cast<Paddleboat_BatteryStatus>(
-                        batteryStatus - 1);
+                        static_cast<Paddleboat_BatteryStatus>(batteryStatus -
+                                                              1);
                 }
             }
         }
