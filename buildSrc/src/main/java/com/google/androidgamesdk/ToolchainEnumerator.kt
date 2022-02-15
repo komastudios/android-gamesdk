@@ -13,45 +13,28 @@ class ToolchainEnumerator {
     private val abis64Bits = listOf("arm64-v8a", "x86_64")
     val allAbis = abis32Bits + abis64Bits
 
-    private val pre17STLs = listOf(
-        "c++_static", "c++_shared",
-        "gnustl_static", "gnustl_shared"
+    private val stls = listOf(
+        "c++_static", "c++_shared"
     )
-    private val post17STLs = listOf("c++_static", "c++_shared")
 
     // For the AAR, only build the dynamic libraries against shared STL.
-    private val aarPre17STLs = listOf("c++_shared", "gnustl_shared")
-    private val aarPost17STLs = listOf("c++_shared")
+    private val aarStls = listOf("c++_shared")
 
-    private val pre17NdkToSdks = mapOf(
+    private val allNdkToSdkMap = mapOf(
         "r14" to listOf(14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
         "r15" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26),
         "r16" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27),
-        "r17" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28)
-    )
-    private val post17NdkToSdks = mapOf(
+        "r17" to listOf(14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28),
         "r18" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28),
         "r19" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28),
         "r20" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28),
-        "r21" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29)
+        "r21" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29),
+        "r23" to listOf(16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31)
     )
 
-    // In the AAR, library search is handled by Prefab, that looks for API 21 for 64 bits architectures
-    // even if a lower API level is requested. We need to build a different set of libraries for 32 and
-    // 64 bits as a consequence.
-    private val aar32BitsPre17NdkToSdks = pre17NdkToSdks
-    private val aar32BitsPost17NdkToSdks = post17NdkToSdks
-    private val aar64BitsPre17NdkToSdks = mapOf(
-        "r14" to listOf(21, 22, 23, 24),
-        "r15" to listOf(21, 22, 23, 24, 26),
-        "r16" to listOf(21, 22, 23, 24, 26, 27),
-        "r17" to listOf(21, 22, 23, 24, 26, 27, 28)
-    )
-    private val aar64BitsPost17NdkToSdks = mapOf(
-        "r18" to listOf(21, 22, 23, 24, 26, 27, 28),
-        "r19" to listOf(21, 22, 23, 24, 26, 27, 28),
-        "r20" to listOf(21, 22, 23, 24, 26, 27, 28),
-        "r21" to listOf(21, 22, 23, 24, 26, 27, 28, 29)
+    private val expressNdkToSdkMap = mapOf(
+	// TODO(willosborn): check if we can cut these down further
+        "r23" to listOf(19, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31)
     )
 
     fun enumerate(
@@ -59,39 +42,38 @@ class ToolchainEnumerator {
         project: Project
     ): List<EnumeratedToolchain> {
         return when (toolchainSet) {
-            ToolchainSet.ALL -> enumerateAllToolchains(project)
-            ToolchainSet.AAR -> enumerateAllAarToolchains(project)
+            ToolchainSet.ALL -> enumerateAllToolchains(project, allNdkToSdkMap)
+            ToolchainSet.AAR -> enumerateAllAarToolchains(project, allNdkToSdkMap)
+            ToolchainSet.EXPRESS -> enumerateAllToolchains(project, expressNdkToSdkMap)
+            ToolchainSet.EXPRESS_AAR -> enumerateAllToolchains(project, expressNdkToSdkMap)
         }
     }
 
-    private fun enumerateAllToolchains(project: Project): List<EnumeratedToolchain> {
-        val pre17Toolchains: List<EnumeratedToolchain> =
-            allAbis.flatMap { abi ->
-                pre17STLs.flatMap { stl ->
-                    enumerateToolchains(project, abi, stl, pre17NdkToSdks)
+    private fun enumerateAllToolchains(project: Project,
+                                       ndkToSdkMap: Map<String, List<Int>>): List<EnumeratedToolchain> {
+        return allAbis.flatMap { abi ->
+                stls.flatMap { stl ->
+                    enumerateToolchains(project, abi, stl, ndkToSdkMap)
                 }
             }
-        val post17Toolchains: List<EnumeratedToolchain> =
-            allAbis.flatMap { abi ->
-                post17STLs.flatMap { stl ->
-                    enumerateToolchains(project, abi, stl, post17NdkToSdks)
-                }
-            }
-        return pre17Toolchains + post17Toolchains
     }
 
-    private fun enumerateAllAarToolchains(project: Project): List<EnumeratedToolchain> {
+    private fun enumerateAllAarToolchains(project: Project,
+                                          ndkToSdkMap: Map<String, List<Int>>): List<EnumeratedToolchain> {
+        // In the AAR, library search is handled by Prefab, that looks for API 21 for 64 bits architectures
+        // even if a lower API level is requested. We need to build a different set of libraries for 32 and
+        // 64 bits as a consequence.
+        val aar32BitsNdkToSdkMap = ndkToSdkMap
+        val aar64BitsNdkToSdkMap = ndkToSdkMap.entries.associate {
+            it.key to it.value.filter { sdk -> sdk>=21 } }
+
         return abis32Bits.flatMap { abi ->
-            aarPre17STLs.flatMap { stl ->
-                enumerateToolchains(project, abi, stl, aar32BitsPre17NdkToSdks)
-            } + aarPost17STLs.flatMap { stl ->
-                enumerateToolchains(project, abi, stl, aar32BitsPost17NdkToSdks)
+            aarStls.flatMap { stl ->
+                enumerateToolchains(project, abi, stl, aar32BitsNdkToSdkMap)
             }
         } + abis64Bits.flatMap { abi ->
-            aarPre17STLs.flatMap { stl ->
-                enumerateToolchains(project, abi, stl, aar64BitsPre17NdkToSdks)
-            } + aarPost17STLs.flatMap { stl ->
-                enumerateToolchains(project, abi, stl, aar64BitsPost17NdkToSdks)
+            aarStls.flatMap { stl ->
+                enumerateToolchains(project, abi, stl, aar64BitsNdkToSdkMap)
             }
         }
     }

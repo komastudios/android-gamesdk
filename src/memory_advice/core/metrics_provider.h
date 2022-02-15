@@ -67,10 +67,8 @@ class MetricsProvider {
      * @brief Get a list of memory metrics available from android.os.Debug
      */
     Json::object GetDebugValues();
-    MetricsProvider();
 
    private:
-    std::unique_ptr<android::app::ActivityManager> activity_manager_;
     android::os::DebugClass android_debug_;
     /**
      * @brief Reads the given file and dumps the memory values within as a map

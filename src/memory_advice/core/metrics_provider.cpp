@@ -60,12 +60,15 @@ Json::object MetricsProvider::GetProcValues() {
 
 Json::object MetricsProvider::GetActivityManagerValues() {
     Json::object metrics_map;
+    java::Object obj = AppContext().getSystemService(
+        android::content::Context::ACTIVITY_SERVICE);
+    android::app::ActivityManager activity_manager(std::move(obj));
 
     metrics_map["MemoryClass"] =
-        Json(activity_manager_->getMemoryClass() * BYTES_IN_MB);
+        Json(activity_manager.getMemoryClass() * BYTES_IN_MB);
     metrics_map["LargeMemoryClass"] =
-        Json(activity_manager_->getLargeMemoryClass() * BYTES_IN_MB);
-    metrics_map["LowRamDevice"] = Json(activity_manager_->isLowRamDevice());
+        Json(activity_manager.getLargeMemoryClass() * BYTES_IN_MB);
+    metrics_map["LowRamDevice"] = Json(activity_manager.isLowRamDevice());
 
     return metrics_map;
 }
@@ -73,7 +76,10 @@ Json::object MetricsProvider::GetActivityManagerValues() {
 Json::object MetricsProvider::GetActivityManagerMemoryInfo() {
     android::app::MemoryInfo memory_info;
     Json::object metrics_map;
-    activity_manager_->getMemoryInfo(memory_info);
+    java::Object obj = AppContext().getSystemService(
+        android::content::Context::ACTIVITY_SERVICE);
+    android::app::ActivityManager activity_manager(std::move(obj));
+    activity_manager.getMemoryInfo(memory_info);
     metrics_map["threshold"] = Json((double)memory_info.threshold());
     metrics_map["availMem"] = Json((double)memory_info.availMem());
     metrics_map["totalMem"] = Json((double)memory_info.totalMem());
@@ -129,10 +135,4 @@ int32_t MetricsProvider::GetOomScore() {
     }
 }
 
-MetricsProvider::MetricsProvider() {
-    java::Object obj = AppContext().getSystemService(
-        android::content::Context::ACTIVITY_SERVICE);
-    activity_manager_ =
-        std::make_unique<android::app::ActivityManager>(std::move(obj));
-}
 }  // namespace memory_advice

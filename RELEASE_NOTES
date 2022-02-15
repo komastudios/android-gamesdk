@@ -132,3 +132,21 @@ Frame Pacing and Android Performance Tuner libraries.
   https://android.googlesource.com/platform/frameworks/opt/gamesdk for details of changes.
 
 For full documentation, see https://developer.android.com/games/agdk.
+
+Version 2022.0.0
+================
+This major release includes the memory advice library and several fixes for other libraries.
+- GameActivity
+  - Added handling of insets for positioning of game UI around the IME and cutouts.
+  - Bug fixes to avoid input event losses and prevent consuming all input events.
+  - Add key and motion event filters.
+- Android Performance Tuner (Tuning Fork)
+  - Fix corrupted API key bug
+  - Memory reporting is now as time-series rather than histograms.
+  - Allow programmatically setting upload interval.
+- Android Frame Pacing Library (Swappy)
+ - Improvements to auto-mode
+ - Add 'uninjectTracer' functions.
+- Memory Advice Library
+ - Initial version. See the header at include/memory_advice/memory_advice.h for more
+   details.

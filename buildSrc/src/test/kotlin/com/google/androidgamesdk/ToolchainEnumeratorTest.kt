@@ -22,34 +22,24 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            // 4 abis, 4 STLs, pre17 ndk/sdks:
-            (11 + 11 + 12 + 13) * 4 * 4 +
-                // 4 abis, 4 STLs, post17 ndk/sdks:
-                (11 + 11 + 11 + 12) * 2 * 4,
+            // 4 abis, 2 STLs, pre17 ndk/sdks:
+            (11 + 11 + 12 + 13 + 11 + 11 + 11 + 12 + 14) * 4 * 2,
             allToolchains.size
         )
         assertEquals(
-            278,
+            212,
             allToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
-            368,
+            424,
             allToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            368,
+            424,
             allToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
-            188,
-            allToolchains.filter { it.stl == "gnustl_static" }.count()
-        )
-        assertEquals(
-            188,
-            allToolchains.filter { it.stl == "gnustl_shared" }.count()
-        )
-        assertEquals(
-            11 * 4 * 4, // 4 abis, 4 STLs, 11 pre17 ndk/sdks
+            11 * 4 * 2, // 4 abis, 2 STLs, 11 pre17 ndk/sdks
             allToolchains.filter { it.toolchain.getNdkVersion() == "r14" }
                 .count()
         )
@@ -68,18 +58,18 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            // 2 32bits abis, 2 STLs, pre17 ndk/sdks:
-            2 * 2 * (11 + 11 + 12 + 13) +
+            // 2 32bits abis, 1 STLs, pre17 ndk/sdks:
+            2 * 1 * (11 + 11 + 12 + 13) +
                 // 2 32bits abis, 1 STL, post17 ndk/sdks:
-                2 * 1 * (11 + 11 + 11 + 12) +
-                // 2 64bits abis, 2 STLs, pre17 64 bits ndk/sdks:
-                2 * 2 * (4 + 5 + 6 + 7) +
+                2 * 1 * (11 + 11 + 11 + 12 + 14) +
+                // 2 64bits abis, 1 STLs, pre17 64 bits ndk/sdks:
+                2 * 1 * (4 + 5 + 6 + 7) +
                 // 2 64bits abis, 1 STL, post17 64bits ndk/sdks:
-                2 * 1 * (7 + 7 + 7 + 8),
+                2 * 1 * (7 + 7 + 7 + 8 + 10),
             allAarToolchains.size
         )
         assertEquals(
-            139,
+            106,
             allAarToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
@@ -87,25 +77,17 @@ class ToolchainEnumeratorTest {
             allAarToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            286,
+            334,
             allAarToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
-            0,
-            allAarToolchains.filter { it.stl == "gnustl_static" }.count()
-        )
-        assertEquals(
-            138,
-            allAarToolchains.filter { it.stl == "gnustl_shared" }.count()
-        )
-        assertEquals(
-            // 2 abis, 2 STLs, 4 r14 ndk/sdks + 2 abis, 2 STLs, 11 r14 ndk/sdks
-            4 * 2 * 2 + 11 * 2 * 2,
+            // 2 abis, 1 STLs, 4 r14 ndk/sdks + 2 abis, 1 STLs, 11 r14 ndk/sdks
+            4 * 2 * 1 + 11 * 2 * 1,
             allAarToolchains.filter { it.toolchain.getNdkVersion() == "r14" }
                 .count()
         )
         assertEquals(
-            // 2 abis, 2 STLs, 7 r18 ndk/sdks + 2 abis, 1 STL, 11 r18 ndk/sdks
+            // 2 abis, 1 STLs, 7 r18 ndk/sdks + 2 abis, 1 STL, 11 r18 ndk/sdks
             7 * 2 * 1 + 11 * 1 * 2,
             allAarToolchains.filter { it.toolchain.getNdkVersion() == "r18" }
                 .count()

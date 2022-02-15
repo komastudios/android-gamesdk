@@ -17,24 +17,28 @@
 package com.google.tfmonitor
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.tuningfork.AppKey
 import com.google.tuningfork.Datastore
 import com.google.tuningfork.Deserializer
+import java.io.File
+import kotlinx.android.synthetic.main.activity_main.toolbar
 
-private class AsyncWebServer(val applicationContext: Context, val port: Int,
-                             val requestListener: RequestListener) :
+private class AsyncWebServer(
+    val applicationContext: Context, val port: Int,
+    val requestListener: RequestListener
+) :
     AsyncTask<Unit, Unit, Unit>() {
 
     private var idir: File? = null;
@@ -57,32 +61,37 @@ private class AsyncWebServer(val applicationContext: Context, val port: Int,
 }
 
 class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractionListener,
-    AppDetailFragment.OnFragmentInteractionListener,
-    FidelityParametersFragment.OnFragmentInteractionListener,
-    AnnotationsFragment.OnFragmentInteractionListener, RequestListener {
+                     AppDetailFragment.OnFragmentInteractionListener,
+                     FidelityParametersFragment.OnFragmentInteractionListener,
+                     AnnotationsFragment.OnFragmentInteractionListener, RequestListener {
+
+    private lateinit var databaseName: String
 
     private var navController: NavController? = null
-    private lateinit var datastore : Datastore
+    private lateinit var datastore: Datastore
 
     private fun getViewModel(): MonitorViewModel {
         val factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         return ViewModelProvider(viewModelStore, factory).get(MonitorViewModel::class.java)
     }
 
-    override fun generateTuningParameters(appKey: AppKey, requestString: String): Pair<Int,String> {
+    override fun generateTuningParameters(
+        appKey: AppKey,
+        requestString: String
+    ): Pair<Int, String> {
         val deser = Deserializer()
         val req = deser.parseGenerateTuningParametersRequest(requestString)
         return getViewModel().generateTuningParameters(appKey, req)
     }
 
-    override fun uploadTelemetry(appKey: AppKey, requestString: String): Pair<Int,String> {
+    override fun uploadTelemetry(appKey: AppKey, requestString: String): Pair<Int, String> {
         val deser = Deserializer()
         val req = deser.parseUploadTelemetryRequest(requestString)
         datastore.uploadTelemetryRequest(appKey, req)
         return getViewModel().uploadTelemetry(appKey, req)
     }
 
-    override fun debugInfo(appKey: AppKey, requestString: String): Pair<Int,String> {
+    override fun debugInfo(appKey: AppKey, requestString: String): Pair<Int, String> {
         val deser = Deserializer()
         val req = deser.parseDebugInfoRequest(requestString)
         datastore.debugInfoRequest(appKey, req)
@@ -94,7 +103,8 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        datastore = Datastore(this.applicationContext)
+        databaseName = getString(R.string.database_name)
+        datastore = Datastore(this.applicationContext, databaseName)
 
         loadStoredApps()
 
@@ -115,6 +125,12 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         return true
     }
 
+    fun getDatabaseURI(c: Context, dbname: String): Uri {
+        val exportFile = c.getDatabasePath(dbname)
+        return FileProvider.getUriForFile(c, "com.google.tfmonitor.fileprovider", exportFile)
+
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -129,7 +145,10 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
                 }
                 true
             }
-            R.id.action_settings -> true
+            R.id.action_export -> {
+                exportDatabase()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -145,4 +164,23 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
         }
     }
 
+    fun exportDatabase() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "application/octet-stream"
+        val uri: Uri = getDatabaseURI(this, databaseName)
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        val chooser = Intent.createChooser(intent, "Export to:")
+        // Without these permissions, there are errors in the log, although the export chooser
+        // still seems to work.
+        val uriPermissions =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        intent.addFlags(uriPermissions)
+        val resInfoList =
+            packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            grantUriPermission(packageName, uri, uriPermissions)
+        }
+        startActivity(chooser)
+    }
 }

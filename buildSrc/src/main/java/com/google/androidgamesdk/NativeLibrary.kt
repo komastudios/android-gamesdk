@@ -31,6 +31,8 @@ data class NativeLibrary(
         private set
     var usesTensorflow = false
         private set
+    var assetsDirectory: String? = null
+        private set
 
     fun addSampleAndroidProject(
         sampleAndroidProject: ExternalAndroidProject
@@ -84,6 +86,13 @@ data class NativeLibrary(
     fun setUsesTensorflow(): NativeLibrary {
         this.usesTensorflow = true
         return this
+    }
+
+    fun setAssetsDirectory(
+      assetsDirectory: String?
+    ): NativeLibrary {
+      this.assetsDirectory = assetsDirectory
+      return this
     }
 
     data class SampleFolder(
