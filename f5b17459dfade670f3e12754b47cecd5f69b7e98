@@ -180,6 +180,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c8d9cb4_e4067a50",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-16T22:01:22Z",
+      "side": 1,
+      "message": "Talked with Neil about this. I will remove the `isGooglePlayGames` condition to enable keyboard controls, so this sample app can be compatible with Chrome OS too.\n\nInstead, to showcase platform detection I will extend the gameplay as described in b/219774994.\n\nThanks for your comments on this.",
+      "parentUuid": "6e12da58_daf22b51",
+      "revId": "f5b17459dfade670f3e12754b47cecd5f69b7e98",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf1a9e49_f3ebdd0e",
