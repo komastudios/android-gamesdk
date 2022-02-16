@@ -98,6 +98,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "48b246e8_0c046b43",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-16T23:17:09Z",
+      "side": 1,
+      "message": "JFYI the build flavor CL (aosp/1960861) have been submitted",
+      "parentUuid": "eebeb9ae_a7ccd7d9",
+      "range": {
+        "startLine": 49,
+        "startChar": 58,
+        "endLine": 49,
+        "endChar": 71
+      },
+      "revId": "d73e0916ab07fdf21a8f8caf6cbf10c8132e53e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cc69e466_639cd67a",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
         "patchSetId": 1
