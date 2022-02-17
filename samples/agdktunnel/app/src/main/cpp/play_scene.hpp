@@ -68,6 +68,10 @@ protected:
     // shape and text renderers we use when rendering the HUD
     ShapeRenderer *mShapeRenderer;
     TextRenderer *mTextRenderer;
+#ifdef TOUCH_INDICATOR_MODE
+    // Flat color rectangle for latency measurement
+    ShapeRenderer *mRectRenderer;
+#endif // TOUCH_INDICATOR_MODE
 
     // matrices
     glm::mat4 mViewMat, mProjMat;

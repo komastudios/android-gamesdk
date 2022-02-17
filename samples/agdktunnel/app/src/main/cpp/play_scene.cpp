@@ -64,6 +64,9 @@ PlayScene::PlayScene() : Scene() {
     mTrivialShader = NULL;
     mTextRenderer = NULL;
     mShapeRenderer = NULL;
+#ifdef TOUCH_INDICATOR_MODE
+    mRectRenderer = NULL;
+#endif // TOUCH_INDICATOR_MODE
     mShipSteerX = mShipSteerZ = 0.0f;
     mFilteredSteerX = mFilteredSteerZ = 0.0f;
 
@@ -292,11 +295,17 @@ void PlayScene::OnStartGraphics() {
     // create text renderer and shape renderer
     mTextRenderer = new TextRenderer(mTrivialShader);
     mShapeRenderer = new ShapeRenderer(mTrivialShader);
+#ifdef TOUCH_INDICATOR_MODE
+    mRectRenderer = new ShapeRenderer(mTrivialShader);
+#endif // TOUCH_INDICATOR_MODE
 }
 
 void PlayScene::OnKillGraphics() {
     CleanUp(&mTextRenderer);
     CleanUp(&mShapeRenderer);
+#ifdef TOUCH_INDICATOR_MODE
+    CleanUp(&mRectRenderer);
+#endif // TOUCH_INDICATOR_MODE
     CleanUp(&mOurShader);
     CleanUp(&mTrivialShader);
     CleanUp(&mTunnelGeom);
@@ -403,8 +412,10 @@ void PlayScene::DoFrame() {
     // generate more obstacles!
     GenObstacles();
 
+#ifndef GHOST_MODE
     // detect collisions
     DetectCollisions(previousY);
+#endif // GHOST_MODE
 
     // update ship's roll speed according to level
     static float roll_speeds[] = ROLL_SPEEDS;
@@ -663,6 +674,15 @@ void PlayScene::RenderHUD() {
         modelMat = glm::translate(modelMat, glm::vec3(LIFE_SPACING_X, 0.0f, 0.0f));
     }
 
+#ifdef TOUCH_INDICATOR_MODE
+    if (mSteering == STEERING_TOUCH) {
+        mRectRenderer->SetColor(1.0f, 1.0f, 0.0f);
+    } else {
+        mRectRenderer->SetColor(0.0f, 0.0f, 1.0f);
+    }
+    mRectRenderer->RenderRect(0.18f, 0.18f, 0.3f, 0.3f);
+#endif // TOUCH_INDICATOR_MODE
+
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -707,6 +727,7 @@ void PlayScene::DetectCollisions(float previousY) {
     int row = o->GetRowAt(mPlayerPos.z);
 
     if (o->grid[col][row]) {
+#ifndef GOD_MODE
         // crashed against obstacle
         mLives--;
         if (mLives > 0) {
@@ -724,7 +745,7 @@ void PlayScene::DetectCollisions(float previousY) {
         mBlinkingHeartExpire = Clock() + BLINKING_HEART_DURATION;
 
         mLastCrashSection = mFirstSection;
-
+#endif // GOD_MODE
     } else if (row == o->bonusRow && col == o->bonusCol) {
         ShowSign(S_GOT_BONUS, SIGN_DURATION_BONUS);
         o->DeleteBonus();

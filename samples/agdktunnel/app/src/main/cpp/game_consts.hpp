@@ -17,6 +17,12 @@
 #ifndef agdktunnel_game_consts_h
 #define agdktunnel_game_consts_h
 
+// Cheats and test settings
+// #define GHOST_MODE
+// #define GOD_MODE
+// #define TOUCH_INDICATOR_MODE
+// #define SWAPPY_OFF_MODE
+
 // Render settings
 #define RENDER_FOV 45.0f
 #define RENDER_NEAR_CLIP 0.1f

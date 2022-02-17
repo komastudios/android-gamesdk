@@ -108,6 +108,9 @@ NativeEngine::NativeEngine(struct android_app *app) {
     ALOGI("Calling SwappyGL_init");
     SwappyGL_init(GetJniEnv(), mApp->activity->javaGameActivity);
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
+#ifdef SWAPPY_OFF_MODE
+    SwappyGL_setMaxAutoSwapIntervalNS(0);
+#endif // SWAPPY_OFF_MODE
 
     mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
 
