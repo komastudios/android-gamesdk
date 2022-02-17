@@ -67,6 +67,11 @@ android {
             dimension "platform"
             applicationIdSuffix ".playGamesPC"
             versionNameSuffix "-playGamesPC"
+
+            // x86 ABI compatibility
+            ndk {
+                abiFilters 'x86'
+            }
         }
     }
     externalNativeBuild {
