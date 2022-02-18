@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6e6b2cd_96a9d720",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-18T00:18:30Z",
+      "side": 1,
+      "message": "Moved sample comments to ”Battlestar Flavored\" version of code. PTAL",
+      "revId": "9de1c772e57979d4ecad4a8f69c94c277436d00f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
