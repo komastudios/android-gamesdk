@@ -50,6 +50,24 @@
       "message": "I CC\u0027d Henry who may have more info on the presubmit failure. It\u0027s been happening for a while but isn\u0027t testing anything relevant to this CL.",
       "revId": "5193b7effb4c6fe7247ac8f29796377eb2840230",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d30a976c_903640fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-02-18T00:20:08Z",
+      "side": 1,
+      "message": "Done, update comments.",
+      "parentUuid": "dea307c8_28352d80",
+      "revId": "5193b7effb4c6fe7247ac8f29796377eb2840230",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
