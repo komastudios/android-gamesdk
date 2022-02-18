@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55c59be6_51779709",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-18T17:42:46Z",
+      "side": 1,
+      "message": "This activity is not shared among the mobile and playGamesPC platform, hence this should be moved to a new file mobile/AndroidManifest.xml\n\nFor mobile/AndroidManifest.xml we can make a copy of this file but removing the shared permissions and features",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 15
+      },
+      "revId": "ce4d51257f5532446fc6551687fcfcff1df99316",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e8ce567_bca4133f",
+        "filename": "samples/agdktunnel/app/src/playGamesPC/AndroidManifest.xml",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-02-18T17:42:46Z",
+      "side": 1,
+      "message": "For a more granular manifest set, we can remove these permissions and features and let them only be in the main/AndroidManifest.xml file.\n\nHere we should include only new permissions that are needed for the Play Games PC platform but not for the mobile platform. Shared permissions should be in the main/AndroidManifest.xml file, and for instance, permissions restricted for B* (like android.permission.CAMERA) should be in mobile/AndroidManifest.xml",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 68,
+        "endChar": 76
+      },
+      "revId": "ce4d51257f5532446fc6551687fcfcff1df99316",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
