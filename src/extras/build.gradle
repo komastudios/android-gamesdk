@@ -1,10 +1,12 @@
 project('aar') {
     apply plugin: 'com.android.library'
+//    buildDir = "../../../../out_extras_aar"
 }
 
-project('apk') {
-    apply plugin: 'com.android.application'
-}
+// project('apk') {
+//     apply plugin: 'com.android.application'
+//     buildDir = "../../../../out_extras_apk"
+// }
 
 subprojects {
 
@@ -48,5 +50,5 @@ subprojects {
 
 task assembleRelease {
     dependsOn 'aar:assembleRelease'
-    dependsOn 'apk:assembleRelease'
+//    dependsOn 'apk:assembleRelease'
 }

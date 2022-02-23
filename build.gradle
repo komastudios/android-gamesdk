@@ -40,7 +40,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
 }
 
@@ -80,14 +80,15 @@ def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
                         .buildDebugApkTo("apks/samples", "bouncyball.apk"))
+/* TODO(b/223394862): temporarily removed because of ndk23 vulkan incompatiblities
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "cube"))
                         .copySourcesTo("samples/cube")
                         .buildDebugApkTo("apks/samples", "cube.apk")
                         .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
-        .addSampleAndroidProject(
+       .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('third_party', "cube"))
-                        .copySourcesTo("third_party/cube"))
+                        .copySourcesTo("third_party/cube"))*/
         .addSampleAndroidProject(
                 new ExternalAndroidProject("test/swappy/testapp")
                         .buildDebugApkTo("apks/test", "swappytest.apk")
@@ -271,7 +272,7 @@ task cleanPath(type: Delete) {
  * prefab folder being generated, filtering non-game controller classes.
  */
 def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
+    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}-release.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
     return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
@@ -571,7 +572,7 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
  * Also patch the AAR with a prefab folder if necessary.
  */
 def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
-    def aarPath = joinPath(getOutPath(), "outputs", "aar", "${library.projectName}.aar");
+    def aarPath = joinPath(getOutPath(), "outputs", "aar", "${library.projectName}-release.aar");
     def packageFolder = joinPath(getPackagePath(), outFolder)
 
     // Inject the sources of the "header only" library, in Prefab format.
