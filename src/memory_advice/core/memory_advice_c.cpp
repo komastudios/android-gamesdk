@@ -67,6 +67,8 @@ void MemoryAdvice_JsonSerialization_free(MemoryAdvice_JsonSerialization *ser) {
     }
 }
 
+int32_t MemoryAdvice_test() { return memory_advice::BaseTests(); }
+
 void MEMORY_ADVICE_VERSION_SYMBOL() {
     // Intentionally empty: this function is used to ensure that the proper
     // version of the library is linked against the proper headers.

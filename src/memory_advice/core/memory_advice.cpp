@@ -89,4 +89,9 @@ MemoryAdvice_ErrorCode UnregisterWatcher(
     return s_impl->UnregisterWatcher(callback);
 }
 
+int32_t BaseTests() {
+    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    return s_impl->BaseTests();
+}
+
 }  // namespace memory_advice
