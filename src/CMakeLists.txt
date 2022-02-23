@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.18.1)
+project(android_game_sdk C CXX)
+
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 project(android_game_sdk C CXX)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")

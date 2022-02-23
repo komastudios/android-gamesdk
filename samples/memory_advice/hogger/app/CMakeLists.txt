@@ -9,7 +9,7 @@ set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../test/me
 
 include("../../../gamesdk.cmake")
 
-# This builds the gamesdk in package/localtf and adds a gamesdk static library target
+# This builds the memory_advice in package/local and adds a memory_advice shared library target
 add_gamesdk_target(
         DO_LOCAL_BUILD
         ROOT_DIR "../../../.."
@@ -17,7 +17,7 @@ add_gamesdk_target(
         LIBRARIES "memory_advice"
 )
 
-get_target_property(DEP_LIB memory_advice IMPORTED_LOCATION)
+#get_target_property(DEP_LIB memory_advice IMPORTED_LOCATION)
 
 file(GLOB TF_MODEL_FILES "${MEMORYADVICE_RESOURCES_DIR}/*.*")
 file(COPY ${TF_MODEL_FILES} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/src/main/assets)
@@ -34,13 +34,6 @@ add_library( native-lib
 target_link_libraries( native-lib
         memory_advice
         android
-        EGL
         GLESv2
         log
         )
-
-add_custom_command(
-        TARGET native-lib POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${DEP_LIB}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI}/libmemory_advice.so)

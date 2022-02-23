@@ -37,7 +37,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
 }
 
@@ -310,7 +310,7 @@ task cleanPath(type: Delete) {
  * prefab folder being generated, filtering non-game controller classes.
  */
 def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
+    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}-release.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
     return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
