@@ -4,7 +4,7 @@ plugins {
 
 android {
     compileSdkVersion 28
-    ndkVersion "20.0.5594570"
+    ndkVersion "23.1.7779620"
 
     defaultConfig {
         applicationId "com.memory_advice.hogger"
