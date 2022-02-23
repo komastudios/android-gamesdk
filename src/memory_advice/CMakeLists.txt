@@ -3,6 +3,8 @@ project(memory-advice C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
+
 include("../../samples/gamesdk.cmake")
 
 set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
