@@ -3,6 +3,8 @@ project(tuningfork C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
+
 option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
 
 include("../protobuf/protobuf.cmake")

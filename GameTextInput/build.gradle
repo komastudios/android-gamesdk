@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
 }
 
+buildDir="../../out_game_text_input"
+
 android {
     compileSdkVersion 28
 
