@@ -48,5 +48,4 @@ subprojects {
 
 task assembleRelease {
     dependsOn 'aar:assembleRelease'
-    dependsOn 'apk:assembleRelease'
 }

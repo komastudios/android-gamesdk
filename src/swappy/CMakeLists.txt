@@ -3,6 +3,8 @@ project(swappy C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
+
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
@@ -45,7 +47,7 @@ if (ANDROID_NDK_MAJOR GREATER 22)
 endif()
 
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ../intermediates/dex/release/mergeDexRelease/out && ${CMAKE_LINKER} ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     COMMAND cd ../intermediates/dex/release/mergeDexRelease && ${CMAKE_LINKER} ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
      WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
      )
 
