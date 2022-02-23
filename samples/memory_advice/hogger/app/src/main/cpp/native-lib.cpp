@@ -1,9 +1,10 @@
+#include <cassert>
 #include <jni.h>
-#include <string>
-#include <sstream>
 #include <list>
 #include <mutex>
 #include <random>
+#include <string>
+#include <sstream>
 
 #include <memory_advice/memory_advice.h>
 #include <memory_advice/memory_advice_debug.h>
