@@ -4,7 +4,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    ndkVersion "20.0.5594570"
+    ndkVersion "23.1.7779620"
     defaultConfig {
         applicationId "com.tuningfork.insightsdemo"
         minSdkVersion 16
