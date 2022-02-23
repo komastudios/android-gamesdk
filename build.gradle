@@ -40,7 +40,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
 }
 
@@ -85,7 +85,7 @@ def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
                         .copySourcesTo("samples/cube")
                         .buildDebugApkTo("apks/samples", "cube.apk")
                         .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
-        .addSampleAndroidProject(
+       .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('third_party', "cube"))
                         .copySourcesTo("third_party/cube"))
         .addSampleAndroidProject(
@@ -206,6 +206,10 @@ def getOutPath() {
     return new File("$projectDir/../out").getPath()
 }
 
+def getLibraryOutPath(library) {
+    return new File("$projectDir/../out_"+library.libraryInfo.nickname).getPath()
+}
+
 def getPackagePath() {
     return new File("$projectDir/../package").getPath();
 }
@@ -271,7 +275,7 @@ task cleanPath(type: Delete) {
  * prefab folder being generated, filtering non-game controller classes.
  */
 def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
+    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/${library.hybridProjectDir}-release.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
     return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
@@ -571,7 +575,7 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
  * Also patch the AAR with a prefab folder if necessary.
  */
 def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
-    def aarPath = joinPath(getOutPath(), "outputs", "aar", "${library.projectName}.aar");
+    def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
     def packageFolder = joinPath(getPackagePath(), outFolder)
 
     // Inject the sources of the "header only" library, in Prefab format.
@@ -892,7 +896,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 }
                 removeUnneededPrefabDirs(tempPrefabDir, library)
                 // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getOutPath(), "outputs", "aar", "${library.hybridProjectDir}.aar")
+                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.hybridProjectDir}.aar")
                 def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
                 def aarPrefabPatcher = new AarPrefabPatcher()
                 aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)

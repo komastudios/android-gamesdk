@@ -18,6 +18,8 @@ plugins {
     id 'com.android.library'
 }
 
+buildDir="../../out_paddleboat"
+
 android {
 
     defaultConfig {
