@@ -59,5 +59,6 @@ MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
                                        MemoryAdvice_WatcherCallback callback,
                                        void* user_data);
 MemoryAdvice_ErrorCode UnregisterWatcher(MemoryAdvice_WatcherCallback callback);
+int32_t BaseTests();
 
 }  // namespace memory_advice
