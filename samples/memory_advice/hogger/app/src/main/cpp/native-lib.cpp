@@ -40,6 +40,8 @@ Java_com_memory_1advice_hogger_MainActivity_initMemoryAdvice(
     if (init_error_code == MEMORYADVICE_ERROR_OK) {
         MemoryAdvice_registerWatcher(callback_waittime_ms, callback, &TEST_USER_DATA);
         MemoryAdvice_registerWatcher(callback2_waittime_ms, callback2, &TEST_USER_DATA2);
+
+        assert(MemoryAdvice_test() == 0);
     }
     return init_error_code;
 }
