@@ -21,6 +21,12 @@ import com.google.android.libraries.play.games.inputmapping.InputMappingClient;
 import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
 import com.google.android.libraries.play.games.inputmapping.Input;
 
+// If you are building for Google Play Games for Windows, some APIs modules are not supported.
+// For example, references to the following modules will fail silently at runtime and may cause
+// unexpected behavior.
+// import com.google.android.gms.analytics; // NOT SUPPORTED
+// import com.google.android.gms.location.places; // NOT SUPPORTED
+
 public class PlayGamesPCActivity extends AGDKTunnelActivity {
 
     @Override
