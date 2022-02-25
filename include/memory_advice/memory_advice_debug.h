@@ -58,6 +58,15 @@ MemoryAdvice_ErrorCode MemoryAdvice_getAdvice(
  */
 void MemoryAdvice_JsonSerialization_free(MemoryAdvice_JsonSerialization *ser);
 
+/**
+ * @brief Perform tests on the memory advice library.
+ *
+ * @return 0 if the tests pass.
+ * @return non-zero if the tests fail. Error messages will be printed to logcat
+ * in this case.
+ */
+int32_t MemoryAdvice_test();
+
 #ifdef __cplusplus
 }  // extern "C" {
 #endif

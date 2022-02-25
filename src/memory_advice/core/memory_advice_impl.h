@@ -117,6 +117,10 @@ class MemoryAdviceImpl {
     MemoryAdvice_ErrorCode UnregisterWatcher(
         MemoryAdvice_WatcherCallback callback);
 
+    /** @brief Perform basic checking
+     */
+    int32_t BaseTests();
+
     MemoryAdvice_ErrorCode InitializationErrorCode() const {
         return initialization_error_code_;
     }

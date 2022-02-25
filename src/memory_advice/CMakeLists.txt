@@ -80,6 +80,7 @@ set(MEMORY_ADVICE_SRCS
   core/metrics_provider.cpp
   core/state_watcher.cpp
   core/predictor.cpp
+  test/basic.cpp
   ../common/jni/jni_helper.cpp
   ../common/jni/jni_wrap.cpp
   ../common/jni/jnictx.cpp
