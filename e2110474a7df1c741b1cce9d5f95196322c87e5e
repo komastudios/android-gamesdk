@@ -41,6 +41,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e6196a1_b8fd591e",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-01T21:18:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "370abaf1_3b917355",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 11
+      },
+      "revId": "e2110474a7df1c741b1cce9d5f95196322c87e5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "be904e10_aa0d1fc9",
@@ -54,6 +78,30 @@
       "writtenOn": "2022-03-01T15:06:01Z",
       "side": 1,
       "message": "This can\u0027t be a real value, it would need to be changed to something like \"add_project_id\" as a placeholder.",
+      "range": {
+        "startLine": 20,
+        "startChar": 67,
+        "endLine": 20,
+        "endChar": 79
+      },
+      "revId": "e2110474a7df1c741b1cce9d5f95196322c87e5e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c1643f1_06034258",
+        "filename": "samples/agdktunnel/app/src/main/res/values/strings.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-01T21:18:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be904e10_aa0d1fc9",
       "range": {
         "startLine": 20,
         "startChar": 67,
