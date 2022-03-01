@@ -30,9 +30,7 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
-    express_package_name=expressfullsdk
     ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -44,15 +42,12 @@ then
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
-    express_package_name=expressgamesdk
     ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
-    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
-else
-    package_name=gamesdk
-    express_package_name=expressgamesdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PdistPath="$dist_dir"
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PdistPath="$dist_dir" -PpackageName=$express_package_name -Pexpress
+elif [[ $1 == "maven-only" ]]
+then
+    # Only the Maven artifacts for Jetpack
+    package_name=gamesdk-maven
     ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
@@ -61,27 +56,21 @@ else
     ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+else
+    # The default is to build the express zip
+    package_name=gamesdk-express
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
 fi
 
 # Calculate hash of the zip file
 pushd "$dist_dir/$package_name"
 ZIPNAME=$(ls agdk-libraries-*)
-sha256sum $ZIPNAME > $ZIPNAME.sha256
-popd
-# And the express zip
-pushd "$dist_dir/$express_package_name"
-ZIPNAME=$(ls agdk-libraries-*)
-sha256sum $ZIPNAME > $ZIPNAME.sha256
+if [[ -z $package_name ]]
+    sha256sum $ZIPNAME > $ZIPNAME.sha256
+fi
 popd
 
 pushd "$dist_dir/$package_name"
-# Remove intermediate files that would be very costly to store
-rm -rf libs prefab
-# Remove other files that we don't care about and are polluting the output
-rm -rf external third_party src include samples aar
-popd
-
-pushd "$dist_dir/$express_package_name"
 # Remove intermediate files that would be very costly to store
 rm -rf libs prefab
 # Remove other files that we don't care about and are polluting the output
