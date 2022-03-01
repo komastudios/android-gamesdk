@@ -24,11 +24,16 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+
+import com.google.android.gms.games.GamesSignInClient;
+import com.google.android.gms.games.PlayGames;
+import com.google.android.gms.games.PlayGamesSdk;
 import com.google.androidgamesdk.GameActivity;
 
 public class AGDKTunnelActivity extends GameActivity {
@@ -76,6 +81,22 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+
+        PlayGamesSdk.initialize(this);
+        GamesSignInClient gamesSignInClient = PlayGames.getGamesSignInClient(this);
+        gamesSignInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask -> {
+            boolean isAuthenticated = (isAuthenticatedTask.isSuccessful() &&
+                    isAuthenticatedTask.getResult().isAuthenticated());
+            if (isAuthenticated) {
+                // Continue with Play Games Services
+                Log.i("AGDK Tunnel","the user is authenticated with Play Games Services");
+            } else {
+                // Disable your integration with Play Games Services or show a login button to ask
+                // players to sign-in. Clicking it should call GamesSignInClient.signIn().
+                Log.e("AGDK Tunnel","the user is not authenticated with Play Games Services");
+                gamesSignInClient.signIn();
+            }
+        });
     }
 
     public boolean isGooglePlayGames() {

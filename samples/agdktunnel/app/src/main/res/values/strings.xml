@@ -17,5 +17,6 @@
 
 <resources>
     <string name="app_name">AGDKTunnel</string>
+    <string translatable="false"  name="game_services_project_id"> 162411770512 </string>
 </resources>
 
