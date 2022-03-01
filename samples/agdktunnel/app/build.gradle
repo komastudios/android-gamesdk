@@ -107,6 +107,8 @@ dependencies {
     implementation "androidx.games:games-activity:1.1.0-beta03"
 
     // Google Play Games dependencies
+    // TODO(b/215589030): release PGS v2 public to GMaven
+    implementation "com.google.android.gms:play-services-games-v2:16.0.2-eap"
     // TODO(b/215589030): release the input sdk public to GMaven
     playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
