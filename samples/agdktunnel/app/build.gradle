@@ -108,6 +108,7 @@ dependencies {
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
+    implementation "com.google.android.gms:play-services-games-v2:17.0.0"
     // TODO(b/215589030): release the input sdk public to GMaven
     playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
