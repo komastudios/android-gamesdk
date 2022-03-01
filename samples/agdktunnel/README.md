@@ -35,6 +35,7 @@ need to follow the next steps.
 
 1. Go to **Build > Select Build Variant** and select the `playGamesPC` [build variant](https://developer.android.com/studio/build/build-variants).
 2. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
+2. Download the Maven repository for Play Games Services in `app/play_services_games_v2`.
 
 ## Building
 
