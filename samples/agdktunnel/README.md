@@ -12,6 +12,10 @@ AGDKTunnel uses the following AGDK libraries:
 * GameTextInput
 * Oboe
 
+## Building
+
+Open the `samples/agdktunnel' directory in Android Studio 4.2 or higher.
+
 ## Prerequisites
 
 ### GLM
@@ -22,7 +26,7 @@ The GLM library must be downloaded before building:
 2. `cd third-party/glm`
 3. `git clone https://github.com/g-truc/glm.git`
 
-### Google Play Games for PC
+### Google Play Games for PC (optional)
 
 We use build variants to control the platform where the the app will run.
 If you are building this application to run in Google Play Games for PC you
@@ -30,10 +34,16 @@ need to follow the next steps.
 
 1. Go to **Build > Select Build Variant** and select the `playGamesPC` [build variant](https://developer.android.com/studio/build/build-variants).
 2. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
+3. (Optional) Enable Play Games Services.
 
-## Building
+### Google Play Games Services (optional)
 
-Open the `samples/agdktunnel' directory in Android Studio 4.2 or higher.
+We use Play Games Services (PGS) to sign-in and cloud save to play in Play Games Services and mobile.
+To enable this feature following the next steps.
+
+1. Rename the package of AGDK Tunnel.
+2. Create an application on the [Google Play Console](https://play.google.com/console/about/?) and follow the steps to set up Play Games Services using your package name.
+3. Replace the **game_services_project_id** string value in `app/src/main/res/values/strings.xml` with the id of your project in the Google Play Console.
 
 ## Android Performance Tuner (APT)
 
