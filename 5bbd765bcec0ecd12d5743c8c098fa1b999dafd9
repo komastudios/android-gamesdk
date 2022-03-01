@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77a7d6eb_30960206",
+        "filename": "samples/agdktunnel/app/src/playGamesPC/AndroidManifest.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-01T15:14:03Z",
+      "side": 1,
+      "message": "Missed a change from Windows -\u003e PC",
+      "range": {
+        "startLine": 59,
+        "startChar": 42,
+        "endLine": 59,
+        "endChar": 49
+      },
+      "revId": "5bbd765bcec0ecd12d5743c8c098fa1b999dafd9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
