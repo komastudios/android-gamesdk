@@ -43,17 +43,17 @@
   </application>
 
   <!--
-    If building for Google Play Games for Windows, some features are not
+    If building for Google Play Games for PC, some features are not
     supported. For example, "android.hardware.wifi" is not supported, so the
     following line will cause an exception.
     <uses-feature android.hardware.wifi android:required="true" />
 
     The feature needs to be removed or changed to not required like:
     <uses-feature android.hardware.wifi android:required="false" />
+
+    Use this space to add features used only for Google Play Games for PC
   -->
-  <uses-feature android:glEsVersion="0x00030000" android:required="true" />
-
-
+  
 
   <!--
     If building for Google Play Games for Windows, some permissions are not
@@ -62,8 +62,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     The permission needs to be removed to run on Google Play Games for Windows.
+
+    Use this space to add permissions used only for Google Play Games for PC
   -->
 
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 </manifest>
