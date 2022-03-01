@@ -68,6 +68,11 @@ pushd "$dist_dir/$package_name"
 ZIPNAME=$(ls agdk-libraries-*)
 sha256sum $ZIPNAME > $ZIPNAME.sha256
 popd
+# And the express zip
+pushd "$dist_dir/$express_package_name"
+ZIPNAME=$(ls agdk-libraries-*)
+sha256sum $ZIPNAME > $ZIPNAME.sha256
+popd
 
 pushd "$dist_dir/$package_name"
 # Remove intermediate files that would be very costly to store
