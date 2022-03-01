@@ -29,6 +29,7 @@ import android.view.WindowManager.LayoutParams;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+
 import com.google.androidgamesdk.GameActivity;
 
 public class AGDKTunnelActivity extends GameActivity {
@@ -76,6 +77,11 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+
+        if (isPlayGamesServicesLinked()) {
+            // Initialize Play Games Services
+            PGSManager.getInstance(this);
+        }
     }
 
     public boolean isGooglePlayGames() {
@@ -85,5 +91,10 @@ public class AGDKTunnelActivity extends GameActivity {
 
     public String getInternalStoragePath() {
         return getFilesDir().getAbsolutePath();
+    }
+
+    private boolean isPlayGamesServicesLinked() {
+        String playGamesServicesPlaceholder = "0000000000";
+        return !getString(R.string.game_services_project_id).equals(playGamesServicesPlaceholder);
     }
 }
