@@ -22,6 +22,30 @@
       },
       "revId": "5bbd765bcec0ecd12d5743c8c098fa1b999dafd9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e29b1934_0625e4e6",
+        "filename": "samples/agdktunnel/app/src/playGamesPC/AndroidManifest.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-01T21:18:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77a7d6eb_30960206",
+      "range": {
+        "startLine": 59,
+        "startChar": 42,
+        "endLine": 59,
+        "endChar": 49
+      },
+      "revId": "5bbd765bcec0ecd12d5743c8c098fa1b999dafd9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
