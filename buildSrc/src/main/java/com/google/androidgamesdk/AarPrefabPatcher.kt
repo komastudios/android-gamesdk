@@ -12,9 +12,7 @@ import java.io.File
  */
 class AarPrefabPatcher {
     fun injectPrefabFolder(aarPath: String, prefabFolderPath: String) {
-        // Remove the game controller classes and put the new classes.jar
-        // back in the .aar
-        removeGameControllerClasses(aarPath, "com/google/android/")
+	println("injectPrefabFolder: aarPath=${aarPath}, prefabFolderPath=${prefabFolderPath}")
 
         val aarZipFile = ZipFile(aarPath)
 
@@ -25,24 +23,29 @@ class AarPrefabPatcher {
         aarZipFile.addFolder(prefabFolderFile, zipParameters)
     }
 
-    fun extractAarClasses(aarPath: String, prefabFolderPath: String, doRemove: Boolean) {
+    // Copy classes.jar from $aarPath to $prefabFolderPath, if it's not there already, filtering the classes to remove non-gamecontroller classes.
+    fun extractAarClasses(aarPath: String, prefabFolderPath: String): File {
         val jarName = "classes.jar"
         val jarPath = joinPath(prefabFolderPath, jarName)
 
-        val checkExists = File(jarPath)
-        if (!checkExists.exists()) {
+        val outputFile = File(jarPath)
+        if (!outputFile.exists()) {
+	    println("extractAar: aarPath=${aarPath}, prefabFolderPath=${prefabFolderPath}")
             val aarZipFile = ZipFile(aarPath)
             aarZipFile.extractFile(jarName, prefabFolderPath)
             aarZipFile.removeFile(jarName)
-            // Remove the non game controller classes and
+            // Remove the non-GameController classes and
             // put the modified classes.jar back in the .aar
-            if (doRemove) {
-                removeClasses(aarZipFile, jarPath, "com/google/androidgamesdk/")
-            }
+	    val directoryToRemove = "com/google/androidgamesdk"
+	    val directoryNotToRemove = "com/google/android/games/paddleboat"
+            removeClasses(jarPath, directoryToRemove, directoryNotToRemove)
+	    addClassesJarToAar(jarPath, aarZipFile)
         }
+	return outputFile
     }
 
-    fun removeGameControllerClasses(aarPath: String, directoryToRemove: String) {
+    // Filter classes in aarPath->classes.jar.
+    fun filterClasses(aarPath: String, directoryToRemove: String, directoryNotToRemove: String?) {
         val temporaryDirectory =
             createTempDir("gamesdk-remove-classes")
         var aarZipFile = ZipFile(aarPath)
@@ -50,25 +53,32 @@ class AarPrefabPatcher {
         var jarPath = joinPath(temporaryDirectory.absolutePath, jarName)
         aarZipFile.extractFile(jarName, temporaryDirectory.absolutePath)
         aarZipFile.removeFile(jarName)
-        removeClasses(aarZipFile, jarPath, directoryToRemove)
+        removeClasses(jarPath, directoryToRemove, directoryNotToRemove)
+	addClassesJarToAar(jarPath, aarZipFile)
     }
 
-    fun removeClasses(aarZipFile: ZipFile, jarPath: String, directoryToRemove: String) {
+    private fun removeClasses(jarPath: String, directoryToRemove: String, directoryNotToRemove: String?) {
+	println("removeClasses ${jarPath}, ${directoryToRemove}, ${directoryNotToRemove}")
         var jarZipFile = ZipFile(jarPath)
 
         val fileHeaders = jarZipFile.getFileHeaders();
         val removeList = mutableListOf<String>()
         for (fileHeader in fileHeaders) {
             val fileName = fileHeader.getFileName()
-            if (fileName.startsWith(directoryToRemove)) {
-                removeList.add(fileName)
+	    if (directoryNotToRemove==null || !fileName.startsWith(directoryNotToRemove)) {
+		if ( fileName.startsWith(directoryToRemove)) {
+                    removeList.add(fileName)
+		}
             }
         }
 
         for (removeFileName in removeList) {
+	    println("Removing ${removeFileName}")
             jarZipFile.removeFile(removeFileName)
         }
+    }
 
+    private fun addClassesJarToAar(jarPath: String, aarZipFile: ZipFile) {
         val zipParameters = ZipParameters()
         zipParameters.isIncludeRootFolder = false
         aarZipFile.addFile(jarPath, zipParameters)
