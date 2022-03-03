@@ -33,6 +33,24 @@
       "message": "nit: comment that instructions for enabling APT can be found in the README?",
       "revId": "f773c906b3c8da605dab6cc30aa5b74f748633bd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9383f30_14038976",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-03T13:57:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b10b581_8362952a",
+      "revId": "f773c906b3c8da605dab6cc30aa5b74f748633bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
