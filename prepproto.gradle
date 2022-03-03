@@ -1,0 +1,57 @@
+import org.gradle.internal.os.OperatingSystem;
+import static groovy.lang.Closure.IDENTITY;
+
+def protobufInstallDir() {
+    def protoDirName = 'linux-x86'
+    if (OperatingSystem.current().isWindows()) {
+        protoDirName = 'win'
+    } else if (OperatingSystem.current().isMacOsX()) {
+        protoDirName = 'mac'
+    }
+    return new File("${buildscript.sourceFile.getParent()}/third_party/protobuf-3.0.0/install/"
+            + protoDirName).getPath()
+}
+
+def getEnvironment() {
+    def env = [:]
+    def trans = IDENTITY
+    if (OperatingSystem.current().isWindows()) {
+        trans = { it.toUpperCase() }
+    }
+    System.getenv().each { entry -> env[trans(entry.key)] = entry.value }
+    return env
+}
+
+task prepare_proto_before() {
+    def protocBinDir = protobufInstallDir() + "/bin"
+    def sixDir = "${buildscript.sourceFile.getParent()}/../external/six"
+    def env = getEnvironment()
+    env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
+    env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
+    doLast {
+        // Install python-protobuf
+        exec {
+            workingDir "${buildscript.sourceFile.getParent()}/third_party/protobuf-3.0.0/python"
+            setEnvironment env
+            commandLine "python", "setup.py", "install", "--user"
+        }
+        // Generate nano-pb requirements
+        exec {
+            workingDir "${buildscript.sourceFile.getParent()}/../external/nanopb-c/generator/proto"
+            setEnvironment env
+            commandLine 'make'
+        }
+    }
+}
+
+task prepare_proto(dependsOn: prepare_proto_before) {
+    doLast {
+        exec {
+            workingDir "${buildscript.sourceFile.getParent()}"
+            commandLine "python"
+            args = ["ab_info.py"]
+        }
+    }
+}
+
+
