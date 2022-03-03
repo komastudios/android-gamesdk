@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5e5a63c_85ae5df7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-03T13:41:44Z",
+      "side": 1,
+      "message": "One nit but LGTM",
+      "revId": "f773c906b3c8da605dab6cc30aa5b74f748633bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b10b581_8362952a",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-03T13:41:44Z",
+      "side": 1,
+      "message": "nit: comment that instructions for enabling APT can be found in the README?",
+      "revId": "f773c906b3c8da605dab6cc30aa5b74f748633bd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
