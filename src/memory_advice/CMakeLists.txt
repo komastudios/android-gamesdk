@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18.1)
 project(memory-advice C CXX)
 set(CMAKE_CXX_STANDARD 14)
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 include("../../samples/gamesdk.cmake")
 
