@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(tuningfork C CXX)
 set(CMAKE_CXX_STANDARD 14)
+set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
 
