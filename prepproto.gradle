@@ -1,6 +1,8 @@
 import org.gradle.internal.os.OperatingSystem;
 import static groovy.lang.Closure.IDENTITY;
 
+def gameSdkRoot = buildscript.sourceFile.getParent()
+
 def protobufInstallDir() {
     def protoDirName = 'linux-x86'
     if (OperatingSystem.current().isWindows()) {
@@ -8,7 +10,7 @@ def protobufInstallDir() {
     } else if (OperatingSystem.current().isMacOsX()) {
         protoDirName = 'mac'
     }
-    return new File("${buildscript.sourceFile.getParent()}/third_party/protobuf-3.0.0/install/"
+    return new File("${gameSdkRoot}/third_party/protobuf-3.0.0/install/"
             + protoDirName).getPath()
 }
 
@@ -24,20 +26,20 @@ def getEnvironment() {
 
 task prepare_proto_before() {
     def protocBinDir = protobufInstallDir() + "/bin"
-    def sixDir = "${buildscript.sourceFile.getParent()}/../external/six"
+    def sixDir = "${gameSdkRoot}/../external/six"
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
     doLast {
         // Install python-protobuf
         exec {
-            workingDir "${buildscript.sourceFile.getParent()}/third_party/protobuf-3.0.0/python"
+            workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
             setEnvironment env
             commandLine "python", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
-            workingDir "${buildscript.sourceFile.getParent()}/../external/nanopb-c/generator/proto"
+            workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
             setEnvironment env
             commandLine 'make'
         }
@@ -47,7 +49,7 @@ task prepare_proto_before() {
 task prepare_proto(dependsOn: prepare_proto_before) {
     doLast {
         exec {
-            workingDir "${buildscript.sourceFile.getParent()}"
+            workingDir "${gameSdkRoot}"
             commandLine "python"
             args = ["ab_info.py"]
         }
