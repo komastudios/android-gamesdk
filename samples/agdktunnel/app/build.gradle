@@ -16,6 +16,7 @@
 
 import org.gradle.internal.os.OperatingSystem;
 
+apply from: GameSDKPath + '/prepproto.gradle'
 apply plugin: 'com.android.application'
 
 android {
@@ -133,6 +134,7 @@ def getProtocPath() {
 }
 
 task buildTuningForkBinFiles(type: Exec) {
+    dependsOn prepare_proto
     dependsOn createJar
     commandLine "java",
             "-jar",
