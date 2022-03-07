@@ -30,7 +30,7 @@ using namespace json11;
 
 class MemoryAdviceImpl {
    private:
-    std::unique_ptr<MetricsProvider> metrics_provider_;
+    IMetricsProvider* metrics_provider_;
     std::unique_ptr<DeviceProfiler> device_profiler_;
     std::unique_ptr<Predictor> realtime_predictor_, available_predictor_;
     Json::object advisor_parameters_;
@@ -38,6 +38,8 @@ class MemoryAdviceImpl {
     Json::object device_profile_;
     Json::object build_;
     std::mutex advice_mutex_;
+
+    std::unique_ptr<IMetricsProvider> default_metrics_provider_;
 
     typedef std::vector<std::unique_ptr<StateWatcher>> WatcherContainer;
     WatcherContainer active_watchers_;
@@ -66,7 +68,7 @@ class MemoryAdviceImpl {
      * returned object also includes how long it took to gather the metrics.
      */
     Json::object ExtractValues(
-        MetricsProvider::MetricsFunction metrics_function, Json fields);
+        IMetricsProvider::MetricsFunction metrics_function, Json fields);
     double MillisecondsSinceEpoch();
     /** @brief Find a value in a JSON object, even when it is nested in
      * sub-dictionaries in the object. */
@@ -76,7 +78,7 @@ class MemoryAdviceImpl {
     void CheckCancelledWatchers();
 
    public:
-    MemoryAdviceImpl(const char* params);
+    MemoryAdviceImpl(const char* params, IMetricsProvider* metrics_provider);
     /** @brief Creates an advice object by reading variable metrics and
      * feeding them into the provided machine learning model.
      */
