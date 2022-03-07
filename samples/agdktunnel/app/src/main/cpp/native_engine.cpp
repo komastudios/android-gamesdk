@@ -108,6 +108,9 @@ NativeEngine::NativeEngine(struct android_app *app) {
     ALOGI("Calling SwappyGL_init");
     SwappyGL_init(GetJniEnv(), mApp->activity->javaGameActivity);
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
+#ifdef SWAPPY_OFF_MODE
+    SwappyGL_setMaxAutoSwapIntervalNS(0);
+#endif // SWAPPY_OFF_MODE
 
     mTuningManager = new TuningManager(GetJniEnv(), app->activity->javaGameActivity, app->config);
 
@@ -125,6 +128,20 @@ NativeEngine::NativeEngine(struct android_app *app) {
 
     GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
                                   IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
+
+    // Flag to find if we are are running on Google Play Games
+    if (mJniEnv) {
+        // Find the Java class
+        jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
+        // Find the Java method
+        jmethodID methodID =
+                mJniEnv->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
+        // Call the method
+        mRunningOnGooglePlayGames =
+                (bool) mJniEnv->CallBooleanMethod(mApp->activity->javaGameActivity, methodID);
+    } else {
+        mRunningOnGooglePlayGames = false;
+    }
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -275,6 +292,10 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
     }
 
     return mAppJniEnv;
+}
+
+bool NativeEngine::GetRunningOnGooglePlayGames() {
+    return mRunningOnGooglePlayGames;
 }
 
 static char sInsetsTypeName[][32] = {

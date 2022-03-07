@@ -18,6 +18,9 @@ import org.gradle.internal.os.OperatingSystem;
 
 apply plugin: 'com.android.application'
 
+// See README for details on enabling APT
+def useApt = APTEnabled
+
 android {
     compileSdkVersion 30
     ndkVersion '21.4.7075529'
@@ -37,7 +40,8 @@ android {
             externalNativeBuild {
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                            "-DUSE_ASSET_PACKS=false"
+                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_APT=$useApt"
                 }
             }
         }
@@ -48,10 +52,31 @@ android {
                         'proguard-rules.pro'
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                            "-DUSE_ASSET_PACKS=false"
+                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_APT=$useApt"
                 }
             }
             multiDexEnabled true
+        }
+    }
+    // Flavor dimension to create mobile and PC build variants
+    flavorDimensions "platform"
+    productFlavors {
+        mobile {
+            getIsDefault().set(true)
+            dimension "platform"
+            applicationIdSuffix ".mobile"
+            versionNameSuffix "-mobile"
+        }
+        playGamesPC {
+            dimension "platform"
+            applicationIdSuffix ".playGamesPC"
+            versionNameSuffix "-playGamesPC"
+
+            // x86 ABI compatibility
+            ndk {
+                abiFilters 'x86'
+            }
         }
     }
     externalNativeBuild {
@@ -82,10 +107,13 @@ dependencies {
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
     implementation "androidx.games:games-controller:1.0.0"
-    //    implementation "androidx.games:games-activity:1.1.0-beta01"
+    implementation "androidx.games:games-activity:1.1.0-beta03"
 
+    // Google Play Games dependencies
+    // TODO(b/215589030): release the input sdk public to GMaven
+    playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
-    implementation fileTree(dir: 'libs', include: ['GameActivity.aar'])
+    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
     //                                               'GameController.aar',
     //                                               'games-frame-pacing-1.9.0.aar',
     //                                               'games-performance-tuner-1.5.0.aar'])
@@ -120,4 +148,6 @@ task buildTuningForkBinFiles(type: Exec) {
             getProtocPath()
 }
 
-tasks.preBuild.dependsOn("buildTuningForkBinFiles")
+if (APTEnabled.toBoolean()) {
+    tasks.preBuild.dependsOn("buildTuningForkBinFiles")
+}

@@ -24,6 +24,7 @@
 #include "shape_renderer.hpp"
 #include "text_renderer.hpp"
 #include "util.hpp"
+#include "input_util.hpp"
 
 class OurShader;
 
@@ -55,6 +56,8 @@ public:
 
     virtual void OnKeyDown(int keyCode);
 
+    virtual void OnKeyUp(int keyCode);
+
     virtual void OnPause();
 
 protected:
@@ -68,6 +71,10 @@ protected:
     // shape and text renderers we use when rendering the HUD
     ShapeRenderer *mShapeRenderer;
     TextRenderer *mTextRenderer;
+#ifdef TOUCH_INDICATOR_MODE
+    // Flat color rectangle for latency measurement
+    ShapeRenderer *mRectRenderer;
+#endif // TOUCH_INDICATOR_MODE
 
     // matrices
     glm::mat4 mViewMat, mProjMat;
@@ -120,7 +127,7 @@ protected:
     ObstacleGenerator mObstacleGen;
 
     // touch pointer ID and anchor position (where touch started)
-    static const int STEERING_NONE = 0, STEERING_TOUCH = 1, STEERING_JOY = 2;
+    static const int STEERING_NONE = 0, STEERING_TOUCH = 1, STEERING_JOY = 2, STEERING_KEY = 3;
     int mSteering;  // is player steering at the moment? If so, how?
     int mPointerId;  // if so, what's the pointer ID
     float mPointerAnchorX, mPointerAnchorY; // where the drag started
@@ -131,6 +138,9 @@ protected:
     // moving average filter for input (on mShipSteerX and mShipSteerY)
     static const int NOISE_FILTER_SAMPLES = 5;
     float mFilteredSteerX, mFilteredSteerZ;
+
+    // Bitmask for movement keys: W = 1, A = 2, S = 4, D = 8
+    int mMotionKeyBitmask;
 
     // frame clock -- it computes the deltas between successive frames so we can
     // update stuff properly
@@ -293,6 +303,9 @@ protected:
 
     // update projection matrix
     void UpdateProjectionMatrix();
+
+    // apply movement if key is pressed
+    void OnMovementKey();
 };
 
 #endif
