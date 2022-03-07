@@ -306,14 +306,14 @@ task cleanPath(type: Delete) {
 }
 
 /**
- * Take the classes.jar from a hybrid library and copy it to the
- * Prefab AAR being generated
+ * Take the classes.jar from outputs/aar/GameController.aar and copy it to the
+ * prefab folder being generated, filtering non-game controller classes.
  */
-def copyHybridClassesFromAar(outFolder, library, doRemove) {
+def copyHybridClassesFromAar(library, outFolder) {
     def hybridAarPath = joinPath(getOutPath(), "outputs/aar/${library.hybridProjectDir}.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
-    aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder, doRemove)
+    return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
 }
 
 def prefabBuildFolder(outFolder) {
@@ -619,6 +619,9 @@ def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
         def prefabFolderPath = joinPath(getProjectDir().getPath(), library.projectName, library.prefabFolderName)
         def aarPrefabPatcher = new AarPrefabPatcher()
         aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
+        // Remove GameController classes if we are not GameController.
+        if (library.libraryInfo.nickname!="paddleboat")
+            aarPrefabPatcher.filterClasses(aarPath, "com/google/android/games/paddleboat", null)
     }
 
     copy {
@@ -883,16 +886,19 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
             if (library.isHybridLibrary()) {
                 // Put classes.jar in 'libs' root and make sure it only has relevant classes
                 def outFolder = joinPath(packageName, "libs")
-                copyHybridClassesFromAar(outFolder, library, true)
+                def filteredJarFile = copyHybridClassesFromAar(library, outFolder)
                 // Patch aar with native libraries.
                 // Use a temporary dir to avoid pollution with other prefab libraries.
                 def tempPrefabDir = getPackageName()+"_"+library.hybridProjectDir
+                copy {
+                    from filteredJarFile
+                    into tempPrefabDir
+                }
                 buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
                     copyNativeLibraryToPrefabDir(buildInfo, tempPrefabDir, library)
-                    copyHybridClassesFromAar(tempPrefabDir, library, true)
                 }
                 removeUnneededPrefabDirs(tempPrefabDir, library)
-                // Now add the prefab files to the aar.
+                // Now add the prefab files to the $hybridProjectDir.aar.
                 def aarPath = joinPath(getOutPath(), "outputs", "aar", "${library.hybridProjectDir}.aar")
                 def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
                 def aarPrefabPatcher = new AarPrefabPatcher()
@@ -909,50 +915,6 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
         copyDocs(packageName)
         if (shouldIncludeSampleSources()) {
             copySampleSources(packageName, nativeLibraries)
-        }
-    }
-}
-
-// Build task for making the structure of an AAR that can be used with Prefab.
-// The actual zipping up into an AAR is done in packageAar.
-task buildAarStructure {
-    def nativeLibraries = filterNativeLibraries(allLibraries)
-    def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-
-    dependsOn ':extras:assembleRelease'
-    nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
-        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
-    }
-    androidArchiveLibraries.each { androidLibrary ->
-        dependsOn ":${androidLibrary.projectName}:assembleRelease"
-    }
-
-    doFirst {
-        // Clear the package and output path to ensure AAR generation is not polluted
-        // by previous build tasks.
-        delete getFullPackagePath()
-    }
-
-    doLast {
-        def packageName = getPackageName()
-
-        // Android libraries are already built, just add the AARs to the package.
-        androidArchiveLibraries.each {
-            copyAndroidArchiveLibrary(it, packageName)
-        }
-
-        // Build native libraries, and add them to the AAR
-        nativeLibraries.each { library ->
-            buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
-                copyNativeLibraryToPrefabDir(buildInfo, packageName, library)
-                if (library.isHybridLibrary()) {
-                    copyHybridClassesFromAar(packageName, library, true)
-                }
-            }
-            removeUnneededPrefabDirs(packageName, library)
         }
     }
 }
@@ -1029,9 +991,11 @@ task buildSampleArtifacts {
     }
 }
 
-/** Create a ZIP file for the entire "package" generated by a build task. */
-def addZipTask(name, buildTask, archName) {
-    tasks.register(name, Zip) {
+/** Add a task called $zipTask that creates a ZIP or AAR file, $outputArchiveFileName,
+for the entire "package" generated by $buildTask.
+The task then copies the archive to the 'build' directory and to the 'package' directory. */
+def addZipTask(zipTask, buildTask, outputArchiveFileName) {
+    tasks.register(zipTask, Zip) {
         dependsOn buildTask
 
         if (shouldIncludeSampleArtifacts()) {
@@ -1040,20 +1004,21 @@ def addZipTask(name, buildTask, archName) {
         def packageFolder = getFullPackagePath()
 
         from fileTree(packageFolder)
-        exclude archName
+        exclude outputArchiveFileName
         destinationDirectory = file(packageFolder)
-        archiveFileName = archName
+        archiveFileName = outputArchiveFileName
 
         doLast {
+            // Copy the output archive to 'build'
             def outFolder = getBuildPath();
             mkdir outFolder;
 
             copy {
-                from file(archiveName)
+                from file(outputArchiveFileName)
                 into outFolder
             }
 
-            // This copies across everything, including the zip.
+            // This copies across everything, including the zip, to the $distribution/$package directory.
             // We then delete stuff we don't need in the build.sh script.
             if (getDistPath() != getPackagePath()) {
                 copy {
@@ -1063,13 +1028,65 @@ def addZipTask(name, buildTask, archName) {
             }
 
             def out = services.get(StyledTextOutputFactory).create("output")
-            out.style(Style.Identifier).text('\n' + archName + ' is in ')
+            out.style(Style.Identifier).text('\n' + outputArchiveFileName + ' is in ')
                     .style(Style.ProgressStatus)
                     .println(destinationDirectory.get());
         }
     }
 
 }
+
+addZipTask("packageUnityZip", buildUnity, "builds.zip")
+addZipTask("packageZip", buildAll, getAGDKZipName())
+addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
+addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
+
+// Build task for making the structure of an AAR that can be used with Prefab.
+// The actual zipping up into an AAR is done in packageAar.
+task buildAarStructure {
+    def nativeLibraries = filterNativeLibraries(allLibraries)
+    def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
+
+    dependsOn ':extras:assembleRelease'
+    nativeLibraries.each { nativeLibrary ->
+        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
+        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
+    }
+    androidArchiveLibraries.each { androidLibrary ->
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
+    }
+
+    doFirst {
+        // Clear the package and output path to ensure AAR generation is not polluted
+        // by previous build tasks.
+        delete getFullPackagePath()
+    }
+
+    doLast {
+        def packageName = getPackageName()
+
+        // Android libraries are already built, just add the AARs to the package.
+        androidArchiveLibraries.each {
+            copyAndroidArchiveLibrary(it, packageName)
+        }
+
+        // Build native libraries, and add them to the AAR
+        nativeLibraries.each { library ->
+            buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
+                copyNativeLibraryToPrefabDir(buildInfo, packageName, library)
+                if (library.isHybridLibrary()) {
+                    copyHybridClassesFromAar(library, packageName)
+                }
+            }
+            removeUnneededPrefabDirs(packageName, library)
+        }
+    }
+}
+
+// Task performed before a maven file is prepared with prepareMavenZipContent.
+addZipTask("packageAar", buildAarStructure, "gamesdk.aar")
 
 task prepareMavenZipContent {
     description "Build the AAR and prepare the versioned pom file for the specified libraries"
@@ -1143,12 +1160,6 @@ task packageMavenZip(type: Zip) {
         }
     }
 }
-
-addZipTask("packageUnityZip", buildUnity, "builds.zip")
-addZipTask("packageZip", buildAll, getAGDKZipName())
-addZipTask("packageLocalZip", buildLocal, "gamesdk.zip")
-addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
-addZipTask("packageAar", buildAarStructure, "gamesdk.aar")
 
 task jetpadJson {
     doLast {

@@ -18,6 +18,7 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -75,5 +76,10 @@ public class AGDKTunnelActivity extends GameActivity {
         // super.setImeEditorInfoFields(InputType.TYPE_CLASS_TEXT,
         //     IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN );
         super.onCreate(savedInstanceState);
+    }
+
+    public boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
     }
 }
