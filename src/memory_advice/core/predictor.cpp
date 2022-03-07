@@ -46,6 +46,8 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
 
     features_string =
         features_string.substr(features_string.find_first_of('\n') + 1);
+    features_string =
+        features_string.substr(0, features_string.find_first_of(']'));
     int pos = 0;
     while ((pos = features_string.find_first_of('\n')) != std::string::npos) {
         std::string line(features_string.substr(0, pos));
