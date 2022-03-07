@@ -41,12 +41,23 @@ using namespace json11;
 MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
                                        std::string features_file) {
     apk_utils::NativeAsset features_asset(features_file.c_str());
+
+    // Get the features list from the corresponding asset,
+    // which is a list of strings denoted with quotation marks
     std::string features_string(
         static_cast<const char*>(AAsset_getBuffer(features_asset)));
 
+    // remove the extra bits from the beginning and end of the files
+    // including the brackets
     features_string =
         features_string.substr(features_string.find_first_of('\n') + 1);
+    features_string =
+        features_string.substr(0, features_string.find_first_of(']'));
     int pos = 0;
+
+    // Iterate over the list, searching for quotation marks to figure out
+    // where each string begins and ends. This operation ends with all the
+    // features placed inside a vector<string>
     while ((pos = features_string.find_first_of('\n')) != std::string::npos) {
         std::string line(features_string.substr(0, pos));
         features.push_back(
@@ -55,19 +66,25 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
         features_string = features_string.substr(pos + 1);
     }
 
+    // Read the tflite model from the given asset file
     model_asset = std::make_unique<apk_utils::NativeAsset>(model_file.c_str());
     const char* model_buffer =
         static_cast<const char*>(AAsset_getBuffer(*model_asset));
     const size_t model_capacity =
         static_cast<size_t>(AAsset_getLength(*model_asset));
 
+    // Create a tensorflow lite model using the asset file
     model = tflite::FlatBufferModel::BuildFromBuffer(
         model_buffer, model_capacity, &error_reporter);
     std::unique_ptr<OpResolver> resolver = tflite::CreateOpResolver();
 
+    // Create a tensorflow lite interpreter from the model
     if (InterpreterBuilder(*model, *resolver)(&interpreter) != kTfLiteOk) {
         return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
     }
+
+    // Finally, resize the input of the model; which is just the number of
+    // available features
     std::vector<int> sizes;
     sizes.push_back(features.size());
     if (interpreter->ResizeInputTensor(0, sizes) != kTfLiteOk) {

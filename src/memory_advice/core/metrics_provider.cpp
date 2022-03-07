@@ -42,23 +42,23 @@ namespace memory_advice {
 
 using namespace json11;
 
-Json::object MetricsProvider::GetMeminfoValues() {
+Json::object DefaultMetricsProvider::GetMeminfoValues() {
     return GetMemoryValuesFromFile("/proc/meminfo", MEMINFO_REGEX);
 }
 
-Json::object MetricsProvider::GetStatusValues() {
+Json::object DefaultMetricsProvider::GetStatusValues() {
     std::stringstream ss_path;
     ss_path << "/proc/" << getpid() << "/status";
     return GetMemoryValuesFromFile(ss_path.str(), STATUS_REGEX);
 }
 
-Json::object MetricsProvider::GetProcValues() {
+Json::object DefaultMetricsProvider::GetProcValues() {
     Json::object proc_map;
     proc_map["oom_score"] = Json(GetOomScore());
     return proc_map;
 }
 
-Json::object MetricsProvider::GetActivityManagerValues() {
+Json::object DefaultMetricsProvider::GetActivityManagerValues() {
     Json::object metrics_map;
     java::Object obj = AppContext().getSystemService(
         android::content::Context::ACTIVITY_SERVICE);
@@ -73,7 +73,7 @@ Json::object MetricsProvider::GetActivityManagerValues() {
     return metrics_map;
 }
 
-Json::object MetricsProvider::GetActivityManagerMemoryInfo() {
+Json::object DefaultMetricsProvider::GetActivityManagerMemoryInfo() {
     android::app::MemoryInfo memory_info;
     Json::object metrics_map;
     java::Object obj = AppContext().getSystemService(
@@ -88,7 +88,7 @@ Json::object MetricsProvider::GetActivityManagerMemoryInfo() {
     return metrics_map;
 }
 
-Json::object MetricsProvider::GetDebugValues() {
+Json::object DefaultMetricsProvider::GetDebugValues() {
     Json::object metrics_map;
     metrics_map["nativeHeapAllocatedSize"] =
         Json((double)android_debug_.getNativeHeapAllocatedSize());
@@ -100,7 +100,7 @@ Json::object MetricsProvider::GetDebugValues() {
     return metrics_map;
 }
 
-Json::object MetricsProvider::GetMemoryValuesFromFile(
+Json::object DefaultMetricsProvider::GetMemoryValuesFromFile(
     const std::string &path, const std::regex &pattern) {
     std::ifstream file_stream(path);
     Json::object metrics_map;
@@ -121,7 +121,7 @@ Json::object MetricsProvider::GetMemoryValuesFromFile(
     return metrics_map;
 }
 
-int32_t MetricsProvider::GetOomScore() {
+int32_t DefaultMetricsProvider::GetOomScore() {
     std::stringstream ss_path;
     ss_path << "/proc/" << getpid() << "/oom_score";
     std::ifstream oom_file(ss_path.str());

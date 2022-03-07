@@ -28,8 +28,13 @@ namespace memory_advice {
 
 using namespace json11;
 
-MemoryAdviceImpl::MemoryAdviceImpl(const char* params) {
-    metrics_provider_ = std::make_unique<MetricsProvider>();
+MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
+                                   IMetricsProvider* metrics_provider)
+    : metrics_provider_(metrics_provider) {
+    if (metrics_provider_ == nullptr) {
+        default_metrics_provider_ = std::make_unique<DefaultMetricsProvider>();
+        metrics_provider_ = default_metrics_provider_.get();
+    }
     realtime_predictor_ = std::make_unique<Predictor>();
     available_predictor_ = std::make_unique<Predictor>();
 
@@ -362,9 +367,9 @@ Json::object MemoryAdviceImpl::GenerateMetricsFromFields(Json::object fields) {
 }
 
 Json::object MemoryAdviceImpl::ExtractValues(
-    MetricsProvider::MetricsFunction metrics_function, Json fields) {
+    IMetricsProvider::MetricsFunction metrics_function, Json fields) {
     double start_time = MillisecondsSinceEpoch();
-    Json::object metrics = (metrics_provider_.get()->*metrics_function)();
+    Json::object metrics = (metrics_provider_->*metrics_function)();
     Json::object extracted_metrics;
     if (fields.bool_value()) {
         extracted_metrics = metrics;
