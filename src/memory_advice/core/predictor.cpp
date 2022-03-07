@@ -46,6 +46,8 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
 
     features_string =
         features_string.substr(features_string.find_first_of('\n') + 1);
+    features_string =
+        features_string.substr(0, features_string.find_first_of(']'));
     int pos = 0;
     while ((pos = features_string.find_first_of('\n')) != std::string::npos) {
         std::string line(features_string.substr(0, pos));
@@ -70,6 +72,12 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
     }
     std::vector<int> sizes;
     sizes.push_back(features.size());
+    ALOGE("BARIS: features size is: %d", sizes[0]);
+
+    for (int i = 0; i < features.size(); i++) {
+        ALOGE("BARIS: feature number %d is %s:", i, features[i].c_str());
+    }
+
     if (interpreter->ResizeInputTensor(0, sizes) != kTfLiteOk) {
         return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
     }
