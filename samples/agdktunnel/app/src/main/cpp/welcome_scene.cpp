@@ -83,6 +83,9 @@ OwnedGameTextInputState &OwnedGameTextInputState::operator=(const GameTextInputS
 WelcomeScene::WelcomeScene() : mTextInputState(INITIAL_NAME) {
 }
 
+WelcomeScene::WelcomeScene(int level) : mTextInputState(INITIAL_NAME), mLevelLoaded(level) {
+}
+
 WelcomeScene::~WelcomeScene() {
 }
 
@@ -127,7 +130,7 @@ void WelcomeScene::OnButtonClicked(int id) {
     SceneManager *mgr = SceneManager::GetInstance();
 
     if (id == mPlayButtonId) {
-        mgr->RequestNewScene(new PlayScene());
+        mgr->RequestNewScene(new PlayScene(mLevelLoaded));
     } else if (id == mStoryButtonId) {
         mgr->RequestNewScene((new DialogScene())->SetText(BLURB_STORY)->SetSingleButton(S_OK,
                 DialogScene::ACTION_RETURN));
