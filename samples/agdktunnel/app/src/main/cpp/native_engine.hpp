@@ -60,6 +60,18 @@ public:
     // Returns if the game is running in Google Play Games
     bool GetRunningOnGooglePlayGames();
 
+    // Returns the path to save files to internal storage
+    char *GetInternalStoragePath();
+
+    // Returns if cloud save is enabled
+    bool IsCloudSaveEnabled();
+
+    // Returns the level saved in the cloud
+    int GetCloudSavedLevel();
+
+    // Save the checkpoint level in the cloud
+    void SaveCloudLevel(int level);
+
 private:
     // variables to track Android lifecycle:
     bool mHasFocus, mIsVisible, mHasWindow;
@@ -111,6 +123,12 @@ private:
 
     // is the game running on Google Play Games?
     bool mRunningOnGooglePlayGames;
+
+    // path to save files to internal storage
+    char *mInternalStoragePath;
+
+    // is cloud save enabled
+    bool mCloudSaveEnabled;
 
     // initialize the display
     bool InitDisplay();
