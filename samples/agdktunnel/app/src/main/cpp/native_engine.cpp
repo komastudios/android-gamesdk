@@ -129,19 +129,29 @@ NativeEngine::NativeEngine(struct android_app *app) {
     GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
                                   IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 
+    // Set fields retrieved through JNI
+    // Find the Java class
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+
     // Flag to find if we are are running on Google Play Games
-    if (mJniEnv) {
-        // Find the Java class
-        jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
-        // Find the Java method
-        jmethodID methodID =
-                mJniEnv->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
-        // Call the method
-        mRunningOnGooglePlayGames =
-                (bool) mJniEnv->CallBooleanMethod(mApp->activity->javaGameActivity, methodID);
-    } else {
-        mRunningOnGooglePlayGames = false;
+    jmethodID isGooglePlayGamesID =
+            GetJniEnv()->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
+    mRunningOnGooglePlayGames = (bool) GetJniEnv()->CallBooleanMethod(
+            mApp->activity->javaGameActivity, isGooglePlayGamesID);
+
+    // Field that stores the path to save files to internal storage
+    jmethodID getInternalStoragePathID = GetJniEnv()->GetMethodID(
+            activityClass, "getInternalStoragePath", "()Ljava/lang/String;");
+    jobject internalStoragePath = GetJniEnv()->CallObjectMethod(
+            mApp->activity->javaGameActivity, getInternalStoragePathID);
+    jboolean isCopy;
+    const char * str = GetJniEnv()->GetStringUTFChars((jstring)internalStoragePath, &isCopy);
+    mInternalStoragePath = new char[strlen(str) + 3];
+    strcpy(mInternalStoragePath, str);
+    if (isCopy == JNI_TRUE) {
+        GetJniEnv()->ReleaseStringUTFChars((jstring)internalStoragePath, str);
     }
+
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -296,6 +306,10 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
 
 bool NativeEngine::GetRunningOnGooglePlayGames() {
     return mRunningOnGooglePlayGames;
+}
+
+char *NativeEngine::GetInternalStoragePath() {
+    return mInternalStoragePath;
 }
 
 static char sInsetsTypeName[][32] = {
