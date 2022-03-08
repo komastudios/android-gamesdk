@@ -152,6 +152,11 @@ NativeEngine::NativeEngine(struct android_app *app) {
         GetJniEnv()->ReleaseStringUTFChars((jstring)internalStoragePath, str);
     }
 
+    // Flag to find if cloud save is enabled
+    jmethodID isPlayGamesServicesLinkedID =
+            GetJniEnv()->GetMethodID(activityClass, "isPlayGamesServicesLinked", "()Z");
+    mCloudSaveEnabled = (bool) GetJniEnv()->CallBooleanMethod(
+            mApp->activity->javaGameActivity, isPlayGamesServicesLinkedID);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -310,6 +315,32 @@ bool NativeEngine::GetRunningOnGooglePlayGames() {
 
 char *NativeEngine::GetInternalStoragePath() {
     return mInternalStoragePath;
+}
+
+bool NativeEngine::IsCloudSaveEnabled() {
+    return mCloudSaveEnabled;
+}
+
+int32_t NativeEngine::GetCloudSavedLevel() {
+    if (mCloudSaveEnabled && mJniEnv) {
+        jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+        jmethodID loadCloudCheckpointID =
+                GetJniEnv()->GetMethodID(activityClass, "loadCloudCheckpoint", "()I");
+        int32_t level = (int32_t) GetJniEnv()->CallIntMethod(
+                mApp->activity->javaGameActivity, loadCloudCheckpointID);
+        return level;
+    }
+    return 0;
+}
+
+void NativeEngine::SaveCloudLevel(int level) {
+    if (mCloudSaveEnabled && mJniEnv) {
+        jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+        jmethodID saveCloudCheckpointID =
+                GetJniEnv()->GetMethodID(activityClass, "saveCloudCheckpoint", "(I)V");
+        GetJniEnv()->CallVoidMethod(
+                mApp->activity->javaGameActivity, saveCloudCheckpointID, (jint)level);
+    }
 }
 
 static char sInsetsTypeName[][32] = {

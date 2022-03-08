@@ -74,7 +74,7 @@ PlayScene::PlayScene() : Scene() {
     mPlayerPos = glm::vec3(0.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3(0.0f, 1.0f, 0.0f); // forward
     mDifficulty = 0;
-    mUseCloudSave = false;
+    mUseCloudSave = NativeEngine::GetInstance()->IsCloudSaveEnabled();
 
     mCubeGeom = NULL;
     mTunnelGeom = NULL;
@@ -170,9 +170,11 @@ void PlayScene::LoadProgress() {
 
     // check cloud save.
     ALOGI("Checking cloud save data.");
-    if (true) {
-        ALOGI("No cloud save available because we are not signed in.");
-        mUseCloudSave = false;
+    if (mUseCloudSave) {
+        mSavedCheckpoint = NativeEngine::GetInstance()->GetCloudSavedLevel();
+        ALOGI("Level loaded from cloud: %d", mSavedCheckpoint);
+        mSavedCheckpoint = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+        ALOGI("Normalized check-point: level %d", mSavedCheckpoint);
     }
 
     if (mUseCloudSave && hasLocalFile) {
@@ -215,9 +217,7 @@ void PlayScene::SaveProgress() {
     // Save state locally or to the cloud, depending on configuration:
     if (mUseCloudSave) {
         ALOGI("Saving progress to the cloud: level %d", mDifficulty);
-        /*
-         * No where to save
-         */
+        NativeEngine::GetInstance()->SaveCloudLevel(mDifficulty);
     } else {
         ALOGI("Saving progress to LOCAL FILE: level %d", mDifficulty);
         WriteSaveFile(mDifficulty);

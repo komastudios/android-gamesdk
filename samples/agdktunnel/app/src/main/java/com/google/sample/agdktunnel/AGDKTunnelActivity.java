@@ -48,6 +48,11 @@ public class AGDKTunnelActivity extends GameActivity {
         System.loadLibrary("game");
     }
 
+    public boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+    }
+
     private void hideSystemUI() {
         // This will put the game behind any cutouts and waterfalls on devices which have
         // them, so the corresponding insets will be non-zero.
@@ -84,17 +89,31 @@ public class AGDKTunnelActivity extends GameActivity {
         }
     }
 
-    public boolean isGooglePlayGames() {
-        PackageManager pm = getPackageManager();
-        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
-    }
-
-    public String getInternalStoragePath() {
-        return getFilesDir().getAbsolutePath();
-    }
-
     private boolean isPlayGamesServicesLinked() {
         String playGamesServicesPlaceholder = "0000000000";
         return !getString(R.string.game_services_project_id).equals(playGamesServicesPlaceholder);
+    }
+
+    private boolean isCloudSaveEnabled() {
+        return isPlayGamesServicesLinked() && PGSManager.getInstance(this).isUserAuthenticated();
+    }
+
+    private int loadCloudCheckpoint() {
+        if (isCloudSaveEnabled()) {
+            int level = PGSManager.getInstance(this).loadCheckpoint();
+            return level;
+        } else {
+            return 0;
+        }
+    }
+
+    private void saveCloudCheckpoint(int level) {
+        if (isCloudSaveEnabled()) {
+            PGSManager.getInstance(this).saveCheckpoint(level);
+        }
+    }
+
+    private String getInternalStoragePath() {
+        return getFilesDir().getAbsolutePath();
     }
 }
