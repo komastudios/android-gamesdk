@@ -129,18 +129,34 @@ NativeEngine::NativeEngine(struct android_app *app) {
     GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
                                   IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 
-    // Flag to find if we are are running on Google Play Games
+    // Set fields retrieved through JNI
     if (mJniEnv) {
         // Find the Java class
         jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
-        // Find the Java method
-        jmethodID methodID =
+
+        // Flag to find if we are are running on Google Play Games
+        jmethodID isGooglePlayGamesID =
                 mJniEnv->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
-        // Call the method
-        mRunningOnGooglePlayGames =
-                (bool) mJniEnv->CallBooleanMethod(mApp->activity->javaGameActivity, methodID);
+        mRunningOnGooglePlayGames = (bool) mJniEnv->CallBooleanMethod(
+                mApp->activity->javaGameActivity, isGooglePlayGamesID);
+
+        // Field that stores the path to save files to internal storage
+        jmethodID getInternalStoragePathID = mJniEnv->GetMethodID(
+                activityClass, "getInternalStoragePath", "()Ljava/lang/String;");
+        jobject internalStoragePath = mJniEnv->CallObjectMethod(
+                mApp->activity->javaGameActivity, getInternalStoragePathID);
+        mInternalStoragePath = mJniEnv->GetStringUTFChars((jstring)internalStoragePath, 0);
+
+        // Flag to find if cloud save is enabled
+        jmethodID isCloudSaveEnabledID =
+                mJniEnv->GetMethodID(activityClass, "isCloudSaveEnabled", "()Z");
+        mCloudSaveEnabled = (bool) mJniEnv->CallBooleanMethod(
+                mApp->activity->javaGameActivity, isCloudSaveEnabledID);
+
     } else {
         mRunningOnGooglePlayGames = false;
+        mInternalStoragePath = "";
+        mCloudSaveEnabled = false;
     }
 }
 
@@ -296,6 +312,44 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
 
 bool NativeEngine::GetRunningOnGooglePlayGames() {
     return mRunningOnGooglePlayGames;
+}
+
+const char *NativeEngine::GetInternalStoragePath() {
+    return mInternalStoragePath;
+}
+
+bool NativeEngine::IsCloudSaveEnabled() {
+    return mCloudSaveEnabled;
+}
+
+int NativeEngine::GetCloudSavedLevel() {
+    if (mCloudSaveEnabled && mJniEnv) {
+        ALOGI("RUVALCABAC FLAG: calling loadCloudCheckpoint through JNI");
+        // Find the Java class
+        jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
+
+        jmethodID loadCloudCheckpointID =
+                mJniEnv->GetMethodID(activityClass, "loadCloudCheckpoint", "()I");
+        int32_t level = (int32_t) mJniEnv->CallIntMethod(
+                mApp->activity->javaGameActivity, loadCloudCheckpointID);
+
+        ALOGI("RUVALCABAC FLAG: level loaded: %d", level);
+        return level;
+    }
+    return 0;
+}
+
+void NativeEngine::SaveCloudLevel(int level) {
+    if (mCloudSaveEnabled && mJniEnv) {
+        // Find the Java class
+        jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
+
+        jmethodID saveCloudCheckpointID =
+                mJniEnv->GetMethodID(activityClass, "saveCloudCheckpoint", "(I)");
+
+        mJniEnv->CallVoidMethod(
+                mApp->activity->javaGameActivity, saveCloudCheckpointID, (jint)level);
+    }
 }
 
 static char sInsetsTypeName[][32] = {

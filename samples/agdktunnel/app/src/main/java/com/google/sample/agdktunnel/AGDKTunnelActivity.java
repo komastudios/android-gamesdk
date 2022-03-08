@@ -24,6 +24,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import androidx.core.view.WindowCompat;
@@ -82,15 +83,45 @@ public class AGDKTunnelActivity extends GameActivity {
             // Initialize Play Games Services
             PGSManager.getInstance(this);
         }
-    }
 
-    public boolean isGooglePlayGames() {
-        PackageManager pm = getPackageManager();
-        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+        saveCloudCheckpoint(2);
     }
 
     private boolean isPlayGamesServicesLinked() {
         String playGamesServicesPlaceholder = "0000000000";
         return !getString(R.string.game_services_project_id).equals(playGamesServicesPlaceholder);
+    }
+
+    /** JNI methods */
+    public boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+    }
+
+    private boolean isCloudSaveEnabled() {
+        return isPlayGamesServicesLinked();
+    }
+
+    private int loadCloudCheckpoint() {
+        if (isCloudSaveEnabled()) {
+            Log.i("RUVALCABAC FLAG:", "cloud is enabled, looking for level");
+            int level = PGSManager.getInstance(this).loadCheckpoint();
+            Log.i("RUVALCABAC FLAG", "level found from java: " + String.valueOf(level));
+            return level;
+        } else {
+            Log.i("RUVALCABAC FLAG:", "cloud is not enabled, returning 0");
+        }
+        return 0;
+    }
+
+    private void saveCloudCheckpoint(int level) {
+        Log.i("RUVALCABAC FLAG:", "saving to cloud " + String.valueOf(level));
+        if (isCloudSaveEnabled()) {
+            PGSManager.getInstance(this).saveCheckpoint(level);
+        }
+    }
+
+    public String getInternalStoragePath() {
+        return getFilesDir().getAbsolutePath();
     }
 }
