@@ -79,6 +79,7 @@ add_library(game SHARED
      jni_util.cpp
      loader_scene.cpp
      loading_thread.cpp
+     data_loader_machine.cpp
      native_app_glue_included.c
      native_engine.cpp
      obstacle.cpp
