@@ -81,6 +81,7 @@ add_library(game SHARED
      loader_scene.cpp
      loading_thread.cpp
      memory_consumer.cpp
+     data_loader_machine.cpp
      native_app_glue_included.c
      native_engine.cpp
      obstacle.cpp

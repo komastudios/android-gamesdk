@@ -146,25 +146,28 @@ NativeEngine::NativeEngine(struct android_app *app) {
     // Find the Java class
     jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
 
-    // Flag to find if we are are running on Google Play Games
-    jmethodID isGooglePlayGamesID =
-            GetJniEnv()->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
-    mRunningOnGooglePlayGames = (bool) GetJniEnv()->CallBooleanMethod(
-            mApp->activity->javaGameActivity, isGooglePlayGamesID);
-
     // Field that stores the path to save files to internal storage
     jmethodID getInternalStoragePathID = GetJniEnv()->GetMethodID(
             activityClass, "getInternalStoragePath", "()Ljava/lang/String;");
-    jobject internalStoragePath = GetJniEnv()->CallObjectMethod(
+    jobject jInternalStoragePath = GetJniEnv()->CallObjectMethod(
             mApp->activity->javaGameActivity, getInternalStoragePathID);
     jboolean isCopy;
-    const char * str = GetJniEnv()->GetStringUTFChars((jstring)internalStoragePath, &isCopy);
-    mInternalStoragePath = new char[strlen(str) + 3];
-    strcpy(mInternalStoragePath, str);
-    if (isCopy == JNI_TRUE) {
-        GetJniEnv()->ReleaseStringUTFChars((jstring)internalStoragePath, str);
-    }
+    const char * str = GetJniEnv()->GetStringUTFChars((jstring)jInternalStoragePath, &isCopy);
+    char *internalStoragePath = new char[strlen(str) + 2];
+    strcpy(internalStoragePath, str);
 
+    if (isCopy == JNI_TRUE) {
+        GetJniEnv()->ReleaseStringUTFChars((jstring)jInternalStoragePath, str);
+    }
+    GetJniEnv()->DeleteLocalRef(jInternalStoragePath);
+
+    // Flag to find if cloud save is enabled
+    jmethodID isPlayGamesServicesLinkedID =
+            GetJniEnv()->GetMethodID(activityClass, "isPlayGamesServicesLinked", "()Z");
+    mCloudSaveEnabled = (bool) GetJniEnv()->CallBooleanMethod(
+            mApp->activity->javaGameActivity, isPlayGamesServicesLinkedID);
+
+    mDataStateMachine = new DataLoaderStateMachine(mCloudSaveEnabled, internalStoragePath);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -190,6 +193,7 @@ NativeEngine::~NativeEngine() {
         mJniEnv = NULL;
     }
     _singleton = NULL;
+    delete mDataStateMachine;
 }
 
 static void _handle_cmd_proxy(struct android_app *app, int32_t cmd) {
@@ -318,12 +322,97 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
     return mAppJniEnv;
 }
 
-bool NativeEngine::GetRunningOnGooglePlayGames() {
-    return mRunningOnGooglePlayGames;
+DataLoaderStateMachine *NativeEngine::BeginSavedGameLoad() {
+    if (IsCloudSaveEnabled()) {
+        ALOGI("Scheduling task to load cloud data through JNI");
+        jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+        jmethodID loadCloudCheckpointID =
+                GetJniEnv()->GetMethodID(activityClass, "loadCloudCheckpoint", "()V");
+        GetJniEnv()->CallVoidMethod(mApp->activity->javaGameActivity, loadCloudCheckpointID);
+    } else {
+        mDataStateMachine->LoadLocalProgress();
+    }
+    return mDataStateMachine;
 }
 
-char *NativeEngine::GetInternalStoragePath() {
-    return mInternalStoragePath;
+bool NativeEngine::SaveProgress(int level) {
+    if (level <= mDataStateMachine->getLevelLoaded()) {
+        // nothing to do
+        ALOGI("No need to save level, current = %d, saved = %d",
+              level, mDataStateMachine->getLevelLoaded());
+        return false;
+    } else if (!IsCheckpointLevel(level)) {
+        ALOGI("Current level %d is not a checkpoint level. Nothing to save.", level);
+        return false;
+    }
+
+    // Save state locally and to the cloud if it is enabled
+    ALOGI("Saving progress to LOCAL FILE: level %d", level);
+    mDataStateMachine->SaveLocalProgress(level);
+    if (IsCloudSaveEnabled()) {
+        ALOGI("Saving progress to the cloud: level %d", level);
+        SaveGameToCloud(level);
+    }
+    return true;
+}
+
+void NativeEngine::SaveGameToCloud(int level) {
+    MY_ASSERT(GetJniEnv() && IsCloudSaveEnabled());
+    ALOGI("Scheduling task to save cloud data through JNI");
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+    jmethodID saveCloudCheckpointID =
+            GetJniEnv()->GetMethodID(activityClass, "saveCloudCheckpoint", "(I)V");
+    GetJniEnv()->CallVoidMethod(
+            mApp->activity->javaGameActivity, saveCloudCheckpointID, (jint)level);
+}
+
+// TODO: rename the methods according to your package name
+extern "C" jboolean Java_com_google_sample_agdktunnel_PGSManager_isLoadingWorkInProgress(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    return (jboolean)!instance->GetDataStateMachine()->isLoadingDataCompleted();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateInitLoading(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->init();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationCompleted(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->authenticationCompleted();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationFailed(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->authenticationFailed();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateSnapshotNotFound(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateSnapshotNotFound();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateCloudDataFound(
+        JNIEnv *env, jobject pgsManagerl) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateCloudDataFound();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingFailed(
+        JNIEnv *env, jobject pgsManager) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateLoadingFailed();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingCompleted(
+        JNIEnv *env, jobject pgsManager, jint level) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateLoadingCompleted(level);
 }
 
 static char sInsetsTypeName[][32] = {
