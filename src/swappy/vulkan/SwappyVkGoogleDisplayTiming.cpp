@@ -18,7 +18,10 @@
 
 #include "SwappyVkGoogleDisplayTiming.h"
 
+#ifdef LOG_TAG
+#undef LOG_TAG
 #define LOG_TAG "SwappyVkGoogleDisplayTiming"
+#endif
 
 using std::chrono::nanoseconds;
 

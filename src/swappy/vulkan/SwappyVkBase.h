@@ -57,22 +57,14 @@
 #include <mutex>
 
 #include "ChoreographerShim.h"
+#include "Log.h"
 #include "Settings.h"
 #include "SwappyCommon.h"
 #include "Trace.h"
 
-namespace swappy {
+#define LOG_TAG "SwappyVk"
 
-#define ALOGE(...) \
-    __android_log_print(ANDROID_LOG_ERROR, "SwappyVk", __VA_ARGS__)
-#define ALOGW(...) \
-    __android_log_print(ANDROID_LOG_WARN, "SwappyVk", __VA_ARGS__)
-#define ALOGI(...) \
-    __android_log_print(ANDROID_LOG_INFO, "SwappyVk", __VA_ARGS__)
-#define ALOGD(...) \
-    __android_log_print(ANDROID_LOG_DEBUG, "SwappyVk", __VA_ARGS__)
-#define ALOGV(...) \
-    __android_log_print(ANDROID_LOG_VERBOSE, "SwappyVk", __VA_ARGS__)
+namespace swappy {
 
 constexpr uint32_t kThousand = 1000;
 constexpr uint32_t kMillion = 1000000;
