@@ -19,11 +19,38 @@
 
 #include "engine.hpp"
 #include "ui_scene.hpp"
+#include "game_consts.hpp"
+
+// Cloud load status codes
+#define AUTHENTICATION_COMPLETED 0
+#define AUTHENTICATION_ERROR 1
+#define LOAD_DATA_COMPLETED 2
+#define ERROR_LOADING_DATA 3
+
+#define LOAD_DATA_STEPS 2
 
 /* Loader Scene, displays load progress at startup */
 class LoaderScene : public UiScene {
  private:
   class TextureLoader;
+
+  // Flag to acknowledge finish of cloud data loading
+  bool mCloudDataLoadingCompleted;
+
+  // Flag to acknowledge when the user gets authenticated
+  bool mUserAuthenticationCompleted;
+
+  // Level to start from in play scene
+  int mLevelLoaded;
+
+  // should we use cloud save? If not, we will save progress to local data only.
+  bool mUseCloudSave;
+
+  // name of the save file
+  char *mSaveFileName;
+
+  // Load progress from local file
+  int LoadLocalProgress();
 
  protected:
     // text to be shown
@@ -55,6 +82,10 @@ public:
         mLoadingText = text;
         return this;
     }
+
+    void CloudLoadUpdate(int result, int level);
+
+    static LoaderScene *GetCurrentScene();
 };
 
 #endif
