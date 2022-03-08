@@ -31,6 +31,14 @@
             ALOGW(__VA_ARGS__);                                \
         }                                                      \
     } while (0)
+#define ALOGW_ONCE(...)                                        \
+    do {                                                       \
+        static bool alogw_once##__FILE__##__LINE__##__ = true; \
+        if (alogw_once##__FILE__##__LINE__##__) {              \
+            alogw_once##__FILE__##__LINE__##__ = false;        \
+            ALOGW(__VA_ARGS__);                                \
+        }                                                      \
+    } while (0)
 #define ALOGE_ONCE(...)                                        \
     do {                                                       \
         static bool aloge_once##__FILE__##__LINE__##__ = true; \

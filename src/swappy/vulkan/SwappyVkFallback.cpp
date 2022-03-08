@@ -16,7 +16,10 @@
 
 #include "SwappyVkFallback.h"
 
+#ifdef LOG_TAG
+#undef LOG_TAG
 #define LOG_TAG "SwappyVkFallback"
+#endif
 
 namespace swappy {
 
