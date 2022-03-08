@@ -31,6 +31,8 @@ import static com.google.androidgamesdk.ToolchainEnumerator.filterBuiltLibraries
 
 import groovy.io.FileType
 
+apply from: 'prepproto.gradle'
+
 buildscript {
     repositories {
         google()
@@ -150,52 +152,6 @@ def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'agdktunnel'))
                         .copySourcesTo("samples/agdktunnel"))
-
-def protobufInstallDir() {
-    return new File("$projectDir/third_party/protobuf-3.0.0/install/"
-            + osFolderName(ExternalToolName.PROTOBUF)).getPath()
-}
-
-def getEnvironment() {
-    def env = [:]
-    def trans = IDENTITY
-    if (OperatingSystem.current().isWindows()) {
-        trans = { it.toUpperCase() }
-    }
-    System.getenv().each { entry -> env[trans(entry.key)] = entry.value }
-    return env
-}
-
-task prepare_proto_before {
-    def protocBinDir = protobufInstallDir() + "/bin"
-    def sixDir = "$projectDir/../external/six"
-    def env = getEnvironment()
-    env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
-    env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
-    doLast {
-        // Install python-protobuf
-        exec {
-            workingDir "./third_party/protobuf-3.0.0/python"
-            setEnvironment env
-            commandLine "python", "setup.py", "install", "--user"
-        }
-        // Generate nano-pb requirements
-        exec {
-            workingDir '../external/nanopb-c/generator/proto'
-            setEnvironment env
-            commandLine 'make'
-        }
-    }
-}
-
-task prepare_proto(dependsOn: prepare_proto_before) {
-    doLast {
-        exec {
-            commandLine "python"
-            args = ["ab_info.py"]
-        }
-    }
-}
 
 // Download third party libraries that are distributed in the Game SDK
 // but not part of the Game SDK sources.
