@@ -175,7 +175,7 @@ void SceneManager::OnPause() {
 }
 
 void SceneManager::OnResume() {
-    if (mHasGraphics && mCurScene) {
+    if (mCurScene) {
         mCurScene->OnResume();
     }
 }
