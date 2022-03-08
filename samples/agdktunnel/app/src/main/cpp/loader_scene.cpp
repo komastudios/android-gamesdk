@@ -30,6 +30,8 @@
 
 #define MAX_ASSET_TEXTURES 16
 
+LoaderScene *currentScene = NULL;
+
 class LoaderScene::TextureLoader {
  private:
     int _totalLoadCount = 0;
@@ -123,13 +125,32 @@ LoaderScene::LoaderScene() : mTextureLoader(new LoaderScene::TextureLoader()) {
     mLoadingWidget = NULL;
     mTextBoxId = -1;
     mStartTime = 0;
+    currentScene = this;
+    const char *savePath = NativeEngine::GetInstance()->GetInternalStoragePath();
+    int len = strlen(savePath) + strlen(SAVE_FILE_NAME) + 3;
+    mSaveFileName = new char[len];
+    strcpy(mSaveFileName, savePath);
+    strcat(mSaveFileName, "/");
+    strcat(mSaveFileName, SAVE_FILE_NAME);
+
+    mLevelLoaded = LoadLocalProgress();
+    mUseCloudSave = NativeEngine::GetInstance()->IsCloudSaveEnabled();
+    if (mUseCloudSave) {
+        mCloudDataLoadingComplete = false;
+        ALOGI("Cloud save detected. Attempting to load cloud data.");
+        NativeEngine::GetInstance()->GetCloudSavedLevel();
+    } else {
+        ALOGI("Cloud save not detected, using local storage: %d", mLevelLoaded);
+        mCloudDataLoadingComplete = true;
+    }
 }
 
 LoaderScene::~LoaderScene() {
+    currentScene = NULL;
 }
 
 void LoaderScene::DoFrame() {
-    if (mTextureLoader->NumberRemainingToLoad() == 0) {
+    if (mTextureLoader->NumberRemainingToLoad() == 0 && mCloudDataLoadingComplete) {
         mTextureLoader->CreateTextures();
 
         // Inform performance tuner we are done loading
@@ -144,7 +165,7 @@ void LoaderScene::DoFrame() {
         loadTime /= 1000.0f;
         ALOGI("Load complete in %.1f seconds", loadTime);
         SceneManager *mgr = SceneManager::GetInstance();
-        mgr->RequestNewScene(new WelcomeScene());
+        mgr->RequestNewScene(new WelcomeScene(mLevelLoaded));
     } else {
         float totalLoad = mTextureLoader->TotalNumberToLoad();
         float completedLoad = mTextureLoader->NumberCompetedLoading();
@@ -178,4 +199,50 @@ void LoaderScene::OnCreateWidgets() {
 
 void LoaderScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
+}
+
+int LoaderScene::LoadLocalProgress() {
+    ALOGI("Attempting to load locally: %s", mSaveFileName);
+    int level = 0;
+    FILE *f = fopen(mSaveFileName, "r");
+    if (f) {
+        ALOGI("Local file found. Loading data.");
+        if (1 != fscanf(f, "v1 %d", &level)) {
+            ALOGE("Error parsing save file.");
+            level = 0;
+        } else {
+            ALOGI("Loaded. Level = %d", level);
+        }
+        fclose(f);
+    } else {
+        ALOGI("Save file not present.");
+    }
+    return level;
+}
+
+void LoaderScene::CloudLoadUpdate(int result, int level) {
+    if (result == AUTHENTICATION_COMPLETED) {
+        ALOGI("Cloud authentication completed");
+        // TODO: update loading bar
+    } else if (result == LOAD_DATA_COMPLETED) {
+        ALOGI("Using cloud save data. Level loaded: %d", level);
+        mLevelLoaded = level;
+        mCloudDataLoadingComplete = true;
+    } else if (result == ERROR_LOADING_DATA) {
+        ALOGE("Error on loading cloud data. Using local data instead");
+        mCloudDataLoadingComplete = true;
+    }
+}
+
+LoaderScene * LoaderScene::GetCurrentScene() {
+    MY_ASSERT(currentScene != NULL);
+    return currentScene;
+}
+
+// TODO: rename the method according to your package name
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_cloudLoadUpdate(
+        JNIEnv *env, jobject thiz, jint result, jint level) {
+    ALOGI("Update callback received: %d %d", (int)result, (int)level);
+    LoaderScene *scene = LoaderScene::GetCurrentScene();
+    scene->CloudLoadUpdate(result, level);
 }
