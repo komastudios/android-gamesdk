@@ -21,6 +21,7 @@
 #include "game_asset_manager.hpp"
 #include "texture_manager.hpp"
 #include "tuning_manager.hpp"
+#include "data_loader_machine.hpp"
 
 struct NativeEngineSavedState {
     bool mHasFocus;
@@ -57,11 +58,16 @@ public:
     // This is the env for the app thread. It's different to the main thread.
     JNIEnv *GetAppJniEnv();
 
-    // Returns if the game is running in Google Play Games
-    bool GetRunningOnGooglePlayGames();
+    // Returns if cloud save is enabled
+    bool IsCloudSaveEnabled();
 
-    // Returns the path to save files to internal storage
-    char *GetInternalStoragePath();
+    // Load data from cloud if it is enabled, or from local data otherwise
+    DataLoaderStateMachine *BeginSavedGameLoad();
+
+    // Saves data to local storage and to cloud if it is enabled
+    bool SaveProgress(int level);
+
+    DataLoaderStateMachine *GetDataStateMachine() { return mDataStateMachine; }
 
 private:
     // variables to track Android lifecycle:
@@ -112,11 +118,11 @@ private:
     // is this the first frame we're drawing?
     bool mIsFirstFrame;
 
-    // is the game running on Google Play Games?
-    bool mRunningOnGooglePlayGames;
+    // is cloud save enabled
+    bool mCloudSaveEnabled;
 
-    // path to save files to internal storage
-    char *mInternalStoragePath;
+    // state machine instance to query the status of the current load of data
+    DataLoaderStateMachine *mDataStateMachine;
 
     // initialize the display
     bool InitDisplay();
@@ -151,6 +157,15 @@ private:
     void HandleGameActivityInput();
 
     void CheckForNewAxis();
+
+    // Save the checkpoint level in the cloud
+    void SaveGameToCloud(int level);
+
+    // returns whether or not this level is a "checkpoint level" (that is,
+    // where progress should be saved)
+    bool IsCheckpointLevel(int level) {
+        return 0 == level % LEVELS_PER_CHECKPOINT;
+    }
 
 public:
     // these are public for simplicity because we have internal static callbacks
