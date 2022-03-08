@@ -25,6 +25,7 @@
 #include "text_renderer.hpp"
 #include "util.hpp"
 #include "input_util.hpp"
+#include "loader_scene.hpp"
 
 class OurShader;
 
@@ -35,6 +36,8 @@ class OurShader;
 class PlayScene : public Scene {
 public:
     PlayScene();
+
+    PlayScene(int savedLevel);
 
     virtual void OnStartGraphics();
 
@@ -59,6 +62,8 @@ public:
     virtual void OnKeyUp(int keyCode);
 
     virtual void OnPause();
+
+    virtual void OnResume();
 
 protected:
     // shaders
@@ -98,11 +103,8 @@ protected:
     // current difficulty level
     int mDifficulty;
 
-    // should we use cloud save? If not, we will save progress to local data only.
-    bool mUseCloudSave;
-
     // greatest checkpoint level attained by player (loaded from file)
-    int mSavedCheckpoint;
+    int mSavedLevel;
 
     // vertex buffer and index buffer to render tunnel
     SimpleGeom *mTunnelGeom;
@@ -159,6 +161,7 @@ protected:
     static const int MENU_NONE = 0;
     static const int MENU_PAUSE = 1; // pause menu
     static const int MENU_LEVEL = 2; // select starting level
+    static const int MENU_LOADING = 3; // loading menu
     int mMenu;
 
     // identifiers for each menu item
@@ -166,10 +169,11 @@ protected:
     static const int MENUITEM_QUIT = 1;
     static const int MENUITEM_START_OVER = 2;
     static const int MENUITEM_RESUME = 3;
-    static const int MENUITEM_COUNT = 4;
+    static const int MENUITEM_LOADING = 4;
+    static const int MENUITEM_COUNT = 5;
 
     // text for each menu item
-    const char *mMenuItemText[MENUITEM_COUNT];
+    char *mMenuItemText[MENUITEM_COUNT];
 
     // menu items on current menu
     static const int MENUITEMS_MAX = 4;
@@ -209,9 +213,6 @@ protected:
 
     // last subsection were an ambient sound was emitted
     int mLastAmbientBeepEmitted;
-
-    // name of the save file
-    char *mSaveFileName;
 
     // pending to show a "checkpoint saved" sign?
     bool mCheckpointSignPending;
@@ -281,21 +282,6 @@ protected:
 
     // updates which menu item is selected based on where the screen was touched
     void UpdateMenuSelFromTouch(float x, float y);
-
-    // writes to the local save file
-    void WriteSaveFile(int level);
-
-    // loads progress from the local save file and/or cloudsave
-    void LoadProgress();
-
-    // saves progress to the local save file and/or cloudsave
-    void SaveProgress();
-
-    // returns whether or not this level is a "checkpoint level" (that is,
-    // where progress should be saved)
-    bool IsCheckpointLevel() {
-        return 0 == mDifficulty % LEVELS_PER_CHECKPOINT;
-    }
 
     // shows the sign that tells the player they've reached a new level.
     // (like "LEVEL 5").
