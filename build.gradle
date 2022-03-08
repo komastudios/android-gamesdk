@@ -30,6 +30,7 @@ import static com.google.androidgamesdk.CMakeWrapper.runNinja;
 import static com.google.androidgamesdk.ToolchainEnumerator.filterBuiltLibraries;
 
 import groovy.io.FileType
+import groovy.transform.Field
 
 buildscript {
     repositories {
@@ -43,8 +44,8 @@ buildscript {
 
 // The following is needed for sub-projects that have their own gradle script and that are
 // not using the general swappy/tuningfork multi-ndk build logic below and in buildSrc.
-def buildScript = System.getenv("BUILDBOT_SCRIPT")
-if (buildScript) {
+@Field isRunningOnBuildBot = System.getenv("BUILDBOT_SCRIPT")
+if (isRunningOnBuildBot) {
     Properties properties = new Properties()
 
     if (project.rootProject.file('local.properties').exists()) {
@@ -646,17 +647,26 @@ def buildNativeLibraries(libraries, buildType = "Release", toolchainSet = Toolch
     def threadChecks = false
     def toolchainEnumerator = new ToolchainEnumerator()
     def toolchains = toolchainEnumerator.enumerate(toolchainSet, project)
-    return toolchainEnumerator.parallelMap(toolchains, { enumeratedToolchain ->
-        buildNativeModules(
-                new BuildOptions(
-                        buildType,
-                        threadChecks,
-                        enumeratedToolchain.stl,
-                        enumeratedToolchain.abi),
-                enumeratedToolchain.toolchain,
-                libraries,
-                "src")
-    })
+    def nLibraries = libraries.size()
+    def nToolchains = toolchains.size()
+    println("buildNativeLibraries: ${nLibraries} libraries x ${nToolchains} toolchains = ${nLibraries*nToolchains} variants")
+    return libraries.collect { library ->
+        def psize = parallelChunkSize(library);
+        def libraryName = library.libraryInfo.nickname
+        println("buildNativeLibraries: using ${psize} parallel tasks for ${libraryName}")
+        toolchainEnumerator.parallelMap(toolchains, {
+            enumeratedToolchain ->
+                buildNativeModules(
+                    new BuildOptions(
+                            buildType,
+                            threadChecks,
+                            enumeratedToolchain.stl,
+                            enumeratedToolchain.abi),
+                    enumeratedToolchain.toolchain,
+                    [library],
+                    "src")
+        }, psize, libraryName)
+    }.flatten()
 }
 
 def buildSpecificNativeLibraries(specificToolchainConfiguration, libraries,
@@ -796,6 +806,29 @@ def getAarToolchainSet() {
         return ToolchainSet.EXPRESS_AAR
     } else {
         return ToolchainSet.AAR
+    }
+}
+
+// How to chunk the toolchain list for parallel execution.
+def parallelChunkSize(library) {
+    if (project.hasProperty("parallelChunkSize")) {
+        return project.getProperty("parallelChunkSize").toInteger()
+    } else {
+        // By default, use less parallelism for memory_advice and oboe since they
+        // have parallelised sub-builds
+        def isCompoundBuild = library.libraryInfo.nickname=="memory_advice" ||
+            library.libraryInfo.nickname=="oboe"
+        if (isCompoundBuild) {
+            if (isRunningOnBuildBot)
+                return 16
+            else
+                return 4
+        } else {
+            if (isRunningOnBuildBot)
+                return 64
+            else
+                return 16
+        }
     }
 }
 
