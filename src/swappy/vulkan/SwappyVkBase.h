@@ -73,6 +73,14 @@ namespace swappy {
     __android_log_print(ANDROID_LOG_DEBUG, "SwappyVk", __VA_ARGS__)
 #define ALOGV(...) \
     __android_log_print(ANDROID_LOG_VERBOSE, "SwappyVk", __VA_ARGS__)
+#define ALOGW_ONCE(...)                                        \
+    do {                                                       \
+        static bool alogw_once##__FILE__##__LINE__##__ = true; \
+        if (alogw_once##__FILE__##__LINE__##__) {              \
+            alogw_once##__FILE__##__LINE__##__ = false;        \
+            ALOGW(__VA_ARGS__);                                \
+        }                                                      \
+    } while (0)
 
 constexpr uint32_t kThousand = 1000;
 constexpr uint32_t kMillion = 1000000;
