@@ -129,18 +129,26 @@ NativeEngine::NativeEngine(struct android_app *app) {
     GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
                                   IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 
-    // Flag to find if we are are running on Google Play Games
+    // Set fields retrieved through JNI
     if (mJniEnv) {
         // Find the Java class
         jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
-        // Find the Java method
-        jmethodID methodID =
+
+        // Flag to find if we are are running on Google Play Games
+        jmethodID isGooglePlayGamesID =
                 mJniEnv->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
-        // Call the method
-        mRunningOnGooglePlayGames =
-                (bool) mJniEnv->CallBooleanMethod(mApp->activity->javaGameActivity, methodID);
+        mRunningOnGooglePlayGames = (bool) mJniEnv->CallBooleanMethod(
+                mApp->activity->javaGameActivity, isGooglePlayGamesID);
+
+        // Field that stores the path to save files to internal storage
+        jmethodID getInternalStoragePathID = mJniEnv->GetMethodID(
+                activityClass, "getInternalStoragePath", "()Ljava/lang/String;");
+        jobject internalStoragePath = mJniEnv->CallObjectMethod(
+                mApp->activity->javaGameActivity, getInternalStoragePathID);
+        mInternalStoragePath = mJniEnv->GetStringUTFChars((jstring)internalStoragePath, 0);
     } else {
         mRunningOnGooglePlayGames = false;
+        mInternalStoragePath = "";
     }
 }
 
@@ -296,6 +304,10 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
 
 bool NativeEngine::GetRunningOnGooglePlayGames() {
     return mRunningOnGooglePlayGames;
+}
+
+const char *NativeEngine::GetInternalStoragePath() {
+    return mInternalStoragePath;
 }
 
 static char sInsetsTypeName[][32] = {

@@ -60,6 +60,9 @@ public:
     // Returns if the game is running in Google Play Games
     bool GetRunningOnGooglePlayGames();
 
+    // Returns the path to save files to internal storage
+    const char *GetInternalStoragePath();
+
 private:
     // variables to track Android lifecycle:
     bool mHasFocus, mIsVisible, mHasWindow;
@@ -111,6 +114,9 @@ private:
 
     // is the game running on Google Play Games?
     bool mRunningOnGooglePlayGames;
+
+    // path to save files to internal storage
+    const char *mInternalStoragePath;
 
     // initialize the display
     bool InitDisplay();

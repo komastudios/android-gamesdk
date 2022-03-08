@@ -82,4 +82,8 @@ public class AGDKTunnelActivity extends GameActivity {
         PackageManager pm = getPackageManager();
         return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
     }
+
+    public String getInternalStoragePath() {
+        return getFilesDir().getAbsolutePath();
+    }
 }
