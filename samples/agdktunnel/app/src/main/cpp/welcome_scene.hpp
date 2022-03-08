@@ -58,6 +58,8 @@ protected:
 public:
     WelcomeScene();
 
+    WelcomeScene(int level);
+
     ~WelcomeScene();
 
     virtual void OnCreateWidgets() override;
@@ -74,7 +76,6 @@ public:
  private:
     // Complete about text, including insets.
     std::string AboutMessage();
-
 };
 
 #endif

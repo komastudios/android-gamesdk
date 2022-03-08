@@ -123,13 +123,15 @@ LoaderScene::LoaderScene() : mTextureLoader(new LoaderScene::TextureLoader()) {
     mLoadingWidget = NULL;
     mTextBoxId = -1;
     mStartTime = 0;
+    mDataStateMachine = NativeEngine::GetInstance()->LoadProgress();
 }
 
 LoaderScene::~LoaderScene() {
 }
 
 void LoaderScene::DoFrame() {
-    if (mTextureLoader->NumberRemainingToLoad() == 0) {
+    if (mTextureLoader->NumberRemainingToLoad() == 0 &&
+            mDataStateMachine->isLoadingDataCompleted()) {
         mTextureLoader->CreateTextures();
 
         // Inform performance tuner we are done loading
@@ -146,9 +148,12 @@ void LoaderScene::DoFrame() {
         SceneManager *mgr = SceneManager::GetInstance();
         mgr->RequestNewScene(new WelcomeScene());
     } else {
-        float totalLoad = mTextureLoader->TotalNumberToLoad();
-        float completedLoad = mTextureLoader->NumberCompetedLoading();
-        int loadingPercentage = static_cast<int>((completedLoad / totalLoad) * 100.0f);
+        float totalLoad = mTextureLoader->TotalNumberToLoad() + 0.5f *
+                mDataStateMachine->getTotalSteps();
+        float completedLoad = mTextureLoader->NumberCompetedLoading() +
+                0.5f * mDataStateMachine->getStepsCompleted();
+
+        int loadingPercentage = static_cast<int>((long)completedLoad * 100 / (int)totalLoad);
         char progressString[64];
         sprintf(progressString, "%s... %d%%", S_LOADING, loadingPercentage);
         mLoadingWidget->SetText(progressString);
