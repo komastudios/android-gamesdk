@@ -25,6 +25,7 @@
 #include "text_renderer.hpp"
 #include "util.hpp"
 #include "input_util.hpp"
+#include "loader_scene.hpp"
 
 class OurShader;
 
@@ -35,6 +36,8 @@ class OurShader;
 class PlayScene : public Scene {
 public:
     PlayScene();
+
+    PlayScene(int savedLevel);
 
     virtual void OnStartGraphics();
 
@@ -102,7 +105,7 @@ protected:
     bool mUseCloudSave;
 
     // greatest checkpoint level attained by player (loaded from file)
-    int mSavedCheckpoint;
+    int mSavedLevel;
 
     // vertex buffer and index buffer to render tunnel
     SimpleGeom *mTunnelGeom;

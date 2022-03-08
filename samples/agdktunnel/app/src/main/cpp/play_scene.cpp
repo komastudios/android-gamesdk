@@ -59,7 +59,9 @@ static const char *TONE_BONUS[] = {
         "d70 f550. f650. f750. f850."
 };
 
-PlayScene::PlayScene() : Scene() {
+PlayScene::PlayScene(int savedLevel) : Scene() {
+    mSavedLevel = (savedLevel / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+    ALOGI("Normalized check-point: level %d", mSavedLevel);
     mOurShader = NULL;
     mTrivialShader = NULL;
     mTextRenderer = NULL;
@@ -74,7 +76,7 @@ PlayScene::PlayScene() : Scene() {
     mPlayerPos = glm::vec3(0.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3(0.0f, 1.0f, 0.0f); // forward
     mDifficulty = 0;
-    mUseCloudSave = false;
+    mUseCloudSave = NativeEngine::GetInstance()->IsCloudSaveEnabled();
 
     mCubeGeom = NULL;
     mTunnelGeom = NULL;
@@ -136,56 +138,12 @@ PlayScene::PlayScene() : Scene() {
     strcat(mSaveFileName, "/");
     strcat(mSaveFileName, SAVE_FILE_NAME);
     ALOGI("Save file name: %s", mSaveFileName);
-    LoadProgress();
 
-    if (mSavedCheckpoint) {
+    if (mSavedLevel) {
         // start with the menu that asks whether or not to start from the saved level
         // or start over from scratch
         ShowMenu(MENU_LEVEL);
     }
-}
-
-void PlayScene::LoadProgress() {
-    // try to load save file
-    mSavedCheckpoint = 0;
-
-    ALOGI("Attempting to load: %s", mSaveFileName);
-    FILE *f = fopen(mSaveFileName, "r");
-    bool hasLocalFile = false;
-    if (f) {
-        hasLocalFile = true;
-        ALOGI("File found. Loading data.");
-        if (1 != fscanf(f, "v1 %d", &mSavedCheckpoint)) {
-            ALOGE("Error parsing save file.");
-            mSavedCheckpoint = 0;
-        } else {
-            ALOGI("Loaded. Level = %d", mSavedCheckpoint);
-            mSavedCheckpoint = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
-            ALOGI("Normalized check-point: level %d", mSavedCheckpoint);
-        }
-        fclose(f);
-    } else {
-        ALOGI("Save file not present.");
-    }
-
-    // check cloud save.
-    ALOGI("Checking cloud save data.");
-    if (true) {
-        ALOGI("No cloud save available because we are not signed in.");
-        mUseCloudSave = false;
-    }
-
-    if (mUseCloudSave && hasLocalFile) {
-        // since we're using cloud save, we can delete the local progress file
-        ALOGI("Since we're using cloud save, deleting local progress file %s", mSaveFileName);
-        if (0 != remove(mSaveFileName)) {
-            ALOGW("WARNING: failed to remove local progress file.");
-        }
-    }
-
-    ALOGI("Final decision on starting level: %d", mSavedCheckpoint);
-    ALOGI("Final decision on whether to use cloud: %s", mUseCloudSave ? "USE CLOUD" :
-                                                        "DO NOT USE CLOUD (failed)");
 }
 
 void PlayScene::WriteSaveFile(int level) {
@@ -201,27 +159,24 @@ void PlayScene::WriteSaveFile(int level) {
 }
 
 void PlayScene::SaveProgress() {
-    if (mDifficulty <= mSavedCheckpoint) {
+    if (mDifficulty <= mSavedLevel) {
         // nothing to do
-        ALOGI("No need to save level, current = %d, saved = %d", mDifficulty, mSavedCheckpoint);
+        ALOGI("No need to save level, current = %d, saved = %d", mDifficulty, mSavedLevel);
         return;
     } else if (!IsCheckpointLevel()) {
         ALOGI("Current level %d is not a checkpoint level. Nothing to save.", mDifficulty);
         return;
     }
 
-    mSavedCheckpoint = mDifficulty;
+    mSavedLevel = mDifficulty;
 
-    // Save state locally or to the cloud, depending on configuration:
+    // Save state locally and to the cloud if it is enabled
     if (mUseCloudSave) {
         ALOGI("Saving progress to the cloud: level %d", mDifficulty);
-        /*
-         * No where to save
-         */
-    } else {
-        ALOGI("Saving progress to LOCAL FILE: level %d", mDifficulty);
-        WriteSaveFile(mDifficulty);
+        NativeEngine::GetInstance()->SaveCloudData(mDifficulty);
     }
+    ALOGI("Saving progress to LOCAL FILE: level %d", mDifficulty);
+    WriteSaveFile(mDifficulty);
 
     // Show a "checkpoint saved" sign when possible. We don't show it right away
     // because will already be showing the "Level N" sign, so we just set this flag
@@ -438,8 +393,7 @@ void PlayScene::DoFrame() {
 
     // did the game expire?
     if (mLives <= 0 && Clock() > mGameOverExpire) {
-        SceneManager::GetInstance()->RequestNewScene(new WelcomeScene());
-
+        SceneManager::GetInstance()->RequestNewScene(new LoaderScene());
     }
 
     // produce the ambient sound
@@ -935,14 +889,14 @@ void PlayScene::ShowMenu(int menu) {
 void PlayScene::HandleMenu(int menuItem) {
     switch (menuItem) {
         case MENUITEM_QUIT:
-            SceneManager::GetInstance()->RequestNewScene(new WelcomeScene());
+            SceneManager::GetInstance()->RequestNewScene(new LoaderScene());
             break;
         case MENUITEM_UNPAUSE:
             ShowMenu(MENU_NONE);
             break;
         case MENUITEM_RESUME:
             // resume from saved level
-            mDifficulty = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+            mDifficulty = (mSavedLevel / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
             SetScore(SCORE_PER_LEVEL * mDifficulty);
             mObstacleGen.SetDifficulty(mDifficulty);
             ShowLevelSign();
