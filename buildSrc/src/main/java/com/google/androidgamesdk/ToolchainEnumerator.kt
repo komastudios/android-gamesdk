@@ -3,6 +3,8 @@ package com.google.androidgamesdk
 import java.lang.reflect.UndeclaredThrowableException
 import java.util.stream.Collectors
 import org.gradle.api.Project
+import java.time.LocalDateTime
+import java.time.Duration
 
 /**
  * Expose the toolchains to use to compile a library against all combinations
@@ -101,7 +103,7 @@ class ToolchainEnumerator {
      * all tasks to finish).
      */
     @Throws(Exception::class)
-    fun <T> parallelMap(
+    fun <T> innerParallelMap(
         toolchains: List<EnumeratedToolchain>,
         f: (EnumeratedToolchain) -> T
     ): List<T> {
@@ -114,6 +116,32 @@ class ToolchainEnumerator {
                 throw e.cause ?: e
             }
         }.collect(Collectors.toList())
+    }
+    @Throws(Exception::class)
+    fun <T> parallelMap(
+        toolchains: List<EnumeratedToolchain>,
+        f: (EnumeratedToolchain) -> T,
+        chunkSize: Int,
+        debugMessage: String
+    ): List<T> {
+        val nChunkedToolchains = toolchains.size / chunkSize
+        var estDuration = Duration.ZERO
+        val weight = 0.9e0 // For exponentially weighted moving average of each chunk's duration
+        return toolchains.chunked(chunkSize).mapIndexed { i, ts ->
+            System.out.println("ToolchainEnumerator::parallelMap(${debugMessage}) "
+                               + "${i+1}/${nChunkedToolchains}, chunkSize=${chunkSize}")
+            val startTime = LocalDateTime.now()
+            val result = innerParallelMap(ts, f)
+            val endTime = LocalDateTime.now()
+            val duration = Duration.between(startTime, endTime)
+            estDuration = Duration.ofMillis((estDuration.toMillis() * (1-weight)
+                                             + duration.toMillis() * weight).toLong())
+            val estTimeLeft = Duration.ofMillis(((nChunkedToolchains - i - 1)
+                                                  * estDuration.toMillis()).toLong())
+            System.out.println("ToolchainEnumerator::parallelMap(${debugMessage}) took "
+                               + "${duration.toString()}, est. time left: ${estTimeLeft}")
+            result
+        }.flatten()
     }
 
     data class EnumeratedToolchain(
