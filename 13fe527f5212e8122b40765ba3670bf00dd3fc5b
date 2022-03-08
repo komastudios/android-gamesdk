@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9bde1bb9_300528cf",
+        "filename": "src/swappy/vulkan/SwappyVkBase.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-08T17:00:08Z",
+      "side": 1,
+      "message": "I\u0027m wondering why we aren\u0027t we using src/common/Log.h here. Did you try it?",
+      "revId": "13fe527f5212e8122b40765ba3670bf00dd3fc5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
