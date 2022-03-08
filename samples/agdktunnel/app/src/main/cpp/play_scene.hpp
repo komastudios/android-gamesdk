@@ -25,6 +25,7 @@
 #include "text_renderer.hpp"
 #include "util.hpp"
 #include "input_util.hpp"
+#include "loader_scene.hpp"
 
 class OurShader;
 
@@ -35,6 +36,8 @@ class OurShader;
 class PlayScene : public Scene {
 public:
     PlayScene();
+
+    PlayScene(int savedCheckpoint);
 
     virtual void OnStartGraphics();
 

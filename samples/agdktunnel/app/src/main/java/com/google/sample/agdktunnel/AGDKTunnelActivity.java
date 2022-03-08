@@ -48,22 +48,9 @@ public class AGDKTunnelActivity extends GameActivity {
         System.loadLibrary("game");
     }
 
-    private void hideSystemUI() {
-        // This will put the game behind any cutouts and waterfalls on devices which have
-        // them, so the corresponding insets will be non-zero.
-        if (VERSION.SDK_INT >= VERSION_CODES.P) {
-            getWindow().getAttributes().layoutInDisplayCutoutMode
-                = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-        }
-        // From API 30 onwards, this is the recommended way to hide the system UI, rather than
-        // using View.setSystemUiVisibility.
-        View decorView = getWindow().getDecorView();
-        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(),
-            decorView);
-        controller.hide(WindowInsetsCompat.Type.systemBars());
-        controller.hide(WindowInsetsCompat.Type.displayCutout());
-        controller.setSystemBarsBehavior(
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    public boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
     }
 
     @Override
@@ -84,17 +71,42 @@ public class AGDKTunnelActivity extends GameActivity {
         }
     }
 
-    public boolean isGooglePlayGames() {
-        PackageManager pm = getPackageManager();
-        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
-    }
-
-    public String getInternalStoragePath() {
-        return getFilesDir().getAbsolutePath();
+    private void hideSystemUI() {
+        // This will put the game behind any cutouts and waterfalls on devices which have
+        // them, so the corresponding insets will be non-zero.
+        if (VERSION.SDK_INT >= VERSION_CODES.P) {
+            getWindow().getAttributes().layoutInDisplayCutoutMode
+                = LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        }
+        // From API 30 onwards, this is the recommended way to hide the system UI, rather than
+        // using View.setSystemUiVisibility.
+        View decorView = getWindow().getDecorView();
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(),
+            decorView);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
+        controller.hide(WindowInsetsCompat.Type.displayCutout());
+        controller.setSystemBarsBehavior(
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
     private boolean isPlayGamesServicesLinked() {
         String playGamesServicesPlaceholder = "0000000000";
         return !getString(R.string.game_services_project_id).equals(playGamesServicesPlaceholder);
+    }
+
+    private void loadCloudCheckpoint() {
+        if (isPlayGamesServicesLinked()) {
+            PGSManager.getInstance(this).loadCheckpoint();
+        }
+    }
+
+    private void saveCloudCheckpoint(int level) {
+        if (isPlayGamesServicesLinked()) {
+            PGSManager.getInstance(this).saveCheckpoint(level);
+        }
+    }
+
+    private String getInternalStoragePath() {
+        return getFilesDir().getAbsolutePath();
     }
 }
