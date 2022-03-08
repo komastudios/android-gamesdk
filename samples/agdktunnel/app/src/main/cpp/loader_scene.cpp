@@ -123,13 +123,30 @@ LoaderScene::LoaderScene() : mTextureLoader(new LoaderScene::TextureLoader()) {
     mLoadingWidget = NULL;
     mTextBoxId = -1;
     mStartTime = 0;
+    const char *savePath = NativeEngine::GetInstance()->GetInternalStoragePath();
+    int len = strlen(savePath) + strlen(SAVE_FILE_NAME) + 3;
+    mSaveFileName = new char[len];
+    strcpy(mSaveFileName, savePath);
+    strcat(mSaveFileName, "/");
+    strcat(mSaveFileName, SAVE_FILE_NAME);
+
+    mLevelLoaded = LoadLocalProgress();
+    mUseCloudSave = NativeEngine::GetInstance()->IsCloudSaveEnabled();
+    if (mUseCloudSave) {
+        mCloudDataLoadingComplete = false;
+        ALOGI("RUVALCABAC FLAG: scheduling the load data task");
+        NativeEngine::GetInstance()->GetCloudSavedLevel();
+    } else {
+        ALOGI("RUVALCABAC FLAG: using local storage: %d", mLevelLoaded);
+        mCloudDataLoadingComplete = true;
+    }
 }
 
 LoaderScene::~LoaderScene() {
 }
 
 void LoaderScene::DoFrame() {
-    if (mTextureLoader->NumberRemainingToLoad() == 0) {
+    if (mTextureLoader->NumberRemainingToLoad() == 0 && mCloudDataLoadingComplete) {
         mTextureLoader->CreateTextures();
 
         // Inform performance tuner we are done loading
@@ -178,4 +195,39 @@ void LoaderScene::OnCreateWidgets() {
 
 void LoaderScene::RenderBackground() {
     RenderBackgroundAnimation(mShapeRenderer);
+}
+
+int LoaderScene::LoadLocalProgress() {
+    ALOGI("Attempting to load locally: %s", mSaveFileName);
+    int level = 0;
+    FILE *f = fopen(mSaveFileName, "r");
+    if (f) {
+        ALOGI("Local file found. Loading data.");
+        if (1 != fscanf(f, "v1 %d", &level)) {
+            ALOGE("Error parsing save file.");
+            level = 0;
+        } else {
+            ALOGI("Loaded. Level = %d", level);
+        }
+        fclose(f);
+    } else {
+        ALOGI("Save file not present.");
+    }
+    return level;
+}
+
+// TODO: rename the method acording to your package name
+extern "C" JNIEXPORT void JNICALL LoaderScene::Java_com_google_sample_agdktunnel_PGSManager_loadCloudResult(
+        JNIEnv *env, jobject thiz, jint result, jint level) {
+
+    const int RESULT_OK = 0;
+    /*
+    const int RESULT_UNKNOWN_ERROR = 1;
+    const int RESULT_AUTH_ERROR = 2; */
+    ALOGI("RUVALCABAC FLAG: logging from callback: %d %d", (int)result, (int)level);
+    if (result == RESULT_OK) {
+        mLevelLoaded = level;
+    }
+
+    mCloudDataLoadingComplete = true;
 }

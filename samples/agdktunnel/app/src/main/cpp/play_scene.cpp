@@ -59,7 +59,9 @@ static const char *TONE_BONUS[] = {
         "d70 f550. f650. f750. f850."
 };
 
-PlayScene::PlayScene() : Scene() {
+PlayScene::PlayScene(int savedCheckpoint) : Scene() {
+    mSavedCheckpoint = (savedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+    ALOGI("Normalized check-point: level %d", mSavedCheckpoint);
     mOurShader = NULL;
     mTrivialShader = NULL;
     mTextRenderer = NULL;
@@ -74,7 +76,7 @@ PlayScene::PlayScene() : Scene() {
     mPlayerPos = glm::vec3(0.0f, 0.0f, 0.0f); // center
     mPlayerDir = glm::vec3(0.0f, 1.0f, 0.0f); // forward
     mDifficulty = 0;
-    mUseCloudSave = false;
+    mUseCloudSave = NativeEngine::GetInstance()->IsCloudSaveEnabled();
 
     mCubeGeom = NULL;
     mTunnelGeom = NULL;
@@ -136,7 +138,9 @@ PlayScene::PlayScene() : Scene() {
     strcat(mSaveFileName, "/");
     strcat(mSaveFileName, SAVE_FILE_NAME);
     ALOGI("Save file name: %s", mSaveFileName);
-    LoadProgress();
+    //LoadProgress();
+
+    ALOGI("RUVALCABAC FLAG: starting from level %d", mSavedCheckpoint);
 
     if (mSavedCheckpoint) {
         // start with the menu that asks whether or not to start from the saved level
@@ -145,6 +149,7 @@ PlayScene::PlayScene() : Scene() {
     }
 }
 
+/*
 void PlayScene::LoadProgress() {
     // try to load save file
     mSavedCheckpoint = 0;
@@ -170,9 +175,11 @@ void PlayScene::LoadProgress() {
 
     // check cloud save.
     ALOGI("Checking cloud save data.");
-    if (true) {
-        ALOGI("No cloud save available because we are not signed in.");
-        mUseCloudSave = false;
+    if (mUseCloudSave) {
+        mSavedCheckpoint = NativeEngine::GetInstance()->GetCloudSavedLevel();
+        ALOGI("Level loaded from cloud: %d", mSavedCheckpoint);
+        mSavedCheckpoint = (mSavedCheckpoint / LEVELS_PER_CHECKPOINT) * LEVELS_PER_CHECKPOINT;
+        ALOGI("Normalized check-point: level %d", mSavedCheckpoint);
     }
 
     if (mUseCloudSave && hasLocalFile) {
@@ -186,7 +193,7 @@ void PlayScene::LoadProgress() {
     ALOGI("Final decision on starting level: %d", mSavedCheckpoint);
     ALOGI("Final decision on whether to use cloud: %s", mUseCloudSave ? "USE CLOUD" :
                                                         "DO NOT USE CLOUD (failed)");
-}
+} */
 
 void PlayScene::WriteSaveFile(int level) {
     ALOGI("Saving progress (level %d) to file: %s", level, mSaveFileName);
@@ -215,9 +222,7 @@ void PlayScene::SaveProgress() {
     // Save state locally or to the cloud, depending on configuration:
     if (mUseCloudSave) {
         ALOGI("Saving progress to the cloud: level %d", mDifficulty);
-        /*
-         * No where to save
-         */
+        NativeEngine::GetInstance()->SaveCloudLevel(mDifficulty);
     } else {
         ALOGI("Saving progress to LOCAL FILE: level %d", mDifficulty);
         WriteSaveFile(mDifficulty);
@@ -438,8 +443,7 @@ void PlayScene::DoFrame() {
 
     // did the game expire?
     if (mLives <= 0 && Clock() > mGameOverExpire) {
-        SceneManager::GetInstance()->RequestNewScene(new WelcomeScene());
-
+        SceneManager::GetInstance()->RequestNewScene(new LoaderScene());
     }
 
     // produce the ambient sound
@@ -935,7 +939,7 @@ void PlayScene::ShowMenu(int menu) {
 void PlayScene::HandleMenu(int menuItem) {
     switch (menuItem) {
         case MENUITEM_QUIT:
-            SceneManager::GetInstance()->RequestNewScene(new WelcomeScene());
+            SceneManager::GetInstance()->RequestNewScene(new LoaderScene());
             break;
         case MENUITEM_UNPAUSE:
             ShowMenu(MENU_NONE);

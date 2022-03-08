@@ -63,6 +63,15 @@ public:
     // Returns the path to save files to internal storage
     char *GetInternalStoragePath();
 
+    // Returns if cloud save is enabled
+    bool IsCloudSaveEnabled();
+
+    // Returns the level saved in the cloud
+    int GetCloudSavedLevel();
+
+    // Save the checkpoint level in the cloud
+    void SaveCloudLevel(int level);
+
 private:
     // variables to track Android lifecycle:
     bool mHasFocus, mIsVisible, mHasWindow;
@@ -117,6 +126,9 @@ private:
 
     // path to save files to internal storage
     char *mInternalStoragePath;
+
+    // is cloud save enabled
+    bool mCloudSaveEnabled;
 
     // initialize the display
     bool InitDisplay();

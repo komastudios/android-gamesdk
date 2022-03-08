@@ -19,11 +19,27 @@
 
 #include "engine.hpp"
 #include "ui_scene.hpp"
+#include "game_consts.hpp"
 
 /* Loader Scene, displays load progress at startup */
 class LoaderScene : public UiScene {
  private:
   class TextureLoader;
+
+  // Flag to acknowledge finish of cloud data loading
+  bool mCloudDataLoadingComplete;
+
+  // Level to start from in play scene
+  int mLevelLoaded;
+
+  // should we use cloud save? If not, we will save progress to local data only.
+  bool mUseCloudSave;
+
+  // name of the save file
+  char *mSaveFileName;
+
+  //
+  int LoadLocalProgress();
 
  protected:
     // text to be shown
@@ -54,7 +70,10 @@ public:
     LoaderScene *SetText(const char *text) {
         mLoadingText = text;
         return this;
-    }
+    };
+
+    JNIEXPORT void JNICALL Java_com_google_sample_agdktunnel_PGSManager_loadCloudResult(
+            JNIEnv *env, jobject thiz, jint result, jint level);
 };
 
 #endif
