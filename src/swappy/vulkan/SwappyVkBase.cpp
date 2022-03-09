@@ -391,7 +391,7 @@ void SwappyVkBase::waitForFenceThreadMain(ThreadContext& thread) {
                 vkWaitForFences(mDevice, 1, &sync.fence, VK_TRUE,
                                 mCommonBase.getFenceTimeout().count());
             if (result) {
-                ALOGE("Failed to wait for fence %d", result);
+                ALOGW_ONCE("Failed to wait for fence %d", result);
             }
             mLastFenceTime = std::chrono::steady_clock::now() - startTime;
 
