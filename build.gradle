@@ -126,6 +126,10 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
         .setUsesTensorflow()
         .setMinimumNdkVersion(20)
         .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
+                        .copySourcesTo("samples/memory_advice/hogger")
+                        .buildDebugApkTo("apks/samples", "hogger.apk"))
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()

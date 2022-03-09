@@ -59,7 +59,7 @@ then
 else
     # The default is to build the express zip
     package_name=gamesdk-express
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
 fi
 
 # Calculate hash of the zip file
