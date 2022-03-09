@@ -52,6 +52,24 @@
       "parentUuid": "af630277_c70647bd",
       "revId": "13fe527f5212e8122b40765ba3670bf00dd3fc5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20d961f3_4ee649e4",
+        "filename": "src/swappy/vulkan/SwappyVkBase.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-03-09T11:49:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9cfe1611_209c3fc7",
+      "revId": "13fe527f5212e8122b40765ba3670bf00dd3fc5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
