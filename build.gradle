@@ -30,6 +30,9 @@ import static com.google.androidgamesdk.CMakeWrapper.runNinja;
 import static com.google.androidgamesdk.ToolchainEnumerator.filterBuiltLibraries;
 
 import groovy.io.FileType
+import groovy.transform.Field
+
+apply from: 'prepproto.gradle'
 
 buildscript {
     repositories {
@@ -43,8 +46,8 @@ buildscript {
 
 // The following is needed for sub-projects that have their own gradle script and that are
 // not using the general swappy/tuningfork multi-ndk build logic below and in buildSrc.
-def buildScript = System.getenv("BUILDBOT_SCRIPT")
-if (buildScript) {
+@Field isRunningOnBuildBot = System.getenv("BUILDBOT_SCRIPT")
+if (isRunningOnBuildBot) {
     Properties properties = new Properties()
 
     if (project.rootProject.file('local.properties').exists()) {
@@ -124,6 +127,10 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
         .setUsesTensorflow()
         .setMinimumNdkVersion(20)
         .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
+                        .copySourcesTo("samples/memory_advice/hogger")
+                        .buildDebugApkTo("apks/samples", "hogger.apk"))
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
@@ -150,52 +157,6 @@ def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'agdktunnel'))
                         .copySourcesTo("samples/agdktunnel"))
-
-def protobufInstallDir() {
-    return new File("$projectDir/third_party/protobuf-3.0.0/install/"
-            + osFolderName(ExternalToolName.PROTOBUF)).getPath()
-}
-
-def getEnvironment() {
-    def env = [:]
-    def trans = IDENTITY
-    if (OperatingSystem.current().isWindows()) {
-        trans = { it.toUpperCase() }
-    }
-    System.getenv().each { entry -> env[trans(entry.key)] = entry.value }
-    return env
-}
-
-task prepare_proto_before {
-    def protocBinDir = protobufInstallDir() + "/bin"
-    def sixDir = "$projectDir/../external/six"
-    def env = getEnvironment()
-    env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
-    env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
-    doLast {
-        // Install python-protobuf
-        exec {
-            workingDir "./third_party/protobuf-3.0.0/python"
-            setEnvironment env
-            commandLine "python", "setup.py", "install", "--user"
-        }
-        // Generate nano-pb requirements
-        exec {
-            workingDir '../external/nanopb-c/generator/proto'
-            setEnvironment env
-            commandLine 'make'
-        }
-    }
-}
-
-task prepare_proto(dependsOn: prepare_proto_before) {
-    doLast {
-        exec {
-            commandLine "python"
-            args = ["ab_info.py"]
-        }
-    }
-}
 
 // Download third party libraries that are distributed in the Game SDK
 // but not part of the Game SDK sources.
@@ -646,17 +607,26 @@ def buildNativeLibraries(libraries, buildType = "Release", toolchainSet = Toolch
     def threadChecks = false
     def toolchainEnumerator = new ToolchainEnumerator()
     def toolchains = toolchainEnumerator.enumerate(toolchainSet, project)
-    return toolchainEnumerator.parallelMap(toolchains, { enumeratedToolchain ->
-        buildNativeModules(
-                new BuildOptions(
-                        buildType,
-                        threadChecks,
-                        enumeratedToolchain.stl,
-                        enumeratedToolchain.abi),
-                enumeratedToolchain.toolchain,
-                libraries,
-                "src")
-    })
+    def nLibraries = libraries.size()
+    def nToolchains = toolchains.size()
+    println("buildNativeLibraries: ${nLibraries} libraries x ${nToolchains} toolchains = ${nLibraries*nToolchains} variants")
+    return libraries.collect { library ->
+        def psize = parallelChunkSize(library);
+        def libraryName = library.libraryInfo.nickname
+        println("buildNativeLibraries: using ${psize} parallel tasks for ${libraryName}")
+        toolchainEnumerator.parallelMap(toolchains, {
+            enumeratedToolchain ->
+                buildNativeModules(
+                    new BuildOptions(
+                            buildType,
+                            threadChecks,
+                            enumeratedToolchain.stl,
+                            enumeratedToolchain.abi),
+                    enumeratedToolchain.toolchain,
+                    [library],
+                    "src")
+        }, psize, libraryName)
+    }.flatten()
 }
 
 def buildSpecificNativeLibraries(specificToolchainConfiguration, libraries,
@@ -796,6 +766,29 @@ def getAarToolchainSet() {
         return ToolchainSet.EXPRESS_AAR
     } else {
         return ToolchainSet.AAR
+    }
+}
+
+// How to chunk the toolchain list for parallel execution.
+def parallelChunkSize(library) {
+    if (project.hasProperty("parallelChunkSize")) {
+        return project.getProperty("parallelChunkSize").toInteger()
+    } else {
+        // By default, use less parallelism for memory_advice and oboe since they
+        // have parallelised sub-builds
+        def isCompoundBuild = library.libraryInfo.nickname=="memory_advice" ||
+            library.libraryInfo.nickname=="oboe"
+        if (isCompoundBuild) {
+            if (isRunningOnBuildBot)
+                return 16
+            else
+                return 4
+        } else {
+            if (isRunningOnBuildBot)
+                return 64
+            else
+                return 16
+        }
     }
 }
 
