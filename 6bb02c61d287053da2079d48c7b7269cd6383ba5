@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50de2310_fa7d07a5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-10T20:30:37Z",
+      "side": 1,
+      "message": "One minor nit",
+      "revId": "6bb02c61d287053da2079d48c7b7269cd6383ba5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4ff1500_6dea723b",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 12
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-10T20:30:37Z",
+      "side": 1,
+      "message": "Did you mean 4.4.2 versus 4.2.2? Most other things seem to be 4.2.2",
+      "range": {
+        "startLine": 10,
+        "startChar": 52,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "6bb02c61d287053da2079d48c7b7269cd6383ba5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
