@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c822bc5_4cdcfcf6",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-10T14:22:48Z",
+      "side": 1,
+      "message": "Did you check this works on NDK\u003c23?\nWe probably need \n#ifndef VK_DYNAMIC_STATE_RANGE_SIZE\n...\n#endif",
+      "revId": "03c09d7f3b51236d85f2b4561d08daed8e2886fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
