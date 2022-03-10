@@ -16,6 +16,24 @@
       "message": "Did you check this works on NDK\u003c23?\nWe probably need \n#ifndef VK_DYNAMIC_STATE_RANGE_SIZE\n...\n#endif",
       "revId": "03c09d7f3b51236d85f2b4561d08daed8e2886fb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11d41319_6833a13a",
+        "filename": "third_party/cube/app/src/main/cpp/cube.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-03-10T14:49:13Z",
+      "side": 1,
+      "message": "It works with ndk \u003c 23.\nThe value was in an enum in older versions, not a #define\n\ntypedef enum VkDynamicState {\n    VK_DYNAMIC_STATE_VIEWPORT \u003d 0,\n    VK_DYNAMIC_STATE_SCISSOR \u003d 1,\n   ...\n    VK_DYNAMIC_STATE_RANGE_SIZE \u003d (VK_DYNAMIC_STATE_STENCIL_REFERENCE - VK_DYNAMIC_STATE_VIEWPORT + 1),\n    ...\n} VkDynamicState;",
+      "parentUuid": "1c822bc5_4cdcfcf6",
+      "revId": "03c09d7f3b51236d85f2b4561d08daed8e2886fb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
