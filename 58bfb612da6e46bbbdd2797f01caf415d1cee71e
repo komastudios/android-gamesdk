@@ -16,6 +16,52 @@
       "message": "Wondering if it is possible to get the path to internal storage using native functions instead of JNI.",
       "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "265d1f1c_1ea7ca84",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-10T19:32:48Z",
+      "side": 1,
+      "message": "In what case do we use this?",
+      "range": {
+        "startLine": 151,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8932b7e_c7e2dd86",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-10T19:32:48Z",
+      "side": 1,
+      "message": "Does this work both B* and non-B* builds?",
+      "range": {
+        "startLine": 132,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 81
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
