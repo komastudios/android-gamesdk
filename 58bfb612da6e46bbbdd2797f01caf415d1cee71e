@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0bf70ea1_14183cbd",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-10T19:43:32Z",
+      "side": 1,
+      "message": "You\u0027d probably want to make a copy of the string returned by GetStringUTFChars and them call ReleaseStringUTFChars on the returned pointer. Hanging onto it indefinitely isn\u0027t ideal.",
+      "range": {
+        "startLine": 148,
+        "startChar": 40,
+        "endLine": 148,
+        "endChar": 57
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "265d1f1c_1ea7ca84",
         "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
         "patchSetId": 1
@@ -43,6 +66,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6335c27c_e217fdc0",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-10T19:43:32Z",
+      "side": 1,
+      "message": "Technically I don\u0027t think that check is even needed, if mJniEnv is null at that point the game would already have crashed.",
+      "parentUuid": "265d1f1c_1ea7ca84",
+      "range": {
+        "startLine": 151,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d8932b7e_c7e2dd86",
         "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
         "patchSetId": 1
@@ -54,6 +101,30 @@
       "writtenOn": "2022-03-10T19:32:48Z",
       "side": 1,
       "message": "Does this work both B* and non-B* builds?",
+      "range": {
+        "startLine": 132,
+        "startChar": 4,
+        "endLine": 132,
+        "endChar": 81
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef843c79_2339bfeb",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-10T19:43:32Z",
+      "side": 1,
+      "message": "Yes, it\u0027s just a fix to be compatible with scoped storage, which is a general Android requirement.",
+      "parentUuid": "d8932b7e_c7e2dd86",
       "range": {
         "startLine": 132,
         "startChar": 4,
