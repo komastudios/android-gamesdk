@@ -39,6 +39,30 @@
       },
       "revId": "6bb02c61d287053da2079d48c7b7269cd6383ba5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1db6af3_84dc2069",
+        "filename": "samples/device_info_app/build.gradle",
+        "patchSetId": 12
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-11T09:23:27Z",
+      "side": 1,
+      "message": "Well spotted!",
+      "parentUuid": "c4ff1500_6dea723b",
+      "range": {
+        "startLine": 10,
+        "startChar": 52,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "6bb02c61d287053da2079d48c7b7269cd6383ba5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
