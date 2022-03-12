@@ -56,6 +56,8 @@
 #endif
 
 #include <vulkan/vk_platform.h>
+//Ndks >= 23 have a vulkan header that removed this definition
+#define VK_DYNAMIC_STATE_RANGE_SIZE (VK_DYNAMIC_STATE_STENCIL_REFERENCE - VK_DYNAMIC_STATE_VIEWPORT + 1)
 #include "linmath.h"
 #include "object_type_string_helper.h"
 
