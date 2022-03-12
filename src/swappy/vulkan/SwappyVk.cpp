@@ -16,6 +16,8 @@
 
 #include "SwappyVk.h"
 
+#define LOG_TAG "SwappyVk"
+
 namespace swappy {
 
 class DefaultSwappyVkFunctionProvider {

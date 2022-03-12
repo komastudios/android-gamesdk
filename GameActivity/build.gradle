@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
 }
 
+buildDir = "../../out_game_activity"
+
 android {
     compileSdkVersion 28
 
