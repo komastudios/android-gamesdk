@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae876c4d_544a4bb3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-13T22:21:16Z",
+      "side": 1,
+      "message": "Without this, agdktunnel doesn\u0027t build from the zip and the compiled APKs are not included.",
+      "revId": "59e295a50a9ed0a663de71678118ed76a5b2f1bc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
