@@ -16,6 +16,29 @@
       "message": "Tagging in Will",
       "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9619ec8a_27d5fb01",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-14T19:44:06Z",
+      "side": 1,
+      "message": "This is essentially mJniEnv, right? Every call will re-assign value to mJniEnv.\nI don\u0027t think we need to call it over and over again.",
+      "range": {
+        "startLine": 134,
+        "startChar": 27,
+        "endLine": 134,
+        "endChar": 38
+      },
+      "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
