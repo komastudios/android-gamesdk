@@ -41,6 +41,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "41df0bdc_0178097f",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-14T15:50:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0bf70ea1_14183cbd",
+      "range": {
+        "startLine": 148,
+        "startChar": 40,
+        "endLine": 148,
+        "endChar": 57
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "265d1f1c_1ea7ca84",
@@ -78,6 +102,30 @@
       "side": 1,
       "message": "Technically I don\u0027t think that check is even needed, if mJniEnv is null at that point the game would already have crashed.",
       "parentUuid": "265d1f1c_1ea7ca84",
+      "range": {
+        "startLine": 151,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b5a294b_0eb81df6",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-14T15:50:35Z",
+      "side": 1,
+      "message": "Removed else from the code",
+      "parentUuid": "6335c27c_e217fdc0",
       "range": {
         "startLine": 151,
         "startChar": 8,
