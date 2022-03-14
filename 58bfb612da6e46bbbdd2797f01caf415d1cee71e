@@ -138,6 +138,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8cf5429d_6d682254",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-14T16:31:41Z",
+      "side": 1,
+      "message": "If \"else\" is an error case, I suggest we log and throw exception.\n\n\n/* Thinking something like this */\nif (!mJniEnv) {\n  log\n  throw\n}\n\n// Find the Java class\njclass activityClass \u003d mJniEnv-\u003eGetObjectClass(mApp-\u003eactivity-\u003ejavaGameActivity);\ncontinue with code",
+      "parentUuid": "2b5a294b_0eb81df6",
+      "range": {
+        "startLine": 151,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d8932b7e_c7e2dd86",
         "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
         "patchSetId": 1
