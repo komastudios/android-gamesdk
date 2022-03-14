@@ -210,6 +210,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9ec5c5c9_bedf2d42",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-14T18:16:29Z",
+      "side": 1,
+      "message": "Well GetJniEnv() is a few lines below and basically assign mJniEnv, I don\u0027t think that\u0027s necessary. I think if we remove the \"if altogether“ as Nate said, it is good. Thanks",
+      "parentUuid": "b1abb77d_2bf66ba9",
+      "range": {
+        "startLine": 151,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 34
+      },
+      "revId": "58bfb612da6e46bbbdd2797f01caf415d1cee71e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d8932b7e_c7e2dd86",
         "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
         "patchSetId": 1
