@@ -76,7 +76,9 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         experiment_id.clear();
         return TUNINGFORK_ERROR_NO_FIDELITY_PARAMS;
     } else {
-        ALOGI("Response to generateTuningParameters: %s", response.c_str());
+        ALOGI("Response to generateTuningParameters: %s",
+              verbose_logging_enabled ? response.c_str()
+                                      : LOGGING_PLACEHOLDER_TEXT);
     }
     std::string err;
     Json jresponse = Json::parse(response, err);
