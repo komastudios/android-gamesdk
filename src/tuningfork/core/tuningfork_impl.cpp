@@ -57,6 +57,10 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       next_ikey_(0),
       before_first_tick_(true),
       app_first_run_(first_run) {
+    verbose_logging_enabled = settings.c_settings.verbose_logging_enabled;
+    ALOGE("+++Sensitive Logging Enabled: %d",
+          settings.c_settings.verbose_logging_enabled);
+    ALOGE("+++Sensitive Logging Enabled: %d", verbose_logging_enabled);
     if (backend == nullptr) {
         default_backend_ = std::make_unique<HttpBackend>();
         TuningFork_ErrorCode err = default_backend_->Init(settings);
@@ -101,8 +105,9 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
         settings.aggregation_strategy.intervalms_or_count,
         settings.aggregation_strategy.max_instrumentation_keys,
         settings.aggregation_strategy.annotation_enum_size.size(),
-        settings.histograms.size(), settings.base_uri.c_str(),
-        settings.api_key.c_str(),
+        settings.histograms.size(),
+        verbose_logging_enabled ? settings.base_uri.c_str() : "",
+        verbose_logging_enabled ? settings.api_key.c_str() : "",
         settings.default_fidelity_parameters_filename.c_str(),
         settings.initial_request_timeout_ms,
         settings.ultimate_request_timeout_ms);
