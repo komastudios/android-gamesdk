@@ -45,10 +45,10 @@
             ALOGE(__VA_ARGS__);                                \
         }                                                      \
     } while (0)
-
 #ifndef NDEBUG
 #define ALOGV(...) \
-    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__);
+
 #else
 #define ALOGV(...)
 #endif
