@@ -65,6 +65,9 @@ namespace tuningfork {
 static std::unique_ptr<TuningForkImpl> s_impl;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 
+// False by default to hide sensitive information in the logs
+bool g_verbose_logging_enabled = false;
+
 TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
                           ITimeProvider *time_provider,
