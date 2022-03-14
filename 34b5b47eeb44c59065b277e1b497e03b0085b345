@@ -39,6 +39,30 @@
       },
       "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c604ddd8_8c1b2a22",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-14T19:50:59Z",
+      "side": 1,
+      "message": "This is how `GetJniEnv()` is defined. If the value of mJniEnv was assigned previously then it just returns that value.\n\n```\nJNIEnv *NativeEngine::GetJniEnv() {\n    if (!mJniEnv) {\n        ALOGI(\"Attaching current thread to JNI.\");\n        if (0 !\u003d mApp-\u003eactivity-\u003evm-\u003eAttachCurrentThread(\u0026mJniEnv, NULL)) {\n            ALOGE(\"*** FATAL ERROR: Failed to attach thread to JNI.\");\n            ABORT_GAME;\n        }\n        MY_ASSERT(mJniEnv !\u003d NULL);\n        ALOGI(\"Attached current thread to JNI, %p\", mJniEnv);\n    }\n\n    return mJniEnv;\n}\n```",
+      "parentUuid": "9619ec8a_27d5fb01",
+      "range": {
+        "startLine": 134,
+        "startChar": 27,
+        "endLine": 134,
+        "endChar": 38
+      },
+      "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
