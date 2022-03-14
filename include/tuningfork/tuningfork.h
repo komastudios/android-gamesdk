@@ -362,6 +362,11 @@ typedef struct TuningFork_Settings {
      * tuningfork_settings.bin file. See tuningfork.proto for more information.
      */
     const char* api_key;
+    /**
+     * If true, all the logging except for errors and response codes will be
+     * removed.
+     */
+    bool sensitive_logging_enabled;
 } TuningFork_Settings;
 
 /**

@@ -99,8 +99,8 @@ class TuningForkImpl : public IdProvider {
     TuningForkImpl(const Settings &settings, IBackend *backend,
                    ITimeProvider *time_provider,
                    IMemInfoProvider *memory_provider,
-                   IBatteryProvider *battery_provider,
-                   bool first_run /* whether we have just installed the app*/);
+                   IBatteryProvider *battery_provider, bool first_run
+                   /* whether we have just installed the app*/);
 
     TuningForkImpl(const TuningForkImpl &) = delete;
     TuningForkImpl &operator=(const TuningForkImpl &) = delete;

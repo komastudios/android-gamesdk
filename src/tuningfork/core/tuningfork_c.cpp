@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "Log.h"
 #include "jni/jni_helper.h"
 #include "proto/protobuf_util.h"
 #include "settings.h"
@@ -40,6 +41,8 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings *c_settings_in,
         settings.c_settings = *c_settings_in;
     }
     jni::Init(env, context);
+    //::sensitive_logging_enabled =
+    //: settings.c_settings.sensitive_logging_enabled;
     bool first_run = tf::CheckIfFirstRun();
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
     if (err != TUNINGFORK_ERROR_OK) return err;

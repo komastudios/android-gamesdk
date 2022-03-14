@@ -57,6 +57,10 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       next_ikey_(0),
       before_first_tick_(true),
       app_first_run_(first_run) {
+    sensitive_logging_enabled = settings.c_settings.sensitive_logging_enabled;
+    ALOGE("+++Sensitive Logging Enabled: %d",
+          settings.c_settings.sensitive_logging_enabled);
+    ALOGE("+++Sensitive Logging Enabled: %d", sensitive_logging_enabled);
     if (backend == nullptr) {
         default_backend_ = std::make_unique<HttpBackend>();
         TuningFork_ErrorCode err = default_backend_->Init(settings);
