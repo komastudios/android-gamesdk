@@ -101,8 +101,11 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
         settings.aggregation_strategy.intervalms_or_count,
         settings.aggregation_strategy.max_instrumentation_keys,
         settings.aggregation_strategy.annotation_enum_size.size(),
-        settings.histograms.size(), settings.base_uri.c_str(),
-        settings.api_key.c_str(),
+        settings.histograms.size(),
+        g_verbose_logging_enabled ? settings.base_uri.c_str()
+                                  : LOGGING_PLACEHOLDER_TEXT,
+        g_verbose_logging_enabled ? settings.api_key.c_str()
+                                  : LOGGING_PLACEHOLDER_TEXT,
         settings.default_fidelity_parameters_filename.c_str(),
         settings.initial_request_timeout_ms,
         settings.ultimate_request_timeout_ms);
