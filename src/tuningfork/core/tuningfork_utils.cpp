@@ -70,19 +70,24 @@ int GetVersionCode(std::string* packageNameStr, uint32_t* gl_es_version) {
     using namespace gamesdk::jni;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0,
+                                                    g_verbose_logging_enabled);
     std::string package_name = app_context.getPackageName().C();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0,
+                                                    g_verbose_logging_enabled);
     auto package_info = pm.getPackageInfo(package_name, 0x0);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0,
+                                                    g_verbose_logging_enabled);
     if (packageNameStr != nullptr) {
         *packageNameStr = package_name;
     }
     auto code = package_info.versionCode();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0,
+                                                    g_verbose_logging_enabled);
     if (gl_es_version != nullptr) {
         auto features = pm.getSystemAvailableFeatures();
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(0);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            0, g_verbose_logging_enabled);
         for (auto& f : features) {
             if (f.name.empty()) {
                 if (f.reqGlEsVersion != android::content::pm::FeatureInfo::
@@ -104,21 +109,27 @@ std::string GetSignature() {
     using namespace gamesdk::jni;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     auto package_name = app_context.getPackageName();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     auto package_info = pm.getPackageInfo(
         package_name.C(), android::content::pm::PackageManager::GET_SIGNATURES);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     if (!package_info.valid()) return "";
     auto sigs = package_info.signatures();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     if (sigs.size() == 0) return "";
     auto sig = sigs[0];
     java::security::MessageDigest md("SHA1");
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     auto padded_sig = md.digest(sigs[0]);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN("");
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN("",
+                                                    g_verbose_logging_enabled);
     return Base16(padded_sig);
 }
 
@@ -127,14 +138,18 @@ bool GetDebuggable() {
     if (!gamesdk::jni::IsValid()) return false;
     auto app_context = AppContext();
     auto pm = app_context.getPackageManager();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false,
+                                                    g_verbose_logging_enabled);
     auto package_name = app_context.getPackageName();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false,
+                                                    g_verbose_logging_enabled);
     auto package_info = pm.getPackageInfo(package_name.C(), 0);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false,
+                                                    g_verbose_logging_enabled);
     if (!package_info.valid()) return false;
     auto application_info = package_info.applicationInfo();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false,
+                                                    g_verbose_logging_enabled);
     if (!application_info.valid()) return false;
     return application_info.flags() &
            android::content::pm::ApplicationInfo::FLAG_DEBUGGABLE;

@@ -153,19 +153,23 @@ CrashReason ActivityLifecycleState::GetReasonFromActivityManager() {
         using namespace gamesdk::jni;
         auto app_context = AppContext();
         auto pm = app_context.getPackageManager();
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            CRASH_REASON_UNSPECIFIED, g_verbose_logging_enabled);
         std::string package_name = app_context.getPackageName().C();
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            CRASH_REASON_UNSPECIFIED, g_verbose_logging_enabled);
 
         java::Object obj = app_context.getSystemService(
             android::content::Context::ACTIVITY_SERVICE);
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            CRASH_REASON_UNSPECIFIED, g_verbose_logging_enabled);
         if (!obj.IsNull()) {
             android::app::ActivityManager activity_manager(std::move(obj));
             java::util::List reasons =
                 activity_manager.getHistoricalProcessExitReasons(package_name,
                                                                  0, 0);
-            CHECK_FOR_JNI_EXCEPTION_AND_RETURN(CRASH_REASON_UNSPECIFIED);
+            SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+                CRASH_REASON_UNSPECIFIED, g_verbose_logging_enabled);
             if (!reasons.isEmpty()) {
                 android::app::ApplicationExitInfo exit_info(
                     std::move(reasons.get(0)));

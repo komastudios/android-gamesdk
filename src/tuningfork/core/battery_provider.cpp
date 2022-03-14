@@ -19,6 +19,7 @@
 #include "Log.h"
 #include "jni/jni_wrap.h"
 #include "system_utils.h"
+#include "tuningfork_internal.h"
 
 #define LOG_TAG "TuningFork"
 
@@ -82,7 +83,8 @@ bool DefaultBatteryProvider::IsPowerSaveModeEnabled() {
         using namespace gamesdk::jni;
         java::Object obj = AppContext().getSystemService(
             android::content::Context::POWER_SERVICE);
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(false);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            false, g_verbose_logging_enabled);
         if (!obj.IsNull()) {
             android::os::PowerManager power_manager(std::move(obj));
             return power_manager.isPowerSaveMode();
@@ -101,8 +103,9 @@ DefaultBatteryProvider::GetCurrentThermalStatus() {
         using namespace gamesdk::jni;
         java::Object obj = AppContext().getSystemService(
             android::content::Context::POWER_SERVICE);
-        CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-            IBatteryProvider::THERMAL_STATE_UNSPECIFIED);
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            IBatteryProvider::THERMAL_STATE_UNSPECIFIED,
+            g_verbose_logging_enabled);
         if (!obj.IsNull()) {
             android::os::PowerManager power_manager(std::move(obj));
             int status = power_manager.getCurrentThermalStatus();
