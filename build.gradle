@@ -100,10 +100,6 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
                         .copySourcesTo("samples/tuningfork/insightsdemo")
                         .buildDebugApkTo("apks/samples", "insightsdemo.apk"))
         .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'experimentsdemo'))
-                        .copySourcesTo("samples/tuningfork/experimentsdemo")
-                        .buildDebugApkTo("apks/samples", "experimentsdemo.apk"))
-        .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('src', 'tuningfork', 'tools', 'validation'))
                         .copySourcesTo("src/tuningfork/tools/validation"))
         .addSampleAndroidProject(
@@ -536,6 +532,12 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
         into file(joinPath(buildFolder, 'samples'))
     }
 
+    // Needed for samples that depend on proto preparation (agdktunnel).
+    copy {
+        from file('prepproto.gradle')
+        into file(buildFolder)
+    }
+
     // All sample common files
     copy {
         from file(joinPath('samples', "common"))
@@ -851,6 +853,12 @@ tasks.withType(BuildTask) {
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
+    def packageName = getPackageName()
+
+    // Clear the package path to ensure the task zip is not polluted
+    // by previous build tasks.
+    delete getFullPackagePath()
+
     doFirst {
         // Ensure some libraries to build were set
         if (nativeLibraries.isEmpty() && androidArchiveLibraries.isEmpty()) {
@@ -858,14 +866,10 @@ tasks.withType(BuildTask) {
 Must specify which libraries to build,
 e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
         }
+
     }
 
     doLast {
-        def packageName = getPackageName()
-
-        // Clear the package path to ensure the task zip is not polluted
-        // by previous build tasks.
-        delete getFullPackagePath()
 
         // Android libraries are already built, just add the AARs to the package.
         androidArchiveLibraries.each {
@@ -996,7 +1000,7 @@ def addZipTask(zipTask, buildTask, outputArchiveFileName) {
         dependsOn buildTask
 
         if (shouldIncludeSampleArtifacts()) {
-            dependsOn buildSampleArtifacts
+            buildTask.dependsOn buildSampleArtifacts
         }
         def packageFolder = getFullPackagePath()
 
