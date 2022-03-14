@@ -148,6 +148,15 @@ std::string GetExceptionMessage() {
     Env()->DeleteLocalRef(exception);
     return msg;
 }
+std::string RemoveSensitiveInfoFromExceptionMessage(
+    std::string exception_message) {
+    std::string exception_prefix = "Exception:";
+    std::size_t found = exception_message.find(exception_prefix);
+    if (found != std::string::npos) {
+        return exception_message.substr(0, found + exception_prefix.length());
+    }
+    return exception_message;
+}
 bool CheckForException(std::string& msg) {
     if (Env()->ExceptionCheck()) {
         msg = GetExceptionMessage();

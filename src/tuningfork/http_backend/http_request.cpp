@@ -38,15 +38,17 @@ static TuningFork_ErrorCode ConnectionIsMetered(bool& value) {
     using namespace gamesdk::jni;
     java::Object obj = AppContext().getSystemService(
         android::content::Context::CONNECTIVITY_SERVICE);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(TUNINGFORK_ERROR_JNI_EXCEPTION);
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION, g_verbose_logging_enabled);
     if (obj.IsNull())
         return TUNINGFORK_ERROR_BAD_PARAMETER;  // Can't get service
     android::net::ConnectivityManager cm(std::move(obj));
     value = cm.isActiveNetworkMetered();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // Most likely missing
-                                          // Manifest.permission.ACCESS_NETWORK_STATE
-                                          // or no active network.
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // Most likely missing
+                                     // Manifest.permission.ACCESS_NETWORK_STATE
+                                     // or no active network.
     return TUNINGFORK_ERROR_OK;
 }
 
@@ -61,18 +63,21 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
     if ((!allow_metered_) && connection_is_metered)
         return TUNINGFORK_ERROR_METERED_CONNECTION_DISALLOWED;
     auto uri = GetURL(rpc_name);
-    ALOGI("Connecting to: %s", uri.c_str());
+    ALOGI("Connecting to: %s",
+          g_verbose_logging_enabled ? uri.c_str() : LOGGING_PLACEHOLDER_TEXT);
 
     using namespace gamesdk::jni;
 
     auto url = java::net::URL(uri);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // Malformed URL
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // Malformed URL
 
     // Open connection and set properties
     java::net::HttpURLConnection connection(url.openConnection());
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     connection.setRequestMethod("POST");
     auto timeout_ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(timeout_).count();
@@ -96,42 +101,51 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
 
     // Write json request body
     auto os = connection.getOutputStream();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     auto writer =
         java::io::BufferedWriter(java::io::OutputStreamWriter(os, "UTF-8"));
     writer.write(request_json);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     writer.flush();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     writer.close();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     os.close();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
     // Connect and get response
     connection.connect();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
     response_code = connection.getResponseCode();
     ALOGI("Response code: %d", response_code);
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
     auto resp = connection.getResponseMessage();
     ALOGI("Response message: %s", resp.C());
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
     // Read body from input stream
     auto is = connection.getInputStream();
-    CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
     auto reader =
         java::io::BufferedReader(java::io::InputStreamReader(is, "UTF-8"));
     std::stringstream body;
