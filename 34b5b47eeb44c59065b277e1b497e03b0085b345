@@ -63,6 +63,30 @@
       },
       "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f435b416_b24a08dd",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-14T20:02:18Z",
+      "side": 1,
+      "message": "Sounds good, I prefer use mJniEnv directly. But I realize all callers are in the few lines here, either way is fine.",
+      "parentUuid": "c604ddd8_8c1b2a22",
+      "range": {
+        "startLine": 134,
+        "startChar": 27,
+        "endLine": 134,
+        "endChar": 38
+      },
+      "revId": "34b5b47eeb44c59065b277e1b497e03b0085b345",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
