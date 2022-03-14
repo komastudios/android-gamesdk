@@ -61,7 +61,8 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
     if ((!allow_metered_) && connection_is_metered)
         return TUNINGFORK_ERROR_METERED_CONNECTION_DISALLOWED;
     auto uri = GetURL(rpc_name);
-    ALOGI("Connecting to: %s", uri.c_str());
+    ALOGI("Connecting to: %s",
+          verbose_logging_enabled ? uri.c_str() : LOGGING_PLACEHOLDER_TEXT);
 
     using namespace gamesdk::jni;
 

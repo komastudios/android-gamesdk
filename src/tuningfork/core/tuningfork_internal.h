@@ -32,6 +32,12 @@
 
 namespace tuningfork {
 
+#ifndef LOGGING_PLACEHOLDER_TEXT
+#define LOGGING_PLACEHOLDER_TEXT "HIDDEN"
+#endif
+
+extern bool verbose_logging_enabled;
+
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google
 // http endpoint is used. If no timeProvider is passed,
