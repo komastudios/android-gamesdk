@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0abfbee0_1ecd4a21",
+        "filename": "samples/agdktunnel/app/src/main/AndroidManifest.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-14T18:36:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc5b0cd4_9ec9ca3e",
+      "range": {
+        "startLine": 41,
+        "startChar": 2,
+        "endLine": 41,
+        "endChar": 75
+      },
+      "revId": "7b3fd9077f40e2a464b356fd3d3bf3ea1883b045",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d1204310_8d6760af",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-03-01T21:52:47Z",
       "side": 1,
       "message": "We should say only about mobile variant in this file, and leave pc comments in the pc manifest.",
+      "range": {
+        "startLine": 48,
+        "startChar": 6,
+        "endLine": 49,
+        "endChar": 18
+      },
+      "revId": "7b3fd9077f40e2a464b356fd3d3bf3ea1883b045",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "710b14ae_15a5e679",
+        "filename": "samples/agdktunnel/app/src/mobile/AndroidManifest.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-14T18:36:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1204310_8d6760af",
       "range": {
         "startLine": 48,
         "startChar": 6,
