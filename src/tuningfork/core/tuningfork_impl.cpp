@@ -44,7 +44,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
                                ITimeProvider *time_provider,
                                IMemInfoProvider *meminfo_provider,
                                IBatteryProvider *battery_provider,
-                               bool first_run)
+                               bool first_run, bool sensitive_logging_enabled)
     : settings_(settings),
       trace_(gamesdk::Trace::create()),
       backend_(backend),
@@ -57,6 +57,7 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
       next_ikey_(0),
       before_first_tick_(true),
       app_first_run_(first_run) {
+    ::sensitive_logging_enabled = sensitive_logging_enabled;
     if (backend == nullptr) {
         default_backend_ = std::make_unique<HttpBackend>();
         TuningFork_ErrorCode err = default_backend_->Init(settings);

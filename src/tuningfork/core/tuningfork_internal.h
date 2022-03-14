@@ -45,7 +45,8 @@ TuningFork_ErrorCode Init(const Settings& settings,
                           ITimeProvider* time_provider = nullptr,
                           IMemInfoProvider* meminfo_provider = nullptr,
                           IBatteryProvider* battery_provider = nullptr,
-                          bool first_run = false);
+                          bool first_run = false,
+                          bool sensitive_logging_enabled = false);
 
 // Blocking call to get fidelity parameters from the server.
 // Returns true if parameters could be downloaded within the timeout, false

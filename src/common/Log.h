@@ -20,9 +20,26 @@
 
 #include <string>
 
+// If true, only errors and web response codes will be logged.
+static bool sensitive_logging_enabled = false;
+
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define ALOGW_ALWAYS(...) \
+    __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+#define ALOGW(...)                                                      \
+    do {                                                                \
+        if (!sensitive_logging_enabled) {                               \
+            __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__) \
+        }                                                               \
+    } while (0)
+#define ALOGI_ALWAYS(...) \
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define ALOGI(...)                                                      \
+    do {                                                                \
+        if (!sensitive_logging_enabled) {                               \
+            __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__) \
+        }                                                               \
+    } while (0)
 #define ALOGW_ONCE_IF(cond, ...)     \
     do {                             \
         if (cond) {                  \
@@ -45,10 +62,14 @@
             ALOGE(__VA_ARGS__);                                \
         }                                                      \
     } while (0)
-
 #ifndef NDEBUG
-#define ALOGV(...) \
-    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ALOGV(...)                                                         \
+    do {                                                                   \
+        if (!sensitive_logging_enabled) {                                  \
+            __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__) \
+        }                                                                  \
+    } while (0)
+
 #else
 #define ALOGV(...)
 #endif

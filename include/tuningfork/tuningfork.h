@@ -397,7 +397,8 @@ inline void TuningFork_CProtobufSerialization_free(
  * initialized.
  */
 TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
-                                     JNIEnv* env, jobject context);
+                                     JNIEnv* env, jobject context,
+                                     bool sensitive_logging_enabled = false);
 
 // The functions below will return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED
 // if TuningFork_init

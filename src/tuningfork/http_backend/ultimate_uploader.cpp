@@ -47,15 +47,16 @@ bool UltimateUploader::CheckUploadPending() {
         TuningFork_ErrorCode ret =
             request_.Send(kUploadRpcName, request_json, response_code, body);
         if (ret == TUNINGFORK_ERROR_OK) {
-            ALOGI("UPLOAD request returned %d %s", response_code, body.c_str());
+            ALOGI_ALWAYS("UPLOAD request returned %d %s", response_code,
+                         body.c_str());
             if (response_code == 200) {
                 persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
                 TuningFork_CProtobufSerialization_free(&uploading_hists_ser);
                 return true;
             }
         } else {
-            ALOGW("Error %d when sending UPLOAD request\n%s", ret,
-                  request_json.c_str());
+            ALOGW_ALWAYS("Error %d when sending UPLOAD request\n%s", ret,
+                         request_json.c_str());
             persister_->remove(HISTOGRAMS_UPLOADING, persister_->user_data);
             persister_->set(HISTOGRAMS_PAUSED, &uploading_hists_ser,
                             persister_->user_data);

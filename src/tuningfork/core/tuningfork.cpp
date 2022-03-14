@@ -69,7 +69,8 @@ TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
                           ITimeProvider *time_provider,
                           IMemInfoProvider *meminfo_provider,
-                          IBatteryProvider *battery_provider, bool first_run) {
+                          IBatteryProvider *battery_provider, bool first_run,
+                          bool sensitive_logging_enabled) {
     if (s_impl.get() != nullptr) return TUNINGFORK_ERROR_ALREADY_INITIALIZED;
 
     if (request_info != nullptr) {

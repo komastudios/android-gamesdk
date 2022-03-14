@@ -32,12 +32,12 @@ extern "C" {
 jint JNI_OnLoad(JavaVM* vm, void* reserved);
 
 TuningFork_ErrorCode Unity_TuningFork_init_with_settings(
-    TuningFork_Settings* settings);
+    TuningFork_Settings* settings, bool sensitive_logging_enabled = false);
 
 TuningFork_ErrorCode Unity_TuningFork_init(
     TuningFork_FidelityParamsCallback fidelity_params_callback,
     const TuningFork_CProtobufSerialization* training_fidelity_params,
-    const char* endpoint_uri_override);
+    const char* endpoint_uri_override, bool sensitive_logging_enabled = false);
 
 bool Unity_TuningFork_swappyIsEnabled();
 

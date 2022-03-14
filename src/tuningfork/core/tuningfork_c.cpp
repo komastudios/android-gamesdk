@@ -33,7 +33,8 @@ namespace jni = gamesdk::jni;
 void TUNINGFORK_VERSION_SYMBOL();
 
 TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings *c_settings_in,
-                                     JNIEnv *env, jobject context) {
+                                     JNIEnv *env, jobject context,
+                                     bool sensitive_logging_enabled) {
     TUNINGFORK_VERSION_SYMBOL();
     tf::Settings settings{};
     if (c_settings_in != nullptr) {
@@ -45,7 +46,7 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings *c_settings_in,
     if (err != TUNINGFORK_ERROR_OK) return err;
     settings.Check();
     err = tf::Init(settings, nullptr, nullptr, nullptr, nullptr, nullptr,
-                   first_run);
+                   first_run, sensitive_logging_enabled);
     if (err != TUNINGFORK_ERROR_OK) return err;
     if (!(settings.default_fidelity_parameters_filename.empty() &&
           settings.c_settings.training_fidelity_params == nullptr)) {
