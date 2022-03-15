@@ -49,6 +49,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "69a645f5_b945f944",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-15T22:28:09Z",
+      "side": 1,
+      "message": "It is called from loadCloudCheckpoint() and saveCloudCheckpoint, these are called from c++ side using JNI",
+      "parentUuid": "d0e57a8a_00c8699d",
+      "range": {
+        "startLine": 97,
+        "startChar": 20,
+        "endLine": 97,
+        "endChar": 38
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "90ea2419_768ff305",
         "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
         "patchSetId": 3
