@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1358bfb_0e4b4f98",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-15T22:03:42Z",
+      "side": 1,
+      "message": "move the public method up.",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 95,
+        "endChar": 5
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0e57a8a_00c8699d",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-15T22:03:42Z",
+      "side": 1,
+      "message": "This function is not called yet? Or did I miss the caller?",
+      "range": {
+        "startLine": 97,
+        "startChar": 20,
+        "endLine": 97,
+        "endChar": 38
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90ea2419_768ff305",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-03-15T22:03:42Z",
+      "side": 1,
+      "message": "From what I look, the caller of this function seems to be the main UI thread (GameActivity).",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 121,
+        "endChar": 17
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
