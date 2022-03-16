@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec3783a3_3bac88a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-16T14:57:12Z",
+      "side": 1,
+      "message": "General comment: I think the loading from cloud needs to be relocated to better handle the async nature. There is a loader_scene that gets launched at startup before going to the initial menu screen. Game data loading could happen there with the following flow:\n\n1. Condition of: savedata_loading_complete is set to false on loader_scene startup\n2. Local device save file is loaded if available, checkpoint level is initialized to zero if not.\n3. If cloud is not available, set the savedata_loading_complete set to true\n4. If cloud is available, attempt to load cloud data. This should be async with a native callback function. I\u0027m fine with just declaring a JNI interface native function with a status parameter and a level number parameter, i.e. com_google_sample_agdktunnel_PGSManager_cloudLoadResult(JNIEnv *env, jint result, jint level)\n5. If a cloud load comes back successful, update the checkpoint and save the local device save file, and set savedata_loading_complete to true.\n6. If the cloud load comes back unsuccessful, log the status result, and set savedata_loading_complete to true\n7. savedata_loading_complete being true is an additional required exit condition to transition out of the loader_scene\n\nOn the save side, the cloud save function can just be \u0027fire and forget\u0027, as long as the local device save happens at the same time.",
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a1358bfb_0e4b4f98",
