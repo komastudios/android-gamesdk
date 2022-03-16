@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bf92290_03ba204d",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-16T12:49:45Z",
+      "side": 1,
+      "message": "Can you say what the default value of this parameter is here, please? We want it to be false, I think, i.e. we do not show sensitive information by default.",
+      "revId": "242dde670998682d88ca74f9df67623b091c6441",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5a2bf59_bebc6a54",
+        "filename": "src/tuningfork/core/tuningfork.cpp",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-16T12:49:45Z",
+      "side": 1,
+      "message": "Please rename this to g_verbose_logging_enabled, to denote that it is a global variable. The default value should be false.",
+      "revId": "242dde670998682d88ca74f9df67623b091c6441",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3d0eedb_6cefa4d6",
+        "filename": "src/tuningfork/core/tuningfork_internal.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-16T12:49:45Z",
+      "side": 1,
+      "message": "Please rename and comment what this is.\nDo we need the #ifndef guard? The #pragma once at the top should mean the definition only happens once.",
+      "revId": "242dde670998682d88ca74f9df67623b091c6441",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
