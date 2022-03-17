@@ -43,6 +43,9 @@ public class AGDKTunnelActivity extends GameActivity {
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
 
+        // Load the memory advice library
+        System.loadLibrary("memory_advice");
+
         // It's not actually necessary to load the native 'game' library here as it's loaded in
         // GameActivity.onCreate when we have the following line in the manifest:
         // <meta-data android:name="android.app.lib_name" android:value="game" />

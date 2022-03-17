@@ -76,7 +76,7 @@ android {
 
             // x86 ABI compatibility
             ndk {
-                abiFilters 'x86'
+                abiFilters 'x86', 'x86_64'
             }
         }
     }
@@ -108,7 +108,8 @@ dependencies {
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
     implementation "androidx.games:games-controller:1.0.0"
-    implementation "androidx.games:games-activity:1.1.0-beta03"
+    implementation "androidx.games:games-activity:1.1.0"
+    implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
     // TODO(b/215589030): release the input sdk public to GMaven
