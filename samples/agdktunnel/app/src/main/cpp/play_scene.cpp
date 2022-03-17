@@ -654,6 +654,10 @@ void PlayScene::RenderHUD() {
     mTextRenderer->SetFontScale(SCORE_FONT_SCALE);
     mTextRenderer->RenderText(score_str, SCORE_POS_X, SCORE_POS_Y);
 
+    // Render memory statistics
+    NativeEngine::GetInstance()->GetMemoryConsumer()->RenderMemoryStatistics(
+            mTextRenderer);
+
     // render current sign
     if (mSignText) {
         modelMat = glm::mat4(1.0f);
