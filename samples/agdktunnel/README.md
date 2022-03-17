@@ -10,6 +10,7 @@ AGDKTunnel uses the following AGDK libraries:
 * GameActivity
 * GameController
 * GameTextInput
+* Memory Advice
 * Oboe
 
 ## Prerequisites
@@ -34,6 +35,41 @@ need to follow the next steps.
 ## Building
 
 Open the `samples/agdktunnel' directory in Android Studio 4.2 or higher.
+
+## Memory Advice
+
+AGDKTunnel integrates the Memory Advice library to receive hints when memory usage is becoming
+critical and risks being terminated by the OS due to low available memory.
+
+Memory consumption is artifically inflated using the MemoryConsumer class, which also displays
+status information onscreen. This is on by default. The behavior can be disabled by changing
+`true` to `false` in the following line in `native_engine.cpp`:
+
+`mMemoryConsumer = new MemoryConsumer(true);`
+
+When active, the Memory Consumer allocates at random intervals blocks of variable sizes and
+places them into two memory pools, dubbed 'General' and 'Cache'. If the Memory Advice library
+signals a critical memory situation, the Memory Consumer frees all allocations from the Cache
+pool. After the first critical memory warning, the Memory Consumer ceases to allocate into the
+General pool and only allocates into the Cache pool.
+
+When active, the Memory Consumer displays statistics on screen in the UI and Play scenes. The
+information is formatted as follows:
+
+`(status) (crit warning count) (percent available) (General pool size) (Cache pool size)`
+
+**(status)**
+`OK|WARN|CRIT`
+Memory State reported by the Memory Advice library
+**(crit warning count)**
+The number of times Memory Advice has reported a critical memory shortage
+**(percent available)**
+The estimated percentage of available memory reported by Memory Advice, this
+is updated every five seconds
+**(General pool size)**
+Total allocation size of the General pool in megabytes
+**(Cache pool size)**
+Total allocation size of the Cache pool in megabytes
 
 ## Android Performance Tuner (APT)
 

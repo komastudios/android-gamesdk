@@ -43,6 +43,9 @@ public class AGDKTunnelActivity extends GameActivity {
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
 
+        // Load the memory advice library:
+        System.loadLibrary("memory_advice");
+
         // Load the game library:
         System.loadLibrary("game");
     }
