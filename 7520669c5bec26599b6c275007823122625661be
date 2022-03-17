@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7324e2d_191060ac",
+        "filename": "src/common/jni/jni_helper.h",
+        "patchSetId": 10
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "Input arguments should be passed as a const reference, not a value, unless you want a copy of the string to be made.",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc6fa631_be03cc8e",
+        "filename": "src/tuningfork/core/activity_lifecycle_state.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "Could these checks give URL or API key? I think we only need to replace the macros where we could leak sensitive information.",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb8bf1ce_3e822789",
+        "filename": "src/tuningfork/core/tuningfork.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "Please comment why this is false by default (i.e. to hide sensitive information)",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f85a385_4d62c477",
+        "filename": "src/tuningfork/core/tuningfork_utils.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "Do we need to replace the exception handling in this file?",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5569ebb0_356f63e4",
+        "filename": "src/tuningfork/http_backend/http_request.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "I don\u0027t think this is sensitive information?",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c088aae_c84a307b",
+        "filename": "src/tuningfork/http_backend/http_request.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-17T10:32:07Z",
+      "side": 1,
+      "message": "Ditto",
+      "revId": "7520669c5bec26599b6c275007823122625661be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
