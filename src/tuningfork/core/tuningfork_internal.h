@@ -32,6 +32,13 @@
 
 namespace tuningfork {
 
+// Replaces sensitive information when verbose logging is disabled
+#define LOGGING_PLACEHOLDER_TEXT "HIDDEN"
+
+// If false, sensitive information is removed from logging.
+// Default is false.
+extern bool g_verbose_logging_enabled;
+
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google
 // http endpoint is used. If no timeProvider is passed,
