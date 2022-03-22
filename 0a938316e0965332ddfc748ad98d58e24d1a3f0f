@@ -41,6 +41,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "53cf84e5_4a01bf03",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-22T23:48:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77c8f40a_b1adbee1",
+      "range": {
+        "startLine": 325,
+        "startChar": 4,
+        "endLine": 325,
+        "endChar": 39
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "01ef131f_f29f403b",
@@ -64,6 +88,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "998bf549_fa33bfae",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-22T23:48:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "01ef131f_f29f403b",
+      "range": {
+        "startLine": 337,
+        "startChar": 4,
+        "endLine": 337,
+        "endChar": 39
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a1358bfb_0e4b4f98",
@@ -77,6 +125,30 @@
       "writtenOn": "2022-03-15T22:03:42Z",
       "side": 1,
       "message": "move the public method up.",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 95,
+        "endChar": 5
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf02d9bd_f40f2d24",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-22T23:48:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a1358bfb_0e4b4f98",
       "range": {
         "startLine": 92,
         "startChar": 4,
@@ -124,6 +196,30 @@
       "side": 1,
       "message": "It is called from loadCloudCheckpoint() and saveCloudCheckpoint, these are called from c++ side using JNI",
       "parentUuid": "d0e57a8a_00c8699d",
+      "range": {
+        "startLine": 97,
+        "startChar": 20,
+        "endLine": 97,
+        "endChar": 38
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8869a05a_c29a5153",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-22T23:48:07Z",
+      "side": 1,
+      "message": "Marked as fixed because the method was removed since it was no longer needed",
+      "parentUuid": "69a645f5_b945f944",
       "range": {
         "startLine": 97,
         "startChar": 20,
@@ -194,6 +290,30 @@
       "side": 1,
       "message": "+1, this call may result in the ANR",
       "parentUuid": "90ea2419_768ff305",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 121,
+        "endChar": 17
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "387875b9_1c7c112f",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-22T23:48:07Z",
+      "side": 1,
+      "message": "Fixed.\n\nLoading data now is fully asynchronous",
+      "parentUuid": "8e9b4162_f8ebe502",
       "range": {
         "startLine": 110,
         "startChar": 4,
