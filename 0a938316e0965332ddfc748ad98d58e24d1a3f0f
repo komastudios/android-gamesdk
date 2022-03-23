@@ -253,6 +253,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bb3eb45_739a3f1b",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-23T23:53:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54684cf4_e6f1ccab",
+      "range": {
+        "startLine": 63,
+        "startChar": 55,
+        "endLine": 63,
+        "endChar": 95
+      },
+      "revId": "0a938316e0965332ddfc748ad98d58e24d1a3f0f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "90ea2419_768ff305",

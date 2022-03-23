@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aec9afaf_2f2e435a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-23T23:53:17Z",
+      "side": 1,
+      "message": "Summary of changes:\n- WelcomeScene now is opened only from a LoaderScene instance.\n- Save and load from cloud now is fully asynchronous.\n- Data is saved locally and in cloud as a measure of the fire-and-forget cloud save\n- Authentication to PGS is verified before every save/load operation\n- LoaderScene now counts steps to authenticate and load data when updating the loading percentage in the UI",
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
