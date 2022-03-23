@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c0b49ab_98bf2ea8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-23T15:57:45Z",
+      "side": 1,
+      "message": "LGTM, except a few minor things",
+      "revId": "0f1bcc70f898c4f45b309bf83f3bb60f7a48ff75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60cb3c3f_7e18ba0d",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-23T15:57:45Z",
+      "side": 1,
+      "message": "Can you comment what all this string manipulation is doing, please?",
+      "revId": "0f1bcc70f898c4f45b309bf83f3bb60f7a48ff75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a141d4c8_9c5671b7",
+        "filename": "test/memory_advice/providers/test_metrics_provider.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-23T15:57:45Z",
+      "side": 1,
+      "message": "Please update the comment",
+      "revId": "0f1bcc70f898c4f45b309bf83f3bb60f7a48ff75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1bed701_e0a4d296",
+        "filename": "test/memory_advice/test_utils.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-23T15:57:45Z",
+      "side": 1,
+      "message": "Are some of these functions copied from the tuningfork tests? Can we refactor into common code? You can do it in a subsequent CL if you like.",
+      "revId": "0f1bcc70f898c4f45b309bf83f3bb60f7a48ff75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72da7053_c6de5357",
+        "filename": "test/memory_advice/test_utils.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-23T15:57:45Z",
+      "side": 1,
+      "message": "You don\u0027t normally want statics in headers: they get defined in all cpp files they are included in. Move these to test_utils.cpp?",
+      "revId": "0f1bcc70f898c4f45b309bf83f3bb60f7a48ff75",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
