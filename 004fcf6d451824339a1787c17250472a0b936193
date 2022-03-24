@@ -16,6 +16,46 @@
       "message": "Summary of changes:\n- WelcomeScene now is opened only from a LoaderScene instance.\n- Save and load from cloud now is fully asynchronous.\n- Data is saved locally and in cloud as a measure of the fire-and-forget cloud save\n- Authentication to PGS is verified before every save/load operation\n- LoaderScene now counts steps to authenticate and load data when updating the loading percentage in the UI",
       "revId": "004fcf6d451824339a1787c17250472a0b936193",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10b1b5c8_d9b9ac1a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-24T14:49:48Z",
+      "side": 1,
+      "message": "Looking good, there is one more common cloud save case that probably needs to be taken into account:\n\n* Start playing on a mobile device\n* Put the game in the background or sleep the device\n* Play on a PC, saving a later checkpoint\n* Stop playing on the PC\n* Wake the mobile device and bring the game into the foreground\n\nRight now, the game doesn\u0027t requery the cloud save when resuming from the background to see if progress was made on another device. I\u0027m okay with it silently raising the local checkpoint level (higher only) without any user interaction, but it\u0027s a common case and should probably be demonstrated in the sample.\n",
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c293bee_1b1133e6",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-24T14:49:48Z",
+      "side": 1,
+      "message": "Recommend making this static (static LoaderScene *currentScene \u003d NULL;)",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 11
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
