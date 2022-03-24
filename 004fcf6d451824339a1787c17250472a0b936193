@@ -37,6 +37,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6df891c0_1e2c2564",
+        "filename": "samples/agdktunnel/app/src/main/cpp/dialog_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: new PlayScene(/*savedCheckpoint\u003d*/ 0)\nSee go/c-readability-advice#comment-argument-literals-with-their-parameter-names",
+      "range": {
+        "startLine": 145,
+        "startChar": 33,
+        "endLine": 145,
+        "endChar": 49
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9c293bee_1b1133e6",
         "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
         "patchSetId": 12
@@ -53,6 +76,483 @@
         "startChar": 0,
         "endLine": 33,
         "endChar": 11
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f4dc18c_9d22464f",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: 2?\n[Not for this CL] would it be possible to replace \"char *\" with std::string?",
+      "range": {
+        "startLine": 130,
+        "startChar": 58,
+        "endLine": 130,
+        "endChar": 59
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b11636f4_1c57ff87",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "[for consideration] how quick is the single texture loading in compare to authentication and saved state loading? Maybe wight of the authentication and saved state loading should be larger? For example,\n        if (mUserAuthenticationCompleted) {\n            completedLoad +\u003d 500; // e.g. cost of authentication is equivalent of 500 texture loadings\n        }\n        if (mCloudDataLoadingCompleted) {\n            completedLoad +\u003d 200; // e.g. cost of saved state is equivalent of 200 texture loadings\n        }\n\n\ncould make progress percentage more predictable to end user.",
+      "range": {
+        "startLine": 172,
+        "startChar": 25,
+        "endLine": 172,
+        "endChar": 79
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "906353de_bc136e81",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: int loadingPercentage \u003d static_cast\u003cint\u003e(completedLoad * 100 / totalLoad);\nand use \"int totalLoad\" and \"long completedLoad\"",
+      "range": {
+        "startLine": 182,
+        "startChar": 49,
+        "endLine": 182,
+        "endChar": 85
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c02abe72_1ba73ff7",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.hpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: seems everywhere else we use \"level\", should we rename savedCheckpoint to savedLevel here?",
+      "range": {
+        "startLine": 40,
+        "startChar": 18,
+        "endLine": 40,
+        "endChar": 33
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc7e25a7_d379296c",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "please revert changes that move method around, those make reviewing harder and affect per line change history (AKA blame)",
+      "range": {
+        "startLine": 74,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 33
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2413a7b_07cecb55",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "changing order of those would break a contract, particularly would need to be updated loader_scene.hpp. That\u0027s error prone. I\u0027d recommend introduce a callback method per the status code:\n    private native void authenticationCompleted();\n    private native void authenticationFailed();\n    private native void savedStateLoadingCompleted(int level);\n    private native void savedStateLoadingFailed();",
+      "range": {
+        "startLine": 43,
+        "startChar": 17,
+        "endLine": 43,
+        "endChar": 31
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "065ecb0c_3dcd576f",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: please update the comment",
+      "range": {
+        "startLine": 55,
+        "startChar": 34,
+        "endLine": 55,
+        "endChar": 99
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d03ea51d_235f1b2d",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: private static final int",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 22
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9184bb47_cd5b22bf",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: remove this comment?",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 59,
+        "endChar": 7
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22c5a15f_c90845e4",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: replace android.app.Activity with on-demand import, also change parameter from  \"Context context\" to \"Activity activity\".\n\nAlso instead of the singleton PGSManager you should have PGSManager instance per activity, otherwise reference to the activity will be leaked even after it was destroyed and shouldn\u0027t really be used.",
+      "range": {
+        "startLine": 64,
+        "startChar": 56,
+        "endLine": 64,
+        "endChar": 76
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "436e762b_5cb86e19",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "this will crash the app if, for example, task.isSuccessful() was false",
+      "range": {
+        "startLine": 84,
+        "startChar": 45,
+        "endLine": 84,
+        "endChar": 63
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d94cb2a_8f48aba2",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "that may result in the ANR. Try something like the following:\n Task\u003cAuthenticationResult\u003e task \u003d mGamesSignInClient.isAuthenticated();\n task.continueWithTask(\n            new Continuation\u003cAuthenticationResult, Task\u003cAuthenticationResult\u003e\u003e() {\n              @Override\n              public Task\u003cAuthenticationResult\u003e then(Task\u003cAuthenticationResult\u003e task)\n                  throws Exception {\n                if (!task.isSuccessful() || !task.getResult().isAuthenticated()) {\n                  // try to sign-in\n                  return mGamesSignInClient.signIn();\n                }\n                return task;\n              }\n            })\n        .addOnCompleteListener(\n            activity,\n            new OnCompleteListener\u003cAuthenticationResult\u003e() {\n              @Override\n              public void onComplete(@NonNull Task\u003cAuthenticationResult\u003e task) {\n                if (!task.isSuccessful() || !task.getResult().isAuthenticated()) {\n                  Log.e(TAG, \"the user can\u0027t be authenticated.\");\n                  cloudLoadUpdate(DataLoadStatus.AUTHENTICATION_ERROR.ordinal(), 0);\n                  return;\n                }\n                // Signal authentication completed and schedule loading data task\n                Log.i(TAG, \"authentication completed, loading data.\");\n                cloudLoadUpdate(DataLoadStatus.AUTHENTICATION_COMPLETED.ordinal(), 0);\n                loadSnapshot();\n              }\n            });",
+      "range": {
+        "startLine": 94,
+        "startChar": 23,
+        "endLine": 94,
+        "endChar": 80
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19c26688_e4a0b20d",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "I believe this should be Tasks.forResult(null)",
+      "range": {
+        "startLine": 113,
+        "startChar": 27,
+        "endLine": 113,
+        "endChar": 31
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1aed88b7_5cea1790",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 137,
+        "startChar": 20,
+        "endLine": 137,
+        "endChar": 86
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d2307357_70d59140",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: /* createIfNotFound\u003d */ false",
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49952db6_0b2930f1",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "To be more explicit about case when we haven\u0027t saved anything into the cloud yet:  \n  if (e instanceof ApiException) {\n    int status \u003d ((ApiException) e).getStatusCode();\n    if (status \u003d\u003d GamesClientStatusCodes.SNAPSHOT_NOT_FOUND) {\n       Log.i(TAG, \"Level hasn\u0027t been saved\"); \n       cloudLoadUpdate(DataLoadStatus.SNAPSHOT_NOT_FOUND.ordinal(), level);\n       return;\n    }\n  }\n  Log.e(TAG, \"Error while opening Snapshot to load data.\", e);\n  cloudLoadUpdate(DataLoadStatus.ERROR_LOADING_DATA.ordinal(), 0);",
+      "range": {
+        "startLine": 172,
+        "startChar": 19,
+        "endLine": 173,
+        "endChar": 84
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53c727b3_d92a97a7",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "if (!task.isSuccessful()) {\n   return Tasks.forResult(null);\n}\n\nthe Continuation will be called after the failure listener added by addOnFailureListener",
+      "range": {
+        "startLine": 180,
+        "startChar": 18,
+        "endLine": 180,
+        "endChar": 22
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75d2dfa1_12e42edd",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "nit: /* createIfNotFound\u003d */ true",
+      "range": {
+        "startLine": 201,
+        "startChar": 51,
+        "endLine": 201,
+        "endChar": 55
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e631b08e_27e8a81b",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "what version of java are you using? Could those anonymous classes be replaced with lambdas? For example:\n    .addOnFailureListener(activity, (Exception e) -\u003e Log.e(TAG, \"Error while opening Snapshot to save data.\", e))",
+      "range": {
+        "startLine": 202,
+        "startChar": 34,
+        "endLine": 202,
+        "endChar": 59
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01d82dba_a1fee962",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "addOnFailureListener(activity, ...",
+      "range": {
+        "startLine": 202,
+        "startChar": 13,
+        "endLine": 202,
+        "endChar": 33
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1db32b06_a34e3fef",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-24T17:20:08Z",
+      "side": 1,
+      "message": "addOnSuccessListener(activity, ...\n\naddOnCompleteListener will be called in addition to the listened added at addOnFailureListener",
+      "range": {
+        "startLine": 207,
+        "startChar": 20,
+        "endLine": 207,
+        "endChar": 28
       },
       "revId": "004fcf6d451824339a1787c17250472a0b936193",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
