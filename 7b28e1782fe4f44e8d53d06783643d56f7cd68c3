@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2faf17ce_2d64f1fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "Looks good. Can we add a flag and/or on-screen button to toggle this constant memory allocating behaviour? I know we\u0027re meant to be responding and avoiding OOM exceptions, but the behaviour could introduce unexpected crashes that mean other parts of AGDK are difficult to test.",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "295e4f00_b42ee0dd",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "The memory advice library is beta01 now",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d7c9236_d6eee04b",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "nit: name the variable *_MS to include the units?",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "976b9eef_f0132013",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "Do you need a mutex around the Purge and AddAllocation functions, to stop unsynchronized updates?",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e06be8d6_861f6523",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "Comment that this takes ownership of the data pointed to by ptr?",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70669568_560f8322",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T13:56:30Z",
+      "side": 1,
+      "message": "I used to fill with random bytes in my tests, but if this works, it\u0027s good to know.",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
