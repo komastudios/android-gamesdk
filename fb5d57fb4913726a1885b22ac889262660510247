@@ -22,6 +22,30 @@
       },
       "revId": "fb5d57fb4913726a1885b22ac889262660510247",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea8db6c3_33c248a4",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-25T10:34:33Z",
+      "side": 1,
+      "message": "I did it like this so we don\u0027t get confusing errors about libmain not being available if the manifest doesn\u0027t have the entry, but I think you\u0027re right we do need to load libmain here, if we\u0027ve already found the library at line 261. I\u0027ll make a follow up CL.",
+      "parentUuid": "67cc129d_866f9260",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 273,
+        "endChar": 34
+      },
+      "revId": "fb5d57fb4913726a1885b22ac889262660510247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
