@@ -1,5 +1,29 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67cc129d_866f9260",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-03-25T00:41:08Z",
+      "side": 1,
+      "message": "this seems to miss the following:\n1) the native library is named as the default:  libmain.so\n2) app does not have to specify it inside the AndroidManifest.xml (so it is not inside the XML file).\n3) app has 0 java code\n\nstill no one will load libmain.so, correct?\n\nif libname is not null, it needs to be loaded; libname is default to be \"main\", updated to the manifest configure (if it is there). So libname is never null.  In this case, the \"if statement\" should be removed. (probably the new variable libname_in_manifest is not necessary, just use the libname instead?)",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 273,
+        "endChar": 34
+      },
+      "revId": "fb5d57fb4913726a1885b22ac889262660510247",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
