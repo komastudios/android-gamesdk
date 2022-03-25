@@ -235,7 +235,6 @@ public class GameActivity
 
     String libname = "main";
     String funcname = "GameActivity_onCreate";
-    String libname_in_manifest = null;
     ActivityInfo ai;
     try {
       ai = getPackageManager().getActivityInfo(
@@ -243,7 +242,7 @@ public class GameActivity
       if (ai.metaData != null) {
         String ln = ai.metaData.getString(META_DATA_LIB_NAME);
         if (ln != null)
-          libname_in_manifest = ln;
+          libname = ln;
         ln = ai.metaData.getString(META_DATA_FUNC_NAME);
         if (ln != null)
           funcname = ln;
@@ -251,9 +250,6 @@ public class GameActivity
     } catch (PackageManager.NameNotFoundException e) {
       throw new RuntimeException("Error getting activity info", e);
     }
-
-    if ( libname_in_manifest != null )
-      libname = libname_in_manifest;
 
     Log.i(LOG_TAG, "Looking for library " + libname );
 
@@ -269,8 +265,7 @@ public class GameActivity
 
     // Load the native library so that native functions are registered, even if GameActivity
     // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
-    if ( libname_in_manifest != null )
-      System.loadLibrary(libname);
+    System.loadLibrary(libname);
 
     byte[] nativeSavedState =
         savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
