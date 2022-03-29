@@ -46,6 +46,30 @@
       },
       "revId": "d7ad542e1607fc20ff98ba6c4262d37359bc67a1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a9cf5fe_53dfb3e0",
+        "filename": "samples/agdktunnel/app/src/main/cpp/scene_manager.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T18:27:45Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "57fe32b1_5cfb9e46",
+      "range": {
+        "startLine": 178,
+        "startChar": 8,
+        "endLine": 178,
+        "endChar": 20
+      },
+      "revId": "d7ad542e1607fc20ff98ba6c4262d37359bc67a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
