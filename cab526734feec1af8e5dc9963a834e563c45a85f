@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2baa12cc_d95e2f5c",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data_loader_machine.cpp",
+        "patchSetId": 19
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-29T19:05:37Z",
+      "side": 1,
+      "message": "Removed.",
+      "parentUuid": "4b1e36d1_68d3e325",
+      "range": {
+        "startLine": 48,
+        "startChar": 4,
+        "endLine": 48,
+        "endChar": 43
+      },
+      "revId": "cab526734feec1af8e5dc9963a834e563c45a85f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0b559a7_47e8db00",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-03-29T18:27:45Z",
       "side": 1,
       "message": "nit: replace a bunch of *instance\u003d with *instance \u003d in the below sections",
+      "range": {
+        "startLine": 361,
+        "startChar": 26,
+        "endLine": 361,
+        "endChar": 27
+      },
+      "revId": "cab526734feec1af8e5dc9963a834e563c45a85f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "717fd9e8_76210792",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 19
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-29T19:05:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0b559a7_47e8db00",
       "range": {
         "startLine": 361,
         "startChar": 26,
