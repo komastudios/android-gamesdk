@@ -1031,4 +1031,21 @@ bool SwappyCommon::isDeviceUnsupported() {
     return false;
 }
 
+int SwappyCommon::getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
+                                               int allocated_entries) {
+    if (!mSupportedRefreshPeriods) return 0;
+    if (!out_refreshrates) {
+        ALOGE("ARRAY NULLPTR");
+        return (*mSupportedRefreshPeriods).size();
+    }
+
+    int counter = 0;
+    for (const auto& pair : *mSupportedRefreshPeriods) {
+        out_refreshrates[counter] = pair.first.count();
+        ++counter;
+    }
+
+    return (*mSupportedRefreshPeriods).size();
+}
+
 }  // namespace swappy
