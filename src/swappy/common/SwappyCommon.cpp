@@ -171,7 +171,6 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
                                    mCommonSettings.sdkVersion)) {
         mDisplayManager =
             std::make_unique<SwappyDisplayManager>(mJVM, jactivity);
-
         if (!mDisplayManager->isInitialized()) {
             mDisplayManager = nullptr;
             ALOGE("failed to initialize DisplayManager");
@@ -1029,6 +1028,39 @@ bool SwappyCommon::isDeviceUnsupported() {
     }
 
     return false;
+}
+
+int SwappyCommon::getSupportedRefreshPeriods(uint64_t* out_refreshrates,
+                                             int allocated_entries) {
+    if (!mSupportedRefreshPeriods || !out_refreshrates) {
+        return -1;
+    }
+
+    int counter = 0;
+    for (const auto& pair : *mSupportedRefreshPeriods) {
+        out_refreshrates[counter] = pair.first.count() / 1000000;
+        ++counter;
+        if (counter == allocated_entries) {
+            break;
+        }
+    }
+
+    int size = (*mSupportedRefreshPeriods).size();
+
+    int start, end;
+    if (allocated_entries < size) {
+        start = allocated_entries;
+        end = size;
+    } else {
+        start = size;
+        end = allocated_entries;
+    }
+    // Set to error value all trailing values in the array.
+    for (size_t i = start; i < end; i++) {
+        out_refreshrates[i] = -1;
+    }
+
+    return size;
 }
 
 }  // namespace swappy

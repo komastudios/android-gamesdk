@@ -75,6 +75,9 @@ class SwappyGL {
 
     static void setBufferStuffingFixWait(int32_t n_frames);
 
+    static int getSupportedRefreshPeriods(uint64_t *out_refreshrates,
+                                          int allocated_entries);
+
    private:
     static SwappyGL *getInstance();
 

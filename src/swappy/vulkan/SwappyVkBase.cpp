@@ -431,4 +431,10 @@ void SwappyVkBase::removeTracer(const SwappyTracer* tracer) {
     if (tracer != nullptr) mCommonBase.removeTracerCallbacks(*tracer);
 }
 
+int SwappyVkBase::getSupportedRefreshPeriods(uint64_t* out_refreshrates,
+                                             int allocated_entries) {
+    return mCommonBase.getSupportedRefreshPeriods(out_refreshrates,
+                                                  allocated_entries);
+}
+
 }  // namespace swappy

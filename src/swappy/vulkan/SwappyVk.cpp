@@ -299,4 +299,10 @@ void SwappyVk::removeTracer(const SwappyTracer* t) {
     }
 }
 
+int SwappyVk::GetSupportedRefreshPeriods(uint64_t* out_refreshrates,
+                                         int allocated_entries) {
+    return (*perSwapchainImplementation.cbegin()->second)
+        .getSupportedRefreshPeriods(out_refreshrates, allocated_entries);
+}
+
 }  // namespace swappy
