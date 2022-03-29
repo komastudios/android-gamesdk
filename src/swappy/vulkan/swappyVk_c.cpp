@@ -142,4 +142,13 @@ uint64_t SwappyVk_getSwapIntervalNS(VkSwapchainKHR swapchain) {
     return swappy.GetSwapInterval(swapchain).count();
 }
 
+int SwappyVk_getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
+                                          int allocated_entries,
+                                          VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    return swappy.GetSupportedRefreshPeriodsNS(out_refreshrates,
+                                               allocated_entries, swapchain);
+}
+
 }  // extern "C"

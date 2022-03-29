@@ -316,6 +316,15 @@ void SwappyVk_setFunctionProvider(
  */
 uint64_t SwappyVk_getSwapIntervalNS(VkSwapchainKHR swapchain);
 
+/**
+ * @brief Get the supported refresh periods of this device. Up to
+ * allocated_entries refresh periods will be filled in, and the total number of
+ * supported periods is returned.
+ */
+int SwappyVk_getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
+                                          int allocated_entries,
+                                          VkSwapchainKHR swapchain);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

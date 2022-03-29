@@ -61,12 +61,7 @@ bool SwappyDisplayManager::useSwappyDisplayManager(SdkVersion sdkVersion) {
         return false;
     }
 
-    // SDK 31 and above doesn't need SwappyDisplayManager as it has native
-    // support in NDK. SDK 30 has partial native support
-    // (AChoreographer_registerRefreshRateCallback) but lacks synchronization
-    // with DisplayManager to query app/sf offsets
-    return !(sdkVersion.sdkInt >= 31 ||
-             (sdkVersion.sdkInt == 30 && sdkVersion.previewSdkInt == 1));
+    return true;
 }
 
 SwappyDisplayManager::SwappyDisplayManager(JavaVM *vm, jobject mainActivity)
