@@ -399,6 +399,30 @@
       },
       "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "528556d9_658e5b8c",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 919,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-29T18:07:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "386a7a46_9eab2af5",
+      "range": {
+        "startLine": 919,
+        "startChar": 8,
+        "endLine": 919,
+        "endChar": 30
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
