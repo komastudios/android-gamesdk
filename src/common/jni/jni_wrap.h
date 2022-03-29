@@ -553,6 +553,22 @@ class Build {
     }
 };  // Class Build
 
+class Process {
+   public:
+    static int myPid() {
+        JNIEnv* env = Env();
+        if (env != nullptr) {
+            LocalObject obj;
+            obj.Cast("android/os/Process");
+            jclass clz = obj;
+            jmethodID method = env->GetStaticMethodID(clz, "myPid", "()I");
+            if (method != NULL)
+                return (uint64_t)env->CallStaticIntMethod(clz, method);
+        }
+        return 0;
+    }
+};  // Class Process
+
 class BatteryManager : java::Object {
    public:
     static constexpr const char* EXTRA_LEVEL = "level";

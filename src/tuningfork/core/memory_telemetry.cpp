@@ -171,7 +171,7 @@ void DefaultMemInfoProvider::SetEnabled(bool enabled) {
 
     if (enabled && !memInfo.initialized) {
         memInfo.initialized = true;
-        memInfo.pid = (uint32_t)getpid();
+        memInfo.pid = (uint32_t)android_process_.myPid();
     }
 }
 
