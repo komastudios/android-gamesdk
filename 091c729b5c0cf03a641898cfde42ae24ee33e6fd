@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19ce9f34_881c041a",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data_loader_machine.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "Should define a destructor for DataLoaderStateMachine which does a delete[] mSaveFileName",
+      "range": {
+        "startLine": 72,
+        "startChar": 4,
+        "endLine": 72,
+        "endChar": 17
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "926de860_49c501a9",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data_loader_machine.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "mUserAuthenticationCompleted isn\u0027t initialized in the constructor. Although, I\u0027d recommend replacing all the booleans except for mIsCloudSaveEnabled with a state enum. Something like.\n\nDATA_INITIALIZING \u003d 0,\nCLOUD_INITIALIZED,\nCLOUD_USER_AUTHENTICATED,\nCLOUD_DATA_FOUND,\nDATA_LOADED\n\n::getTotalSteps would just return DATA_LOADED. ::getStepsCompleted would return the current enum. The non-cloud case would just skip from DATA_INITIALIZING to DATA_LOADED rather than having separate variables for local versus cloud save. I\u0027m not concerned by the steps going from 0 to 4 in that case, the loading time is pretty arbitrary for this sample, it mainly exists to demonstrate the APT loading times API.",
+      "range": {
+        "startLine": 80,
+        "startChar": 4,
+        "endLine": 80,
+        "endChar": 30
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59bc87a4_b208e12d",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "missing delete mDataStateMachine in the destructor",
+      "range": {
+        "startLine": 156,
+        "startChar": 4,
+        "endLine": 156,
+        "endChar": 21
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4d9a783_909fcca3",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "This might be better served by a more informative name, like BeginSavedGameLoad",
+      "range": {
+        "startLine": 65,
+        "startChar": 28,
+        "endLine": 65,
+        "endChar": 40
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b93012f_6fcce532",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "Move to the private section with the other member variables",
+      "range": {
+        "startLine": 70,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 45
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49a453d1_44b245d1",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "nit: can return inline like the other accessors rather than defining a function body in the .cpp",
+      "range": {
+        "startLine": 72,
+        "startChar": 28,
+        "endLine": 72,
+        "endChar": 47
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6164a86a_9ed42f53",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.hpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "nit: maybe SaveGameToCloud",
+      "range": {
+        "startLine": 161,
+        "startChar": 9,
+        "endLine": 161,
+        "endChar": 22
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54729a97_ad722acd",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 16
+      },
+      "lineNbr": 919,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "Kicking the player out of their game if they put it in the background and resume is pretty harsh. What I\u0027d like to see is the further checkpoint silently updated in the background on resume if there is a cloud save with a higher level. The code might need a check to avoid the live game setting a lower number (i.e. SetCurrentCheckpoint should only set if \u003e the current value)",
+      "range": {
+        "startLine": 919,
+        "startChar": 8,
+        "endLine": 919,
+        "endChar": 30
+      },
+      "revId": "091c729b5c0cf03a641898cfde42ae24ee33e6fd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

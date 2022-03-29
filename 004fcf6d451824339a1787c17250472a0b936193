@@ -194,6 +194,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0272a1c_d5d97813",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 12
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-29T15:58:09Z",
+      "side": 1,
+      "message": "Endless Tunnel is a bit behind the times in C++ style and usage, for now we are generally keeping code consistent with the existing style and usage, unless deviating makes more sense for a particular API. Doing some refactoring modernization is on the to-do list, but relatively low priority.",
+      "parentUuid": "58bee6c9_2edd050f",
+      "range": {
+        "startLine": 130,
+        "startChar": 58,
+        "endLine": 130,
+        "endChar": 59
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b11636f4_1c57ff87",
