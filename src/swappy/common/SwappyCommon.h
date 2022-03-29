@@ -127,6 +127,9 @@ class SwappyCommon {
         mBufferStuffingFixWait = std::max(0, nFrames);
     }
 
+    int getSupportedRefreshPeriods(uint64_t* out_refreshrates,
+                                   int allocated_entries);
+
    protected:
     // Used for testing
     SwappyCommon(const SwappyCommonSettings& settings);

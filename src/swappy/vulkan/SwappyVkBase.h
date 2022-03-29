@@ -142,6 +142,9 @@ class SwappyVkBase {
 
     VkDevice getDevice() const { return mDevice; }
 
+    int getSupportedRefreshPeriods(uint64_t* out_refreshrates,
+                                   int allocated_entries);
+
    protected:
     struct VkSync {
         VkFence fence;
