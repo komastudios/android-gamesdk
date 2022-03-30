@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f426a173_cafb2c56",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "Added a Consume Memory button on the title screen to turn it on. It\u0027s now off by default.",
+      "parentUuid": "2faf17ce_2d64f1fb",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "295e4f00_b42ee0dd",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-03-25T13:56:30Z",
       "side": 1,
       "message": "The memory advice library is beta01 now",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d84cf38e_7bfe5b53",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "295e4f00_b42ee0dd",
       "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f6baf44_9ad7329a",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d7c9236_d6eee04b",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "976b9eef_f0132013",
@@ -65,6 +119,24 @@
       "writtenOn": "2022-03-25T13:56:30Z",
       "side": 1,
       "message": "Do you need a mutex around the Purge and AddAllocation functions, to stop unsynchronized updates?",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b8d711f_a9125e57",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "The callback appears to come from a different thread, so yes, good catch. Added.",
+      "parentUuid": "976b9eef_f0132013",
       "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -86,6 +158,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a20458d_fcf497e1",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e06be8d6_861f6523",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "70669568_560f8322",
@@ -99,6 +189,24 @@
       "writtenOn": "2022-03-25T13:56:30Z",
       "side": 1,
       "message": "I used to fill with random bytes in my tests, but if this works, it\u0027s good to know.",
+      "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c44cd41b_63010f90",
+        "filename": "samples/agdktunnel/app/src/main/cpp/memory_consumer.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-03-30T22:15:38Z",
+      "side": 1,
+      "message": "Yes, it appears you just have to at least write to the memory, and that is enough.",
+      "parentUuid": "70669568_560f8322",
       "revId": "7b28e1782fe4f44e8d53d06783643d56f7cd68c3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
