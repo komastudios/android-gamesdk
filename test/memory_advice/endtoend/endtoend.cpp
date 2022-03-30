@@ -31,7 +31,8 @@
 #include "json11/json11.hpp"
 
 #include "gtest/gtest.h"
-#include "../test_utils.h"
+#include "../memory_utils.h"
+#include "test_utils.h"
 
 namespace memory_advice_test {
 
@@ -47,7 +48,7 @@ std::string TestEndToEnd() {
 TEST(EndToEndTest, Base) {
   auto result = TestEndToEnd();
   std::string expected = GetAdviceString("!REGEX(\\d+)", "0.0!REGEX(\\d+)", "!REGEX(\\d{1,3})");
-  CheckStrings("Base", result, expected);
+  gamesdk_test::CheckStrings("Base", result, expected);
 }
 
 } // memory_advice_test

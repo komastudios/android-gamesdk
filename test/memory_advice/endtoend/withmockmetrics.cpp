@@ -32,7 +32,8 @@
 #include "json11/json11.hpp"
 
 #include "gtest/gtest.h"
-#include "../test_utils.h"
+#include "../memory_utils.h"
+#include "test_utils.h"
 #include "../providers/test_metrics_provider.h"
 
 namespace memory_advice_test {
@@ -55,9 +56,9 @@ std::string TestEndToEndWithMockMetrics() {
 }
 
 TEST(EndToEndTest, WithMockMetrics) {
-auto result = TestEndToEndWithMockMetrics();
-std::string expected = GetAdviceString("12341234", "0.97!REGEX(\\d+)", "500", true);
-CheckStrings("Base", result, expected);
+  auto result = TestEndToEndWithMockMetrics();
+  std::string expected = GetAdviceString("12341234", "0.97!REGEX(\\d+)", "500", true);
+  gamesdk_test::CheckStrings("Base", result, expected);
 }
 
 } // memory_advice_test

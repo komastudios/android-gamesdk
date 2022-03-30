@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Android Open Source Project
+ * Copyright 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
 
 #include <string>
 
-namespace tuningfork_test {
+namespace gamesdk_test {
 
 const std::string kArrayWildcard = "[**]";
 const std::string kRegexPattern = "!REGEX";
+const uint64_t kBytesInMegabyte = 1000000;
 
 // Compare two strings, ignoring any whitespace. Also, the following patterns in
 // s1 can be used:
@@ -30,4 +31,10 @@ const std::string kRegexPattern = "!REGEX";
 bool CompareIgnoringWhitespace(std::string s0, std::string s1,
                                std::string* error_msg = nullptr);
 
-}  // namespace tuningfork_test
+// Compare the strings ignoring whitespace and EXPECT_TRUE that they're the
+// same.
+bool CheckStrings(const std::string& name, const std::string& result,
+                  const std::string& expected);
+
+}  // namespace gamesdk_test
+

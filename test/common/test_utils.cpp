@@ -24,7 +24,7 @@
 
 #include "gtest/gtest.h"
 
-namespace memory_advice_test {
+namespace gamesdk_test {
 
 static std::list<std::unique_ptr<char[]>> allocated_bytes_list;
 static std::mutex allocated_mutex;
@@ -146,82 +146,5 @@ bool CheckStrings(const std::string& name, const std::string& result,
   return comp;
 }
 
-std::string GetAdviceString(const std::string& avail_mem, const std::string& predicted_usage,
-                            const std::string& oom_score, bool with_warnings) {
-  if (with_warnings) {
-    return R"MA(
-    {
-      "metrics":{
-        "MemoryInfo":{
-          "_meta":["duration", !REGEX(\d)],
-           "availMem":)MA" + avail_mem + R"MA(
-        },
-        "meta": {
-          "time": !REGEX(\d+)
-        },
-        "predictedUsage": )MA" + predicted_usage + R"MA(,
-        "proc": {
-          "_meta":["duration", !REGEX(\d)],
-          "oom_score": )MA" + oom_score + R"MA(
-        }
-      },
-      "warnings": [
-        {
-          "formula": "predictedUsage>0.75",
-          "level": "red"
-        },
-        {
-          "formula": "predictedUsage>0.65",
-          "level": "yellow"
-        }
-      ]
-    }
-    )MA";
-  } else {
-    return R"MA(
-    {
-      "metrics":{
-        "MemoryInfo":{
-          "_meta":["duration", !REGEX(\d)],
-           "availMem":)MA" + avail_mem + R"MA(
-        },
-        "meta": {
-          "time": !REGEX(\d+)
-        },
-        "predictedUsage": )MA" + predicted_usage + R"MA(,
-        "proc": {
-          "_meta":["duration", !REGEX(\d)],
-          "oom_score": )MA" + oom_score + R"MA(
-        }
-      }
-    }
-    )MA";
-  }
-}
 
-void FillRandom(char* bytes, size_t size) {
-  std::minstd_rand rng;
-  int32_t* ptr = reinterpret_cast<int32_t*>(bytes);
-  std::generate(ptr, ptr + size/4, [&]() -> int32_t { return rng(); });
-  // Don't worry about filling the last few bytes if size isn't a multiple of 4.
-}
-
-void AllocateMemory(uint64_t nbytes) {
-  std::lock_guard<std::mutex> guard(allocated_mutex);
-  try {
-    auto allocated_bytes = new char[nbytes];
-    // Note that without setting the memory, the available memory figure doesn't go down.
-    FillRandom(allocated_bytes, nbytes);
-    allocated_bytes_list.push_back(std::unique_ptr<char[]>{allocated_bytes});
-  } catch(std::bad_alloc& ex) {
-  }
-}
-
-void DeallocateAllMemory() {
-  std::lock_guard<std::mutex> guard(allocated_mutex);
-  while (allocated_bytes_list.size() > 0) {
-    allocated_bytes_list.pop_back();
-  }
-}
-
-} // namespace memory_advice_test
+} // namespace gamesdk_test
