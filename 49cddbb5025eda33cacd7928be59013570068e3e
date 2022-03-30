@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "06c8ab20_064f46c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-30T12:32:28Z",
+      "side": 1,
+      "message": "LGTM apart from the one nit.",
+      "revId": "49cddbb5025eda33cacd7928be59013570068e3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a84db67_98db4d4a",
+        "filename": "test/common/test_utils.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-30T12:32:28Z",
+      "side": 1,
+      "message": "The interface here doesn\u0027t depend on list and mutex. These includes should go in the cpp file.",
+      "revId": "49cddbb5025eda33cacd7928be59013570068e3e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
