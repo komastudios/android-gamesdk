@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "177e85e5_74f567fc",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-30T12:44:08Z",
+      "side": 1,
+      "message": "This needs updating now we have a 2-call interface. Please document the out_refreshrates\u003d\u003dnullptr case.",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d86566e_04d1cac4",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-30T12:44:08Z",
+      "side": 1,
+      "message": "This needs updating now we have a 2-call interface. Please document the out_refreshrates\u003d\u003dnullptr case.",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bac1d678_fd37512e",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-30T12:44:08Z",
+      "side": 1,
+      "message": "Have you checked that this doesn\u0027t cause problems for sdk\u003e\u003d31, where we shouldn\u0027t be using the SwappyDisplayManager?",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
