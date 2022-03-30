@@ -59,6 +59,7 @@ include_directories(
   "${ANDROID_GTEST_DIR}/googletest/include"
   ../../src/memory_advice
   ../../src/common
+  ../common
   ../../include
   ../../../external/nanopb-c
   ../../third_party
@@ -78,7 +79,8 @@ set(TEST_SRCS
         endtoend/endtoend.cpp
         endtoend/withallocation.cpp
         endtoend/withmockmetrics.cpp
-        test_utils.cpp
+        memory_utils.cpp
+        ../common/test_utils.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/advisor_parameters.cpp
 )
 

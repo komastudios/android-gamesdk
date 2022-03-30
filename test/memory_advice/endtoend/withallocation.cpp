@@ -31,7 +31,8 @@
 #include "json11/json11.hpp"
 
 #include "gtest/gtest.h"
-#include "../test_utils.h"
+#include "../memory_utils.h"
+#include "test_utils.h"
 
 namespace memory_advice_test {
 
@@ -58,7 +59,7 @@ std::string TestEndToEndWithAllocation() {
 TEST(EndToEndTest, WithAllocation) {
   auto result = TestEndToEndWithAllocation();
   std::string expected = GetAdviceString("!REGEX(\\d+)", "0.5!REGEX(\\d+)", "!REGEX(\\d{1,3})");
-  CheckStrings("Base", result, expected);
+  gamesdk_test::CheckStrings("Base", result, expected);
 }
 
 } // memory_advice_test

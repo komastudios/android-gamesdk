@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "../tf_test_utils.h"
 #include "core/memory_telemetry.h"
 #include "core/tuningfork_internal.h"
 #include "full/dev_tuningfork.pb.h"
@@ -55,11 +54,6 @@ tf::Settings TestSettings(
     int n_keys, std::vector<uint32_t> annotation_size,
     const std::vector<tf::Settings::Histogram>& hists = {},
     int num_frame_time_histograms = 0, int num_loading_time_histograms = 0);
-
-// Compare the strings ignoring whitespace and EXPECT_TRUE that they're the
-// same.
-bool CheckStrings(const std::string& name, const std::string& result,
-                  const std::string& expected);
 
 // Return a string with all returns replaced with single spaces.
 std::string ReplaceReturns(std::string in);

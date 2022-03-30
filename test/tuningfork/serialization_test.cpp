@@ -21,12 +21,12 @@
 #include "common/gamesdk_common.h"
 #include "core/tuningfork_utils.h"
 #include "http_backend/json_serializer.h"
-#include "tf_test_utils.h"
+#include "test_utils.h"
 
 namespace serialization_test {
 
 using namespace tuningfork;
-using namespace tuningfork_test;
+using namespace gamesdk_test;
 using namespace json11;
 using namespace std::chrono;
 
