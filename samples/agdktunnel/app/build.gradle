@@ -66,13 +66,9 @@ android {
         mobile {
             getIsDefault().set(true)
             dimension "platform"
-            applicationIdSuffix ".mobile"
-            versionNameSuffix "-mobile"
         }
         playGamesPC {
             dimension "platform"
-            applicationIdSuffix ".playGamesPC"
-            versionNameSuffix "-playGamesPC"
 
             // x86 ABI compatibility
             ndk {
