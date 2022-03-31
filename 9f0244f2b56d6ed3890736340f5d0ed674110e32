@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80d93590_d3655f9c",
+        "filename": "samples/agdktunnel/app/src/main/cpp/data_loader_machine.hpp",
+        "patchSetId": 23
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-31T20:27:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "019980bd_5a05e7bd",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 6
+      },
+      "revId": "9f0244f2b56d6ed3890736340f5d0ed674110e32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d509eb13_05ed7a9d",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-03-31T19:01:35Z",
       "side": 1,
       "message": "try define a const for this feature string and see if this error go away.",
+      "range": {
+        "startLine": 56,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 85
+      },
+      "revId": "9f0244f2b56d6ed3890736340f5d0ed674110e32",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2ee9fce_9f6fac4d",
+        "filename": "samples/agdktunnel/app/src/playGamesPC/java/com/google/sample/agdktunnel/PlayGamesPCActivity.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-31T20:27:17Z",
+      "side": 1,
+      "message": "Done, but the problem persists 😐",
+      "parentUuid": "d509eb13_05ed7a9d",
       "range": {
         "startLine": 56,
         "startChar": 8,
