@@ -382,6 +382,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf098ee0_7e89c466",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-03-31T17:37:39Z",
+      "side": 1,
+      "message": "Marked as resolved",
+      "parentUuid": "dc7e25a7_d379296c",
+      "range": {
+        "startLine": 74,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 33
+      },
+      "revId": "004fcf6d451824339a1787c17250472a0b936193",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c2413a7b_07cecb55",
