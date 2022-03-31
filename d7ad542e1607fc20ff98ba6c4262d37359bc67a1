@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c85c1df_377f96d1",
+        "filename": "samples/agdktunnel/README.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-31T10:49:50Z",
+      "side": 1,
+      "message": "-\u003e \"Rename the package of AGDK Tunnel to a name of your choosing.\"",
+      "revId": "d7ad542e1607fc20ff98ba6c4262d37359bc67a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86b1bcb7_5709ce38",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-31T10:49:50Z",
+      "side": 1,
+      "message": "nit: it\u0027s 2022",
+      "revId": "d7ad542e1607fc20ff98ba6c4262d37359bc67a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
