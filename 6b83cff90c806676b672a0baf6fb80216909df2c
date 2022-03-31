@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4eecc1e_6f0ecacd",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/PGSManager.java",
+        "patchSetId": 21
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-31T15:11:30Z",
+      "side": 1,
+      "message": "nit: (mActivity,",
+      "range": {
+        "startLine": 187,
+        "startChar": 50,
+        "endLine": 187,
+        "endChar": 51
+      },
+      "revId": "6b83cff90c806676b672a0baf6fb80216909df2c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

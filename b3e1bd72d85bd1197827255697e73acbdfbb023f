@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e513af42_860595e2",
+        "filename": "samples/agdktunnel/app/src/main/cpp/loader_scene.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-31T15:11:30Z",
+      "side": 1,
+      "message": "nit: original suggestion was based on the fact that loading steps were changed by integer number and the total was the integer, too.\n\nBy introducing fractional DATA_LOAD_DELTA this is not true anymore. \n\nEither change above to:\nTEXTURE_LOADING_WEIGHT \u003d 2\n\n long totalLoad \u003d mTextureLoader-\u003eTotalNumberToLoad() * TEXTURE_LOADING_WEIGHT + \n                mDataStateMachine-\u003egetTotalSteps();\n long completedLoad \u003d mTextureLoader-\u003eNumberCompetedLoading() * TEXTURE_LOADING_WEIGHT  + mDataStateMachine-\u003egetStepsCompleted();\n\n        int loadingPercentage \u003d static_cast\u003cint\u003e(completedLoad * 100 / totalLoad);\n\nor change the last line to:\nint loadingPercentage \u003d static_cast\u003cint\u003e(completedLoad * 100 / totalLoad);",
+      "range": {
+        "startLine": 156,
+        "startChar": 49,
+        "endLine": 156,
+        "endChar": 91
+      },
+      "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c9af862f_549fd32d",
         "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
         "patchSetId": 20
@@ -32,6 +55,75 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "c9af862f_549fd32d",
+      "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9fd90d96_062220a8",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-31T15:11:30Z",
+      "side": 1,
+      "message": "nit: maybe mSavedLevel \u003e 0\n?",
+      "range": {
+        "startLine": 134,
+        "startChar": 8,
+        "endLine": 134,
+        "endChar": 19
+      },
+      "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6e05666_a5b89703",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-31T15:11:30Z",
+      "side": 1,
+      "message": "I think the logic to change menu to MENU_PAUSE, update mDifficulty and so on should be outside of the PlayScene::DoFrame().",
+      "range": {
+        "startLine": 252,
+        "startChar": 11,
+        "endLine": 263,
+        "endChar": 37
+      },
+      "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e275598e_25fd1b10",
+        "filename": "samples/agdktunnel/app/src/main/cpp/play_scene.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1044844
+      },
+      "writtenOn": "2022-03-31T15:11:30Z",
+      "side": 1,
+      "message": "replace sprintf with snprintf",
+      "range": {
+        "startLine": 267,
+        "startChar": 16,
+        "endLine": 267,
+        "endChar": 23
+      },
       "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
