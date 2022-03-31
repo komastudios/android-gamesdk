@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9af862f_549fd32d",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 20
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-03-31T11:00:48Z",
+      "side": 1,
+      "message": "You need to DeleteLocalRef on jInternalStoragePath before the function exits.",
+      "revId": "b3e1bd72d85bd1197827255697e73acbdfbb023f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
