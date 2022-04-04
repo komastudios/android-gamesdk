@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4989da6d_544b286d",
+        "filename": "include/swappy/swappyGL.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-04-04T12:15:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "177e85e5_74f567fc",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5d86566e_04d1cac4",
@@ -35,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "03cbb56d_c4a194d8",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-04-04T12:15:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d86566e_04d1cac4",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bac1d678_fd37512e",
@@ -48,6 +84,24 @@
       "writtenOn": "2022-03-30T12:44:08Z",
       "side": 1,
       "message": "Have you checked that this doesn\u0027t cause problems for sdk\u003e\u003d31, where we shouldn\u0027t be using the SwappyDisplayManager?",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d71826a6_db76c10c",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-04-04T12:15:04Z",
+      "side": 1,
+      "message": "I introduced a new function to differentiate the two cases.",
+      "parentUuid": "bac1d678_fd37512e",
       "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
