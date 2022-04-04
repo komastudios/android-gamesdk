@@ -104,6 +104,24 @@
       "parentUuid": "bac1d678_fd37512e",
       "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecc851ef_1735f579",
+        "filename": "src/swappy/common/SwappyDisplayManager.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-04-04T14:07:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d71826a6_db76c10c",
+      "revId": "64263ac32680043ba86c4f3cf80c0a2b54db619b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
