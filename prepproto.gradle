@@ -53,7 +53,7 @@ task prepare_proto_before() {
         exec {
             workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
             setEnvironment env
-            commandLine "python", "setup.py", "install", "--user"
+            commandLine "python3", "setup.py", "install", "--user"
         }
         // Generate nano-pb requirements
         exec {
@@ -69,7 +69,7 @@ task prepare_proto(dependsOn: prepare_proto_before) {
     doLast {
         exec {
             workingDir "${gameSdkRoot}"
-            commandLine "python"
+            commandLine "python3"
             args = ["ab_info.py"]
         }
     }
