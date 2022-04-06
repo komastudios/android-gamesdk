@@ -29,23 +29,27 @@ namespace memory_advice_test {
 static std::list<std::unique_ptr<char[]>> allocated_bytes_list;
 static std::mutex allocated_mutex;
 
-std::string GetAdviceString(const std::string& avail_mem, const std::string& predicted_usage,
+std::string GetAdviceString(const std::string& avail_mem,
+                            const std::string& predicted_usage,
                             const std::string& oom_score, bool with_warnings) {
-  if (with_warnings) {
-    return R"MA(
+    if (with_warnings) {
+        return R"MA(
     {
       "metrics":{
         "MemoryInfo":{
           "_meta":["duration", !REGEX(\d)],
-           "availMem":)MA" + avail_mem + R"MA(
+           "availMem":)MA" +
+               avail_mem + R"MA(
         },
         "meta": {
           "time": !REGEX(\d+)
         },
-        "predictedUsage": )MA" + predicted_usage + R"MA(,
+        "predictedUsage": )MA" +
+               predicted_usage + R"MA(,
         "proc": {
           "_meta":["duration", !REGEX(\d)],
-          "oom_score": )MA" + oom_score + R"MA(
+          "oom_score": )MA" +
+               oom_score + R"MA(
         }
       },
       "warnings": [
@@ -60,26 +64,29 @@ std::string GetAdviceString(const std::string& avail_mem, const std::string& pre
       ]
     }
     )MA";
-  } else {
-    return R"MA(
+    } else {
+        return R"MA(
     {
       "metrics":{
         "MemoryInfo":{
           "_meta":["duration", !REGEX(\d)],
-           "availMem":)MA" + avail_mem + R"MA(
+           "availMem":)MA" +
+               avail_mem + R"MA(
         },
         "meta": {
           "time": !REGEX(\d+)
         },
-        "predictedUsage": )MA" + predicted_usage + R"MA(,
+        "predictedUsage": )MA" +
+               predicted_usage + R"MA(,
         "proc": {
           "_meta":["duration", !REGEX(\d)],
-          "oom_score": )MA" + oom_score + R"MA(
+          "oom_score": )MA" +
+               oom_score + R"MA(
         }
       }
     }
     )MA";
-  }
+    }
 }
 
 void FillRandom(char* bytes, size_t size) {
