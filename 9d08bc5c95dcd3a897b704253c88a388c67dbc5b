@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfa11e83_c82e2c68",
+        "filename": "build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-04-06T13:16:50Z",
+      "side": 1,
+      "message": "I think it needs to go in apks/test like the tuningforktest app.",
+      "revId": "9d08bc5c95dcd3a897b704253c88a388c67dbc5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
