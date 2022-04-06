@@ -40,7 +40,7 @@ extern const char* parameters_string;
 
 std::string TestEndToEnd() {
   memory_advice::MemoryAdviceImpl* s_impl;
-  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, nullptr);
+  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, nullptr, nullptr, nullptr);
 
   return json11::Json(s_impl->GetAdvice()).dump();
 }

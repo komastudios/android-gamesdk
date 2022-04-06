@@ -41,7 +41,7 @@ extern const char* parameters_string;
 std::string TestEndToEndWithAllocation() {
   memory_advice::MemoryAdviceImpl* s_impl;
 
-  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, nullptr);
+  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, nullptr, nullptr, nullptr);
 
   while (s_impl->GetAdvice()
     .at("metrics")

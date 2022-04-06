@@ -38,8 +38,8 @@ namespace memory_advice {
 using namespace tflite;
 using namespace json11;
 
-MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
-                                       std::string features_file) {
+MemoryAdvice_ErrorCode DefaultPredictor::Init(std::string model_file,
+                                              std::string features_file) {
     apk_utils::NativeAsset features_asset(features_file.c_str());
 
     // Get the features list from the corresponding asset,
@@ -97,7 +97,7 @@ MemoryAdvice_ErrorCode Predictor::Init(std::string model_file,
     return MEMORYADVICE_ERROR_OK;
 }
 
-float Predictor::GetFromPath(std::string feature, Json::object data) {
+float IPredictor::GetFromPath(std::string feature, Json::object data) {
     int pos = 0;
     const Json::object* search = &data;
     while ((pos = feature.find_first_of("/")) != std::string::npos) {
@@ -116,7 +116,7 @@ float Predictor::GetFromPath(std::string feature, Json::object data) {
     }
 }
 
-float Predictor::Predict(Json::object data) {
+float DefaultPredictor::Predict(Json::object data) {
     for (int idx = 0; idx != features.size(); idx++) {
         interpreter->typed_input_tensor<float>(0)[idx] =
             GetFromPath(features[idx], data);

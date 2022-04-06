@@ -50,7 +50,8 @@ std::string TestEndToEndWithMockMetrics() {
   metrics_provider.setTotalMem(1234123412);
   metrics_provider.setSwapTotal(112233);
 
-  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, &metrics_provider);
+  s_impl = new memory_advice::MemoryAdviceImpl(parameters_string, &metrics_provider, nullptr,
+                                               nullptr);
 
   return json11::Json(s_impl->GetAdvice()).dump();
 }
