@@ -39,8 +39,10 @@ bool CheckStrings(const std::string& name, const std::string& result,
                   const std::string& expected);
 
 // Generates an advice string that satisfies the given parameters
-std::string GetAdviceString(const std::string& avail_mem, const std::string& predicted_usage,
-                            const std::string& oom_score, bool with_warnings = false);
+std::string GetAdviceString(const std::string& avail_mem,
+                            const std::string& predicted_usage,
+                            const std::string& oom_score,
+                            bool with_warnings = false);
 
 // Allocates a given number of bytes
 void AllocateMemory(uint64_t nbytes);
