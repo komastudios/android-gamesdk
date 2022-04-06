@@ -19,7 +19,6 @@
 #include <memory>
 #include <mutex>
 
-#include "device_profiler.h"
 #include "metrics_provider.h"
 #include "predictor.h"
 #include "state_watcher.h"
@@ -31,7 +30,6 @@ using namespace json11;
 class MemoryAdviceImpl {
    private:
     IMetricsProvider* metrics_provider_;
-    std::unique_ptr<DeviceProfiler> device_profiler_;
     /** @brief A predictor that tries to predict the current memory consumption
      * as a percentage of total memory. */
     IPredictor* realtime_predictor_;
@@ -40,7 +38,6 @@ class MemoryAdviceImpl {
     IPredictor* available_predictor_;
     Json::object advisor_parameters_;
     Json::object baseline_;
-    Json::object device_profile_;
     Json::object build_;
     std::mutex advice_mutex_;
 
@@ -92,10 +89,6 @@ class MemoryAdviceImpl {
      * feeding them into the provided machine learning model.
      */
     Json::object GetAdvice();
-    /** @brief Creates an advice object by reading variable metrics and
-     * comparing them to baseline values and values provided by device profiler.
-     */
-    Json::object GetAdviceDeprecated();
     /** @brief Evaluates information from the current metrics and returns a
      * memory state.
      */
