@@ -76,6 +76,8 @@ def getGitCommit() {
 }
 
 def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
+        .setSharedLibrary()
+        .setStaticLibrary()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "bouncyball"))
                         .copySourcesTo("samples/bouncyball")
@@ -94,6 +96,8 @@ def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
         )
 
 def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
+        .setSharedLibrary()
+        .setStaticLibrary()
         .setUsesProtobuf()
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
@@ -120,6 +124,7 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
                 new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
 
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
+        .setSharedLibrary()
         .setUsesTensorflow()
         .setMinimumNdkVersion(20)
         .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
@@ -129,6 +134,8 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
                         .buildDebugApkTo("apks/samples", "hogger.apk"))
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
+        .setSharedLibrary()
+        .setStaticLibrary()
         .setThirdParty()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
@@ -143,6 +150,8 @@ def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input']
         .setPrefabFolderName("prefab-src")
 
 def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
+        .setSharedLibrary()
+        .setStaticLibrary()
         .setHybridLibrary()
         .setMinimumAndroidApiLevel(16)
         .setMinimumNdkVersion(17)
@@ -314,8 +323,8 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     def headerFolder = './include/' + libraryName
     def commonHeaderFolder = './include/common'
 
-    def buildSharedLibrary = true
-    def buildStaticLibrary = true
+    def buildSharedLibrary = library.sharedLibrary
+    def buildStaticLibrary = library.staticLibrary
 
     // 1. Copy dynamic library
     if (buildSharedLibrary) {

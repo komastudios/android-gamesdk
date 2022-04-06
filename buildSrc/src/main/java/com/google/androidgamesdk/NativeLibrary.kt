@@ -33,6 +33,10 @@ data class NativeLibrary(
         private set
     var assetsDirectory: String? = null
         private set
+    var sharedLibrary = false
+      private set
+    var staticLibrary = false
+      private set
 
     fun addSampleAndroidProject(
         sampleAndroidProject: ExternalAndroidProject
@@ -85,6 +89,14 @@ data class NativeLibrary(
 
     fun setUsesTensorflow(): NativeLibrary {
         this.usesTensorflow = true
+        return this
+    }
+    fun setSharedLibrary(): NativeLibrary {
+        this.sharedLibrary = true
+        return this
+    }
+    fun setStaticLibrary(): NativeLibrary {
+        this.staticLibrary = true
         return this
     }
 
