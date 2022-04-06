@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3638f17_97db10ab",
+        "filename": "src/memory_advice/core/memory_advice_impl.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-04-06T13:31:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6dfe670c_b3c4d403",
+      "revId": "8d564371b26f0f50d796ff2769e847fa43ab6daf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0efe4d0d_1343745b",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-04-06T13:15:54Z",
       "side": 1,
       "message": "nit: line too long",
+      "revId": "8d564371b26f0f50d796ff2769e847fa43ab6daf",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7887c750_40dd0792",
+        "filename": "test/memory_advice/endtoend/withmockmetrics.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-04-06T13:31:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0efe4d0d_1343745b",
       "revId": "8d564371b26f0f50d796ff2769e847fa43ab6daf",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
