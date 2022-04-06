@@ -19,8 +19,13 @@ import org.gradle.internal.os.OperatingSystem;
 apply from: GameSDKPath + '/prepproto.gradle'
 apply plugin: 'com.android.application'
 
-// See README for details on enabling APT
+// See README for details on enabling APT and PAD
 def useApt = APTEnabled
+def usePad = PADEnabled
+
+// Define a path to the extracted Play Core SDK files.
+// If using a relative path, wrap it with file() since CMake requires absolute paths.
+def playcoreDir = file('libs/play-core-native-sdk')
 
 android {
     compileSdkVersion 30
@@ -32,16 +37,32 @@ android {
         targetSdkVersion 30
         versionCode     1
         versionName    '1.0.3'
+
+        externalNativeBuild {
+            cmake {
+                // Define the PLAYCORE_LOCATION directive.
+                arguments "-DANDROID_STL=c++_static",
+                        "-DPLAYCORE_LOCATION=$playcoreDir"
+            }
+        }
+        ndk {
+            // Skip deprecated ABIs. Only required when using NDK 16 or earlier.
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
     }
     buildTypes {
         release {
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                           'proguard-rules.pro'
+            // Include Play Core Library proguard config files to strip unused code while retaining
+            // the Java symbols needed for JNI.
+            proguardFile "$playcoreDir/proguard/common.pgcfg"
+            proguardFile "$playcoreDir/proguard/asset_delivery.pgcfg"
             externalNativeBuild {
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_ASSET_PACKS=$usePad",
                               "-DUSE_APT=$useApt"
                 }
             }
@@ -53,7 +74,7 @@ android {
                         'proguard-rules.pro'
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_ASSET_PACKS=$usePad",
                               "-DUSE_APT=$useApt"
                 }
             }
@@ -84,6 +105,13 @@ android {
     buildFeatures {
         prefab true
     }
+    assetPacks = [":install_time_assets", ":on_demand_assets"]
+    // Enable the splitting of your asset packs per textures
+    bundle {
+        texture {
+            enableSplit true
+        }
+    }
 }
 
 dependencies {
@@ -109,6 +137,8 @@ dependencies {
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
+    // Use the Play Core AAR included with the SDK.
+    implementation files("$playcoreDir/playcore.aar")
     // TODO(b/215589030): release the input sdk public to GMaven
     playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.

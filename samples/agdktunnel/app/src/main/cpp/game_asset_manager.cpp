@@ -217,6 +217,8 @@ uint64_t GameAssetManagerInternals::GetInternalGameAssetSize(const char *assetNa
     if (asset != NULL) {
         assetSize = AAsset_getLength(asset);
         AAsset_close(asset);
+    } else {
+        ALOGI("GameAssetManager: asset %s found to be NULL", assetName);
     }
     return assetSize;
 }

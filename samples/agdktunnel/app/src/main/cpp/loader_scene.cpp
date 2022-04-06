@@ -105,6 +105,8 @@ class LoaderScene::TextureLoader {
                     }
                 }
             }
+        } else {
+            ALOGI("LoaderScene: could not retrieve the list from pack %s", assetPackName);
         }
     }
 
