@@ -27,6 +27,7 @@ find_package(games-performance-tuner REQUIRED CONFIG)
 set(GAMESDK_BASE_DIR "../../../../../..")
 
 set(PROTOBUF_NANO_SRC_DIR "${GAMESDK_BASE_DIR}/../external/nanopb-c")
+
 # Include the protobuf utility file from the Android Game SDK
 include("${GAMESDK_BASE_DIR}/src/protobuf/protobuf.cmake")
 # Directory of nano protobuf library source files
@@ -49,10 +50,6 @@ set(CMAKE_SHARED_LINKER_FLAGS
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 add_definitions("-DGLM_FORCE_SIZE_T_LENGTH -DGLM_FORCE_RADIANS")
-
-if("${USE_ASSET_PACKS}" STREQUAL "false")
-    add_definitions("-DNO_ASSET_PACKS")
-endif()
 
 if("${USE_APT}" STREQUAL "true")
     add_definitions("-DUSE_APT")
@@ -125,3 +122,14 @@ target_link_libraries(game
      GLESv3
      glm
      log)
+
+if("${USE_ASSET_PACKS}" STREQUAL "false")
+    add_definitions("-DNO_ASSET_PACKS")
+else()
+    # Add a static library called “playcore” built with the c++_static STL.
+    include(${PLAYCORE_LOCATION}/playcore.cmake)
+    add_playcore_static_library()
+    target_include_directories(game PRIVATE ${PLAYCORE_LOCATION}/include)
+
+    target_link_libraries(game playcore)
+endif()
