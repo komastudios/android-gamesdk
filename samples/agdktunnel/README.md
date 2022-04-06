@@ -35,7 +35,8 @@ need to follow the next steps.
 
 1. Go to **Build > Select Build Variant** and select the `playGamesPC` [build variant](https://developer.android.com/studio/build/build-variants).
 2. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
-3. (Optional) Enable Play Games Services.
+3. (Optional) Enable Play Games Services to turn-on cloud save on mobile and PC.
+4. (Optional) Enable Play Asset Delivery API to delivery DXT1 compressed texture assets.
 
 ### Google Play Games Services (optional)
 
@@ -45,6 +46,30 @@ To enable this feature following the next steps.
 1. Rename the package of AGDK Tunnel to a name of your choosing.
 2. Create an application on the [Google Play Console](https://play.google.com/console/about/?) and follow the steps to set up Play Games Services using your package name.
 3. Replace the **game_services_project_id** string value in `app/src/main/res/values/strings.xml` with the id of your project in the Google Play Console.
+
+### Google Play Asset Delivery (optional)
+
+We use the Play Asset Delivery (PAD) API with Texture Compression Format Targeting (TCFT) to
+delivery optimal compressed textures (ETC2 by default and DXT1 for Google Play Games for PC). To
+enable PAD:
+
+1. Edit the `gradle.properties` file and change: `PADEnabled=false` to `PADEnabled=true`.
+2. [Download the Play Core API into the project](https://developer.android.com/guide/playcore#native)
+   in the `apps/libs` directory.
+3. Install bundletool by visiting the [bundletool releases page](https://github.com/google/bundletool/releases)
+   and downloading it in the root of the project.
+4. Using Android Studio build an App Bundle **Build > Build bundle(s)/APK(s) > Build bundle(s)**
+5. Build and install the APKs in your device using bundletool:
+   ```
+   java -jar bundletool-all-1.9.1.jar build-apks
+      --bundle=app/build/outputs/bundle/playGamesPCDebug/app-playGamesPC-debug.aab
+      --output=agdktunnel.apks
+      --local-testing
+   
+   java -jar bundletool-all-1.9.1.jar install-apks --apks=agdktunnel.apks
+   ```
+
+For more information check the codelab: [Using Play Asset Delivery in native games](https://developer.android.com/codelabs/native-gamepad#0)
 
 ## Memory Advice
 
