@@ -29,14 +29,24 @@ namespace memory_advice {
 using namespace json11;
 
 MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
-                                   IMetricsProvider* metrics_provider)
-    : metrics_provider_(metrics_provider) {
+                                   IMetricsProvider* metrics_provider,
+                                   IPredictor* realtime_predictor,
+                                   IPredictor* available_predictor)
+    : metrics_provider_(metrics_provider),
+      realtime_predictor_(realtime_predictor),
+      available_predictor_(available_predictor) {
     if (metrics_provider_ == nullptr) {
         default_metrics_provider_ = std::make_unique<DefaultMetricsProvider>();
         metrics_provider_ = default_metrics_provider_.get();
     }
-    realtime_predictor_ = std::make_unique<Predictor>();
-    available_predictor_ = std::make_unique<Predictor>();
+    if (realtime_predictor_ == nullptr) {
+        default_realtime_predictor_ = std::make_unique<DefaultPredictor>();
+        realtime_predictor_ = default_realtime_predictor_.get();
+    }
+    if (available_predictor_ == nullptr) {
+        default_available_predictor_ = std::make_unique<DefaultPredictor>();
+        available_predictor_ = default_available_predictor_.get();
+    }
 
     initialization_error_code_ =
         realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
