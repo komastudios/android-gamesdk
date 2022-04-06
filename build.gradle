@@ -127,6 +127,9 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
                 new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
                         .copySourcesTo("samples/memory_advice/hogger")
                         .buildDebugApkTo("apks/samples", "hogger.apk"))
+        .addSampleAndroidProject(
+                new ExternalAndroidProject(joinPath('test', "memory_advice", "testapp"))
+                        .buildDebugApkTo("apks/test", "memoryadvicetest.apk"))
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
