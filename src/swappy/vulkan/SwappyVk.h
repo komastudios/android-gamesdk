@@ -79,6 +79,9 @@ class SwappyVk {
     void SetFenceTimeout(std::chrono::nanoseconds duration);
     std::chrono::nanoseconds GetFenceTimeout() const;
     std::chrono::nanoseconds GetSwapInterval(VkSwapchainKHR swapchain);
+    int GetSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
+                                     int allocated_entries,
+                                     VkSwapchainKHR swapchain);
 
     void addTracer(const SwappyTracer* t);
     void removeTracer(const SwappyTracer* t);
