@@ -203,6 +203,27 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
         return s_impl->EnableMemoryRecording(enable);
 }
 
+bool IsFrameTimeLoggingPaused() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->IsFrameTimeLoggingPaused();
+}
+
+TuningFork_ErrorCode PauseFrameTimeLogging() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->PauseFrameTimeLogging();
+}
+
+TuningFork_ErrorCode ResumeFrameTimeLogging() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->ResumeFrameTimeLogging();
+}
+
 TuningFork_ErrorCode RecordLoadingTime(
     Duration duration, const LoadingTimeMetadata &d,
     const ProtobufSerialization &annotation) {

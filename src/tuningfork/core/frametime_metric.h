@@ -41,7 +41,7 @@ struct FrameTimeMetricData : public MetricData {
     Histogram<double> histogram_;
     TimePoint last_time_;
     Duration duration_;
-    void Tick(TimePoint t);
+    void Tick(TimePoint t, bool record = true);
     void Record(Duration dt);
     virtual void Clear() override;
     virtual size_t Count() const override { return histogram_.Count(); }
