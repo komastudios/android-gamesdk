@@ -418,7 +418,8 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (p) {
-        p->Tick(t);
+        // Continue ticking even while logging is paused but don't record values
+        p->Tick(t, !logging_paused_ /*record*/);
         if (pp != nullptr) *pp = p;
         return TUNINGFORK_ERROR_OK;
     } else {
@@ -434,7 +435,9 @@ TuningFork_ErrorCode TuningForkImpl::TraceNanos(MetricId compound_id,
     // Find the appropriate histogram and add this time
     auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (h) {
-        h->Record(dt);
+        if (!logging_paused_) {
+            h->Record(dt);
+        }
         if (pp != nullptr) *pp = h;
         return TUNINGFORK_ERROR_OK;
     } else {
@@ -603,6 +606,11 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
     if (meminfo_provider_ != nullptr) {
         meminfo_provider_->SetEnabled(enable);
     }
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::PauseFrameTimeLogging(bool pause) {
+    logging_paused_ = pause;
     return TUNINGFORK_ERROR_OK;
 }
 

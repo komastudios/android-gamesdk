@@ -126,6 +126,10 @@ TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {
     return tf::EnableMemoryRecording(enable);
 }
 
+TuningFork_ErrorCode TuningFork_pauseFrameTimeLogging(bool pause) {
+    return tf::PauseFrameTimeLogging(pause);
+}
+
 // Take the C metadata structure passed in and copy to the C++ structure,
 // taking into account any version changes indicated by changes in the size.
 // Currently tf::LoadingTimeMetadata is typedefed to

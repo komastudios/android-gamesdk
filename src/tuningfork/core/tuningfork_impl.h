@@ -82,6 +82,7 @@ class TuningForkImpl : public IdProvider {
     TuningFork_ErrorCode initialization_error_code_ = TUNINGFORK_ERROR_OK;
 
     bool lifecycle_stop_event_sent_ = false;
+    bool logging_paused_ = false;
 
     std::string current_loading_group_;
     MetricId current_loading_group_metric_;
@@ -144,6 +145,8 @@ class TuningForkImpl : public IdProvider {
         const ProtobufSerialization &params);
 
     TuningFork_ErrorCode EnableMemoryRecording(bool enable);
+
+    TuningFork_ErrorCode PauseFrameTimeLogging(bool pause);
 
     TuningFork_ErrorCode RecordLoadingTime(
         Duration duration, const LoadingTimeMetadata &metadata,
