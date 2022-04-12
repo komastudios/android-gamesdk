@@ -19,8 +19,8 @@
 
 namespace tuningfork {
 
-void FrameTimeMetricData::Tick(TimePoint t) {
-    if (last_time_ != TimePoint::min() && t > last_time_)
+void FrameTimeMetricData::Tick(TimePoint t, bool record) {
+    if (last_time_ != TimePoint::min() && t > last_time_ && record)
         Record(t - last_time_);
     last_time_ = t;
 }

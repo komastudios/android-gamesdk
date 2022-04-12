@@ -548,6 +548,24 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
 
 /**
+ * @brief Check if frame time logging is paused
+ *
+ * @return true if frame time logging is paused. False otherwise.
+ */
+bool TuningFork_IsFrameTimeLoggingPaused();
+
+/**
+ * @brief Pause/resume the recording of frame times to the frame time histogram.
+ * This can be useful for disabling frame time recording during menus or
+ * loading. This function is idempotent.
+ *
+ * @param Pause If true, frame times are not recorded, if false frame time
+ * recording is resumed.
+ * @return TUNINGFORK_ERROR_OK on success.
+ */
+TuningFork_ErrorCode TuningFork_pauseFrameTimeLogging(bool pause);
+
+/**
  * @brief Metadata recorded with a loading time event
  */
 typedef struct TuningFork_LoadingTimeMetadata {
