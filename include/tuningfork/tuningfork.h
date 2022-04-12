@@ -193,6 +193,10 @@ typedef enum TuningFork_ErrorCode {
         36,  ///< The loading state was not set as part of
              ///< TuningFork_LoadingTimeMetadata when calling a loading
              ///< function.
+    TUNINGFORK_ERROR_NO_ACTIVE_LOADING_GROUP =
+        37,  ///< There was no active loading group when
+             ///< TuningFork_stopLoadingGroup
+             ///< was called.
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 

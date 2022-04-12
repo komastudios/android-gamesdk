@@ -772,7 +772,13 @@ TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
 }
 
 TuningFork_ErrorCode TuningForkImpl::StopLoadingGroup(LoadingHandle handle) {
-    if (handle == 0) handle = current_loading_group_metric_.base;
+    if (handle == 0) {
+        // This happens when there is no active loading group e.g.,
+        // because StartLoadingGroup failed.
+        if (current_loading_group_metric_.base == 0)
+            return TUNINGFORK_ERROR_NO_ACTIVE_LOADING_GROUP;
+        handle = current_loading_group_metric_.base;
+    }
     if (current_loading_group_metric_.base != handle) {
         return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
