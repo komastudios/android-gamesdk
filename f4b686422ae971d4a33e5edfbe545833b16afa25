@@ -16,6 +16,167 @@
       "message": "PTAL",
       "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d411b59_d71304b6",
+        "filename": "samples/agdktunnel/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "Add sentence: Play Asset Delivery requires building an Android App Bundle instead of an APK.",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 8
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a940291_10e028dc",
+        "filename": "samples/agdktunnel/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "change: Install from the Android App Bundle file to your device using bundletool.",
+      "range": {
+        "startLine": 62,
+        "startChar": 29,
+        "endLine": 62,
+        "endChar": 30
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4af39328_74770a24",
+        "filename": "samples/agdktunnel/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "nit: change check to see",
+      "range": {
+        "startLine": 72,
+        "startChar": 21,
+        "endLine": 72,
+        "endChar": 26
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7eaf463_b4bd4ad7",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "Right now, the files in assets/no_asset_packs_textures will always be included in the main apk, even if PADEnabled is true. I recommend having a pair of utility functions:\n1. Makes sure the assets/no_asset_packs_textures directory doesn\u0027t exist if PAD is enabled\n2. If PAD is disabled, creates the assets/no_asset_packs_textures directory and copies the ETC2 texture files into it.\n\nI did something like this in the original implementation: https://user.git.corp.google.com/natetrost/agdktunnel/+/e034fab7aa56d56de64656cef02a588ae6f78003/app/build.gradle",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 23
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4a1cf0f_08bab0a0",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "This should be gated behind USE_ASSET_PACKS so the playcore library isn\u0027t required to be installed if PAD is disabled.",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 29
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d7a9548_d8dc13cd",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "Don\u0027t include if PAD is disabled",
+      "range": {
+        "startLine": 117,
+        "startChar": 5,
+        "endLine": 117,
+        "endChar": 33
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f965fe6c_fc308b3d",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T15:15:22Z",
+      "side": 1,
+      "message": "Don\u0027t include if PAD is disabled.",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 13
+      },
+      "revId": "f4b686422ae971d4a33e5edfbe545833b16afa25",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
