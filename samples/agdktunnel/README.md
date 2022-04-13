@@ -29,14 +29,12 @@ The GLM library must be downloaded before building:
 
 ### Google Play Games for PC (optional)
 
-We use build variants to control the platform where the the app will run.
-If you are building this application to run in Google Play Games for PC you
-need to follow the next steps.
+You can build this application to run in Google Play Games for PC with features like the Input
+SDK to display keyboard controls and cloud saving using PGS. For an optimized experience consider
+enabling the following features:
 
-1. Go to **Build > Select Build Variant** and select the `playGamesPC` [build variant](https://developer.android.com/studio/build/build-variants).
-2. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
-3. (Optional) Enable Play Games Services to turn-on cloud save on mobile and PC.
-4. (Optional) Enable Play Asset Delivery API to delivery DXT1 compressed texture assets.
+1. (Optional) Google Play Games Services (PGS).
+2. (Optional) Play Asset Delivery API to delivery DXT1 compressed texture assets.
 
 ### Google Play Games Services (optional)
 
