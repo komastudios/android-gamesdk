@@ -18,6 +18,7 @@ package com.google.sample.agdktunnel;
 import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -32,11 +33,16 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.androidgamesdk.GameActivity;
+import com.google.android.libraries.play.games.inputmapping.InputMappingClient;
+import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
+import com.google.android.libraries.play.games.inputmapping.Input;
 
 @Keep
 public class AGDKTunnelActivity extends GameActivity {
 
     private PGSManager mPGSManager;
+    private final String mPlayGamesPCSystemFeature =
+            "com.google.android.play.feature.HPE_EXPERIENCE";
 
     // Some code to load our native library:
     static {
@@ -77,6 +83,22 @@ public class AGDKTunnelActivity extends GameActivity {
             // Initialize Play Games Services
             mPGSManager = new PGSManager(this);
         }
+
+        if (isGooglePlayGames()) {
+            InputMappingProvider inputMappingProvider = new InputSDKProvider();
+            InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+            inputMappingClient.setInputMappingProvider(inputMappingProvider);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isGooglePlayGames()) {
+            InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+            inputMappingClient.clearInputMappingProvider();
+        }
+
+        super.onDestroy();
     }
 
     @Override
@@ -127,5 +149,10 @@ public class AGDKTunnelActivity extends GameActivity {
 
     private String getInternalStoragePath() {
         return getFilesDir().getAbsolutePath();
+    }
+
+    private boolean isGooglePlayGames() {
+        PackageManager pm = getPackageManager();
+        return pm.hasSystemFeature(mPlayGamesPCSystemFeature);
     }
 }
