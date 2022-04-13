@@ -16,6 +16,29 @@
       "message": "Removing build variants because this is a practice we don\u0027t want to foster for Battlestar.\n\nThe best practice is to generate a single artifact for all form of releases and build variants would generate an artifact for each platform.\n\nPTAL",
       "revId": "ea5f350db221ae353a33e1d3ddbf1a35e51a142e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "048911eb_c69433e4",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-13T21:56:49Z",
+      "side": 1,
+      "message": "The main blocker that I see to getting rid of the build variant is this being available on Maven so the sample builds \u0027out of the box\u0027.",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 60
+      },
+      "revId": "ea5f350db221ae353a33e1d3ddbf1a35e51a142e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
