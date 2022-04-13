@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3f4a88d_c7c6231b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-04-13T21:16:58Z",
+      "side": 1,
+      "message": "Removing build variants because this is a practice we don\u0027t want to foster for Battlestar.\n\nThe best practice is to generate a single artifact for all form of releases and build variants would generate an artifact for each platform.\n\nPTAL",
+      "revId": "ea5f350db221ae353a33e1d3ddbf1a35e51a142e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
