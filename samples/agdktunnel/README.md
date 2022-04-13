@@ -29,13 +29,11 @@ The GLM library must be downloaded before building:
 
 ### Google Play Games for PC (optional)
 
-We use build variants to control the platform where the the app will run.
 If you are building this application to run in Google Play Games for PC you
 need to follow the next steps.
 
-1. Go to **Build > Select Build Variant** and select the `playGamesPC` [build variant](https://developer.android.com/studio/build/build-variants).
-2. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
-3. (Optional) Enable Play Games Services.
+1. Create the `app/libs` directory and locate the AAR file corresponding to the Input SDK.
+2. (Optional) Enable Play Games Services.
 
 ### Google Play Games Services (optional)
 

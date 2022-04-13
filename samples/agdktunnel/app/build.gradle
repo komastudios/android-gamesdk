@@ -60,22 +60,6 @@ android {
             multiDexEnabled true
         }
     }
-    // Flavor dimension to create mobile and PC build variants
-    flavorDimensions "platform"
-    productFlavors {
-        mobile {
-            getIsDefault().set(true)
-            dimension "platform"
-        }
-        playGamesPC {
-            dimension "platform"
-
-            // x86 ABI compatibility
-            ndk {
-                abiFilters 'x86', 'x86_64'
-            }
-        }
-    }
     externalNativeBuild {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
@@ -110,7 +94,7 @@ dependencies {
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
     // TODO(b/215589030): release the input sdk public to GMaven
-    playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
+    implementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
     //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
     //                                               'GameController.aar',
