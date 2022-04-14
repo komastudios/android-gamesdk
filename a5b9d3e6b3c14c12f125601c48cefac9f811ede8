@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a33f6c0b_33dbe51c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-04-14T09:10:10Z",
+      "side": 1,
+      "message": "Looks good. Please also add a function to get the paused-unpaused state.",
+      "revId": "a5b9d3e6b3c14c12f125601c48cefac9f811ede8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2147e2ea_29ce4ed2",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 560,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-04-14T09:10:10Z",
+      "side": 1,
+      "message": "Please also add a function to get whether TF is paused or not.",
+      "revId": "a5b9d3e6b3c14c12f125601c48cefac9f811ede8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
