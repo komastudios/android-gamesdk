@@ -48,7 +48,7 @@ extern "C" {
 /**
  * @brief Paddleboat error code results.
  */
-enum Paddleboat_ErrorCode {
+enum Paddleboat_ErrorCode : int {
     /**
      * @brief No error. Function call was successful.
      */
@@ -92,7 +92,17 @@ enum Paddleboat_ErrorCode {
      * @brief An invalid parameter was specified. This usually means NULL or
      * nullptr was passed in a parameter that requires a valid pointer.
      */
-    PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007
+    PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007,
+    /**
+     * @brief Invalid controller mapping data was provided. The data in the
+     * provided buffer does not match the expected mapping data format.
+     */
+    PADDLEBOAT_INVALID_MAPPING_DATA = -2008,
+    /**
+     * @brief Incompatible controller mapping data was provided. The data in
+     * the provided buffer is from an incompatible version of the mapping data format.
+     */
+    PADDLEBOAT_INCOMPATIBLE_MAPPING_DATA = -2009
 };
 
 /**
@@ -100,7 +110,7 @@ enum Paddleboat_ErrorCode {
  * AND against `Paddleboat_Controller_Data.buttonsDown` to check for button
  * status.
  */
-enum Paddleboat_Buttons {
+enum Paddleboat_Buttons : uint32_t {
     /**
      * @brief Bitmask for `Paddleboat_Controller_Data.buttonsDown` direction pad
      * up button.
@@ -213,7 +223,7 @@ enum Paddleboat_Buttons {
  * AND against `Paddleboat_Controller_Info.controllerFlags` to determine feature
  * availability.
  */
-enum Paddleboat_Controller_Flags {
+enum Paddleboat_Controller_Flags : uint32_t {
     /**
      * @brief Bitmask for `Paddleboat_Controller_Info.controllerFlags`
      * If set, this controller device wasn't found in the internal
@@ -280,10 +290,55 @@ enum Paddleboat_Controller_Flags {
 };
 
 /**
+ * @brief Bitmask values to use with ::Paddleboat_getIntegratedMotionSensorFlags
+ * and ::Paddleboat_setMotionDataCallbackWithIntegratedFlags
+ * Bitmask values represent integrated sensor types on the main device instead
+ * of a controller device.
+ */
+enum Paddleboat_Integrated_Motion_Sensor_Flags : uint32_t {
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * No present integrated motion sensors.
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_NONE = 0,
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * If set, the main device supports reporting accelerometer
+     * motion axis data
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_ACCELEROMETER = (0x00000001),
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * If set, the main device supports reporting gyroscope
+     * motion axis data
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_GYROSCOPE = (0x00000002),
+};
+
+/**
+ * @brief Bitmask flags to use with ::Paddleboat_getIntegratedMotionSensorFlags
+ * and ::Paddleboat_setMotionDataCallbackWithIntegratedFlags
+ * Flag values represent integrated sensor types on the main device instead
+ * of a controller device.
+ */
+ enum Paddleboat_Motion_Data_Callback_Sensor_Index : uint32_t {
+    /**
+     * @brief Value passed in the `controllerIndex` parameter of the
+     * `Paddleboat_MotionDataCallback` if integrated sensor data
+     * reporting is active and the motion data event came from
+     * an integrated sensor, rather than a controller sensor.
+     * This value will only be passed to the motion data callback
+     * if integrated sensor data has been requested using
+     * ::Paddleboat_setMotionDataCallbackWithIntegratedFlags
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_INDEX = (0x40000000)
+};
+
+/**
  * @brief Paddleboat mouse buttons as bitmask values
  * AND against `Paddleboat_Mouse_Data.buttonsDown` to determine button status.
  */
-enum Paddleboat_Mouse_Buttons {
+enum Paddleboat_Mouse_Buttons : uint32_t {
     /**
      * @brief Bitmask for `Paddleboat_Mouse_Data.buttonsDown` left mouse button.
      */
@@ -326,7 +381,7 @@ enum Paddleboat_Mouse_Buttons {
 /**
  * @brief Paddleboat axis mapping table axis order.
  */
-enum Paddleboat_Mapping_Axis {
+enum Paddleboat_Mapping_Axis : uint32_t {
     /**
      * @brief Paddleboat internal mapping index for left thumbstick X axis. */
     PADDLEBOAT_MAPPING_AXIS_LEFTSTICK_X = 0,
@@ -368,7 +423,7 @@ enum Paddleboat_Mapping_Axis {
  * @brief Special constants to specify an axis or axis button mapping is ignored
  * by the controller.
  */
-enum Paddleboat_Ignored_Axis {
+enum Paddleboat_Ignored_Axis : uint32_t {
     /**
      * @brief Constant that signifies an axis in the
      * `Paddleboat_Controller_Mapping_Data.axisPositiveButtonMapping` array
@@ -387,7 +442,7 @@ enum Paddleboat_Ignored_Axis {
 /**
  * @brief Special constant to specify a button is ignored by the controller.
  */
-enum Paddleboat_Ignored_Buttons {
+enum Paddleboat_Ignored_Buttons : uint32_t {
     /**
      * @brief Constant that signifies a button in the
      * `Paddleboat_Controller_Mapping_Data.buttonMapping` array
@@ -399,7 +454,7 @@ enum Paddleboat_Ignored_Buttons {
 /**
  * @brief Battery status of a controller
  */
-enum Paddleboat_BatteryStatus {
+enum Paddleboat_BatteryStatus : uint32_t {
     PADDLEBOAT_CONTROLLER_BATTERY_UNKNOWN = 0,  ///< Battery status is unknown
     PADDLEBOAT_CONTROLLER_BATTERY_CHARGING =
         1,  ///< Controller battery is charging
@@ -414,7 +469,7 @@ enum Paddleboat_BatteryStatus {
 /**
  * @brief Current status of a controller (at a specified controller index)
  */
-enum Paddleboat_ControllerStatus {
+enum Paddleboat_ControllerStatus : uint32_t {
     PADDLEBOAT_CONTROLLER_INACTIVE = 0,  ///< No controller is connected
     PADDLEBOAT_CONTROLLER_ACTIVE = 1,    ///< Controller is connected and active
     PADDLEBOAT_CONTROLLER_JUST_CONNECTED =
@@ -428,7 +483,7 @@ enum Paddleboat_ControllerStatus {
 /**
  * @brief The button layout and iconography of the controller buttons
  */
-enum Paddleboat_ControllerButtonLayout {
+enum Paddleboat_ControllerButtonLayout : uint32_t {
     //!  Y \n
     //! X B\n
     //!  A 
@@ -455,7 +510,7 @@ enum Paddleboat_ControllerButtonLayout {
  * @brief The type of light being specified by a call to
  * ::Paddleboat_setControllerLight
  */
-enum Paddleboat_LightType {
+enum Paddleboat_LightType : uint32_t {
     PADDLEBOAT_LIGHT_PLAYER_NUMBER = 0,  ///< Light is a player index,
                                          ///< `lightData` is the player number
     PADDLEBOAT_LIGHT_RGB = 1             ///< Light is a color light,
@@ -466,7 +521,7 @@ enum Paddleboat_LightType {
  * @brief The type of motion data being reported in a Paddleboat_Motion_Data
  * structure
  */
-enum Paddleboat_Motion_Type {
+enum Paddleboat_Motion_Type : uint32_t {
     PADDLEBOAT_MOTION_ACCELEROMETER = 0,  ///< Accelerometer motion data
     PADDLEBOAT_MOTION_GYROSCOPE = 1       ///< Gyroscope motion data
 };
@@ -474,7 +529,7 @@ enum Paddleboat_Motion_Type {
 /**
  * @brief The status of the mouse device
  */
-enum Paddleboat_MouseStatus {
+enum Paddleboat_MouseStatus : uint32_t {
     PADDLEBOAT_MOUSE_NONE = 0,  ///< No mouse device is connected
     PADDLEBOAT_MOUSE_CONTROLLER_EMULATED =
         1,                     ///< A virtual mouse is connected
@@ -488,7 +543,7 @@ enum Paddleboat_MouseStatus {
  * @brief The addition mode to use when passing new controller mapping data
  * to ::Paddleboat_addControllerRemapData
  */
-enum Paddleboat_Remap_Addition_Mode {
+enum Paddleboat_Remap_Addition_Mode : uint32_t {
     PADDLEBOAT_REMAP_ADD_MODE_DEFAULT =
         0,  ///< If a vendorId/productId controller entry in the
             ///< new remap table exists in the current database,
@@ -753,7 +808,10 @@ typedef void (*Paddleboat_MouseStatusCallback)(
  * sent by connected controllers
 
  * @param controllerIndex Index of the controller reporting the motion event,
- * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
+ * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1. If integrated motion
+ * sensor reporting was enabled, this value will equal
+ * `PADDLEBOAT_INTEGRATED_SENSOR_INDEX` if the motion event came from
+ * the integrated sensors on the main device, instead of a controller
  * @param motionData The motion data. Pointer is only valid until the callback
  returns.
  * @param userData The value of the userData parameter passed
@@ -763,6 +821,19 @@ typedef void (*Paddleboat_MouseStatusCallback)(
 typedef void (*Paddleboat_MotionDataCallback)(
     const int32_t controllerIndex, const Paddleboat_Motion_Data *motionData,
     void *userData);
+
+/**
+ * @brief Signature of a function that can be passed to
+ * ::Paddleboat_setPhysicalKeyboardStatusCallback to receive information about
+ * physical keyboard connection status changes.
+ * @param physicalKeyboardStatus Whether a physical keyboard is currently connected.
+ * @param userData The value of the userData parameter passed
+ * to ::Paddleboat_setPhysicalKeyboardStatusCallback
+ *
+ * Function will be called on the same thread that calls ::Paddleboat_update.
+ */
+typedef void (*Paddleboat_PhysicalKeyboardStatusCallback)(
+        const bool physicalKeyboardStatus, void *userData);
 
 /**
  * @brief Initialize Paddleboat, constructing internal resources via JNI. This
@@ -859,6 +930,14 @@ uint64_t Paddleboat_getActiveAxisMask();
 bool Paddleboat_getBackButtonConsumed();
 
 /**
+ * @brief Get availibility information for motion data sensors integrated
+ * directly on the main device, instead of attached to a controller.
+ * @return The bitmask of integrated motion data sensors.
+ */
+
+Paddleboat_Integrated_Motion_Sensor_Flags Paddleboat_getIntegratedMotionSensorFlags();
+
+/**
  * @brief Set whether Paddleboat consumes AKEYCODE_BACK key events from devices
  * being managed by Paddleboat. The default at initialization is true. This can
  * be set to false to allow exiting the application from a back button press
@@ -891,10 +970,36 @@ void Paddleboat_setControllerStatusCallback(
  * @param userData optional pointer (may be NULL or nullptr) to user data
  * that will be passed as a parameter to the status callback. A reference
  * to this pointer will be retained internally until changed by a future
- * call to ::Paddleboat_setMotionDataCallback
+ * call to ::Paddleboat_setMotionDataCallback or
+ * ::Paddleboat_setMotionDataCallbackWithIntegratedFlags
  */
 void Paddleboat_setMotionDataCallback(
     Paddleboat_MotionDataCallback motionDataCallback, void *userData);
+
+/**
+ * @brief Set a callback which is called whenever a controller managed by
+ * Paddleboat reports a motion data event.
+ * @param motionDataCallback function pointer to the motion data callback,
+ * passing NULL or nullptr will remove any currently registered callback.
+ * @param integratedSensorFlags specifies if integrated device sensor data
+ * will be reported in the motion data callback. If a sensor flag bit is
+ * set, and the main device has that sensor, the motion data will be
+ * reported in the motion data callback.
+ * The ::Paddleboat_getIntegratedMotionSensorFlags function can be used
+ * to determine availability of integrated sensors.
+ * @param userData optional pointer (may be NULL or nullptr) to user data
+ * that will be passed as a parameter to the status callback. A reference
+ * to this pointer will be retained internally until changed by a future
+ * call to ::Paddleboat_setMotionDataCallback
+ * @return `PADDLEBOAT_NO_ERROR` if the callback was successfully registered,
+ * otherwise an error code. Attempting to register integrated sensor reporting
+ * if the specified sensor is not present will result in a
+ * `PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED` error code.
+ * */
+Paddleboat_ErrorCode Paddleboat_setMotionDataCallbackWithIntegratedFlags(
+    Paddleboat_MotionDataCallback motionDataCallback,
+    Paddleboat_Integrated_Motion_Sensor_Flags integratedSensorFlags,
+    void *userData);
 
 /**
  * @brief Set a callback to be called when the mouse status changes. This is
@@ -910,6 +1015,22 @@ void Paddleboat_setMotionDataCallback(
  */
 void Paddleboat_setMouseStatusCallback(
     Paddleboat_MouseStatusCallback statusCallback, void *userData);
+
+/**
+ * @brief Set a callback to be called when the physical keyboard connection.
+ * status changes. This is used to inform of connections or disconnections
+ * of a physical keyboard to the primary device.
+ * @param statusCallback function pointer to the keyboard status change
+ * callback, passing NULL or nullptr will remove any currently registered
+ * callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that
+ * will be passed as a parameter to the status callback. A reference to this
+ * pointer will be retained internally until changed by a future call to
+ * ::Paddleboat_setPhysicalKeyboardStatusCallback
+ */
+void Paddleboat_setPhysicalKeyboardStatusCallback(
+        Paddleboat_PhysicalKeyboardStatusCallback statusCallback,
+        void *userData);
 
 /**
  * @brief Retrieve the current controller data from the controller with the
@@ -1009,7 +1130,15 @@ Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData);
 Paddleboat_MouseStatus Paddleboat_getMouseStatus();
 
 /**
+ * @brief Retrieve the physical keyboard connection status for the device.
+ * @return Whether a physical keyboard is currently connected, as bpolean.
+ */
+bool Paddleboat_getPhysicalKeyboardStatus();
+
+/**
  * @brief Add new controller remap information to the internal remapping table.
+ * Used to specify custom controller information or override default mapping
+ * for a given controller.
  * @param addMode The addition mode for the new data. See the
  * `Paddleboat_Remap_Addition_Mode` enum for details on each mode.
  * @param remapTableEntryCount the number of remap elements in the mappingData
@@ -1017,11 +1146,29 @@ Paddleboat_MouseStatus Paddleboat_getMouseStatus();
  * @param mappingData An array of controller mapping structs to be added to the
  * internal remapping table. The pointer passed in mappingData is not retained
  * and does not need to persist after function return.
+ * @deprecated Use `Paddleboat_addControllerRemapDataFromBuffer` instead.
  */
 void Paddleboat_addControllerRemapData(
     const Paddleboat_Remap_Addition_Mode addMode,
     const int32_t remapTableEntryCount,
     const Paddleboat_Controller_Mapping_Data *mappingData);
+
+/**
+ * @brief Add new controller remap information to the internal remapping table.
+ * Used to specify custom controller information or override default mapping
+ * for a given controller.
+ * @param addMode The addition mode for the new data. See the
+ * `Paddleboat_Remap_Addition_Mode` enum for details on each mode.
+ * @param mappingData A binary buffer containing controller mapping data
+ * generated by a version of the PaddleboatMappingTool compatible with
+ * this version of the Paddleboat library.
+ * @param mappingDataSize the size of the buffer in bytes passed in
+ * mappingData.
+ * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code.
+ */
+Paddleboat_ErrorCode Paddleboat_addControllerRemapDataFromBuffer(
+        const Paddleboat_Remap_Addition_Mode addMode,
+        const void *mappingData, const size_t mappingDataSize);
 
 /**
  * @brief Retrieve the current table of controller remap entries.
@@ -1034,6 +1181,7 @@ void Paddleboat_addControllerRemapData(
  * destRemapTableEntryCount elements. Passing nullptr is valid, and can be used
  * to get the number of elements in the internal remap table.
  * @return The number of elements in the internal remap table.
+ * @deprecated The number of elements returned will always be zero.
  */
 int32_t Paddleboat_getControllerRemapTableData(
     const int32_t destRemapTableEntryCount,
