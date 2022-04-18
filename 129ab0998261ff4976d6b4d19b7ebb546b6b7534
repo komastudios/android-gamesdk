@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93c4ea3f_e1e1229d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-04-18T21:45:37Z",
+      "side": 1,
+      "message": "Revisions after first round of NDK API council feedback, not sure who else should be added (or if I can add the group email alias). This is not an urgent priority, can wait for whatever the regular schedule is.",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
