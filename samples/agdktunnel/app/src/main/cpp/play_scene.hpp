@@ -170,7 +170,8 @@ protected:
     static const int MENUITEM_START_OVER = 2;
     static const int MENUITEM_RESUME = 3;
     static const int MENUITEM_LOADING = 4;
-    static const int MENUITEM_COUNT = 5;
+    static const int MENUITEM_RESUME_CLOUD = 5;
+    static const int MENUITEM_COUNT = 6;
 
     // text for each menu item
     char *mMenuItemText[MENUITEM_COUNT];

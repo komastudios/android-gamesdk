@@ -335,13 +335,13 @@ DataLoaderStateMachine *NativeEngine::BeginSavedGameLoad() {
     return mDataStateMachine;
 }
 
-bool NativeEngine::SaveProgress(int level) {
-    if (level <= mDataStateMachine->getLevelLoaded()) {
+bool NativeEngine::SaveProgress(int level, bool forceSave) {
+    if (level <= mDataStateMachine->getLevelLoaded() && !forceSave) {
         // nothing to do
         ALOGI("No need to save level, current = %d, saved = %d",
               level, mDataStateMachine->getLevelLoaded());
         return false;
-    } else if (!IsCheckpointLevel(level)) {
+    } else if (!IsCheckpointLevel(level) && !forceSave) {
         ALOGI("Current level %d is not a checkpoint level. Nothing to save.", level);
         return false;
     }
