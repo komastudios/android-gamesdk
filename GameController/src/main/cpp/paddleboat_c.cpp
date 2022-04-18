@@ -23,7 +23,7 @@ extern "C" {
 
 // Internal macros to track Paddleboat version, do not use directly.
 #define PADDLEBOAT_MAJOR_VERSION 1
-#define PADDLEBOAT_MINOR_VERSION 1
+#define PADDLEBOAT_MINOR_VERSION 2
 #define PADDLEBOAT_BUGFIX_VERSION 0
 
 #define PADDLEBOAT_PACKED_VERSION                                          \
@@ -86,6 +86,10 @@ bool Paddleboat_getBackButtonConsumed() {
     return GameControllerManager::getBackButtonConsumed();
 }
 
+uint32_t Paddleboat_getIntegratedMotionSensorFlags() {
+    return PADDLEBOAT_INTEGRATED_SENSOR_NONE;
+}
+
 void Paddleboat_setBackButtonConsumed(bool consumeBackButton) {
     GameControllerManager::setBackButtonConsumed(consumeBackButton);
 }
@@ -101,9 +105,22 @@ void Paddleboat_setMotionDataCallback(
     GameControllerManager::setMotionDataCallback(motionDataCallback, userData);
 }
 
+void Paddleboat_setMotionDataCallbackWithIntegratedFlags(
+        Paddleboat_MotionDataCallback /*motionDataCallback*/,
+        Paddleboat_Integrated_Motion_Sensor_Flags /*integratedSensorFlags*/,
+        void */*userData*/) {
+    // TODO: stub function in this CL
+}
+
 void Paddleboat_setMouseStatusCallback(
     Paddleboat_MouseStatusCallback statusCallback, void *userData) {
     GameControllerManager::setMouseStatusCallback(statusCallback, userData);
+}
+
+void Paddleboat_setPhysicalKeyboardStatusCallback(
+        Paddleboat_PhysicalKeyboardStatusCallback /*statusCallback*/,
+        void */*userData*/) {
+    // TODO: stub function in this CL
 }
 
 Paddleboat_ErrorCode Paddleboat_getControllerData(
@@ -152,12 +169,24 @@ Paddleboat_MouseStatus Paddleboat_getMouseStatus() {
     return GameControllerManager::getMouseStatus();
 }
 
+Paddleboat_PhysicalKeyboardStatus Paddleboat_getPhysicalKeyboardStatus() {
+    // TODO: stub function in this CL
+    return PADDLEBOAT_PHYSICAL_KEYBOARD_NONE;
+}
+
 void Paddleboat_addControllerRemapData(
     const Paddleboat_Remap_Addition_Mode addMode,
     const int32_t remapTableEntryCount,
     const Paddleboat_Controller_Mapping_Data *mappingData) {
     GameControllerManager::addControllerRemapData(addMode, remapTableEntryCount,
                                                   mappingData);
+}
+
+Paddleboat_ErrorCode Paddleboat_addControllerRemapDataFromBuffer(
+        const Paddleboat_Remap_Addition_Mode /*addMode*/,
+        const void */*mappingData*/, const size_t /*mappingDataSize*/) {
+    // TODO: stub function in this CL
+    return PADDLEBOAT_INVALID_MAPPING_DATA;
 }
 
 int32_t Paddleboat_getControllerRemapTableData(

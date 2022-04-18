@@ -92,7 +92,17 @@ enum Paddleboat_ErrorCode {
      * @brief An invalid parameter was specified. This usually means NULL or
      * nullptr was passed in a parameter that requires a valid pointer.
      */
-    PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007
+    PADDLEBOAT_ERROR_INVALID_PARAMETER = -2007,
+    /**
+     * @brief Invalid controller mapping data was provided. The data in the
+     * provided buffer does not match the expected mapping data format.
+     */
+    PADDLEBOAT_INVALID_MAPPING_DATA = -2008,
+    /**
+     * @brief Incompatible controller mapping data was provided. The data in
+     * the provided buffer is from an incompatible version of the mapping data format.
+     */
+    PADDLEBOAT_INCOMPATIBLE_MAPPING_DATA = -2009
 };
 
 /**
@@ -280,6 +290,41 @@ enum Paddleboat_Controller_Flags {
 };
 
 /**
+ * @brief Paddleboat integrated device motion sensor flags as bitmask values
+ * AND against ::Paddleboat_getIntegratedMotionSensorFlags to determine sensor
+ * availability. Integrated sensors are those present on the main device
+ * itself (i.e. phone) instead of a controller. These flags may be passed to
+ * `Paddleboat_setMotionDataCallbackWithIntegratedFlags` to enable motion
+ * data reporting of integrated sensor data in the motion data callback.
+ */
+enum Paddleboat_Integrated_Motion_Sensor_Flags {
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * No present integrated motion sensors.
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_NONE = 0,
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * If set, the main device supports reporting accelerometer
+     * motion axis data
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_ACCELEROMETER = (0x00000001),
+    /**
+     * @brief Bitmask for ::Paddleboat_getIntegratedMotionSensorFlags
+     * If set, the main device supports reporting gyroscope
+     * motion axis data
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_GYROSCOPE = (0x00000002),
+    /**
+     * @brief Value passed in the `controllerIndex` parameter of the
+     * `Paddleboat_MotionDataCallback` if integrated sensor data
+     * reporting is active and the motion data event came from
+     * an integrated sensor, rather than a controller sensor.
+     */
+    PADDLEBOAT_INTEGRATED_SENSOR_INDEX = (0x40000000)
+};
+
+/**
  * @brief Paddleboat mouse buttons as bitmask values
  * AND against `Paddleboat_Mouse_Data.buttonsDown` to determine button status.
  */
@@ -449,6 +494,14 @@ enum Paddleboat_ControllerButtonLayout {
     //! `Paddleboat_Controller_Info.controllerFlags`
     //! to get the `Paddleboat_ControllerButtonLayout` value
     PADDLEBOAT_CONTROLLER_LAYOUT_MASK = 3
+};
+
+/**
+ * @brief The connection status of physical keyboards
+ */
+enum Paddleboat_PhysicalKeyboardStatus {
+    PADDLEBOAT_PHYSICAL_KEYBOARD_NONE = 0,  ///< No physical is connected
+    PADDLEBOAT_PHYSICAL_KEYBOARD_CONNECTED  ///< A physical keyboard is connected
 };
 
 /**
@@ -753,7 +806,10 @@ typedef void (*Paddleboat_MouseStatusCallback)(
  * sent by connected controllers
 
  * @param controllerIndex Index of the controller reporting the motion event,
- * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1.
+ * will range from 0 to PADDLEBOAT_MAX_CONTROLLERS - 1. If integrated motion
+ * sensor reporting was enabled, this value will equal
+ * `PADDLEBOAT_INTEGRATED_SENSOR_INDEX` if the motion event came from
+ * the integrated sensors on the main device, instead of a controller
  * @param motionData The motion data. Pointer is only valid until the callback
  returns.
  * @param userData The value of the userData parameter passed
@@ -763,6 +819,19 @@ typedef void (*Paddleboat_MouseStatusCallback)(
 typedef void (*Paddleboat_MotionDataCallback)(
     const int32_t controllerIndex, const Paddleboat_Motion_Data *motionData,
     void *userData);
+
+/**
+ * @brief Signature of a function that can be passed to
+ * ::Paddleboat_setPhysicalKeyboardStatusCallback to receive information about
+ * physical keyboard connection status changes.
+ * @param physicalKeyboardStatus Current status of the mouse.
+ * @param userData The value of the userData parameter passed
+ * to ::Paddleboat_setPhysicalKeyboardStatusCallback
+ *
+ * Function will be called on the same thread that calls ::Paddleboat_update.
+ */
+typedef void (*Paddleboat_PhysicalKeyboardStatusCallback)(
+        const Paddleboat_PhysicalKeyboardStatus mouseStatus, void *userData);
 
 /**
  * @brief Initialize Paddleboat, constructing internal resources via JNI. This
@@ -859,6 +928,15 @@ uint64_t Paddleboat_getActiveAxisMask();
 bool Paddleboat_getBackButtonConsumed();
 
 /**
+ * @brief Get availibility information for motion data sensors integrated
+ * directly on the main device, instead of attached to a controller.
+ * @return The bitmask of integrated motion data sensors. Bitmask enums are
+ * defined in `Paddleboat_Integrated_Motion_Sensor_Flags`
+ */
+
+uint32_t Paddleboat_getIntegratedMotionSensorFlags();
+
+/**
  * @brief Set whether Paddleboat consumes AKEYCODE_BACK key events from devices
  * being managed by Paddleboat. The default at initialization is true. This can
  * be set to false to allow exiting the application from a back button press
@@ -891,10 +969,32 @@ void Paddleboat_setControllerStatusCallback(
  * @param userData optional pointer (may be NULL or nullptr) to user data
  * that will be passed as a parameter to the status callback. A reference
  * to this pointer will be retained internally until changed by a future
- * call to ::Paddleboat_setMotionDataCallback
+ * call to ::Paddleboat_setMotionDataCallback or
+ * ::Paddleboat_setMotionDataCallbackWithIntegratedFlags
  */
 void Paddleboat_setMotionDataCallback(
     Paddleboat_MotionDataCallback motionDataCallback, void *userData);
+
+/**
+ * @brief Set a callback which is called whenever a controller managed by
+ * Paddleboat reports a motion data event.
+ * @param motionDataCallback function pointer to the motion data callback,
+ * passing NULL or nullptr will remove any currently registered callback.
+ * @param integratedSensorFlags specifies if integrated device sensor data
+ * will be reported in the motion data callback. If a sensor flag bit is
+ * set, and the main device has that sensor, the motion data will be
+ * reported in the motion data callback.
+ * The ::Paddleboat_getIntegratedMotionSensorFlags function can be used
+ * to determine availability of integrated sensors.
+ * @param userData optional pointer (may be NULL or nullptr) to user data
+ * that will be passed as a parameter to the status callback. A reference
+ * to this pointer will be retained internally until changed by a future
+ * call to ::Paddleboat_setMotionDataCallback
+ */
+void Paddleboat_setMotionDataCallbackWithIntegratedFlags(
+    Paddleboat_MotionDataCallback motionDataCallback,
+    Paddleboat_Integrated_Motion_Sensor_Flags integratedSensorFlags,
+    void *userData);
 
 /**
  * @brief Set a callback to be called when the mouse status changes. This is
@@ -910,6 +1010,22 @@ void Paddleboat_setMotionDataCallback(
  */
 void Paddleboat_setMouseStatusCallback(
     Paddleboat_MouseStatusCallback statusCallback, void *userData);
+
+/**
+ * @brief Set a callback to be called when the physical keyboard connection.
+ * status changes. This is used to inform of connections or disconnections
+ * of a physical keyboard to the primary device.
+ * @param statusCallback function pointer to the keyboard status change
+ * callback, passing NULL or nullptr will remove any currently registered
+ * callback.
+ * @param userData optional pointer (may be NULL or nullptr) to user data that
+ * will be passed as a parameter to the status callback. A reference to this
+ * pointer will be retained internally until changed by a future call to
+ * ::Paddleboat_setPhysicalKeyboardStatusCallback
+ */
+void Paddleboat_setPhysicalKeyboardStatusCallback(
+        Paddleboat_PhysicalKeyboardStatusCallback statusCallback,
+        void *userData);
 
 /**
  * @brief Retrieve the current controller data from the controller with the
@@ -1009,6 +1125,13 @@ Paddleboat_ErrorCode Paddleboat_getMouseData(Paddleboat_Mouse_Data *mouseData);
 Paddleboat_MouseStatus Paddleboat_getMouseStatus();
 
 /**
+ * @brief Retrieve the physical keyboard connection status for the device.
+ * @return Paddleboat_PhysicalKeyboardStatus enum value of the current
+ * physical keyboard status.
+ */
+Paddleboat_PhysicalKeyboardStatus Paddleboat_getPhysicalKeyboardStatus();
+
+/**
  * @brief Add new controller remap information to the internal remapping table.
  * @param addMode The addition mode for the new data. See the
  * `Paddleboat_Remap_Addition_Mode` enum for details on each mode.
@@ -1017,11 +1140,27 @@ Paddleboat_MouseStatus Paddleboat_getMouseStatus();
  * @param mappingData An array of controller mapping structs to be added to the
  * internal remapping table. The pointer passed in mappingData is not retained
  * and does not need to persist after function return.
+ * @deprecated Use `Paddleboat_addControllerRemapDataFromBuffer` instead.
  */
 void Paddleboat_addControllerRemapData(
     const Paddleboat_Remap_Addition_Mode addMode,
     const int32_t remapTableEntryCount,
     const Paddleboat_Controller_Mapping_Data *mappingData);
+
+/**
+ * @brief Add new controller remap information to the internal remapping table.
+ * @param addMode The addition mode for the new data. See the
+ * `Paddleboat_Remap_Addition_Mode` enum for details on each mode.
+ * @param mappingData A binary buffer containing controller mapping data
+ * generated by a version of the PaddleboatMappingTool compatible with
+ * this version of the Paddleboat library.
+ * @param mappingDataSize the size of the buffer in bytes passed in
+ * mappingData.
+ * @return `PADDLEBOAT_NO_ERROR` if successful, otherwise an error code.
+ */
+Paddleboat_ErrorCode Paddleboat_addControllerRemapDataFromBuffer(
+        const Paddleboat_Remap_Addition_Mode addMode,
+        const void *mappingData, const size_t mappingDataSize);
 
 /**
  * @brief Retrieve the current table of controller remap entries.
@@ -1034,6 +1173,7 @@ void Paddleboat_addControllerRemapData(
  * destRemapTableEntryCount elements. Passing nullptr is valid, and can be used
  * to get the number of elements in the internal remap table.
  * @return The number of elements in the internal remap table.
+ * @deprecated The number of elements returned will always be zero.
  */
 int32_t Paddleboat_getControllerRemapTableData(
     const int32_t destRemapTableEntryCount,
