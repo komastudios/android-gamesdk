@@ -97,6 +97,7 @@ PlayScene::PlayScene(int savedLevel) : Scene() {
     mMenuItemText[MENUITEM_START_OVER] = (char *)S_START_OVER;
     mMenuItemText[MENUITEM_RESUME] = (char *)S_RESUME;
     mMenuItemText[MENUITEM_LOADING] = new char[64];
+    mMenuItemText[MENUITEM_RESUME_CLOUD] = (char *)S_RESUME_CLOUD;
 
     memset(mMenuItems, 0, sizeof(mMenuItems));
     mMenuItemCount = 0;
@@ -251,7 +252,7 @@ void PlayScene::DoFrame() {
                     NativeEngine::GetInstance()->GetDataStateMachine();
             if (dataStateMachine->isLoadingDataCompleted()) {
                 // resume from saved level
-                HandleMenu(mMenu);
+                HandleMenu(MENUITEM_LOADING);
             } else {
                 int loadingPercentage = dataStateMachine->getStepsCompleted()
                         * 100 / dataStateMachine->getTotalSteps();
@@ -845,11 +846,20 @@ void PlayScene::OnKeyDown(int keyCode) {
 void PlayScene::ShowMenu(int menu) {
     mMenu = menu;
     mMenuSel = 0;
+    NativeEngine *instance = NativeEngine::GetInstance();
+    DataLoaderStateMachine *dataStateMachine = instance->GetDataStateMachine();
     switch (menu) {
         case MENU_PAUSE:
             mMenuItems[0] = MENUITEM_UNPAUSE;
             mMenuItems[1] = MENUITEM_QUIT;
-            mMenuItemCount = 2;
+
+            if (instance->IsCloudSaveEnabled() &&
+                    dataStateMachine->getLevelLoaded() >= mSavedLevel) {
+                mMenuItems[2] = MENUITEM_RESUME_CLOUD;
+                mMenuItemCount = 3;
+            } else {
+                mMenuItemCount = 2;
+            }
             break;
         case MENU_LEVEL:
             mMenuItems[0] = MENUITEM_RESUME;
@@ -885,10 +895,13 @@ void PlayScene::HandleMenu(int menuItem) {
             break;
         case MENUITEM_START_OVER:
             // start over from scratch
-            NativeEngine::GetInstance()->SaveProgress(/* level = */0);
+            NativeEngine::GetInstance()->SaveProgress(/* level = */ 0, /* force = */ true);
             ShowMenu(MENU_NONE);
             break;
         case MENUITEM_LOADING:
+            ShowMenu(MENU_PAUSE);
+            break;
+        case MENUITEM_RESUME_CLOUD:
             DataLoaderStateMachine *dataStateMachine =
                     NativeEngine::GetInstance()->GetDataStateMachine();
             mSavedLevel = (dataStateMachine->getLevelLoaded() / LEVELS_PER_CHECKPOINT)
@@ -900,7 +913,7 @@ void PlayScene::HandleMenu(int menuItem) {
                 mObstacleGen.SetDifficulty(mDifficulty);
             }
             ShowLevelSign();
-            ShowMenu(MENU_PAUSE);
+            ShowMenu(MENU_NONE);
             break;
     }
 }
