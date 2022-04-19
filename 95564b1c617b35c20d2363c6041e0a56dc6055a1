@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3d6209b_78c0c233",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-04-19T18:08:08Z",
+      "side": 1,
+      "message": "Does it make sense do wrap this with\nif (!forceSave) {\n  if / else\n}",
+      "range": {
+        "startLine": 339,
+        "startChar": 4,
+        "endLine": 348,
+        "endChar": 0
+      },
+      "revId": "95564b1c617b35c20d2363c6041e0a56dc6055a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
