@@ -22,6 +22,30 @@
       },
       "revId": "95564b1c617b35c20d2363c6041e0a56dc6055a1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "613e4219_637b19de",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-04-20T21:20:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3d6209b_78c0c233",
+      "range": {
+        "startLine": 339,
+        "startChar": 4,
+        "endLine": 348,
+        "endChar": 0
+      },
+      "revId": "95564b1c617b35c20d2363c6041e0a56dc6055a1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
