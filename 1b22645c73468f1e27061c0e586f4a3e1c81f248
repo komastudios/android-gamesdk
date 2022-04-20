@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba153978_63c50eff",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1373878
+      },
+      "writtenOn": "2022-04-20T12:25:16Z",
+      "side": 1,
+      "message": "Can we make this only log once, so we don\u0027t spam the logs? See ALOGW_ONCE, here: https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/src/common/Log.h",
+      "revId": "1b22645c73468f1e27061c0e586f4a3e1c81f248",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
