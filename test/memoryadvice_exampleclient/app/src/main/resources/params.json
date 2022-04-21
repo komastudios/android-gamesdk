@@ -1,0 +1,23 @@
+{
+  "metrics": {
+    "baseline": {
+      "ActivityManager": true,
+      "MemoryInfo": true,
+      "debug": true,
+      "meminfo": true,
+      "proc": true,
+      "status": true,
+      "summary": true
+    },
+    "variable": {
+      "ActivityManager": true,
+      "DebugMemoryInfo": true,
+      "MemoryInfo": true,
+      "debug": true,
+      "meminfo": true,
+      "proc": true,
+      "status": true,
+      "summary": true
+    }
+  }
+}
