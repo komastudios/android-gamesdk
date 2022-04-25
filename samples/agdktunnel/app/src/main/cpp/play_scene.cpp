@@ -501,7 +501,7 @@ void PlayScene::ShiftIfNeeded() {
     }
 }
 
-void PlayScene::UpdateMenuSelFromTouch(float x, float y) {
+void PlayScene::UpdateMenuSelFromTouch(float /*x*/, float y) {
     float sh = SceneManager::GetInstance()->GetScreenHeight();
     int item = (int) floor((y / sh) * (mMenuItemCount));
     mMenuSel = Clamp(item, 0, mMenuItemCount - 1);
@@ -927,7 +927,7 @@ void PlayScene::OnResume() {
     }
 }
 
-void PlayScene::OnScreenResized(int width, int height) {
+void PlayScene::OnScreenResized(int /*width*/, int /*height*/) {
     UpdateProjectionMatrix();
 }
 

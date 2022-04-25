@@ -83,7 +83,7 @@ namespace {
 }
 #endif
 
-TuningManager::TuningManager(JNIEnv *env, jobject activity, AConfiguration *config) {
+TuningManager::TuningManager(JNIEnv */*env*/, jobject /*activity*/, AConfiguration */*config*/) {
     mTFInitialized = false;
 
 #if defined(USE_APT)
@@ -149,7 +149,7 @@ TuningManager::~TuningManager() {
 #endif
 }
 
-void TuningManager::InitializeChoreographerCallback(AConfiguration *config) {
+void TuningManager::InitializeChoreographerCallback(AConfiguration */*config*/) {
 #if defined(USE_APT)
     int32_t sdkVersion = AConfiguration_getSdkVersion(config);
     if (sdkVersion >= 29) {

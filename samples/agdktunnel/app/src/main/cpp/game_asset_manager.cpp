@@ -117,7 +117,7 @@ private:
     bool mAssetPackManagerInitialized;
 };
 
-GameAssetManagerInternals::GameAssetManagerInternals(AAssetManager *assetManager, JavaVM *jvm,
+GameAssetManagerInternals::GameAssetManagerInternals(AAssetManager *assetManager, JavaVM */*jvm*/,
                                                      jobject nativeActivity) {
 #if defined(NO_ASSET_PACKS)
     mAssetPackErrorMessage = "No Error";
@@ -324,7 +324,7 @@ AssetPackInfo *GameAssetManagerInternals::GetAssetPackForAssetName(const char *a
 
 bool GameAssetManagerInternals::GenerateFullAssetPath(const char *assetName,
                                                       const AssetPackInfo *packInfo,
-                                                      char *pathBuffer, const size_t bufferSize) {
+                                                      char *pathBuffer, const size_t /*bufferSize*/) {
     bool generatedPath = false;
     const size_t requiredSize = strlen(assetName) + strlen(packInfo->mAssetPackBasePath) + 1;
     if (requiredSize < MAX_ASSET_PATH_LENGTH) {
@@ -796,7 +796,7 @@ GameAssetManager::GetGameAssetPackStatus(const char *assetPackName) {
 }
 
 GameAssetManager::GameAssetPackType GameAssetManager::GetGameAssetPackType(
-        const char *assetPackName) {
+        const char */*assetPackName*/) {
     GameAssetManager::GameAssetPackType assetPackType = GAMEASSET_PACKTYPE_INTERNAL;
 
 #if !defined NO_ASSET_PACKS
@@ -828,13 +828,13 @@ bool GameAssetManager::RequestDownload(const char *assetPackName) {
     return downloadStarted;
 }
 
-void GameAssetManager::RequestDownloadCancellation(const char *assetPackName) {
+void GameAssetManager::RequestDownloadCancellation(const char */*assetPackName*/) {
 #if !defined(NO_ASSET_PACKS)
     mInternals->RequestAssetPackCancelDownload(assetPackName);
 #endif
 }
 
-bool GameAssetManager::RequestRemoval(const char *assetPackName) {
+bool GameAssetManager::RequestRemoval(const char */*assetPackName*/) {
 #if !defined(NO_ASSET_PACKS)
     return mInternals->RequestAssetPackRemoval(assetPackName);
 #else
