@@ -263,25 +263,30 @@ public class GameActivity
 
     Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
 
-    // Load the native library so that native functions are registered, even if GameActivity
-    // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
-    System.loadLibrary(libname);
+    try {
+      // Load the native library so that native functions are registered, even if GameActivity
+      // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
+      System.loadLibrary(libname);
 
-    byte[] nativeSavedState =
-        savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
+      byte[] nativeSavedState =
+              savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
 
-    mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
-        getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
-        getAssets(), nativeSavedState);
+      mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
+              getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
+              getAssets(), nativeSavedState);
 
-    if (mNativeHandle == 0) {
-      throw new UnsatisfiedLinkError(
-          "Unable to load native library \"" + path + "\": " + getDlError());
-    }
+      if (mNativeHandle == 0) {
+        throw new UnsatisfiedLinkError(
+                "Unable to load native library \"" + path + "\": " + getDlError());
+      }
 
-    // Set up the input connection
-    if (mSurfaceView != null) {
-      setInputConnectionNative(mNativeHandle, mSurfaceView.mInputConnection);
+      // Set up the input connection
+      if (mSurfaceView != null) {
+        setInputConnectionNative(mNativeHandle, mSurfaceView.mInputConnection);
+      }
+    } catch (UnsatisfiedLinkError e) {
+      // We could not find the library. We will allow this exception in case a derived class
+      // loads the native code separately.
     }
 
     super.onCreate(savedInstanceState);
