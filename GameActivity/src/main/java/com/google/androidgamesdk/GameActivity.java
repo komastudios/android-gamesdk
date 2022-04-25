@@ -228,56 +228,63 @@ public class GameActivity
         | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
   }
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+
+  protected void onCreate(Bundle savedInstanceState, long nativeHandle) {
+    if (nativeHandle != 0) {
+      // We allow derived classes to handle the library loading passing in a nativeHandle to this
+      // function
+      mNativeHandle = nativeHandle;
+      Log.i(LOG_TAG, "Native Library was loaded by derived class.");
+    } else {
+      String libname = "main";
+      String funcname = "GameActivity_onCreate";
+      ActivityInfo ai;
+      try{
+        ai = getPackageManager().getActivityInfo(
+            getIntent().getComponent(), PackageManager.GET_META_DATA);
+        if (ai.metaData != null) {
+          String ln = ai.metaData.getString(META_DATA_LIB_NAME);
+          if (ln != null)
+            libname = ln;
+          ln = ai.metaData.getString(META_DATA_FUNC_NAME);
+          if (ln != null)
+            funcname = ln;
+        }
+      } catch (PackageManager.NameNotFoundException e) {
+        throw new RuntimeException("Error getting activity info", e);
+      }
+      Log.i(LOG_TAG, "Looking for library " + libname );
+
+      BaseDexClassLoader classLoader = (BaseDexClassLoader) getClassLoader();
+      String path = classLoader.findLibrary(libname);
+
+      if (path == null) {
+        throw new IllegalArgumentException("Unable to find native library " + libname
+            + " using classloader: " + classLoader.toString());
+      }
+
+      Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
+
+      // Load the native library so that native functions are registered, even if GameActivity
+      // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
+      System.loadLibrary(libname);
+
+      byte[] nativeSavedState =
+              savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE)
+                      : null;
+
+      mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
+              getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
+              getAssets(), nativeSavedState);
+
+      if (mNativeHandle == 0) {
+        throw new UnsatisfiedLinkError(
+                "Unable to load native library \"" + path + "\": " + getDlError());
+      }
+    }
+
     onCreateSurfaceView();
     onSetUpWindow();
-
-    String libname = "main";
-    String funcname = "GameActivity_onCreate";
-    ActivityInfo ai;
-    try {
-      ai = getPackageManager().getActivityInfo(
-          getIntent().getComponent(), PackageManager.GET_META_DATA);
-      if (ai.metaData != null) {
-        String ln = ai.metaData.getString(META_DATA_LIB_NAME);
-        if (ln != null)
-          libname = ln;
-        ln = ai.metaData.getString(META_DATA_FUNC_NAME);
-        if (ln != null)
-          funcname = ln;
-      }
-    } catch (PackageManager.NameNotFoundException e) {
-      throw new RuntimeException("Error getting activity info", e);
-    }
-
-    Log.i(LOG_TAG, "Looking for library " + libname );
-
-    BaseDexClassLoader classLoader = (BaseDexClassLoader) getClassLoader();
-    String path = classLoader.findLibrary(libname);
-
-    if (path == null) {
-      throw new IllegalArgumentException("Unable to find native library " + libname
-          + " using classloader: " + classLoader.toString());
-    }
-
-    Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
-
-    // Load the native library so that native functions are registered, even if GameActivity
-    // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
-    System.loadLibrary(libname);
-
-    byte[] nativeSavedState =
-        savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
-
-    mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
-        getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
-        getAssets(), nativeSavedState);
-
-    if (mNativeHandle == 0) {
-      throw new UnsatisfiedLinkError(
-          "Unable to load native library \"" + path + "\": " + getDlError());
-    }
 
     // Set up the input connection
     if (mSurfaceView != null) {
