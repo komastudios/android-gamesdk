@@ -368,49 +368,49 @@ void NativeEngine::SaveGameToCloud(int level) {
 
 // TODO: rename the methods according to your package name
 extern "C" jboolean Java_com_google_sample_agdktunnel_PGSManager_isLoadingWorkInProgress(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     return (jboolean)!instance->GetDataStateMachine()->isLoadingDataCompleted();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateInitLoading(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->init();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationCompleted(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->authenticationCompleted();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationFailed(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->authenticationFailed();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateSnapshotNotFound(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->savedStateSnapshotNotFound();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateCloudDataFound(
-        JNIEnv *env, jobject pgsManagerl) {
+        JNIEnv */*env*/, jobject /*pgsManagerl*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->savedStateCloudDataFound();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingFailed(
-        JNIEnv *env, jobject pgsManager) {
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->savedStateLoadingFailed();
 }
 
 extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingCompleted(
-        JNIEnv *env, jobject pgsManager, jint level) {
+        JNIEnv */*env*/, jobject /*pgsManager*/, jint level) {
     NativeEngine *instance = NativeEngine::GetInstance();
     instance->GetDataStateMachine()->savedStateLoadingCompleted(level);
 }
@@ -539,7 +539,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
           mEglConfig);
 }
 
-bool NativeEngine::HandleInput(AInputEvent *event) {
+bool NativeEngine::HandleInput(AInputEvent */*event*/) {
     return false;
 }
 

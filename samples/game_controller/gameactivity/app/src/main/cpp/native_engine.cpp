@@ -38,7 +38,7 @@
 // max # of GL errors to print before giving up
 #define MAX_GL_ERRORS 200
 
-static bool all_motion_filter(const GameActivityMotionEvent* event) {
+static bool all_motion_filter(const GameActivityMotionEvent* /*event*/) {
     // Process all motion events
     return true;
 }
@@ -149,7 +149,7 @@ static bool _cook_game_activity_motion_event(GameActivityMotionEvent *motionEven
     if (motionEvent->pointerCount > 0) {
         int action = motionEvent->action;
         int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
-        int ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
+        uint32_t ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
             AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
 
         if (ptrIndex < motionEvent->pointerCount) {
@@ -343,7 +343,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
           mEglConfig);
 }
 
-bool NativeEngine::HandleInput(AInputEvent *event) {
+bool NativeEngine::HandleInput(AInputEvent */*event*/) {
     return false;
 }
 
