@@ -122,6 +122,7 @@ def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
         .setUsesTensorflow()
         .setMinimumNdkVersion(20)
+        .setMinimumAndroidApiLevel(24)
         .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
