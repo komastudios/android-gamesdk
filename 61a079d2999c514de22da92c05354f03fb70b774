@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff994916_eccfeadc",
+        "filename": "samples/memory_advice/hogger/app/CMakeLists.for-samples-in-archive.txt",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-09T12:36:18Z",
+      "side": 1,
+      "message": "Can you remove or comment this? otherwise it\u0027s confusing why this is here but not used",
+      "revId": "61a079d2999c514de22da92c05354f03fb70b774",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
