@@ -291,12 +291,10 @@ static bool read_work(int fd, ActivityWork *outWork) {
  * Native state for interacting with the GameActivity class.
  */
 struct NativeCode : public GameActivity {
-    NativeCode(void *_dlhandle, GameActivity_createFunc *_createFunc) {
+    NativeCode() {
         memset((GameActivity *)this, 0, sizeof(GameActivity));
         memset(&callbacks, 0, sizeof(callbacks));
         memset(&insetsState, 0, sizeof(insetsState));
-        dlhandle = _dlhandle;
-        createActivityFunc = _createFunc;
         nativeWindow = NULL;
         mainWorkRead = mainWorkWrite = -1;
         gameTextInput = NULL;
@@ -324,12 +322,6 @@ struct NativeCode : public GameActivity {
         setSurface(NULL);
         if (mainWorkRead >= 0) close(mainWorkRead);
         if (mainWorkWrite >= 0) close(mainWorkWrite);
-        if (dlhandle != NULL) {
-            // for now don't unload...  we probably should clean this
-            // up and only keep one open dlhandle per proc, since there
-            // is really no benefit to unloading the code.
-            // dlclose(dlhandle);
-        }
     }
 
     void setSurface(jobject _surface) {
@@ -344,9 +336,6 @@ struct NativeCode : public GameActivity {
     }
 
     GameActivityCallbacks callbacks;
-
-    void *dlhandle;
-    GameActivity_createFunc *createActivityFunc;
 
     std::string internalDataPathObj;
     std::string externalDataPathObj;
@@ -485,40 +474,16 @@ static int mainWorkCallback(int fd, int events, void *data) {
 }
 
 // ------------------------------------------------------------------------
-
 static thread_local std::string g_error_msg;
 
-static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
-                                   jstring path, jstring funcName,
+static jlong initializeNativeCode_native(JNIEnv *env, jobject javaGameActivity,
                                    jstring internalDataDir, jstring obbDir,
                                    jstring externalDataDir, jobject jAssetMgr,
                                    jbyteArray savedState) {
-    LOG_TRACE("loadNativeCode_native");
-    const char *pathStr = env->GetStringUTFChars(path, NULL);
+    LOG_TRACE("initializeNativeCode_native");
     NativeCode *code = NULL;
 
-    void *handle = dlopen(pathStr, RTLD_LAZY);
-
-    env->ReleaseStringUTFChars(path, pathStr);
-
-    if (handle == nullptr) {
-        g_error_msg = dlerror();
-        ALOGE("GameActivity dlopen(\"%s\") failed: %s", pathStr,
-              g_error_msg.c_str());
-        return 0;
-    }
-
-    const char *funcStr = env->GetStringUTFChars(funcName, NULL);
-    code = new NativeCode(handle,
-                          (GameActivity_createFunc *)dlsym(handle, funcStr));
-    env->ReleaseStringUTFChars(funcName, funcStr);
-
-    if (code->createActivityFunc == nullptr) {
-        g_error_msg = dlerror();
-        ALOGW("GameActivity_onCreate not found: %s", g_error_msg.c_str());
-        delete code;
-        return 0;
-    }
+    code = new NativeCode();
 
     code->looper = ALooper_forThread();
     if (code->looper == nullptr) {
@@ -588,7 +553,7 @@ static jlong loadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
         rawSavedState = env->GetByteArrayElements(savedState, NULL);
         rawSavedSize = env->GetArrayLength(savedState);
     }
-    code->createActivityFunc(code, rawSavedState, rawSavedSize);
+    GameActivity_onCreate(code, rawSavedState, rawSavedSize);
 
     code->gameTextInput = GameTextInput_init(env, 0);
     GameTextInput_setEventCallback(code->gameTextInput,
@@ -609,9 +574,9 @@ static jstring getDlError_native(JNIEnv *env, jobject javaGameActivity) {
     return result;
 }
 
-static void unloadNativeCode_native(JNIEnv *env, jobject javaGameActivity,
+static void terminateNativeCode_native(JNIEnv *env, jobject javaGameActivity,
                                     jlong handle) {
-    LOG_TRACE("unloadNativeCode_native");
+    LOG_TRACE("terminateNativeCode_native");
     if (handle != 0) {
         NativeCode *code = (NativeCode *)handle;
         delete code;
@@ -1158,12 +1123,12 @@ static void setInputConnection_native(JNIEnv *env, jobject activity,
 }
 
 static const JNINativeMethod g_methods[] = {
-    {"loadNativeCode",
-     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/"
-     "String;Ljava/lang/String;Landroid/content/res/AssetManager;[B)J",
-     (void *)loadNativeCode_native},
+    {"initializeNativeCode",
+     "(Ljava/lang/String;Ljava/lang/String;"
+     "Ljava/lang/String;Landroid/content/res/AssetManager;[B)J",
+     (void *)initializeNativeCode_native},
     {"getDlError", "()Ljava/lang/String;", (void *)getDlError_native},
-    {"unloadNativeCode", "(J)V", (void *)unloadNativeCode_native},
+    {"terminateNativeCode", "(J)V", (void *)terminateNativeCode_native},
     {"onStartNative", "(J)V", (void *)onStart_native},
     {"onResumeNative", "(J)V", (void *)onResume_native},
     {"onSaveInstanceStateNative", "(J)[B", (void *)onSaveInstanceState_native},
@@ -1292,13 +1257,13 @@ extern "C" int GameActivity_register(JNIEnv *env) {
 
 // Register this method so that GameActiviy_register does not need to be called
 // manually.
-extern "C" jlong Java_com_google_androidgamesdk_GameActivity_loadNativeCode(
-    JNIEnv *env, jobject javaGameActivity, jstring path, jstring funcName,
+extern "C" jlong Java_com_google_androidgamesdk_GameActivity_initializeNativeCode(
+    JNIEnv *env, jobject javaGameActivity,
     jstring internalDataDir, jstring obbDir, jstring externalDataDir,
     jobject jAssetMgr, jbyteArray savedState) {
     GameActivity_register(env);
-    jlong nativeCode = loadNativeCode_native(
-        env, javaGameActivity, path, funcName, internalDataDir, obbDir,
+    jlong nativeCode = initializeNativeCode_native(
+        env, javaGameActivity,internalDataDir, obbDir,
         externalDataDir, jAssetMgr, savedState);
     return nativeCode;
 }
