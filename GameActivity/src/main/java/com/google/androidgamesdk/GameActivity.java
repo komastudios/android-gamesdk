@@ -133,8 +133,8 @@ public class GameActivity
 
   protected boolean mDestroyed;
 
-  protected native long loadNativeCode(String path, String funcname, String internalDataPath,
-      String obbPath, String externalDataPath, AssetManager assetMgr, byte[] savedState);
+  protected native long loadNativeCode(String internalDataPath, String obbPath,
+      String externalDataPath, AssetManager assetMgr, byte[] savedState);
 
   protected native String getDlError();
 
@@ -234,7 +234,6 @@ public class GameActivity
     onSetUpWindow();
 
     String libname = "main";
-    String funcname = "GameActivity_onCreate";
     ActivityInfo ai;
     try {
       ai = getPackageManager().getActivityInfo(
@@ -243,9 +242,6 @@ public class GameActivity
         String ln = ai.metaData.getString(META_DATA_LIB_NAME);
         if (ln != null)
           libname = ln;
-        ln = ai.metaData.getString(META_DATA_FUNC_NAME);
-        if (ln != null)
-          funcname = ln;
       }
     } catch (PackageManager.NameNotFoundException e) {
       throw new RuntimeException("Error getting activity info", e);
@@ -256,21 +252,23 @@ public class GameActivity
     BaseDexClassLoader classLoader = (BaseDexClassLoader) getClassLoader();
     String path = classLoader.findLibrary(libname);
 
-    if (path == null) {
-      throw new IllegalArgumentException("Unable to find native library " + libname
+    if (path != null) {
+      Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
+
+      // Load the native library so that native functions are registered, even if GameActivity
+      // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
+      System.loadLibrary(libname);
+    }
+    else {
+      // assuming application loading the library
+      Log.i(LOG_TAG, "Application loading native library, unable to find native library " + libname
           + " using classloader: " + classLoader.toString());
     }
-
-    Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
-
-    // Load the native library so that native functions are registered, even if GameActivity
-    // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
-    System.loadLibrary(libname);
 
     byte[] nativeSavedState =
         savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
 
-    mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
+    mNativeHandle = loadNativeCode(getAbsolutePath(getFilesDir()),
         getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
         getAssets(), nativeSavedState);
 
@@ -284,6 +282,7 @@ public class GameActivity
       setInputConnectionNative(mNativeHandle, mSurfaceView.mInputConnection);
     }
 
+    // this should be the first to execute.
     super.onCreate(savedInstanceState);
   }
 
