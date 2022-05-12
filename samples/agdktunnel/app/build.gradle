@@ -104,7 +104,7 @@ dependencies {
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
     implementation "androidx.games:games-controller:1.0.0"
-    implementation "androidx.games:games-activity:1.1.0"
+    //implementation "androidx.games:games-activity:1.1.0"
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
@@ -112,7 +112,7 @@ dependencies {
     // TODO(b/215589030): release the input sdk public to GMaven
     playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
-    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
+    implementation fileTree(dir: 'libs', include: ['GameActivity.aar'])
     //                                               'GameController.aar',
     //                                               'games-frame-pacing-1.9.0.aar',
     //                                               'games-performance-tuner-1.5.0.aar'])
