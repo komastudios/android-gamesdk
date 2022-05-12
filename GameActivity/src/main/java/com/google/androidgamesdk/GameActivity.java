@@ -228,6 +228,11 @@ public class GameActivity
         | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
   }
 
+  static {
+    // loading the internal game-activity shared library.
+    System.loadLibrary("game-activity");
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     onCreateSurfaceView();
