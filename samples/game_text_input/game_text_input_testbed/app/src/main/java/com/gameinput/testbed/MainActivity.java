@@ -27,7 +27,7 @@ import com.google.androidgamesdk.gametextinput.InputConnection;
 
 public class MainActivity extends AppCompatActivity {
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("game-input");
     }
 
     InputEnabledTextView inputEnabledTextView;

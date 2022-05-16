@@ -34,7 +34,7 @@
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme">
             <meta-data android:name="android.app.lib_name"
-                android:value="game" />
+                android:value="agdktunnel" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
