@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8158469f_a4430e42",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 555,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-16T11:29:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "128c06eb_a0b9860e",
+      "range": {
+        "startLine": 555,
+        "startChar": 16,
+        "endLine": 555,
+        "endChar": 17
+      },
+      "revId": "72758e973ff756a7a175d271eec46ae603d89613",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0dede23a_40832a06",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbe925df_8e71eeca",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 564,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-16T11:29:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0dede23a_40832a06",
+      "range": {
+        "startLine": 564,
+        "startChar": 0,
+        "endLine": 564,
+        "endChar": 42
+      },
+      "revId": "72758e973ff756a7a175d271eec46ae603d89613",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "668d0c4e_44830191",
@@ -60,6 +108,30 @@
       "writtenOn": "2022-04-27T12:12:23Z",
       "side": 1,
       "message": "instead of adding a single function with a boolean parameter, maybe you should have two functions (pause/resume). If you\u0027re doing that, you should add two more tuningfork error codes; one for logging is already paused, and another for logging already running.",
+      "range": {
+        "startLine": 565,
+        "startChar": 3,
+        "endLine": 567,
+        "endChar": 0
+      },
+      "revId": "72758e973ff756a7a175d271eec46ae603d89613",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bdeb4dc_ea01069f",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 567,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-16T11:29:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "668d0c4e_44830191",
       "range": {
         "startLine": 565,
         "startChar": 3,
