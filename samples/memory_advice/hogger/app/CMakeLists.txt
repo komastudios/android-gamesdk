@@ -26,12 +26,12 @@ include_directories(../../../../include)
 include_directories(../../../common/include ) # Samples Includes
 
 
-add_library( native-lib
+add_library( hogger
         SHARED
         src/main/cpp/native-lib.cpp
         )
 
-target_link_libraries( native-lib
+target_link_libraries( hogger
         memory_advice
         android
         GLESv2
