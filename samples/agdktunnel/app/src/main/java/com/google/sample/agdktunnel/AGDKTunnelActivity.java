@@ -48,10 +48,10 @@ public class AGDKTunnelActivity extends GameActivity {
         // Load the memory advice library
         System.loadLibrary("memory_advice");
 
-        // It's not actually necessary to load the native 'game' library here as it's loaded in
+        // It's not actually necessary to load the native 'agdktunnel' library here as it's loaded in
         // GameActivity.onCreate when we have the following line in the manifest:
-        // <meta-data android:name="android.app.lib_name" android:value="game" />
-        System.loadLibrary("game");
+        // <meta-data android:name="android.app.lib_name" android:value="agdktunnel" />
+        System.loadLibrary("agdktunnel");
     }
 
     @Override

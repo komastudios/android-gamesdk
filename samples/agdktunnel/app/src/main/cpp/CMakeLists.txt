@@ -63,7 +63,7 @@ set(THIRD_PARTY_DIR ../../../../third-party)
 add_subdirectory(${THIRD_PARTY_DIR}/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
 
 # now build app's shared lib
-add_library(game SHARED
+add_library(${CMAKE_PROJECT_NAME} SHARED
      ${PROTOBUF_NANO_SRCS}
      ${PROTO_GENS_DIR}/nano/dev_tuningfork.pb.c
      ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
@@ -105,14 +105,14 @@ add_library(game SHARED
      ${COMMON_SRC_DIR}/Versions.cpp
      )
 
-target_include_directories(game PRIVATE
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
      ${THIRD_PARTY_DIR}/glm/glm
      ${COMMON_INCLUDE_DIR}
      ${CMAKE_CURRENT_SOURCE_DIR}
      ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
 # add lib dependencies
-target_link_libraries(game
+target_link_libraries(${CMAKE_PROJECT_NAME}
      android
      atomic
      EGL

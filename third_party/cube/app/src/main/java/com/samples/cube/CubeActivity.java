@@ -28,10 +28,10 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
     private SeekBar cpuWorkSeekBar;
     private TextView cpuWorkText;
 
-    // Used to load the 'native-lib' library on application startup.
+    // Used to load the 'cube' library on application startup.
     static {
         try {
-            System.loadLibrary("native-lib");
+            System.loadLibrary("cube");
         } catch (Exception e) {
             Log.e(APP_NAME, "Native code library failed to load.\n" + e);
         }
@@ -206,7 +206,7 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
     /**
-     * Native methods that are implemented by the 'native-lib' native library,
+     * Native methods that are implemented by the 'cube' native library,
      * which is packaged with this application.
      */
     public native void nStartCube(Surface holder);
