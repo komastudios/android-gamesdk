@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.4.1)
+project(tuningfork-demo)
 
 # If you have protobuf installed from a different directory, set it here. The source version
 #  must match the protoc version.
@@ -41,7 +42,7 @@ add_library( protobuf-static
 )
 target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
 
-add_library( native-lib
+add_library( ${CMAKE_PROJECT_NAME}
              SHARED
              src/main/cpp/experimentsdemo.cpp
              ../../common/Renderer.cpp
@@ -51,7 +52,7 @@ add_library( native-lib
              ${PROTO_GENS_DIR}/full/tuningfork.pb.cc
 )
 
-target_link_libraries( native-lib
+target_link_libraries( ${CMAKE_PROJECT_NAME}
         swappy
         tuningfork
         protobuf-static

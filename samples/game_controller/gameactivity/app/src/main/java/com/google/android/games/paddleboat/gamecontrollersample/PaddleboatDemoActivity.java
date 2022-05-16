@@ -40,8 +40,8 @@ public class PaddleboatDemoActivity extends GameActivity {
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
 
-        // Load the game library:
-        System.loadLibrary("game");
+        // Load the 'paddleboat_demo' library:
+        System.loadLibrary("paddleboat_demo");
     }
 
     private void hideSystemUI() {
