@@ -58,7 +58,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
 
     // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("bouncyball");
     }
 
     private static final long ONE_MS_IN_NS = 1000000;

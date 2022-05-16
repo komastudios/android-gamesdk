@@ -1080,7 +1080,7 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
 
 static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
                                 jlong handle, jobject motionEvent) {
-    if (handle == 0) return;
+    if (handle == 0) return false;
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onTouchEvent == nullptr) return false;
 
