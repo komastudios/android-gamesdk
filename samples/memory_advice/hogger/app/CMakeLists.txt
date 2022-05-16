@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.4.1)
+project(hogger)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -Os -fPIC" )
@@ -26,12 +27,12 @@ include_directories(../../../../include)
 include_directories(../../../common/include ) # Samples Includes
 
 
-add_library( native-lib
+add_library(${CMAKE_PROJECT_NAME}
         SHARED
-        src/main/cpp/native-lib.cpp
+        src/main/cpp/hogger.cpp
         )
 
-target_link_libraries( native-lib
+target_link_libraries(${CMAKE_PROJECT_NAME}
         memory_advice
         android
         GLESv2

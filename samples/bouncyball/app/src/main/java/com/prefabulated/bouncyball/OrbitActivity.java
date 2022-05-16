@@ -56,9 +56,9 @@ import org.json.JSONObject;
 
 public class OrbitActivity extends AppCompatActivity implements Choreographer.FrameCallback, SurfaceHolder.Callback {
 
-    // Used to load the 'native-lib' library on application startup.
+    // Used to load the 'bouncyball' library on application startup.
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("bouncyball");
     }
 
     private static final long ONE_MS_IN_NS = 1000000;
