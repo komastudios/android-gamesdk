@@ -103,6 +103,15 @@ TuningFork_ErrorCode SetFidelityParameters(const ProtobufSerialization& params);
 // Enable or disable memory telemetry recording.
 TuningFork_ErrorCode EnableMemoryRecording(bool enable);
 
+// Returns true if frame time logging is paused. False otherwise.
+bool IsFrameTimeLoggingPaused();
+
+// Pause frame time logging
+TuningFork_ErrorCode PauseFrameTimeLogging();
+
+// Resume frame time logging
+TuningFork_ErrorCode ResumeFrameTimeLogging();
+
 // Record a loading time event
 TuningFork_ErrorCode RecordLoadingTime(Duration duration,
                                        const LoadingTimeMetadata& d,

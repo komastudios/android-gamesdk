@@ -197,6 +197,12 @@ typedef enum TuningFork_ErrorCode {
         37,  ///< There was no active loading group when
              ///< TuningFork_stopLoadingGroup
              ///< was called.
+    TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_PAUSED =
+        38,  ///< Cannot pause frame time logging because it is already paused.
+    TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_RUNNING =
+        39,  ///< Cannot resume frame time logging because it is already
+             ///< running.
+
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -546,6 +552,37 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
  * initialized.
  */
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable);
+
+/**
+ * @brief Check if frame time logging is paused
+ *
+ * @return true if frame time logging is paused. False otherwise.
+ */
+bool TuningFork_isFrameTimeLoggingPaused();
+
+/**
+ * @brief Pause the recording of frame times to the frame time histogram.
+ * This can be useful for disabling frame time recording during menus or
+ * loading.
+ *
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_PAUSED if logging is already
+ * paused
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't
+ * initialized.
+ */
+TuningFork_ErrorCode TuningFork_pauseFrameTimeLogging();
+
+/**
+ * @brief Resume the recording of frame times to the frame time histogram.
+ *
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_RUNNING if logging isn't
+ * paused
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if Tuning Fork wasn't
+ * initialized.
+ */
+TuningFork_ErrorCode TuningFork_resumeFrameTimeLogging();
 
 /**
  * @brief Metadata recorded with a loading time event
