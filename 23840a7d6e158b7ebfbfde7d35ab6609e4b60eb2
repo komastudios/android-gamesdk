@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c0e3ec1_3a2707bf",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/TensorflowPatcher.kt",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-16T12:31:02Z",
+      "side": 1,
+      "message": "a mutli line string literal using triple quotes \"\"\" would be cleaner",
+      "revId": "23840a7d6e158b7ebfbfde7d35ab6609e4b60eb2",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
