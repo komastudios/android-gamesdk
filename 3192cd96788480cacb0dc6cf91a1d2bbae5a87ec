@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f36a9cea_1df75a3a",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-05-16T10:47:53Z",
+      "side": 1,
+      "message": "This line is longer than 100 characters and giving a lint error, please fix.\n\nInstead of dealing with these by hand, you can also add GameActivity/ to the files being format checked by the presubmit hook. Just change the clang_format line in gamesdk/PREUPLOAD.cfg.",
+      "range": {
+        "startLine": 204,
+        "startChar": 0,
+        "endLine": 204,
+        "endChar": 101
+      },
+      "revId": "3192cd96788480cacb0dc6cf91a1d2bbae5a87ec",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
