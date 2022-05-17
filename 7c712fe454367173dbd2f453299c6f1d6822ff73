@@ -16,6 +16,24 @@
       "message": "It would make sense to use \"\"\" for all multiline strings",
       "revId": "7c712fe454367173dbd2f453299c6f1d6822ff73",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47ed32ef_f8562755",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/TensorflowPatcher.kt",
+        "patchSetId": 7
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-05-17T13:33:56Z",
+      "side": 1,
+      "message": "I\u0027ll just keep it as is; some of these need to be precise since they are in the find part of the replace call.",
+      "parentUuid": "439ac03a_28b04648",
+      "revId": "7c712fe454367173dbd2f453299c6f1d6822ff73",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
