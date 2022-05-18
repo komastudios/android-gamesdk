@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "948abc00_6cdd6a57",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-05-18T12:42:43Z",
+      "side": 1,
+      "message": "Please also touch the c++ code inside GameActivity/ so that the clang-format runs on the code and formats them.",
+      "revId": "204b86b2966fb139e669deb33035f795b8dccfb1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
