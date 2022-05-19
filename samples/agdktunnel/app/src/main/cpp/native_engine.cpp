@@ -22,6 +22,7 @@
 #include "native_engine.hpp"
 
 #include "game-activity/GameActivity.h"
+#include "memory_advice/memory_advice.h"
 #include "paddleboat/paddleboat.h"
 #include "swappy/swappyGL.h"
 #include "welcome_scene.hpp"
@@ -105,6 +106,18 @@ NativeEngine::NativeEngine(struct android_app *app) {
     Paddleboat_init(GetJniEnv(), app->activity->javaGameActivity);
     Paddleboat_setControllerStatusCallback(_GameControllerStatusCallback, NULL);
 
+    const MemoryAdvice_ErrorCode memoryError = MemoryAdvice_init(GetJniEnv(),
+                                                                 app->activity->javaGameActivity);
+    if (memoryError != MEMORYADVICE_ERROR_OK) {
+        ALOGE("MemoryAdvice_init failed with error: %d", memoryError);
+    } else {
+        ALOGI("Initialized MemoryAdvice");
+    }
+
+    // Initialize the memory consumer, used to exercise the
+    // Memory Advice library. Off by default.
+    mMemoryConsumer = new MemoryConsumer(false);
+
     ALOGI("Calling SwappyGL_init");
     SwappyGL_init(GetJniEnv(), mApp->activity->javaGameActivity);
     SwappyGL_setSwapIntervalNS(SWAPPY_SWAP_60FPS);
@@ -129,19 +142,32 @@ NativeEngine::NativeEngine(struct android_app *app) {
     GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
                                   IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
 
-    // Flag to find if we are are running on Google Play Games
-    if (mJniEnv) {
-        // Find the Java class
-        jclass activityClass = mJniEnv->GetObjectClass(mApp->activity->javaGameActivity);
-        // Find the Java method
-        jmethodID methodID =
-                mJniEnv->GetMethodID(activityClass, "isGooglePlayGames", "()Z");
-        // Call the method
-        mRunningOnGooglePlayGames =
-                (bool) mJniEnv->CallBooleanMethod(mApp->activity->javaGameActivity, methodID);
-    } else {
-        mRunningOnGooglePlayGames = false;
+    // Set fields retrieved through JNI
+    // Find the Java class
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+
+    // Field that stores the path to save files to internal storage
+    jmethodID getInternalStoragePathID = GetJniEnv()->GetMethodID(
+            activityClass, "getInternalStoragePath", "()Ljava/lang/String;");
+    jobject jInternalStoragePath = GetJniEnv()->CallObjectMethod(
+            mApp->activity->javaGameActivity, getInternalStoragePathID);
+    jboolean isCopy;
+    const char * str = GetJniEnv()->GetStringUTFChars((jstring)jInternalStoragePath, &isCopy);
+    char *internalStoragePath = new char[strlen(str) + 2];
+    strcpy(internalStoragePath, str);
+
+    if (isCopy == JNI_TRUE) {
+        GetJniEnv()->ReleaseStringUTFChars((jstring)jInternalStoragePath, str);
     }
+    GetJniEnv()->DeleteLocalRef(jInternalStoragePath);
+
+    // Flag to find if cloud save is enabled
+    jmethodID isPlayGamesServicesLinkedID =
+            GetJniEnv()->GetMethodID(activityClass, "isPlayGamesServicesLinked", "()Z");
+    mCloudSaveEnabled = (bool) GetJniEnv()->CallBooleanMethod(
+            mApp->activity->javaGameActivity, isPlayGamesServicesLinkedID);
+
+    mDataStateMachine = new DataLoaderStateMachine(mCloudSaveEnabled, internalStoragePath);
 }
 
 NativeEngine *NativeEngine::GetInstance() {
@@ -167,6 +193,7 @@ NativeEngine::~NativeEngine() {
         mJniEnv = NULL;
     }
     _singleton = NULL;
+    delete mDataStateMachine;
 }
 
 static void _handle_cmd_proxy(struct android_app *app, int32_t cmd) {
@@ -247,6 +274,7 @@ void NativeEngine::GameLoop() {
             }
         }
 
+        mMemoryConsumer->Update();
         mGameAssetManager->UpdateGameAssetManager();
         Paddleboat_update(GetJniEnv());
         HandleGameActivityInput();
@@ -294,8 +322,97 @@ JNIEnv *NativeEngine::GetAppJniEnv() {
     return mAppJniEnv;
 }
 
-bool NativeEngine::GetRunningOnGooglePlayGames() {
-    return mRunningOnGooglePlayGames;
+DataLoaderStateMachine *NativeEngine::BeginSavedGameLoad() {
+    if (IsCloudSaveEnabled()) {
+        ALOGI("Scheduling task to load cloud data through JNI");
+        jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+        jmethodID loadCloudCheckpointID =
+                GetJniEnv()->GetMethodID(activityClass, "loadCloudCheckpoint", "()V");
+        GetJniEnv()->CallVoidMethod(mApp->activity->javaGameActivity, loadCloudCheckpointID);
+    } else {
+        mDataStateMachine->LoadLocalProgress();
+    }
+    return mDataStateMachine;
+}
+
+bool NativeEngine::SaveProgress(int level) {
+    if (level <= mDataStateMachine->getLevelLoaded()) {
+        // nothing to do
+        ALOGI("No need to save level, current = %d, saved = %d",
+              level, mDataStateMachine->getLevelLoaded());
+        return false;
+    } else if (!IsCheckpointLevel(level)) {
+        ALOGI("Current level %d is not a checkpoint level. Nothing to save.", level);
+        return false;
+    }
+
+    // Save state locally and to the cloud if it is enabled
+    ALOGI("Saving progress to LOCAL FILE: level %d", level);
+    mDataStateMachine->SaveLocalProgress(level);
+    if (IsCloudSaveEnabled()) {
+        ALOGI("Saving progress to the cloud: level %d", level);
+        SaveGameToCloud(level);
+    }
+    return true;
+}
+
+void NativeEngine::SaveGameToCloud(int level) {
+    MY_ASSERT(GetJniEnv() && IsCloudSaveEnabled());
+    ALOGI("Scheduling task to save cloud data through JNI");
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+    jmethodID saveCloudCheckpointID =
+            GetJniEnv()->GetMethodID(activityClass, "saveCloudCheckpoint", "(I)V");
+    GetJniEnv()->CallVoidMethod(
+            mApp->activity->javaGameActivity, saveCloudCheckpointID, (jint)level);
+}
+
+// TODO: rename the methods according to your package name
+extern "C" jboolean Java_com_google_sample_agdktunnel_PGSManager_isLoadingWorkInProgress(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    return (jboolean)!instance->GetDataStateMachine()->isLoadingDataCompleted();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateInitLoading(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->init();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationCompleted(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->authenticationCompleted();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_authenticationFailed(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->authenticationFailed();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateSnapshotNotFound(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateSnapshotNotFound();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateCloudDataFound(
+        JNIEnv */*env*/, jobject /*pgsManagerl*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateCloudDataFound();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingFailed(
+        JNIEnv */*env*/, jobject /*pgsManager*/) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateLoadingFailed();
+}
+
+extern "C" void Java_com_google_sample_agdktunnel_PGSManager_savedStateLoadingCompleted(
+        JNIEnv */*env*/, jobject /*pgsManager*/, jint level) {
+    NativeEngine *instance = NativeEngine::GetInstance();
+    instance->GetDataStateMachine()->savedStateLoadingCompleted(level);
 }
 
 static char sInsetsTypeName[][32] = {
@@ -422,7 +539,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
           mEglConfig);
 }
 
-bool NativeEngine::HandleInput(AInputEvent *event) {
+bool NativeEngine::HandleInput(AInputEvent */*event*/) {
     return false;
 }
 

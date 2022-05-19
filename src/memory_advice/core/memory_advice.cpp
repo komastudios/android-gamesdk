@@ -36,7 +36,7 @@ static MemoryAdviceImpl* s_impl;
 
 MemoryAdvice_ErrorCode Init(const char* params) {
     if (s_impl != nullptr) return MEMORYADVICE_ERROR_ALREADY_INITIALIZED;
-    s_impl = new MemoryAdviceImpl(params);
+    s_impl = new MemoryAdviceImpl(params, nullptr, nullptr, nullptr);
     return s_impl->InitializationErrorCode();
 }
 

@@ -119,4 +119,10 @@ void SwappyGL_uninjectTracer(const SwappyTracer *t) {
     SwappyGL::removeTracer(t);
 }
 
+int SwappyGL_getSupportedRefreshPeriodsNS(uint64_t *out_refreshrates,
+                                          int allocated_entries) {
+    return SwappyGL::getSupportedRefreshPeriodsNS(out_refreshrates,
+                                                  allocated_entries);
+}
+
 }  // extern "C" {

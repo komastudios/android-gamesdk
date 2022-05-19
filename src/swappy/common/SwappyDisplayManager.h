@@ -39,6 +39,7 @@ class SwappyDisplayManager {
     static constexpr int MIN_SDK_VERSION = 28;
 
     static bool useSwappyDisplayManager(SdkVersion sdkVersion);
+    static bool usesMinSdkOrLater(SdkVersion sdkVersion);
 
     SwappyDisplayManager(JavaVM*, jobject mainActivity);
     ~SwappyDisplayManager();

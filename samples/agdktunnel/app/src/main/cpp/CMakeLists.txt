@@ -20,6 +20,7 @@ find_package(oboe REQUIRED CONFIG)
 find_package(game-activity REQUIRED CONFIG)
 find_package(games-controller REQUIRED CONFIG)
 find_package(games-frame-pacing REQUIRED CONFIG)
+find_package(games-memory-advice REQUIRED CONFIG)
 find_package(games-performance-tuner REQUIRED CONFIG)
 
 # Set the base dir
@@ -45,13 +46,9 @@ set(CMAKE_SHARED_LINKER_FLAGS
     "${CMAKE_SHARED_LINKER_FLAGS} -u GameActivity_onCreate")
 
 # Set common compiler options
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -Wextra")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra")
 add_definitions("-DGLM_FORCE_SIZE_T_LENGTH -DGLM_FORCE_RADIANS")
-
-if("${USE_ASSET_PACKS}" STREQUAL "false")
-    add_definitions("-DNO_ASSET_PACKS")
-endif()
 
 if("${USE_APT}" STREQUAL "true")
     add_definitions("-DUSE_APT")
@@ -79,6 +76,8 @@ add_library(game SHARED
      jni_util.cpp
      loader_scene.cpp
      loading_thread.cpp
+     memory_consumer.cpp
+     data_loader_machine.cpp
      native_app_glue_included.c
      native_engine.cpp
      obstacle.cpp
@@ -118,6 +117,18 @@ target_link_libraries(game
      games-controller::paddleboat_static
      games-frame-pacing::swappy_static
      games-performance-tuner::tuningfork_static
+     games-memory-advice::memory_advice
      GLESv3
      glm
      log)
+
+if("${USE_ASSET_PACKS}" STREQUAL "false")
+    add_definitions("-DNO_ASSET_PACKS")
+else()
+    # Add a static library called “playcore” built with the c++_static STL.
+    include(${PLAYCORE_LOCATION}/playcore.cmake)
+    add_playcore_static_library()
+    target_include_directories(game PRIVATE ${PLAYCORE_LOCATION}/include)
+
+    target_link_libraries(game playcore)
+endif()

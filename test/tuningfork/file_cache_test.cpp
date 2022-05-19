@@ -23,7 +23,7 @@
 #include "core/tuningfork_utils.h"
 #include "jni/jni_helper.h"
 #include "proto/protobuf_util.h"
-#include "tf_test_utils.h"
+#include "test_utils.h"
 #include "tuningfork_test_c.h"
 
 namespace test {

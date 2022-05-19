@@ -251,6 +251,8 @@ public class GameActivity
       throw new RuntimeException("Error getting activity info", e);
     }
 
+    Log.i(LOG_TAG, "Looking for library " + libname );
+
     BaseDexClassLoader classLoader = (BaseDexClassLoader) getClassLoader();
     String path = classLoader.findLibrary(libname);
 
@@ -258,6 +260,12 @@ public class GameActivity
       throw new IllegalArgumentException("Unable to find native library " + libname
           + " using classloader: " + classLoader.toString());
     }
+
+    Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
+
+    // Load the native library so that native functions are registered, even if GameActivity
+    // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
+    System.loadLibrary(libname);
 
     byte[] nativeSavedState =
         savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;

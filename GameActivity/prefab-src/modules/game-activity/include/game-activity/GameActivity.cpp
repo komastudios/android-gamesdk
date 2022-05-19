@@ -1015,6 +1015,7 @@ static struct {
     jmethodID getModifiers;
     jmethodID getRepeatCount;
     jmethodID getKeyCode;
+    jmethodID getUnicodeChar;
 } gKeyEventClassInfo;
 
 extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
@@ -1046,6 +1047,8 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
             env->GetMethodID(keyEventClass, "getRepeatCount", "()I");
         gKeyEventClassInfo.getKeyCode =
             env->GetMethodID(keyEventClass, "getKeyCode", "()I");
+        gKeyEventClassInfo.getUnicodeChar =
+            env->GetMethodID(keyEventClass, "getUnicodeChar", "()I");
 
         gKeyEventClassInfoInitialized = true;
     }
@@ -1070,7 +1073,9 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
         /*repeatCount=*/
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getRepeatCount),
         /*keyCode=*/
-        env->CallIntMethod(keyEvent, gKeyEventClassInfo.getKeyCode)};
+        env->CallIntMethod(keyEvent, gKeyEventClassInfo.getKeyCode),
+        /*unicodeChar=*/
+        env->CallIntMethod(keyEvent, gKeyEventClassInfo.getUnicodeChar)};
 }
 
 static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
@@ -1086,7 +1091,7 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
 
 static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
                            jobject keyEvent) {
-    if (handle == 0) return;
+    if (handle == 0) return false;
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onKeyUp == nullptr) return false;
 
@@ -1097,9 +1102,9 @@ static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
 
 static bool onKeyDown_native(JNIEnv *env, jobject javaGameActivity,
                              jlong handle, jobject keyEvent) {
-    if (handle == 0) return;
+    if (handle == 0) return false;
     NativeCode *code = (NativeCode *)handle;
-    if (code->callbacks.onKeyDown == nullptr) return;
+    if (code->callbacks.onKeyDown == nullptr) return false;
 
     static GameActivityKeyEvent c_event;
     GameActivityKeyEvent_fromJava(env, keyEvent, &c_event);
@@ -1218,7 +1223,7 @@ static const char *const kWindowInsetsCompatTypePathName =
 
 #define GET_FIELD_ID(var, clazz, fieldName, fieldDescriptor)  \
     var = env->GetFieldID(clazz, fieldName, fieldDescriptor); \
-    LOG_FATAL_IF(!var, "Unable to find field %s" fieldName);
+    LOG_FATAL_IF(!var, "Unable to find field %s", fieldName);
 
 static int jniRegisterNativeMethods(JNIEnv *env, const char *className,
                                     const JNINativeMethod *methods,

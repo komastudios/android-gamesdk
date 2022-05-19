@@ -25,17 +25,13 @@ set( PTHREADPOOL_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/pthreadpool")
 set( FXDIV_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FXdiv")
 set( FP16_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FP16")
 set( PSIMD_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/psimd")
-set( XNNPACK_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/XNNPACK")
+set( XNNPACK_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/xnnpack")
 set( EIGEN_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/eigen")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-s")
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--hash-style=both" )
-
-set(LOOKUP_STRING "namespace memory_advice {\nconst char* lookup_string = R\"LOOKUP(\n")
-string(APPEND LOOKUP_STRING "\n )LOOKUP\";\n}\n")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/device_profiler_lookup.cpp" "${LOOKUP_STRING}")
 
 file(READ "${MEMORYADVICE_ASSETS_DIR}/default.json" PARAMS_FILE)
 set(PARAMS_STRING "namespace memory_advice {\nconst char* parameters_string = R\"PARAMS(\n")
@@ -73,7 +69,6 @@ add_subdirectory(
 
 set(MEMORY_ADVICE_SRCS
   c_header_check.c
-  core/device_profiler.cpp
   core/memory_advice.cpp
   core/memory_advice_impl.cpp
   core/memory_advice_c.cpp
@@ -88,7 +83,6 @@ set(MEMORY_ADVICE_SRCS
   ../common/apk_utils.cpp
   ../common/system_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
-  device_profiler_lookup.cpp
   advisor_parameters.cpp
   ${MEMORYADVICE_RESOURCES_DIR}/realtime.tflite
   ${MEMORYADVICE_RESOURCES_DIR}/oom_features.json

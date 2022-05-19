@@ -53,6 +53,7 @@ include_directories(
   ../../src/tuningfork
   ../../src/common
   ../../include
+  ../common
   ../../../external/nanopb-c
   ../../third_party
   ${PGENS_DIR}
@@ -79,7 +80,7 @@ set(TEST_SRCS
   jni_test.cpp
   serialization_test.cpp
   settings_test.cpp
-  tf_test_utils.cpp
+  ../common/test_utils.cpp
   ${PGENS_DIR}/nano/dev_tuningfork.pb.c
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
   ${PGENS_DIR}/full/tuningfork.pb.cc
