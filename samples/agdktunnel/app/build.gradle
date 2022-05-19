@@ -19,8 +19,13 @@ import org.gradle.internal.os.OperatingSystem;
 apply from: GameSDKPath + '/prepproto.gradle'
 apply plugin: 'com.android.application'
 
-// See README for details on enabling APT
+// See README for details on enabling APT and PAD
 def useApt = APTEnabled
+def usePad = PADEnabled
+
+// Define a path to the extracted Play Core SDK files.
+// If using a relative path, wrap it with file() since CMake requires absolute paths.
+def playcoreDir = file('libs/play-core-native-sdk')
 
 android {
     compileSdkVersion 30
@@ -32,16 +37,30 @@ android {
         targetSdkVersion 30
         versionCode     1
         versionName    '1.0.3'
+
+        externalNativeBuild {
+            cmake {
+                // Define the PLAYCORE_LOCATION directive.
+                arguments "-DANDROID_STL=c++_static",
+                        "-DPLAYCORE_LOCATION=$playcoreDir"
+            }
+        }
+        ndk {
+            // Skip deprecated ABIs. Only required when using NDK 16 or earlier.
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
     }
     buildTypes {
         release {
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                          'proguard-rules.pro'
+                    'proguard-rules.pro',
+                    '$playcoreDir/proguard/common.pgcfg',
+                    '$playcoreDir/proguard/per-feature-proguard-files'
             externalNativeBuild {
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_ASSET_PACKS=$usePad",
                               "-DUSE_APT=$useApt"
                 }
             }
@@ -53,7 +72,7 @@ android {
                         'proguard-rules.pro'
                 cmake {
                     arguments "-DANDROID_STL=c++_shared",
-                              "-DUSE_ASSET_PACKS=false",
+                              "-DUSE_ASSET_PACKS=$usePad",
                               "-DUSE_APT=$useApt"
                 }
             }
@@ -66,17 +85,13 @@ android {
         mobile {
             getIsDefault().set(true)
             dimension "platform"
-            applicationIdSuffix ".mobile"
-            versionNameSuffix "-mobile"
         }
         playGamesPC {
             dimension "platform"
-            applicationIdSuffix ".playGamesPC"
-            versionNameSuffix "-playGamesPC"
 
             // x86 ABI compatibility
             ndk {
-                abiFilters 'x86'
+                abiFilters 'x86', 'x86_64'
             }
         }
     }
@@ -87,6 +102,13 @@ android {
     }
     buildFeatures {
         prefab true
+    }
+    assetPacks = [":install_time_assets", ":on_demand_assets"]
+    // Enable the splitting of your asset packs per textures
+    bundle {
+        texture {
+            enableSplit true
+        }
     }
 }
 
@@ -108,9 +130,15 @@ dependencies {
     implementation "androidx.games:games-frame-pacing:1.9.0"
     implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
     implementation "androidx.games:games-controller:1.0.0"
-    implementation "androidx.games:games-activity:1.1.0-beta03"
+    implementation "androidx.games:games-activity:1.1.0"
+    implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
+    implementation "com.google.android.gms:play-services-games-v2:17.0.0"
+    // Use the Play Core AAR included with the SDK.
+    if(PADEnabled.toBoolean()) {
+        implementation files("$playcoreDir/playcore.aar")
+    }
     // TODO(b/215589030): release the input sdk public to GMaven
     playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
     // Uncomment to use a locally-built library.
@@ -152,4 +180,32 @@ task buildTuningForkBinFiles(type: Exec) {
 
 if (APTEnabled.toBoolean()) {
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
+}
+
+task copyTexturesToAssets(type: Copy) {
+    def assetsDir = new File(projectDir, 'src/main/assets/no_asset_packs_textures')
+    from (rootProject.file('install_time_assets/src/main/assets/textures')) {
+        include('*.ktx')
+    }
+    into assetsDir
+    from (rootProject.file('on_demand_assets/src/main/assets/textures')) {
+        include('*.ktx')
+    }
+    into assetsDir
+}
+
+task deleteAssets(type: Delete) {
+    def assetsDir = new File(projectDir, 'src/main/assets/no_asset_packs_textures')
+    delete assetsDir
+}
+
+tasks.whenTaskAdded { task ->
+    if (!PADEnabled.toBoolean()) {
+        // Copy the ETC2 textures into directory
+        // src/main/assets/no_asset_packs_textures/
+        task.dependsOn copyTexturesToAssets
+    } else {
+        // Delete the src/main/assets/no_asset_packs_textures if using asset packs
+        task.dependsOn deleteAssets
+    }
 }

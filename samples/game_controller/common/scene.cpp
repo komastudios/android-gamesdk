@@ -29,13 +29,13 @@ void Scene::OnStartGraphics() {}
 
 void Scene::OnKillGraphics() {}
 
-void Scene::OnPointerDown(int pointerId, const struct PointerCoords *coords) {}
+void Scene::OnPointerDown(int /*pointerId*/, const struct PointerCoords */*coords*/) {}
 
-void Scene::OnPointerUp(int pointerId, const struct PointerCoords *coords) {}
+void Scene::OnPointerUp(int /*pointerId*/, const struct PointerCoords */*coords*/) {}
 
-void Scene::OnPointerMove(int pointerId, const struct PointerCoords *coords) {}
+void Scene::OnPointerMove(int /*pointerId*/, const struct PointerCoords */*coords*/) {}
 
-void Scene::OnScreenResized(int width, int height) {}
+void Scene::OnScreenResized(int /*width*/, int /*height*/) {}
 
 void Scene::OnPause() {}
 

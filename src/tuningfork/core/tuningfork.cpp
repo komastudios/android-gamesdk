@@ -65,6 +65,9 @@ namespace tuningfork {
 static std::unique_ptr<TuningForkImpl> s_impl;
 static std::unique_ptr<SwappyTraceWrapper> s_swappy_tracer;
 
+// False by default to hide sensitive information in the logs
+bool g_verbose_logging_enabled = false;
+
 TuningFork_ErrorCode Init(const Settings &settings,
                           const RequestInfo *request_info, IBackend *backend,
                           ITimeProvider *time_provider,
@@ -198,6 +201,27 @@ TuningFork_ErrorCode EnableMemoryRecording(bool enable) {
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
     else
         return s_impl->EnableMemoryRecording(enable);
+}
+
+bool IsFrameTimeLoggingPaused() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->IsFrameTimeLoggingPaused();
+}
+
+TuningFork_ErrorCode PauseFrameTimeLogging() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->PauseFrameTimeLogging();
+}
+
+TuningFork_ErrorCode ResumeFrameTimeLogging() {
+    if (!s_impl)
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    else
+        return s_impl->ResumeFrameTimeLogging();
 }
 
 TuningFork_ErrorCode RecordLoadingTime(

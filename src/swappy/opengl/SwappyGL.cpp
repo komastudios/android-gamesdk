@@ -330,4 +330,15 @@ void SwappyGL::setBufferStuffingFixWait(int32_t n_frames) {
     swappy->mCommonBase.setBufferStuffingFixWait(n_frames);
 }
 
+int SwappyGL::getSupportedRefreshPeriodsNS(uint64_t *out_refreshrates,
+                                           int allocated_entries) {
+    TRACE_CALL();
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return -1;
+    }
+    return swappy->mCommonBase.getSupportedRefreshPeriodsNS(out_refreshrates,
+                                                            allocated_entries);
+}
+
 }  // namespace swappy

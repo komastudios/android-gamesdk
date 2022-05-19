@@ -40,6 +40,7 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings *c_settings_in,
         settings.c_settings = *c_settings_in;
     }
     jni::Init(env, context);
+    tf::g_verbose_logging_enabled = settings.c_settings.verbose_logging_enabled;
     bool first_run = tf::CheckIfFirstRun();
     TuningFork_ErrorCode err = tf::Settings::FindInApk(&settings);
     if (err != TUNINGFORK_ERROR_OK) return err;
@@ -123,6 +124,18 @@ TuningFork_ErrorCode TuningFork_setFidelityParameters(
 
 TuningFork_ErrorCode TuningFork_enableMemoryRecording(bool enable) {
     return tf::EnableMemoryRecording(enable);
+}
+
+bool TuningFork_isFrameTimeLoggingPaused() {
+    return tf::IsFrameTimeLoggingPaused();
+}
+
+TuningFork_ErrorCode TuningFork_pauseFrameTimeLogging() {
+    return tf::PauseFrameTimeLogging();
+}
+
+TuningFork_ErrorCode TuningFork_resumeFrameTimeLogging() {
+    return tf::ResumeFrameTimeLogging();
 }
 
 // Take the C metadata structure passed in and copy to the C++ structure,

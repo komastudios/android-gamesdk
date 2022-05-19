@@ -32,6 +32,13 @@
 
 namespace tuningfork {
 
+// Replaces sensitive information when verbose logging is disabled
+#define LOGGING_PLACEHOLDER_TEXT "HIDDEN"
+
+// If false, sensitive information is removed from logging.
+// Default is false.
+extern bool g_verbose_logging_enabled;
+
 // If no request_info is passed, the info for this device and game are used.
 // If no backend is passed, the default backend, which uploads to the google
 // http endpoint is used. If no timeProvider is passed,
@@ -95,6 +102,15 @@ TuningFork_ErrorCode SetFidelityParameters(const ProtobufSerialization& params);
 
 // Enable or disable memory telemetry recording.
 TuningFork_ErrorCode EnableMemoryRecording(bool enable);
+
+// Returns true if frame time logging is paused. False otherwise.
+bool IsFrameTimeLoggingPaused();
+
+// Pause frame time logging
+TuningFork_ErrorCode PauseFrameTimeLogging();
+
+// Resume frame time logging
+TuningFork_ErrorCode ResumeFrameTimeLogging();
 
 // Record a loading time event
 TuningFork_ErrorCode RecordLoadingTime(Duration duration,

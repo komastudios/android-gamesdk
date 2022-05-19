@@ -113,16 +113,6 @@ tf::Settings TestSettings(tf::Settings::AggregationStrategy::Submission method,
     return s;
 }
 
-bool CheckStrings(const std::string& name, const std::string& result,
-                  const std::string& expected) {
-    std::string error_message;
-    bool comp = CompareIgnoringWhitespace(result, expected, &error_message);
-    EXPECT_TRUE(comp) << "\nResult:\n"
-                      << result << "\n!=\nExpected:" << expected << "\n\n"
-                      << error_message;
-    return comp;
-}
-
 std::string ReplaceReturns(std::string in) {
     std::replace(in.begin(), in.end(), '\n', ' ');
     return in;

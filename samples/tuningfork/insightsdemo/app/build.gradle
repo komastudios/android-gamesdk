@@ -2,9 +2,11 @@ import org.gradle.internal.os.OperatingSystem;
 
 apply plugin: 'com.android.application'
 
+def stlType = 'c++_static'
+
 android {
     compileSdkVersion 29
-    ndkVersion "23.1.7779620"
+    ndkVersion '23.1.7779620'
     defaultConfig {
         applicationId "com.tuningfork.insightsdemo"
         minSdkVersion 16
@@ -14,6 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
+                arguments "-DANDROID_STL=${stlType}"
             }
         }
     }

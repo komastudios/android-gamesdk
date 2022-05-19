@@ -113,7 +113,7 @@ CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCal
     if (motionEvent->pointerCount > 0) {
         int action = motionEvent->action;
         int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
-        int ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
+        uint32_t ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
                                  AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
 
         if (ptrIndex < motionEvent->pointerCount) {

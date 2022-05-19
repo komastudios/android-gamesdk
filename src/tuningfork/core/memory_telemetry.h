@@ -58,6 +58,7 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     bool enabled_ = true;
     uint64_t device_memory_bytes = 0;
     gamesdk::jni::android::os::DebugClass android_debug_;
+    gamesdk::jni::android::os::Process android_process_;
 
    protected:
     MemInfo memInfo;

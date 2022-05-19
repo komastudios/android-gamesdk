@@ -15,7 +15,10 @@
  */
 
 #include "common.h"
+#include "test_utils.h"
 #include "tuningfork_test.h"
+
+using namespace gamesdk_test;
 
 namespace tuningfork_test {
 

@@ -89,6 +89,10 @@
 #define SCORE_POS_Y 0.92f
 #define SCORE_FONT_SCALE 0.8f
 
+// settings for rendering memory stats to the screen
+#define MEMORY_POS_X 0.45f
+#define MEMORY_POS_Y 0.80f
+#define MEMORY_FONT_SCALE 0.4f
 
 // scale of the signs that appear onscreen
 #define SIGN_FONT_SCALE 0.9f
@@ -157,11 +161,5 @@
 // menu item pulse animation settings
 #define MENUITEM_PULSE_AMOUNT 1.1f
 #define MENUITEM_PULSE_PERIOD 0.5f
-
-// save file name
-#define SAVE_FILE_NAME "tunnel.dat"
-
-// checkpoint (save progress) every how many levels?
-#define LEVELS_PER_CHECKPOINT 4
 
 #endif

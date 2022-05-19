@@ -28,6 +28,16 @@
         return A;                                          \
     }
 
+#define SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(A, B) \
+    if (RawExceptionCheck()) {                                \
+        std::string exception_msg =                           \
+            B ? GetExceptionMessage()                         \
+              : RemoveSensitiveInfoFromExceptionMessage(      \
+                    GetExceptionMessage());                   \
+        ALOGW("%s", exception_msg.c_str());                   \
+        return A;                                             \
+    }
+
 namespace gamesdk {
 
 namespace jni {
@@ -210,6 +220,8 @@ LocalObject NewObject(const char* cclz, const char* ctorSig, ...);
 inline bool RawExceptionCheck() { return Env()->ExceptionCheck(); }
 // This will clear the exception and get the exception message.
 std::string GetExceptionMessage();
+std::string RemoveSensitiveInfoFromExceptionMessage(
+    const std::string& exception_message);
 // Do a RawExceptionCheck and return the result of it, filling in the msg with
 // the
 //  exception message if one was thrown. Also clears the exception.

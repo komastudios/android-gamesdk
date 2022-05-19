@@ -101,8 +101,11 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
         settings.aggregation_strategy.intervalms_or_count,
         settings.aggregation_strategy.max_instrumentation_keys,
         settings.aggregation_strategy.annotation_enum_size.size(),
-        settings.histograms.size(), settings.base_uri.c_str(),
-        settings.api_key.c_str(),
+        settings.histograms.size(),
+        g_verbose_logging_enabled ? settings.base_uri.c_str()
+                                  : LOGGING_PLACEHOLDER_TEXT,
+        g_verbose_logging_enabled ? settings.api_key.c_str()
+                                  : LOGGING_PLACEHOLDER_TEXT,
         settings.default_fidelity_parameters_filename.c_str(),
         settings.initial_request_timeout_ms,
         settings.ultimate_request_timeout_ms);
@@ -415,7 +418,8 @@ TuningFork_ErrorCode TuningForkImpl::TickNanos(MetricId compound_id,
     // Find the appropriate histogram and add this time
     auto p = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (p) {
-        p->Tick(t);
+        // Continue ticking even while logging is paused but don't record values
+        p->Tick(t, !logging_paused_ /*record*/);
         if (pp != nullptr) *pp = p;
         return TUNINGFORK_ERROR_OK;
     } else {
@@ -431,7 +435,9 @@ TuningFork_ErrorCode TuningForkImpl::TraceNanos(MetricId compound_id,
     // Find the appropriate histogram and add this time
     auto h = current_session_->GetData<FrameTimeMetricData>(compound_id);
     if (h) {
-        h->Record(dt);
+        if (!logging_paused_) {
+            h->Record(dt);
+        }
         if (pp != nullptr) *pp = h;
         return TUNINGFORK_ERROR_OK;
     } else {
@@ -603,6 +609,22 @@ TuningFork_ErrorCode TuningForkImpl::EnableMemoryRecording(bool enable) {
     return TUNINGFORK_ERROR_OK;
 }
 
+bool TuningForkImpl::IsFrameTimeLoggingPaused() { return logging_paused_; }
+
+TuningFork_ErrorCode TuningForkImpl::PauseFrameTimeLogging() {
+    if (logging_paused_) return TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_PAUSED;
+
+    logging_paused_ = true;
+    return TUNINGFORK_ERROR_OK;
+}
+
+TuningFork_ErrorCode TuningForkImpl::ResumeFrameTimeLogging() {
+    if (!logging_paused_) return TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_RUNNING;
+
+    logging_paused_ = false;
+    return TUNINGFORK_ERROR_OK;
+}
+
 void TuningForkImpl::InitAsyncTelemetry() {
     async_telemetry_ = std::make_unique<AsyncTelemetry>(time_provider_);
     battery_reporting_task_ = std::make_shared<BatteryReportingTask>(
@@ -769,7 +791,13 @@ TuningFork_ErrorCode TuningForkImpl::StartLoadingGroup(
 }
 
 TuningFork_ErrorCode TuningForkImpl::StopLoadingGroup(LoadingHandle handle) {
-    if (handle == 0) handle = current_loading_group_metric_.base;
+    if (handle == 0) {
+        // This happens when there is no active loading group e.g.,
+        // because StartLoadingGroup failed.
+        if (current_loading_group_metric_.base == 0)
+            return TUNINGFORK_ERROR_NO_ACTIVE_LOADING_GROUP;
+        handle = current_loading_group_metric_.base;
+    }
     if (current_loading_group_metric_.base != handle) {
         return TUNINGFORK_ERROR_BAD_PARAMETER;
     }
