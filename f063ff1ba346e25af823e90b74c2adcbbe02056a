@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7299c378_921ee381",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-05-23T16:42:21Z",
+      "side": 1,
+      "message": "uploaded the patch #3: incorporated all code review suggestions.\n\nPTAL, thank you so much!\n",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "732cb18e_096025b7",
@@ -14,6 +31,24 @@
       "writtenOn": "2022-05-23T12:06:34Z",
       "side": 1,
       "message": "Why did you keep this line?",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18bd6feb_a1ab999e",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-05-23T16:42:21Z",
+      "side": 1,
+      "message": "good point: removed in the next patch.",
+      "parentUuid": "732cb18e_096025b7",
       "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -35,6 +70,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35fed544_b459b1bd",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 480,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-05-23T16:42:21Z",
+      "side": 1,
+      "message": "yeah, changed to\n intializeNativeCode_native (and also the equivalent fun on Java side)\n terminateNativeCode_native\n \nsee if you like this better (initNativeCode / TermNativeCode does not match too much, mainly the \"term\" part).",
+      "parentUuid": "11a8dae7_aa40589b",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "195987f7_72c40988",
@@ -48,6 +101,24 @@
       "writtenOn": "2022-05-23T12:06:34Z",
       "side": 1,
       "message": "What does this mean? This comment isn\u0027t clear to me. Does it mean this should be first to execute in this function? in that case can we mark it with a \"FIXME:\" or \"TODO:\"",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc5d3a2e_6d722f7e",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-05-23T16:42:21Z",
+      "side": 1,
+      "message": "In normal case, we could initialize the parent class first, then init ourselves (so in our init code, we could use the parent\u0027s methods); and the opposite sequence when we tearing down the class chain. Here we are initializing the opposite sequence, I need to dig more to confirm that this is intentional. ( I will remove the comment for now).",
+      "parentUuid": "195987f7_72c40988",
       "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
