@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "732cb18e_096025b7",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-23T12:06:34Z",
+      "side": 1,
+      "message": "Why did you keep this line?",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11a8dae7_aa40589b",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 480,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-23T12:06:34Z",
+      "side": 1,
+      "message": "Should we change this to initNativeCode_native?\nThis function doesn\u0027t actually load the native code into memory\n\nIn this case we should also change unloadNativeCode",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "195987f7_72c40988",
+        "filename": "GameActivity/src/main/java/com/google/androidgamesdk/GameActivity.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-23T12:06:34Z",
+      "side": 1,
+      "message": "What does this mean? This comment isn\u0027t clear to me. Does it mean this should be first to execute in this function? in that case can we mark it with a \"FIXME:\" or \"TODO:\"",
+      "revId": "f063ff1ba346e25af823e90b74c2adcbbe02056a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
