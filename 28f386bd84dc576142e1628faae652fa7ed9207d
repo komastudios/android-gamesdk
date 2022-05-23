@@ -16,6 +16,24 @@
       "message": "this needs to be taken care of",
       "revId": "28f386bd84dc576142e1628faae652fa7ed9207d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb17ded2_73a850ec",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-05-23T17:37:03Z",
+      "side": 1,
+      "message": "uploaded a new patch with the right wording, please take one more look, thank you so much!",
+      "parentUuid": "fd98216c_6b50cf05",
+      "revId": "28f386bd84dc576142e1628faae652fa7ed9207d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
