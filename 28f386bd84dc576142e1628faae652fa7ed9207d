@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd98216c_6b50cf05",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-05-23T12:18:08Z",
+      "side": 1,
+      "message": "this needs to be taken care of",
+      "revId": "28f386bd84dc576142e1628faae652fa7ed9207d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
