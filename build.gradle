@@ -820,7 +820,7 @@ task buildLocal(type: BuildTask) {
     ext.flattenLibs = false
     ext.withSharedLibs = true
     ext.withStaticLibs = true
-    ext.withFullBuildKey = false
+    ext.withFullBuildKey = true
     ext.nativeBuild = { ->
         localNativeBuild(filterNativeLibraries(allLibraries), "src", getBuildType())
     }
