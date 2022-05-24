@@ -159,7 +159,7 @@ class TensorflowPatcher(val project: Project) {
     }
 
     /**
-    * The xnnpack library on platform/external is updated; fix its cmake file.
+    * The xnnpack library on platform/external is outdated; fix its cmake file.
     */
     private fun patchXnnpack() {
         val xnnpackCmake = project.file("../external/xnnpack/CMakeLists.txt");
@@ -172,6 +172,14 @@ class TensorflowPatcher(val project: Project) {
             "\n" +
                 "  src/f16-maxpool/9p8x-minmax-f16c-c8.c\n" +
                 "  src/f16-vbinary/gen/vadd-minmax-f16c-x16.c");
+        xnnpackCmakeContent = xnnpackCmakeContent.replace(
+            "\n" +
+                "    SET_PROPERTY(SOURCE \${ALL_NEONDOT_MICROKERNEL_SRCS} APPEND_STRING PROPERTY COMPILE_FLAGS \" -mfloat-abi=softfp \")\n" +
+                "  ENDIF()",
+            "\n" +
+                "    SET_PROPERTY(SOURCE \${ALL_NEONDOT_MICROKERNEL_SRCS} APPEND_STRING PROPERTY COMPILE_FLAGS \" -mfloat-abi=softfp \")\n" +
+                "    SET_PROPERTY(SOURCE \${AARCH32_ASM_MICROKERNEL_SRCS} APPEND_STRING PROPERTY COMPILE_FLAGS \" -mfloat-abi=softfp \")\n" +
+                "  ENDIF()");
         xnnpackCmake.writeText(xnnpackCmakeContent);
     }
 
