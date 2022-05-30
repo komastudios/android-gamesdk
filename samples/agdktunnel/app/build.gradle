@@ -181,6 +181,7 @@ task buildTuningForkBinFiles(type: Exec) {
 if (APTEnabled.toBoolean()) {
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
 }
+preBuild.dependsOn prepare_proto
 
 task copyTexturesToAssets(type: Copy) {
     def assetsDir = new File(projectDir, 'src/main/assets/no_asset_packs_textures')
