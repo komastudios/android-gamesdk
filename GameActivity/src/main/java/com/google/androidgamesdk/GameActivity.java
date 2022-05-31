@@ -60,20 +60,14 @@ public class GameActivity
     implements SurfaceHolder.Callback2, Listener, OnApplyWindowInsetsListener {
   private static final String LOG_TAG = "GameActivity";
 
-  /**
-   * Optional meta-that can be in the manifest for this component, specifying
-   * the name of the native shared library to load.  If not specified,
-   * "main" is used.
-   */
-  public static final String META_DATA_LIB_NAME = "android.app.lib_name";
+  private static final String DEFAULT_NATIVE_LIB_NAME = "main";
 
   /**
    * Optional meta-that can be in the manifest for this component, specifying
-   * the name of the main entry point for this native activity in the
-   * {@link #META_DATA_LIB_NAME} native code.  If not specified,
-   * "GameActivity_onCreate" is used.
+   * the name of the native shared library to load.  If not specified,
+   * {@link #DEFAULT_NATIVE_LIB_NAME} is used.
    */
-  public static final String META_DATA_FUNC_NAME = "android.app.func_name";
+  public static final String META_DATA_LIB_NAME = "android.app.lib_name";
 
   private static final String KEY_NATIVE_SAVED_STATE = "android:native_state";
 
@@ -133,12 +127,12 @@ public class GameActivity
 
   protected boolean mDestroyed;
 
-  protected native long loadNativeCode(String path, String funcname, String internalDataPath,
-      String obbPath, String externalDataPath, AssetManager assetMgr, byte[] savedState);
+  protected native long initializeNativeCode(String internalDataPath, String obbPath,
+      String externalDataPath, AssetManager assetMgr, byte[] savedState);
 
   protected native String getDlError();
 
-  protected native void unloadNativeCode(long handle);
+  protected native void terminateNativeCode(long handle);
 
   protected native void onStartNative(long handle);
 
@@ -233,8 +227,7 @@ public class GameActivity
     onCreateSurfaceView();
     onSetUpWindow();
 
-    String libname = "main";
-    String funcname = "GameActivity_onCreate";
+    String libname = new String(DEFAULT_NATIVE_LIB_NAME);
     ActivityInfo ai;
     try {
       ai = getPackageManager().getActivityInfo(
@@ -243,40 +236,44 @@ public class GameActivity
         String ln = ai.metaData.getString(META_DATA_LIB_NAME);
         if (ln != null)
           libname = ln;
-        ln = ai.metaData.getString(META_DATA_FUNC_NAME);
-        if (ln != null)
-          funcname = ln;
       }
     } catch (PackageManager.NameNotFoundException e) {
       throw new RuntimeException("Error getting activity info", e);
     }
 
-    Log.i(LOG_TAG, "Looking for library " + libname );
+    String fullLibname = "lib" + libname + ".so";
+    Log.i(LOG_TAG, "Looking for library " + fullLibname);
 
     BaseDexClassLoader classLoader = (BaseDexClassLoader) getClassLoader();
     String path = classLoader.findLibrary(libname);
 
-    if (path == null) {
-      throw new IllegalArgumentException("Unable to find native library " + libname
-          + " using classloader: " + classLoader.toString());
+    if (path != null) {
+      Log.i(LOG_TAG, "Found library " + fullLibname + ". Loading...");
+
+      // Load the native library so that native functions are registered, even if GameActivity
+      // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
+      System.loadLibrary(libname);
     }
-
-    Log.i(LOG_TAG, "Found library " + libname + ". Loading...");
-
-    // Load the native library so that native functions are registered, even if GameActivity
-    // is not sub-classing a Java activity that uses System.loadLibrary(<libname>).
-    System.loadLibrary(libname);
+    else if (!libname.equals(DEFAULT_NATIVE_LIB_NAME)) {
+      throw new IllegalArgumentException("unable to find native library " + fullLibname +
+        " using classloader: " + classLoader.toString());
+    } else {
+      // Assume the application already loads the library explicitly.
+      Log.i(LOG_TAG,
+        "Application should have loaded the native library " + fullLibname +
+        " explicitly by now. ");
+    }
 
     byte[] nativeSavedState =
         savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
 
-    mNativeHandle = loadNativeCode(path, funcname, getAbsolutePath(getFilesDir()),
+    mNativeHandle = initializeNativeCode(getAbsolutePath(getFilesDir()),
         getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
         getAssets(), nativeSavedState);
 
     if (mNativeHandle == 0) {
       throw new UnsatisfiedLinkError(
-          "Unable to load native library \"" + path + "\": " + getDlError());
+          "Unable to initialize native code \"" + path + "\": " + getDlError());
     }
 
     // Set up the input connection
@@ -299,7 +296,7 @@ public class GameActivity
       mCurSurfaceHolder = null;
     }
 
-    unloadNativeCode(mNativeHandle);
+    terminateNativeCode(mNativeHandle);
     super.onDestroy();
   }
 
