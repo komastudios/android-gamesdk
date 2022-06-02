@@ -11,7 +11,7 @@ get_filename_component(CpuFeaturesDir ${ANDROID_NDK}/sources/android/cpufeatures
 #===================================================================================================
 include("${GameSDKDir}/src/device_info/device_info.cmake")
 
-project(native-lib LANGUAGES C CXX)
+project(cert-lib LANGUAGES C CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
 
 # TODO: Need to see about getting the GameSDK to support Windows.
@@ -69,9 +69,6 @@ endif ()
 
 add_compile_options("-frtti")
 
-find_library(log-lib
-        log)
-
 #===================================================================================================
 
 add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
@@ -79,7 +76,7 @@ add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR)
 add_library(${PROJECT_NAME} SHARED
         ${ANDROID_NDK}/sources/third_party/vulkan/src/common/vulkan_wrapper.cpp
         # Java-Native glue & super-fundamental code
-        native-lib.cpp
+        cert-lib.cpp
 
         # Framework & utilities
         ancer/BaseOperation.cpp
@@ -211,7 +208,7 @@ target_compile_options(basis PRIVATE -Wno-error=invalid-noreturn)
 target_link_libraries(${PROJECT_NAME}
         GLESv3
         android
-        ${log-lib}
+        log
         EGL
         shaderc_lib
         basis

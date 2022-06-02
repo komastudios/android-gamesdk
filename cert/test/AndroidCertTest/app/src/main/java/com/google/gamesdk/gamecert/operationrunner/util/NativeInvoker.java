@@ -24,7 +24,7 @@ import com.google.gamesdk.gamecert.operationrunner.hosts.SwappyGLHostActivity;
 
 public class NativeInvoker {
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("cert-lib");
     }
 
     /**
@@ -91,7 +91,7 @@ public class NativeInvoker {
     public static native void setFilesDirectory(String path);
 
     /**
-     * Create an operation instance (from native-lib) by name.
+     * Create an operation instance (from cert-lib) by name.
      *
      * @param suiteId     The name of the test suite the operation will run in
      * @param description A description of the test suite

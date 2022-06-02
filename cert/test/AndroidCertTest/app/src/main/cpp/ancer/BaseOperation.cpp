@@ -31,7 +31,7 @@ namespace {
 
     void *OpenSelfLibrary(void) {
         // TODO: Have CMake generate this.
-        constexpr const char *this_lib_name = "libnative-lib.so";
+        constexpr const char *this_lib_name = "libcert-lib.so";
         void *lib = dlopen(this_lib_name, RTLD_LAZY);
         if (lib == nullptr) {
             FatalError(TAG, "Failed to load self library");
