@@ -31,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
   Boolean mDone;
   String mResult;
 
-  // Used to load the 'native-lib' library on application startup.
+  // Used to load the test app's native library on application startup.
   static {
-    System.loadLibrary("native-lib");
+    System.loadLibrary("swappy-test");
   }
 
   @Override
@@ -89,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
 
 
   /**
-   * A native method that is implemented by the 'native-lib' native library, which is packaged with
-   * this application.
+   * Native methods implemented in app's native library,
+   * which is packaged with this application.
    */
   public native String runTests();
   public native String testSummarySoFar();
