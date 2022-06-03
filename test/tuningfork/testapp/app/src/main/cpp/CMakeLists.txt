@@ -25,20 +25,9 @@ include_directories("${TEST_DIR}"
         "${TEST_DIR}/../../samples/common/include"
         )
 
-add_library( native-lib
+add_library( ${PROJECT_NAME} SHARED
+             test_app.cpp )
 
-             SHARED
-
-             native-lib.cpp )
-
-find_library( # Sets the name of the path variable.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
-
-target_link_libraries( # Specifies the target library.
-                       native-lib
+target_link_libraries( ${PROJECT_NAME}
                        tuningfork_test_lib
-                       ${log-lib} )
+                       log)

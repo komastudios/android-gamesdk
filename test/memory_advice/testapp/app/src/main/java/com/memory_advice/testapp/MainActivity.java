@@ -23,9 +23,9 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-  // Used to load the 'testapp' library on application startup.
+  // Used to load the testapp's native library on application startup.
   static {
-    System.loadLibrary("native-lib");
+    System.loadLibrary("testapp");
   }
 
   @Override

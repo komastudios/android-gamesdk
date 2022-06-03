@@ -15,15 +15,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * A native method that is implemented by the 'native-lib' native library,
+     * A native method that is implemented by the 'metrics-test' native library,
      * which is packaged with this application.
      */
     external fun measureMetricsPerformance(d: Class<Debug>): String
 
     companion object {
-        // Used to load the 'native-lib' library on application startup.
+        // Used to load app's native library on application startup.
         init {
-            System.loadLibrary("native-lib")
+            System.loadLibrary("metrics-test")
         }
     }
 }

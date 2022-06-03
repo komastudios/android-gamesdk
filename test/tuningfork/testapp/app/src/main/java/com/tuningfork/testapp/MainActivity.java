@@ -23,9 +23,9 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-  // Used to load the 'native-lib' library on application startup.
+  // Used to load the app's native library on application startup.
   static {
-    System.loadLibrary("native-lib");
+    System.loadLibrary("tuningfork-testing");
   }
 
   @Override
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   /**
-   * A native method that is implemented by the 'native-lib' native library, which is packaged with
+   * A native method that is implemented by app's native library, which is packaged with
    * this application.
    */
   public native String runTests();
