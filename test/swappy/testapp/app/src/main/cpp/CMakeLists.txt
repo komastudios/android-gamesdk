@@ -15,6 +15,7 @@
 #
 
 cmake_minimum_required(VERSION 3.4.1)
+project(swappy-test)
 
 set (TEST_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../../..")
 add_subdirectory( "${TEST_DIR}" test_dir)
@@ -23,20 +24,10 @@ include_directories("${TEST_DIR}"
         "${TEST_DIR}/../../samples/common/include"
         )
 
-add_library( native-lib
+add_library( ${PROJECT_NAME} SHARED
+             swappy-test.cpp )
 
-             SHARED
 
-             native-lib.cpp )
-
-find_library( # Sets the name of the path variable.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
-
-target_link_libraries( # Specifies the target library.
-                       native-lib
+target_link_libraries( ${PROJECT_NAME}
                        swappy_test_lib
-                       ${log-lib} )
+                       log )
