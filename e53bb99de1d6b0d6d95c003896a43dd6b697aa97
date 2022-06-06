@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ade0c6a8_5088d9b9",
+        "filename": "test/tuningfork/metrics/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-06-06T09:20:09Z",
+      "side": 1,
+      "message": "This upgrade was intentional? It\u0027s fine with me just want to make sure it\u0027s intentional",
+      "revId": "e53bb99de1d6b0d6d95c003896a43dd6b697aa97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
