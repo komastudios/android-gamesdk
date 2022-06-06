@@ -16,6 +16,24 @@
       "message": "This upgrade was intentional? It\u0027s fine with me just want to make sure it\u0027s intentional",
       "revId": "e53bb99de1d6b0d6d95c003896a43dd6b697aa97",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7209c27_64214d1e",
+        "filename": "test/tuningfork/metrics/gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 6
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-06-06T16:26:06Z",
+      "side": 1,
+      "message": "yeah: the used agp 4.2.2 requires a min gradle version of 6.7.1. The current 6.1.1 does not compile (related release note (not exactly the 4.2.2) is here https://developer.android.com/studio/releases/past-releases#agp-upgrade-assistant, in which 4.1.0 is already requiring gradle 6.5).",
+      "parentUuid": "ade0c6a8_5088d9b9",
+      "revId": "e53bb99de1d6b0d6d95c003896a43dd6b697aa97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
