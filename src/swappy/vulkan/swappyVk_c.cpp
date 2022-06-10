@@ -151,4 +151,10 @@ int SwappyVk_getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                                allocated_entries, swapchain);
 }
 
+bool SwappyVk_isEnabled(VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    return swappy.IsEnabled(swapchain);
+}
+
 }  // extern "C"

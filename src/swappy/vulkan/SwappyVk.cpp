@@ -306,4 +306,10 @@ int SwappyVk::GetSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
         .getSupportedRefreshPeriodsNS(out_refreshrates, allocated_entries);
 }
 
+bool SwappyVk::IsEnabled(VkSwapchainKHR swapchain) {
+    auto& pImplementation = perSwapchainImplementation[swapchain];
+    if (!pImplementation) return false;
+    return pImplementation->isEnabled();
+}
+
 }  // namespace swappy
