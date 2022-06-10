@@ -155,7 +155,6 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
             return false;
         }
     }
-
     // Now, call that derived class to get the refresh duration to return
     return pImplementation->doGetRefreshCycleDuration(swapchain,
                                                       pRefreshDuration);
@@ -304,6 +303,12 @@ int SwappyVk::GetSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                            VkSwapchainKHR swapchain) {
     return (*perSwapchainImplementation[swapchain])
         .getSupportedRefreshPeriodsNS(out_refreshrates, allocated_entries);
+}
+
+bool SwappyVk::IsEnabled(VkSwapchainKHR swapchain) {
+    auto& pImplementation = perSwapchainImplementation[swapchain];
+    if (!pImplementation) return false;
+    return pImplementation->isEnabled();
 }
 
 }  // namespace swappy
