@@ -1,6 +1,4 @@
-plugins {
-    id 'com.android.library'
-}
+apply plugin: 'com.android.library'
 
 buildDir = "../../out_game_activity"
 
@@ -28,15 +26,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-// TODO(florianrival@) Enabling this will trigger "Cannot query the value of this property because it has no value available." error.
-//    buildFeatures {
-//        prefabPublishing true
-//    }
-//    prefab {
-//        gameactivity {
-//            headers "src/main/cpp/include"
-//        }
-//    }
+    externalNativeBuild {
+        cmake {
+            path "prefab-src/modules/game-activity/src/CMakeLists.txt"
+        }
+    }
+
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    prefab {
+        gameactivity {
+            name "game-activity"
+            headers "prefab-src/modules/game-activity/include"
+        }
+    }
 }
 
 dependencies {

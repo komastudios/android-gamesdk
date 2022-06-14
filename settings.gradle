@@ -1,5 +1,8 @@
 rootProject.name = 'androidgamesdk'
 include ':GameActivity'
+include ':samples:agdktunnel:app'
+include ':samples:agdktunnel:install_time_assets'
+include ':samples:agdktunnel:on_demand_assets'
 include ':GameTextInput'
 include ':GameController'
 include ':extras'
