@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "813bc29f_b19bdfff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-14T21:44:20Z",
+      "side": 1,
+      "message": "Minor build tweaks for AGDKTunnel",
+      "revId": "2d34ca67b478ae4bf5dd5cb0fcfccb1e86be8ac8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
