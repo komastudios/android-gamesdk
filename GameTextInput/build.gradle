@@ -1,6 +1,4 @@
-plugins {
-    id 'com.android.library'
-}
+apply plugin: 'com.android.library'
 
 buildDir="../../out_game_text_input"
 
@@ -27,16 +25,23 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-// TODO(florianrival@) Enabling this will trigger "Cannot query the value of this property because it has no value available." error.
-//    buildFeatures {
-//        prefabPublishing true
-//    }
-//    prefab {
-//        gametextinput {
-//            headers "src/main/cpp/include"
-//            libraryName "game-text-input"
-//        }
-//    }
+
+    externalNativeBuild {
+        cmake {
+            path "prefab-src/modules/game-text-input/src/CMakeLists.txt"
+        }
+    }
+
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    prefab {
+        gametextinput {
+            name "game-text-input"
+            headers "prefab-src/modules/game-text-input/include"
+        }
+    }
 }
 
 dependencies {
@@ -46,4 +51,7 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+repositories {
+    mavenCentral()
 }

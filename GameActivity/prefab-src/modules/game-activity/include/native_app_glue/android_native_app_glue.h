@@ -28,7 +28,7 @@
 #include <pthread.h>
 #include <sched.h>
 
-#include "game-activity/GameActivity.h"
+#include "GameActivity.h"
 
 #if (defined NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS_OVERRIDE)
 #define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS \
