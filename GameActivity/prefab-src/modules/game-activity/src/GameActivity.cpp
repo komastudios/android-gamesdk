@@ -15,7 +15,7 @@
  */
 #define LOG_TAG "GameActivity"
 
-#include "GameActivity.h"
+#include "../include/game-activity/GameActivity.h"
 
 #include <android/api-level.h>
 #include <android/asset_manager.h>
