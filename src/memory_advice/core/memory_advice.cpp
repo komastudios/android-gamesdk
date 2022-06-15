@@ -76,6 +76,12 @@ float GetPercentageAvailableMemory() {
     return s_impl->GetPercentageAvailableMemory();
 }
 
+int64_t GetTotalMemory() {
+    if (s_impl == nullptr)
+        return static_cast<int64_t>(MEMORYADVICE_ERROR_NOT_INITIALIZED);
+    return s_impl->GetTotalMemory();
+}
+
 MemoryAdvice_ErrorCode RegisterWatcher(uint64_t intervalMillis,
                                        MemoryAdvice_WatcherCallback callback,
                                        void* user_data) {

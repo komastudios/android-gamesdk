@@ -124,6 +124,16 @@ MemoryAdvice_MemoryState MemoryAdvice_getMemoryState();
 float MemoryAdvice_getPercentageAvailableMemory();
 
 /**
+ * @brief Calculates the total memory available on the device, as reported by
+ * ActivityManager#getMemoryInfo()
+ *
+ * @return The total memory of the device, in bytes.
+ * @return MEMORYADVICE_ERROR_NOT_INITIALIZED (a negative number) if Memory
+ * Advice was not yet initialized.
+ */
+int64_t MemoryAdvice_getTotalMemory();
+
+/**
  * @brief Registers a watcher that polls the Memory Advice library periodically,
  * and invokes the watcher callback when the memory state goes critical.
  *
