@@ -139,8 +139,8 @@ dependencies {
     if(PADEnabled.toBoolean()) {
         implementation files("$playcoreDir/playcore.aar")
     }
-    // TODO(b/215589030): release the input sdk public to GMaven
-    playGamesPCImplementation files('libs/inputmapping-1.0.0-beta.aar')
+    playGamesPCImplementation 'com.google.android.libraries.play.games:inputmapping:1.0.0-beta'
+
     // Uncomment to use a locally-built library.
     //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
     //                                               'GameController.aar',

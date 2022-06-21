@@ -45,13 +45,17 @@ public class AGDKTunnelActivity extends GameActivity {
         // See https://developer.android.com/ndk/guides/cpp-support#shared_runtimes
         System.loadLibrary("c++_shared");
 
-        // Load the memory advice library
+        // Optional: reload the memory advice library explicitly (it will be loaded
+        // implicitly when loading agdktunnel library as a dependent library)
         System.loadLibrary("memory_advice");
 
-        // It's not actually necessary to load the native 'game' library here as it's loaded in
-        // GameActivity.onCreate when we have the following line in the manifest:
-        // <meta-data android:name="android.app.lib_name" android:value="game" />
-        System.loadLibrary("game");
+        // Optional: reload the native library.
+        // However this is necessary when any of the following happens:
+        //     - agdktunnel library is not configured to the following line in the manifest:
+        //        <meta-data android:name="android.app.lib_name" android:value="agdktunnel" />
+        //     - GameActivity derived class calls to the native code before calling
+        //       the super.onCreate() function.
+        System.loadLibrary("agdktunnel");
     }
 
     @Override

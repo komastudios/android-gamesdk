@@ -24,7 +24,7 @@ add_gamesdk_target(
 include_directories( ../../common/include ) # Samples Includes
 include_directories( src/main/cpp )
 
-add_library( native-lib
+add_library( ${CMAKE_PROJECT_NAME}
 
              SHARED
 
@@ -35,7 +35,7 @@ add_library( native-lib
              ../../common/src/Thread.cpp
         )
 
-target_link_libraries( native-lib
+target_link_libraries( ${CMAKE_PROJECT_NAME}
 
                        android
                        EGL

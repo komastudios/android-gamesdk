@@ -22,7 +22,7 @@ public class MemoryTest implements MemoryWatcher.Client {
   private static final String TAG = MemoryTest.class.getSimpleName();
 
   static {
-    System.loadLibrary("native-lib");
+    System.loadLibrary("memory-test");
   }
 
   private final boolean yellowLightTesting;

@@ -7,10 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    // Used to load the 'native-lib' library on application startup.
+    // Used to load app's native libraries on application startup.
     static {
         System.loadLibrary("memory_advice");
-        System.loadLibrary("native-lib");
+        System.loadLibrary("crowdtester");
     }
 
     @Override

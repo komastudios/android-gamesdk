@@ -84,6 +84,6 @@ public class MemoryPressureService extends Service {
   public native void freeAll();
 
   static {
-    System.loadLibrary("native-lib");
+    System.loadLibrary("grabber");
   }
 }

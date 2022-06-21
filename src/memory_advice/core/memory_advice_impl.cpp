@@ -114,6 +114,15 @@ float MemoryAdviceImpl::GetPercentageAvailableMemory() {
                                 metrics["predictedUsage"].number_value()));
 }
 
+int64_t MemoryAdviceImpl::GetTotalMemory() {
+    return static_cast<int64_t>(baseline_.at("constant")
+                                    .object_items()
+                                    .at("MemoryInfo")
+                                    .object_items()
+                                    .at("totalMem")
+                                    .number_value());
+}
+
 Json::object MemoryAdviceImpl::GetAdvice() {
     CheckCancelledWatchers();
 

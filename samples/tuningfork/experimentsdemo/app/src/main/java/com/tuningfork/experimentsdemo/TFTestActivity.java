@@ -29,7 +29,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 public class TFTestActivity extends AppCompatActivity implements Choreographer.FrameCallback, SurfaceHolder.Callback {
 
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("tuningfork-demo");
     }
     public native void initTuningFork(boolean initFromNewThread);
     public static native void resize(Surface surface, int width, int height);

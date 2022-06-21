@@ -24,9 +24,9 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class TuningForkJNIInstrumentedTest {
-    // Used to load the 'native-lib' library on application startup.
+    // Used to load app's native library on application startup.
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("JNITestApp");
     }
     static String TAG = "TuningForkJNIInstrumentedTest";
 

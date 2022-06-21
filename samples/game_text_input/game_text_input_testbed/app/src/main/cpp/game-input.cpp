@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#define LOG_TAG "NativeLib"
+#define LOG_TAG "game-input"
 #define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);
 
 // Import the Game Text Input interfae:
