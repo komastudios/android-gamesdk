@@ -102,6 +102,10 @@ class MemoryAdviceImpl {
      * total memory.
      */
     float GetPercentageAvailableMemory();
+    /** @brief Returns the total memory of the device, as reported by
+     * ActivityManager#getMemoryInfo()
+     */
+    int64_t GetTotalMemory();
     /** @brief Reads the variable part of the advisor_parameters_ and reports
      * metrics for those fields. */
     Json::object GenerateVariableMetrics();

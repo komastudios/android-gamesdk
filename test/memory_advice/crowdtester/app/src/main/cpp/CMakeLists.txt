@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+project(crowdtester)
+
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -Os -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
@@ -27,12 +29,12 @@ include_directories("${GAMESDK_ROOT}/include")
 include_directories("${GAMESDK_ROOT}/samples/common/include") # Samples Includes
 
 
-add_library( native-lib
+add_library( ${PROJECT_NAME}
         SHARED
-        native-lib.cpp
+        crowdtester.cpp
         )
 
-target_link_libraries( native-lib
+target_link_libraries( ${PROJECT_NAME}
         memory_advice
         android
         GLESv2

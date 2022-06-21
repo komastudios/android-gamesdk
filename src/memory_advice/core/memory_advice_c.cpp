@@ -60,6 +60,10 @@ float MemoryAdvice_getPercentageAvailableMemory() {
     return memory_advice::GetPercentageAvailableMemory();
 }
 
+int64_t MemoryAdvice_getTotalMemory() {
+    return memory_advice::GetTotalMemory();
+}
+
 void MemoryAdvice_JsonSerialization_free(MemoryAdvice_JsonSerialization *ser) {
     if (ser->dealloc) {
         ser->dealloc(ser);

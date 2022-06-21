@@ -903,7 +903,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 }
                 removeUnneededPrefabDirs(tempPrefabDir, library)
                 // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.hybridProjectDir}.aar")
+                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.hybridProjectDir}-release.aar")
                 def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
                 def aarPrefabPatcher = new AarPrefabPatcher()
                 aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)

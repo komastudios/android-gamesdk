@@ -15,7 +15,7 @@
 #
 
 cmake_minimum_required(VERSION 3.4.1)
-project(memory_advice-testing C CXX)
+project(testapp C CXX)
 set(CMAKE_CXX_STANDARD 14)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror -Wthread-safety" )
@@ -35,20 +35,8 @@ include_directories("${TEST_DIR}"
         "${TEST_DIR}/../../samples/common/include"
         )
 
-add_library( native-lib
+add_library( ${PROJECT_NAME} SHARED testapp.cpp )
 
-        SHARED
-
-        native-lib.cpp )
-
-find_library( # Sets the name of the path variable.
-        log-lib
-
-        # Specifies the name of the NDK library that
-        # you want CMake to locate.
-        log )
-
-target_link_libraries( # Specifies the target library.
-        native-lib
+target_link_libraries( ${PROJECT_NAME}
         memory_advice_test_lib
-        ${log-lib} )
+        log )
