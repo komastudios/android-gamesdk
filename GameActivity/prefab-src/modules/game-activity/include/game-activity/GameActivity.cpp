@@ -228,6 +228,7 @@ struct ActivityWork {
     int32_t cmd;
     int64_t arg1;
     int64_t arg2;
+    int64_t arg3;
 };
 
 /*
@@ -240,7 +241,8 @@ enum {
     CMD_SET_WINDOW_FLAGS,
     CMD_SHOW_SOFT_INPUT,
     CMD_HIDE_SOFT_INPUT,
-    CMD_SET_SOFT_INPUT_STATE
+    CMD_SET_SOFT_INPUT_STATE,
+    CMD_SET_IME_EDITOR_INFO
 };
 
 /*
@@ -248,11 +250,12 @@ enum {
  * thread.
  */
 static void write_work(int fd, int32_t cmd, int64_t arg1 = 0,
-                       int64_t arg2 = 0) {
+                       int64_t arg2 = 0, int64_t arg3 = 0) {
     ActivityWork work;
     work.cmd = cmd;
     work.arg1 = arg1;
     work.arg2 = arg2;
+    work.arg3 = arg3;
 
     LOG_TRACE("write_work: cmd=%d", cmd);
 restart:
@@ -464,6 +467,12 @@ static int mainWorkCallback(int fd, int events, void *data) {
         } break;
         case CMD_HIDE_SOFT_INPUT: {
             GameTextInput_hideIme(code->gameTextInput, work.arg1);
+        } break;
+        case CMD_SET_IME_EDITOR_INFO: {
+            code->env->CallVoidMethod(code->javaGameActivity,
+                            gGameActivityClassInfo.setImeEditorInfoFields,
+                            work.arg1, work.arg2, work.arg3);
+            checkAndClearException(code->env, "setImeEditorInfo");
         } break;
         default:
             ALOGW("Unknown work command: %d", work.cmd);
@@ -837,12 +846,8 @@ float GameActivityMotionEvent_getHistoricalAxisValue(
 extern "C" void GameActivity_setImeEditorInfo(GameActivity *activity,
                                               int inputType, int actionId,
                                               int imeOptions) {
-    JNIEnv *env;
-    if (activity->vm->AttachCurrentThread(&env, NULL) == JNI_OK) {
-        env->CallVoidMethod(activity->javaGameActivity,
-                            gGameActivityClassInfo.setImeEditorInfoFields,
-                            inputType, actionId, imeOptions);
-    }
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    write_work(code->mainWorkWrite, CMD_SET_IME_EDITOR_INFO, inputType, actionId, imeOptions);
 }
 
 static struct {
