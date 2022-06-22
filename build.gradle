@@ -133,8 +133,8 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
 
 def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
         .setThirdParty()
-        .setMinimumAndroidApiLevel(16)
-        .setMinimumNdkVersion(17)
+        .setMinimumAndroidApiLevel(19)
+        .setMinimumNdkVersion(19)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
 
 def gameActivityLibrary = new AndroidArchiveLibrary(versions['game_activity'])
@@ -147,8 +147,8 @@ def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input']
 
 def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
         .setHybridLibrary()
-        .setMinimumAndroidApiLevel(16)
-        .setMinimumNdkVersion(17)
+        .setMinimumAndroidApiLevel(19)
+        .setMinimumNdkVersion(19)
         .setSupportedStlVersions(["c++_shared", "c++_static"])
         .addSampleAndroidProject(
                 new ExternalAndroidProject(joinPath('samples', 'game_controller'))
