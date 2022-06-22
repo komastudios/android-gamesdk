@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9699a04e_2ec1a147",
+        "filename": "GameActivity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 471,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-06-22T10:19:26Z",
+      "side": 1,
+      "message": "Can we add some testing for this? At the moment nothing in game activity is tested.\n\nIt would be good to have some automated tests just so we avoid accidentally breaking game activity with future changes",
+      "revId": "34bead4a6329ff8c1e8ba68bc74c5590548a74e5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
