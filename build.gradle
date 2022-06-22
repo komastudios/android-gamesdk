@@ -1105,9 +1105,10 @@ task prepareMavenZipContent {
         filterNativeLibraries(allLibraries).forEach { nativeLibrary ->
             def libraryName = nativeLibrary.aarLibraryName
             def aarVersion = nativeLibrary.aarVersion
-
+            def path = joinPath(packageFolder, "gamesdk.aar")
+            assert file(path).exists()
             copy {
-                from file(joinPath(packageFolder, "gamesdk.aar"))
+                from file(path)
                 into file(joinPath(mavenZipContentFolder))
                 rename "gamesdk.aar", libraryName + "-" + aarVersion + ".aar"
             }
@@ -1123,11 +1124,12 @@ task prepareMavenZipContent {
         filterAndroidArchiveLibraries(allLibraries).forEach { androidLibrary ->
             def libraryName = androidLibrary.aarLibraryName
             def aarVersion = androidLibrary.aarVersion
-
+            def path = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
+            assert file(path).exists()
             copy {
-                from file(joinPath(packageFolder, androidLibrary.projectName + ".aar"))
+                from file(path)
                 into file(joinPath(mavenZipContentFolder))
-                rename androidLibrary.projectName + ".aar", libraryName + "-" + aarVersion + ".aar"
+                rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
             }
 
             copy {
