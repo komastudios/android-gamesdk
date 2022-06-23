@@ -52,6 +52,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cfc8a269_0920e04f",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a6975bb_744a0e12",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "65cfec95_53437392",
@@ -65,6 +83,24 @@
       "writtenOn": "2022-06-22T03:41:08Z",
       "side": 1,
       "message": "Provide a backing type (it\u0027s not standard C but clang supports it even for non-C++). We\u0027re super inconsistent about this since the policy is new, but it\u0027s a great ABI compat defense so might as well for anything new (feel free to update old enums to use a backing type as well, just be careful to make sure the backing type doesn\u0027t _change_ when you do so).",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8d5c97f_63ee40a0",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65cfec95_53437392",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -86,6 +122,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c73ec3ce_a89aae87",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Moved to its own enum",
+      "parentUuid": "52109945_0c587fc9",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "67880553_45082b46",
@@ -99,6 +153,24 @@
       "writtenOn": "2022-06-22T03:41:08Z",
       "side": 1,
       "message": "As before: backing type",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14ef28ff_2f7181c4",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 502,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Removed, switched to bool.",
+      "parentUuid": "67880553_45082b46",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -120,6 +192,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5edd250f_5a8d0b00",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 504,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7df20b0e_a49f083c",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ae2fc561_8ae43520",
@@ -133,6 +223,30 @@
       "writtenOn": "2022-06-22T03:41:08Z",
       "side": 1,
       "message": "physicalKeyboardStatus (or just status)",
+      "range": {
+        "startLine": 834,
+        "startChar": 48,
+        "endLine": 834,
+        "endChar": 59
+      },
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b48f32fe_3b32a877",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 834,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae2fc561_8ae43520",
       "range": {
         "startLine": 834,
         "startChar": 48,
@@ -166,6 +280,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c715112_9e1289b1",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 937,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d22584f_6b874e94",
+      "range": {
+        "startLine": 937,
+        "startChar": 0,
+        "endLine": 937,
+        "endChar": 8
+      },
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1afd73db_f91dd3e2",
@@ -183,6 +321,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5faa20d_1dc0c854",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 987,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1afd73db_f91dd3e2",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a32239a8_30f5989d",
@@ -196,6 +352,24 @@
       "writtenOn": "2022-06-22T03:41:08Z",
       "side": 1,
       "message": "I have no idea what this means.",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77be3503_2828d44f",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-23T19:59:39Z",
+      "side": 1,
+      "message": "Added an additional sentence to provide a bit more context. This is an advanced feature most developers won\u0027t use (but the ones that want it really want it).",
+      "parentUuid": "a32239a8_30f5989d",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
