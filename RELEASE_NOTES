@@ -19,6 +19,8 @@ This release adds new features to the GameActivity library and the AGDK Tunnel s
     -Added PGS v2 cloud save to AGDK Tunnel
     -Integrate PGS sign-in with AGDK Tunnel
     -Fixed storage error in AGDK Tunnel
+- Memory Advice Library
+    -Added getTotalMemory to the memory advice native API
 
 Version 2022.0.0
 ================
