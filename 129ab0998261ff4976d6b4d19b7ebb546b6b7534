@@ -372,6 +372,24 @@
       "parentUuid": "a32239a8_30f5989d",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7197f4a7_2bc1c45d",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-23T20:05:44Z",
+      "side": 1,
+      "message": "It might be clear enough for the users that need it, but we can\u0027t review APIs we can\u0027t understand 😞 I still don\u0027t know what this means so I can\u0027t evaluate it.\n\nWhat is \"custom controller information\"? A mapping of what to what?",
+      "parentUuid": "77be3503_2828d44f",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

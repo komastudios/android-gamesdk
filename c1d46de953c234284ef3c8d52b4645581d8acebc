@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c5f96a7c_dec1823b",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-23T20:05:44Z",
+      "side": 1,
+      "message": "Should probably explicitly `#include \u003cstdbool.h\u003e`. You might be getting it transitively, or might be getting it because your tests only ever include this from C++ where it isn\u0027t needed. We\u0027ve made this mistake in NDK headers before and it broke C consumers so better safe than sorry 😊",
+      "revId": "c1d46de953c234284ef3c8d52b4645581d8acebc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9c040e3_5a5e8444",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-23T20:05:44Z",
+      "side": 1,
+      "message": "Use an explicitly sized type: int32_t",
+      "range": {
+        "startLine": 51,
+        "startChar": 28,
+        "endLine": 51,
+        "endChar": 31
+      },
+      "revId": "c1d46de953c234284ef3c8d52b4645581d8acebc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e545e9e_6e1868a1",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 7
+      },
+      "lineNbr": 1134,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-23T20:05:44Z",
+      "side": 1,
+      "message": "boolean",
+      "range": {
+        "startLine": 1134,
+        "startChar": 66,
+        "endLine": 1134,
+        "endChar": 73
+      },
+      "revId": "c1d46de953c234284ef3c8d52b4645581d8acebc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
