@@ -408,6 +408,24 @@
       "parentUuid": "7197f4a7_2bc1c45d",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40dcb924_a808e1a5",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-23T21:42:30Z",
+      "side": 1,
+      "message": "Okay, so basically mapping from inconsistent hardware assignments of axes/buttons to something consistent so game devs don\u0027t have to handle each controller\u0027s quirks?\n\nIf that\u0027s correct, let\u0027s expand the docs here to cover a bit of that. One thing that definitely needs to be covered (and which I haven\u0027t figured out myself yet) is the format of the buffer. I now know what this API does, but still don\u0027t know how to actually use it.\n\nHow about something like:\n\n\u003e @brief Defines how hardware button/axis IDs will map to GameController buttons and axes. Use this to define mappings for unsupported controllers or to override the defaults for controllers that already have default mappings in GameController.\n\u003e \n\u003e Raw axis/button assignments are not consistent from controller to controller. GameController remaps axis and buttons from known controllers in a consistent manner so games do not have to account for this themselves. For a list of controllers that have default mappings included in GameController, see (TODO: link).\n\u003e \n\u003e To add support for a new controller or to override the default mapping, (TODO: instructions for how to use this)\n\nAfter a bit of digging (I always avoid this up front because it makes the doc gaps more obvious if I try to use them alone), it seems like https://developer.android.com/games/sdk/game-controller/custom-mapping should be linked here too?\n\n\u003e the new function expects a binary blob\n\nNo cause for alarm yet, but this is generally grounds for API rejection. I\u0027ve seen a few APIs attempt to do this before and in each case the motivation has been to decouple API breakages from the headers. We can\u0027t approve things like that because they evade our ABI/API stability tooling. Blobs are okay as inputs when the format is well specified (a UTF-8 string, a PNG encoded image, etc).\n\nWhat\u0027s the format of the data here? How does this scale better than `Paddleboat_Controller_Mapping_Data`?",
+      "parentUuid": "a1994626_a29152ee",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
