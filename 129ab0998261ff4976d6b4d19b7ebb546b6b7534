@@ -426,6 +426,24 @@
       "parentUuid": "a1994626_a29152ee",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "217dd1cd_f4d2200b",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-06-24T20:00:21Z",
+      "side": 1,
+      "message": "Added a bunch of additional explanation and link to the DAC page (which is going to get reworked before 1.2 reaches beta).\n\nI hadn\u0027t originally planned on exposing the file format headers in the public interface, but it sounds like I should. I\u0027ve added them, and changed the function signature to take a pointer to the file header instead of void.\n\nThe short answer is originally each controller definition had its own axis and button mapping tables. That ends up being wasteful and more work to maintain since in reality, given 100 controllers (spitballing) you might only have 12 unique axis mapping layouts and 8 button layouts. The revised structure allows for multiple controllers to share a mapping table.\n\nThere were also a couple feature additions to the new format, namely the ability to flag an axis to have its input inverted (in response to a feature request for certain old controllers that act \u0027backwards\u0027), and the ability to specify optional allowlist/denylist information to support controller configurations that only install on or are not-installed particular device/manufacturer. The main use case there is edge cases like the NVidia Shield controller, which has an OS mapping file only on the NVidia Shield TV, and maps differently on every other Android device.",
+      "parentUuid": "40dcb924_a808e1a5",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
