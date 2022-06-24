@@ -444,6 +444,24 @@
       "parentUuid": "40dcb924_a808e1a5",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72e2abab_8e6a1697",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-24T20:12:35Z",
+      "side": 1,
+      "message": "Ah yes, that helps. Thanks! This function looks good now so I\u0027ll need to review the new structs. I\u0027ll try to do that on Monday, but more likely Tuesday.",
+      "parentUuid": "217dd1cd_f4d2200b",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
