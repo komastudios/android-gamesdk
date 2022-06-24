@@ -1,5 +1,14 @@
 RELEASE NOTES
 
+
+Version 2022.2.0
+================
+- GameActivity
+    -Fix issues with missing .aar in maven artifact for release 1.2.0
+- Memory Advice Library
+    -Added getTotalMemory to the memory advice native API
+
+
 Version 2022.1.0
 ================
 This release adds new features to the GameActivity library and the AGDK Tunnel sample. It also
