@@ -12,7 +12,6 @@ data class NativeLibrary(
     val nativeLibraryName: String = libraryInfo.nickname
     val aarLibraryName: String = libraryInfo.jetpackName
     val aarVersion: String = libraryInfo.jetpackVersion()
-    var hybridProjectDir: String = libraryInfo.projectName ?: ""
     var sampleAndroidProjects: ArrayList<ExternalAndroidProject> = ArrayList()
         private set
     var sampleExtraFolderPaths: ArrayList<SampleFolder> = ArrayList()
@@ -22,8 +21,6 @@ data class NativeLibrary(
     var minimumNdkVersion: Int? = null
         private set
     var supportedStlVersions: List<String>? = null
-        private set
-    var isHybridLibrary = false
         private set
     var isThirdParty = false
         private set
@@ -48,11 +45,7 @@ data class NativeLibrary(
         return this
     }
 
-    fun setHybridLibrary(): NativeLibrary {
-        this.isHybridLibrary = true
-        return this
-    }
-    /* End hybrid project setters */
+
 
     fun setMinimumAndroidApiLevel(
         minimumAndroidApiLevel: Int?

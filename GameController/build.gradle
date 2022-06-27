@@ -43,6 +43,28 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    prefab {
+        paddleboat {
+            name "paddleboat"
+            headers "src/main/include"
+        }
+
+        paddleboat_static {
+            name "paddleboat_static"
+            headers "src/main/include"
+        }
+    }
 }
 
 dependencies {
