@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.18.1)
+cmake_minimum_required(VERSION 3.10.1)
 project(paddleboat C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
