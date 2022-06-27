@@ -1,5 +1,5 @@
 rootProject.name = 'androidgamesdk'
 include ':GameActivity'
 include ':GameTextInput'
-include ':GameController'
+include ':games-controller'
 include ':src:extras'
