@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "704c53a7_2acf05ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-29T23:28:07Z",
+      "side": 1,
+      "message": "+michaelwr as the input expert, but structurally this looks fine to me.",
+      "revId": "0dc85ac85fcb3bd095ee9413149b5574a4e7e961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8c1ad3f_80084ed4",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 11
+      },
+      "lineNbr": 796,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-06-29T23:28:07Z",
+      "side": 1,
+      "message": "Do you want to make this struct packed and be explicit about any padding to guard against any future (or current) portability issues? Same question for the other structs that map this file below.\n\nDo you think it\u0027d be worthwhile to move all the controller mapping file stuff into a separate header, since it sounds like it\u0027ll be an atypical use case? I don\u0027t feel strongly, but maybe?",
+      "revId": "0dc85ac85fcb3bd095ee9413149b5574a4e7e961",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
