@@ -845,7 +845,7 @@ task buildSpecific(type: BuildTask) {
 tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-    dependsOn ':extras:assembleRelease'
+    dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
@@ -1051,7 +1051,7 @@ task buildAarStructure {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
 
-    dependsOn ':extras:assembleRelease'
+    dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
