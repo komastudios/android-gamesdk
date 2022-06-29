@@ -980,6 +980,7 @@ static struct {
     jmethodID getModifiers;
     jmethodID getRepeatCount;
     jmethodID getKeyCode;
+    jmethodID getScanCode;
     jmethodID getUnicodeChar;
 } gKeyEventClassInfo;
 
@@ -1012,6 +1013,8 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
             env->GetMethodID(keyEventClass, "getRepeatCount", "()I");
         gKeyEventClassInfo.getKeyCode =
             env->GetMethodID(keyEventClass, "getKeyCode", "()I");
+        gKeyEventClassInfo.getScanCode =
+            env->GetMethodID(keyEventClass, "getScanCode", "()I");
         gKeyEventClassInfo.getUnicodeChar =
             env->GetMethodID(keyEventClass, "getUnicodeChar", "()I");
 
@@ -1039,6 +1042,8 @@ extern "C" void GameActivityKeyEvent_fromJava(JNIEnv *env, jobject keyEvent,
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getRepeatCount),
         /*keyCode=*/
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getKeyCode),
+        /*scanCode=*/
+        env->CallIntMethod(keyEvent, gKeyEventClassInfo.getScanCode),
         /*unicodeChar=*/
         env->CallIntMethod(keyEvent, gKeyEventClassInfo.getUnicodeChar)};
 }
