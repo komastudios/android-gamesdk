@@ -797,41 +797,12 @@ extern "C" void GameActivityPointerAxes_enableAxis(int32_t axis) {
     enabledAxes[axis] = true;
 }
 
-float GameActivityPointerAxes_getAxisValue(
-    const GameActivityPointerAxes *pointerInfo, int32_t axis) {
-    if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
-        return 0;
-    }
-
-    if (!enabledAxes[axis]) {
-        ALOGW("Axis %d must be enabled before it can be accessed.", axis);
-        return 0;
-    }
-
-    return pointerInfo->axisValues[axis];
-}
-
 extern "C" void GameActivityPointerAxes_disableAxis(int32_t axis) {
     if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
         return;
     }
 
     enabledAxes[axis] = false;
-}
-
-float GameActivityMotionEvent_getHistoricalAxisValue(
-    const GameActivityMotionEvent *event, int axis, int pointerIndex,
-    int historyPos) {
-    if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
-        return 0;
-    }
-
-    if (!enabledAxes[axis]) {
-        ALOGW("Axis %d must be enabled before it can be accessed.", axis);
-        return 0;
-    }
-
-    return event->historicalAxisValues[event->pointerCount * historyPos + axis];
 }
 
 extern "C" void GameActivity_setImeEditorInfo(GameActivity *activity,
@@ -861,28 +832,14 @@ static struct {
     jmethodID getClassification;
     jmethodID getEdgeFlags;
 
-    jmethodID getHistorySize;
-    jmethodID getHistoricalEventTime;
-
     jmethodID getPointerCount;
     jmethodID getPointerId;
-
-    jmethodID getToolType;
-
     jmethodID getRawX;
     jmethodID getRawY;
     jmethodID getXPrecision;
     jmethodID getYPrecision;
     jmethodID getAxisValue;
-
-    jmethodID getHistoricalAxisValue;
 } gMotionEventClassInfo;
-
-extern "C" void GameActivityMotionEvent_destroy(
-    GameActivityMotionEvent *c_event) {
-    delete c_event->historicalAxisValues;
-    delete c_event->historicalEventTimes;
-}
 
 extern "C" void GameActivityMotionEvent_fromJava(
     JNIEnv *env, jobject motionEvent, GameActivityMotionEvent *out_event) {
@@ -919,18 +876,10 @@ extern "C" void GameActivityMotionEvent_fromJava(
         }
         gMotionEventClassInfo.getEdgeFlags =
             env->GetMethodID(motionEventClass, "getEdgeFlags", "()I");
-
-        gMotionEventClassInfo.getHistorySize =
-            env->GetMethodID(motionEventClass, "getHistorySize", "()I");
-        gMotionEventClassInfo.getHistoricalEventTime = env->GetMethodID(
-            motionEventClass, "getHistoricalEventTime", "(I)J");
-
         gMotionEventClassInfo.getPointerCount =
             env->GetMethodID(motionEventClass, "getPointerCount", "()I");
         gMotionEventClassInfo.getPointerId =
             env->GetMethodID(motionEventClass, "getPointerId", "(I)I");
-        gMotionEventClassInfo.getToolType =
-            env->GetMethodID(motionEventClass, "getToolType", "(I)I");
         if (sdkVersion >= 29) {
             gMotionEventClassInfo.getRawX =
                 env->GetMethodID(motionEventClass, "getRawX", "(I)F");
@@ -944,8 +893,6 @@ extern "C" void GameActivityMotionEvent_fromJava(
         gMotionEventClassInfo.getAxisValue =
             env->GetMethodID(motionEventClass, "getAxisValue", "(II)F");
 
-        gMotionEventClassInfo.getHistoricalAxisValue = env->GetMethodID(
-            motionEventClass, "getHistoricalAxisValue", "(III)F");
         gMotionEventClassInfoInitialized = true;
     }
 
@@ -958,9 +905,6 @@ extern "C" void GameActivityMotionEvent_fromJava(
         out_event->pointers[i] = {
             /*id=*/env->CallIntMethod(motionEvent,
                                       gMotionEventClassInfo.getPointerId, i),
-            /*toolType=*/
-            env->CallIntMethod(motionEvent, gMotionEventClassInfo.getToolType,
-                               i),
             /*axisValues=*/{0},
             /*rawX=*/gMotionEventClassInfo.getRawX
                 ? env->CallFloatMethod(motionEvent,
@@ -979,38 +923,6 @@ extern "C" void GameActivityMotionEvent_fromJava(
                     env->CallFloatMethod(motionEvent,
                                          gMotionEventClassInfo.getAxisValue,
                                          axisIndex, i);
-            }
-        }
-    }
-
-    int historySize =
-        env->CallIntMethod(motionEvent, gMotionEventClassInfo.getHistorySize);
-    out_event->historySize = historySize;
-    out_event->historicalAxisValues =
-        new float[historySize * pointerCount *
-                  GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
-    out_event->historicalEventTimes = new long[historySize];
-
-    for (int historyIndex = 0; historyIndex < historySize; historyIndex++) {
-        out_event->historicalEventTimes[historyIndex] = env->CallLongMethod(
-            motionEvent, gMotionEventClassInfo.getHistoricalEventTime,
-            historyIndex);
-        for (int i = 0; i < pointerCount; ++i) {
-            int pointerOffset = i * GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
-            int historyAxisOffset = historyIndex * pointerCount *
-                                    GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
-            float *axisValues =
-                &out_event
-                     ->historicalAxisValues[historyAxisOffset + pointerOffset];
-            for (int axisIndex = 0;
-                 axisIndex < GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
-                 ++axisIndex) {
-                if (enabledAxes[axisIndex]) {
-                    axisValues[axisIndex] = env->CallFloatMethod(
-                        motionEvent,
-                        gMotionEventClassInfo.getHistoricalAxisValue, axisIndex,
-                        i, historyIndex);
-                }
             }
         }
     }
@@ -1139,9 +1051,7 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
 
     static GameActivityMotionEvent c_event;
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
-    auto result = code->callbacks.onTouchEvent(code, &c_event);
-    GameActivityMotionEvent_destroy(&c_event);
-    return result;
+    return code->callbacks.onTouchEvent(code, &c_event);
 }
 
 static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
