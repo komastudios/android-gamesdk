@@ -137,17 +137,10 @@ typedef struct GameActivity {
  */
 typedef struct GameActivityPointerAxes {
     int32_t id;
-    int32_t toolType;
     float axisValues[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
     float rawX;
     float rawY;
 } GameActivityPointerAxes;
-
-/** \brief Get the toolType of the pointer. */
-inline int32_t GameActivityPointerAxes_getToolType(
-    const GameActivityPointerAxes* pointerInfo) {
-    return pointerInfo->toolType;
-}
 
 /** \brief Get the current X coordinate of the pointer. */
 inline float GameActivityPointerAxes_getX(
@@ -200,49 +193,13 @@ void GameActivityPointerAxes_disableAxis(int32_t axis);
  * @return The value of the axis, or 0 if the axis is invalid or was not
  * enabled.
  */
-float GameActivityPointerAxes_getAxisValue(
-    const GameActivityPointerAxes* pointerInfo, int32_t axis);
+inline float GameActivityPointerAxes_getAxisValue(
+    GameActivityPointerAxes* pointerInfo, int32_t axis) {
+    if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
+        return 0;
+    }
 
-inline float GameActivityPointerAxes_getPressure(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_PRESSURE);
-}
-
-inline float GameActivityPointerAxes_getSize(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_SIZE);
-}
-
-inline float GameActivityPointerAxes_getTouchMajor(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_TOUCH_MAJOR);
-}
-
-inline float GameActivityPointerAxes_getTouchMinor(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_TOUCH_MINOR);
-}
-
-inline float GameActivityPointerAxes_getToolMajor(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_TOOL_MAJOR);
-}
-
-inline float GameActivityPointerAxes_getToolMinor(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_TOOL_MINOR);
-}
-
-inline float GameActivityPointerAxes_getOrientation(
-    const GameActivityPointerAxes* pointerInfo) {
-    return GameActivityPointerAxes_getAxisValue(pointerInfo,
-                                                AMOTION_EVENT_AXIS_ORIENTATION);
+    return pointerInfo->axisValues[axis];
 }
 
 /**
@@ -281,10 +238,6 @@ typedef struct GameActivityMotionEvent {
     GameActivityPointerAxes
         pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
 
-    int historySize;
-    long* historicalEventTimes;
-    float* historicalAxisValues;
-
     float precisionX;
     float precisionY;
 } GameActivityMotionEvent;
@@ -311,69 +264,6 @@ typedef struct GameActivityKeyEvent {
     int32_t keyCode;
     int32_t unicodeChar;
 } GameActivityKeyEvent;
-
-float GameActivityMotionEvent_getHistoricalAxisValue(
-    const GameActivityMotionEvent* event, int axis, int pointerIndex,
-    int historyPos);
-
-inline int GameActivityMotionEvent_getHistorySize(
-    const GameActivityMotionEvent* event) {
-    return event->historySize;
-}
-
-inline float GameActivityMotionEvent_getHistoricalX(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_X, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalY(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_Y, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalPressure(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_PRESSURE, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalSize(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_SIZE, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalTouchMajor(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_TOUCH_MAJOR, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalTouchMinor(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_TOUCH_MINOR, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalToolMajor(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_TOOL_MAJOR, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalToolMinor(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_TOOL_MINOR, pointerIndex, historyPos);
-}
-
-inline float GameActivityMotionEvent_getHistoricalOrientation(
-    const GameActivityMotionEvent* event, int pointerIndex, int historyPos) {
-    return GameActivityMotionEvent_getHistoricalAxisValue(
-        event, AMOTION_EVENT_AXIS_ORIENTATION, pointerIndex, historyPos);
-}
 
 /**
  * A function the user should call from their callback with the data, its length
@@ -522,9 +412,6 @@ typedef struct GameActivityCallbacks {
      */
     void (*onWindowInsetsChanged)(GameActivity* activity);
 } GameActivityCallbacks;
-
-/** \brief Handle the freeing of the GameActivityMotionEvent struct. */
-void GameActivityMotionEvent_destroy(GameActivityMotionEvent* c_event);
 
 /**
  * \brief Convert a Java `MotionEvent` to a `GameActivityMotionEvent`.
