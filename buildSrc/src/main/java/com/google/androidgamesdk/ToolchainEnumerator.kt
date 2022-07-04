@@ -23,11 +23,8 @@ class ToolchainEnumerator {
     private val aarStls = listOf("c++_shared")
 
     private val allNdkToSdkMap = mapOf(
-        "r17" to listOf(19, 21, 22, 23, 24, 26, 27, 28),
         "r18" to listOf(19, 21, 22, 23, 24, 26, 27, 28),
-        "r19" to listOf(19, 21, 22, 23, 24, 26, 27, 28),
         "r20" to listOf(19, 21, 22, 23, 24, 26, 27, 28),
-        "r21" to listOf(19, 21, 22, 23, 24, 26, 27, 28, 29),
         "r23" to listOf(19, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31)
     )
 

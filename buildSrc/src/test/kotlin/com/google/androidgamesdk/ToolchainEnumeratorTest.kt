@@ -22,19 +22,19 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            416,
+            216,
             allToolchains.size
         )
         assertEquals(
-            104,
+            54,
             allToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
-            208,
+            108,
             allToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            208,
+            108,
             allToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
@@ -57,11 +57,11 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            196,
+            102,
             allAarToolchains.size
         )
         assertEquals(
-            52,
+            27,
             allAarToolchains.filter { it.abi == "armeabi-v7a" }.count()
         )
         assertEquals(
@@ -69,7 +69,7 @@ class ToolchainEnumeratorTest {
             allAarToolchains.filter { it.stl == "c++_static" }.count()
         )
         assertEquals(
-            196,
+            102,
             allAarToolchains.filter { it.stl == "c++_shared" }.count()
         )
         assertEquals(
