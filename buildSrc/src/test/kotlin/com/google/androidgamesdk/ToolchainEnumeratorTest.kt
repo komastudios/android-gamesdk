@@ -22,7 +22,7 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            416,
+            216,
             allToolchains.size
         )
         assertEquals(
@@ -57,7 +57,7 @@ class ToolchainEnumeratorTest {
 
         // Do a few sanity checks on the enumerated toolchains
         assertEquals(
-            196,
+            102,
             allAarToolchains.size
         )
         assertEquals(
