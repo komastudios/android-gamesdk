@@ -44,25 +44,6 @@
 // instead.
 namespace {
 
-#if __ANDROID_API__ >= 26
-std::string getSystemPropViaCallback(const char *key,
-                                     const char *default_value = "") {
-    const prop_info *prop = __system_property_find(key);
-    if (prop == nullptr) {
-        return default_value;
-    }
-    std::string return_value;
-    auto thunk = [](void *cookie, const char * /*name*/, const char *value,
-                    uint32_t /*serial*/) {
-        if (value != nullptr) {
-            std::string *r = static_cast<std::string *>(cookie);
-            *r = value;
-        }
-    };
-    __system_property_read_callback(prop, thunk, &return_value);
-    return return_value;
-}
-#else
 std::string getSystemPropViaGet(const char *key,
                                 const char *default_value = "") {
     char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
@@ -72,14 +53,9 @@ std::string getSystemPropViaGet(const char *key,
     else
         return "";
 }
-#endif
 
 std::string GetSystemProp(const char *key, const char *default_value = "") {
-#if __ANDROID_API__ >= 26
-    return getSystemPropViaCallback(key, default_value);
-#else
     return getSystemPropViaGet(key, default_value);
-#endif
 }
 
 int GetSystemPropAsInt(const char *key, int default_value = 0) {
