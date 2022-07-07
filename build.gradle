@@ -37,7 +37,7 @@ apply from: 'prepproto.gradle'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -180,7 +180,7 @@ allprojects {
     buildDir = getOutPath()
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -984,7 +984,8 @@ task format {
 }
 
 task buildSampleArtifacts {
-    doFirst {
+    doFirst{
+        println("Tom: buildSamples called")
         def buildFolder = getFullPackagePath()
         def builder = new ExternalAndroidProjectBuilder(project, buildFolder)
         builder.setSkipSamplesBuild(shouldSkipSamplesBuild())
@@ -1003,6 +1004,7 @@ def addZipTask(zipTask, buildTask, outputArchiveFileName) {
         dependsOn buildTask
 
         if (shouldIncludeSampleArtifacts()) {
+            buildTask.dependsOn prepare_proto
             buildTask.dependsOn buildSampleArtifacts
         }
         def packageFolder = getFullPackagePath()
