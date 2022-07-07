@@ -74,6 +74,7 @@ set(TEST_SRCS
   endtoend/loading.cpp
   endtoend/loading_groups.cpp
   endtoend/memory.cpp
+  endtoend/trace.cpp
   endtoend/time_based.cpp
   file_cache_test.cpp
   histogram_test.cpp
