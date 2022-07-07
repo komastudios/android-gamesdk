@@ -31,36 +31,37 @@ fi
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+    jdk_arg="-Dorg.gradle.java.home=../prebuilts/jdk/jdk11/"
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice $jdk_arg -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=swappy          -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=tuningfork      -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe            -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_activity   -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=paddleboat      -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=memory_advice   -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice $jdk_arg -PdistPath="$dist_dir" -PpackageName=$package_name
 elif [[ $1 == "samples" ]]
 then
     package_name=gamesdk
-    ./gradlew packageZip -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir"
+    ./gradlew packageZip      -Plibraries=swappy $jdk_arg -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir"
+    ./gradlew packageMavenZip -Plibraries=swappy $jdk_arg -PdistPath="$dist_dir"
 elif [[ $1 == "maven-only" ]]
 then
     # Only the Maven artifacts for Jetpack
     package_name=gamesdk-maven
-    ./gradlew packageMavenZip -Plibraries=swappy -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=tuningfork -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=oboe -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_activity -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=paddleboat -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew packageMavenZip -Plibraries=memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=swappy          -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=tuningfork      -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe            -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_activity   -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=paddleboat      -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=memory_advice   -PdistPath="$dist_dir" $jdk_arg -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice $jdk_arg -PdistPath="$dist_dir" -PpackageName=$package_name
 else
     # The default is to build the express zip
     package_name=gamesdk-express
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice $jdk_arg -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
 fi
 
 # Calculate hash of the zip file
