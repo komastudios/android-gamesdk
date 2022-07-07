@@ -37,7 +37,7 @@ apply from: 'prepproto.gradle'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -95,21 +95,21 @@ def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
         .setUsesProtobuf()
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
-                        .copySourcesTo("samples/tuningfork/insightsdemo")
-                        .buildDebugApkTo("apks/samples", "insightsdemo.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('src', 'tuningfork', 'tools', 'validation'))
-                        .copySourcesTo("src/tuningfork/tools/validation"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("src/tuningfork/tools/TuningForkMonitor")
-                        .buildDebugApkTo("apks/tools", "TuningForkMonitor.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("test/tuningfork/testapp")
-                        .buildDebugApkTo("apks/test", "tuningforktest.apk"))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('samples', 'tuningfork', "common")))
+        //.addSampleAndroidProject(
+        //        new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
+        //                .copySourcesTo("samples/tuningfork/insightsdemo")
+        //                .buildDebugApkTo("apks/samples", "insightsdemo.apk"))
+        //.addSampleAndroidProject(
+        //        new ExternalAndroidProject(joinPath('src', 'tuningfork', 'tools', 'validation'))
+        //                .copySourcesTo("src/tuningfork/tools/validation"))
+        //.addSampleAndroidProject(
+        //        new ExternalAndroidProject("src/tuningfork/tools/TuningForkMonitor")
+        //                .buildDebugApkTo("apks/tools", "TuningForkMonitor.apk"))
+        //.addSampleAndroidProject(
+        //        new ExternalAndroidProject("test/tuningfork/testapp")
+        //                .buildDebugApkTo("apks/test", "tuningforktest.apk"))
+        //.addSampleExtraFolder(
+        //        new SampleFolder(joinPath('samples', 'tuningfork', "common")))
         .addSampleExtraFolder(
                 new SampleFolder(joinPath('src', 'protobuf')))
         .addSampleExtraFolder(
@@ -180,7 +180,7 @@ allprojects {
     buildDir = getOutPath()
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
