@@ -37,7 +37,7 @@ apply from: 'prepproto.gradle'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -180,7 +180,7 @@ allprojects {
     buildDir = getOutPath()
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
