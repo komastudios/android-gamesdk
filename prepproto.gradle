@@ -42,13 +42,14 @@ def getEnvironment() {
 }
 
 task prepare_proto_before() {
+    println("Tom: preapre proto before")
     def gameSdkRoot = buildscript.sourceFile.getParent()
     def protocBinDir = protobufInstallDir() + "/bin"
     def sixDir = "${gameSdkRoot}/../external/six"
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
-    doLast {
+        println("Tom: preapre proto before doLast called")
         // Install python-protobuf
         exec {
             workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
@@ -61,18 +62,16 @@ task prepare_proto_before() {
             setEnvironment env
             commandLine 'make'
         }
-    }
 }
 
 task prepare_proto(dependsOn: prepare_proto_before) {
+    println("Tom: preapre proto called")
     def gameSdkRoot = buildscript.sourceFile.getParent()
-    doLast {
         exec {
             workingDir "${gameSdkRoot}"
             commandLine "python"
             args = ["ab_info.py"]
         }
-    }
 }
 
 
