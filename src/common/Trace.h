@@ -29,6 +29,11 @@ class Trace {
     using ATrace_beginSection_type = void (*)(const char *sectionName);
     using ATrace_endSection_type = void (*)();
     using ATrace_isEnabled_type = bool (*)();
+
+    using ATrace_beginAsyncSection_type = void (*)(const char *sectionName,
+                                                   int32_t cookie);
+    using ATrace_endAsyncSection_type = void (*)(const char *sectionName,
+                                                 int32_t cookie);
     using ATrace_setCounter_type = void (*)(const char *counterName,
                                             int64_t counterValue);
 
@@ -39,10 +44,14 @@ class Trace {
 
     Trace(ATrace_beginSection_type beginSection,
           ATrace_endSection_type endSection, ATrace_isEnabled_type isEnabled,
+          ATrace_beginAsyncSection_type beginAsyncSection,
+          ATrace_endAsyncSection_type endAsyncSection,
           ATrace_setCounter_type setCounter)
         : ATrace_beginSection(beginSection),
           ATrace_endSection(endSection),
           ATrace_isEnabled(isEnabled),
+          ATrace_beginAsyncSection(beginAsyncSection),
+          ATrace_endAsyncSection(endAsyncSection),
           ATrace_setCounter(setCounter) {}
 
     static std::unique_ptr<Trace> create() {
@@ -74,7 +83,19 @@ class Trace {
         /* ATrace_setCounter was added in API 29, continue even if it is not
          * available */
 
+        auto beginAsyncSection =
+            reinterpret_cast<ATrace_beginAsyncSection_type>(
+                dlsym(libandroid, "ATrace_beginAsyncSection"));
+        /* ATrace_beginAsyncSection was added in API 29, continue even if it is
+         * not available */
+
+        auto endAsyncSection = reinterpret_cast<ATrace_endAsyncSection_type>(
+            dlsym(libandroid, "ATrace_endAsyncSection"));
+        /* ATrace_endAsyncSection was added in API 29, continue even if it is
+         * not available */
+
         return std::make_unique<Trace>(beginSection, endSection, isEnabled,
+                                       beginAsyncSection, endAsyncSection,
                                        setCounter);
     }
 
@@ -100,12 +121,37 @@ class Trace {
         ATrace_endSection();
     }
 
+    void beginAsyncSection(const char *name, int64_t value) {
+        if (!ATrace_beginAsyncSection || !isEnabled()) {
+            return;
+        }
+
+        ATrace_beginAsyncSection(name, value);
+    }
+
+    void endAsyncSection(const char *name, int64_t value) {
+        if (!ATrace_endAsyncSection || !isEnabled()) {
+            return;
+        }
+
+        ATrace_endAsyncSection(name, value);
+    }
+
     void setCounter(const char *name, int64_t value) {
         if (!ATrace_setCounter || !isEnabled()) {
             return;
         }
 
         ATrace_setCounter(name, value);
+    }
+
+    bool supportsBasicATrace() const {
+        return ATrace_beginSection && ATrace_endSection;
+    }
+
+    bool supportsFullATrace() const {
+        return supportsBasicATrace() && ATrace_beginAsyncSection &&
+               ATrace_endAsyncSection && ATrace_setCounter;
     }
 
     static Trace *getInstance() {
@@ -117,6 +163,9 @@ class Trace {
     const ATrace_beginSection_type ATrace_beginSection = nullptr;
     const ATrace_endSection_type ATrace_endSection = nullptr;
     const ATrace_isEnabled_type ATrace_isEnabled = nullptr;
+
+    const ATrace_beginAsyncSection_type ATrace_beginAsyncSection = nullptr;
+    const ATrace_endAsyncSection_type ATrace_endAsyncSection = nullptr;
     const ATrace_setCounter_type ATrace_setCounter = nullptr;
 };
 
