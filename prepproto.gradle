@@ -48,30 +48,26 @@ task prepare_proto_before() {
     def env = getEnvironment()
     env['PATH'] = protocBinDir + System.getProperty("path.separator") + env['PATH']
     env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
-    doLast {
-        // Install python-protobuf
-        exec {
-            workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
-            setEnvironment env
-            commandLine "python", "setup.py", "install", "--user"
-        }
-        // Generate nano-pb requirements
-        exec {
-            workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
-            setEnvironment env
-            commandLine 'make'
-        }
+    // Install python-protobuf
+    exec {
+        workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
+        setEnvironment env
+        commandLine "python", "setup.py", "install", "--user"
+    }
+    // Generate nano-pb requirements
+    exec {
+        workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
+        setEnvironment env
+        commandLine 'make'
     }
 }
 
 task prepare_proto(dependsOn: prepare_proto_before) {
     def gameSdkRoot = buildscript.sourceFile.getParent()
-    doLast {
-        exec {
-            workingDir "${gameSdkRoot}"
-            commandLine "python"
-            args = ["ab_info.py"]
-        }
+    exec {
+        workingDir "${gameSdkRoot}"
+        commandLine "python"
+        args = ["ab_info.py"]
     }
 }
 
