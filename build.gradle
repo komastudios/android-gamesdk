@@ -37,7 +37,7 @@ apply from: 'prepproto.gradle'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -180,7 +180,7 @@ allprojects {
     buildDir = getOutPath()
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -984,7 +984,6 @@ task format {
 }
 
 task buildSampleArtifacts {
-    doFirst {
         def buildFolder = getFullPackagePath()
         def builder = new ExternalAndroidProjectBuilder(project, buildFolder)
         builder.setSkipSamplesBuild(shouldSkipSamplesBuild())
@@ -992,7 +991,6 @@ task buildSampleArtifacts {
             logger.info("Building samples of " + nativeLibrary.nativeLibraryName + "...")
             builder.buildSampleArtifacts(nativeLibrary)
         }
-    }
 }
 
 /** Add a task called $zipTask that creates a ZIP or AAR file, $outputArchiveFileName,
@@ -1003,6 +1001,7 @@ def addZipTask(zipTask, buildTask, outputArchiveFileName) {
         dependsOn buildTask
 
         if (shouldIncludeSampleArtifacts()) {
+            if (nativeLibrary.getUsesProtobuf()) buildTask.dependsOn prepare_proto
             buildTask.dependsOn buildSampleArtifacts
         }
         def packageFolder = getFullPackagePath()
