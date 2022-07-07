@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e1cab4a_77cae39a",
+        "filename": "src/tuningfork/core/tuningfork_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-07-07T12:00:39Z",
+      "side": 1,
+      "message": "The previous lock wasn\u0027t actually protecting all the calls",
+      "revId": "a89a19be79ee0106f286ceed98c7b29bdcba269b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
