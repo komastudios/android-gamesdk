@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d5d80e6_0e349228",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-07-11T23:32:39Z",
+      "side": 1,
+      "message": "Question: if excluding index from the CacheEntry, would that make interface clear to follow: from app side, ID is the only one that is valid to access the app cache.  ",
+      "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
