@@ -89,12 +89,10 @@ class TuningForkImpl : public IdProvider {
     Duration current_loading_group_start_time_ = Duration::zero();
 
     // Caching of ATrace markers
-#if __ANDROID_API__ >= 29
     bool trace_started_ = false;
     std::mutex trace_marker_cache_mutex_;
     std::map<AnnotationId, std::string> trace_marker_cache_;
     AnnotationId last_id_;
-#endif
 
    public:
     TuningForkImpl(const Settings &settings, IBackend *backend,

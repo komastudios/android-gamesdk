@@ -219,8 +219,8 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
         ALOGV("Set annotation id to %" PRIu32, id);
         bool changed = current_annotation_id_.detail.annotation != id;
         if (!changed) return current_annotation_id_;
-#if __ANDROID_API__ >= 29
-        if (ATrace_isEnabled()) {
+        if (trace_->isEnabled()) {
+            std::lock_guard<std::mutex> lock(trace_marker_cache_mutex_);
             // Finish the last section if there was one and start a new one.
             static constexpr int32_t kATraceAsyncCookie = 0x5eaf00d;
             if (trace_started_) {
@@ -228,15 +228,14 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
                 if (last_annotation == trace_marker_cache_.end()) {
                     ALOGE("Annotation %u has vanished!", last_id_);
                 } else {
-                    ATrace_endAsyncSection(last_annotation->second.c_str(),
-                                           kATraceAsyncCookie);
+                    trace_->endAsyncSection(last_annotation->second.c_str(),
+                                            kATraceAsyncCookie);
                     trace_marker_cache_.erase(last_annotation);
                 }
             } else {
                 trace_started_ = true;
             }
             // Guard against concurrent access to the cache
-            std::lock_guard<std::mutex> lock(trace_marker_cache_mutex_);
             auto it = trace_marker_cache_.find(id);
             if (it == trace_marker_cache_.end()) {
                 it = trace_marker_cache_
@@ -246,10 +245,9 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
                                           annotation)})
                          .first;
             }
-            ATrace_beginAsyncSection(it->second.c_str(), kATraceAsyncCookie);
+            trace_->beginAsyncSection(it->second.c_str(), kATraceAsyncCookie);
             last_id_ = id;
         }
-#endif
         current_annotation_id_ = MetricId::FrameTime(id, 0);
         battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
         thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
