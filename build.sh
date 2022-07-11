@@ -27,7 +27,9 @@ else
     dist_dir=$DIST_DIR
 fi
 
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+if [ "$(uname)" == "Darwin" ]; then
+    : # Do nothing but skip the next condition so we don't get a bash warning on macos
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # Do only for GNU/Linux platform
     jdk_arg="-Dorg.gradle.java.home=../prebuilts/jdk/jdk11/linux-x86/"
 fi
