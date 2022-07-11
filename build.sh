@@ -29,7 +29,7 @@ fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # Do only for GNU/Linux platform
-    jdk_arg="-Dorg.gradle.java.home=../prebuilts/jdk/jdk11/linux-x86/"
+   export JAVA_HOME=$(pwd)/../prebuilts/jdk/jdk11/linux-x86
 fi
 
 # Build the Game SDK distribution zip and the zips for Maven AARs

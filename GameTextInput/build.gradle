@@ -23,10 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+
 // TODO(florianrival@) Enabling this will trigger "Cannot query the value of this property because it has no value available." error.
 //    buildFeatures {
 //        prefabPublishing true
