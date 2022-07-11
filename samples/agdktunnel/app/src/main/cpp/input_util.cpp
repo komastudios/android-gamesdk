@@ -77,6 +77,26 @@ static int32_t _checkControllerButton(const uint32_t buttonsDown, const InputAct
     return 0;
 }
 
+static bool _cookEventForPointerIndex(GameActivityMotionEvent *motionEvent,
+                                      CookedEventCallback callback, struct CookedEvent &ev,
+                                      const uint32_t pointerIndex) {
+    if (pointerIndex < motionEvent->pointerCount) {
+        ev.motionPointerId = motionEvent->pointers[pointerIndex].id;
+        ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[pointerIndex]);
+        ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[pointerIndex]);
+
+        if (ev.motionIsOnScreen) {
+            // use screen size as the motion range
+            ev.motionMinX = 0.0f;
+            ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
+            ev.motionMinY = 0.0f;
+            ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
+        }
+        return callback(&ev);
+    }
+    return false;
+}
+
 bool isMovementKey(const int32_t keyCode) {
     return keyCode == KEYCODE_W ||
            keyCode == KEYCODE_A ||
@@ -110,43 +130,57 @@ bool CookGameActivityKeyEvent(GameActivityKeyEvent *keyEvent, CookedEventCallbac
 
 bool
 CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCallback callback) {
+    bool callbackProcessed = false;
+
     if (motionEvent->pointerCount > 0) {
-        int action = motionEvent->action;
-        int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
-        uint32_t ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
-                                 AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+        const int action = motionEvent->action;
+        const int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
+        uint32_t pointerIndex = GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT;
+        struct CookedEvent ev;
+        memset(&ev, 0, sizeof(ev));
+        ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
 
-        if (ptrIndex < motionEvent->pointerCount) {
-            struct CookedEvent ev;
-            memset(&ev, 0, sizeof(ev));
-
-            if (actionMasked == AMOTION_EVENT_ACTION_DOWN ||
-                actionMasked == AMOTION_EVENT_ACTION_POINTER_DOWN) {
+        switch (actionMasked) {
+            case AMOTION_EVENT_ACTION_DOWN:
+                pointerIndex = 0;
                 ev.type = COOKED_EVENT_TYPE_POINTER_DOWN;
-            } else if (actionMasked == AMOTION_EVENT_ACTION_UP ||
-                       actionMasked == AMOTION_EVENT_ACTION_POINTER_UP) {
+                break;
+            case AMOTION_EVENT_ACTION_POINTER_DOWN:
+                pointerIndex = ((action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK)
+                        >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT);
+                ev.type = COOKED_EVENT_TYPE_POINTER_DOWN;
+                break;
+            case AMOTION_EVENT_ACTION_UP:
+                pointerIndex = 0;
                 ev.type = COOKED_EVENT_TYPE_POINTER_UP;
-            } else {
+                break;
+            case AMOTION_EVENT_ACTION_POINTER_UP:
+                pointerIndex = ((action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK)
+                        >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT);
+                ev.type = COOKED_EVENT_TYPE_POINTER_UP;
+                break;
+            case AMOTION_EVENT_ACTION_MOVE: {
+                // Move includes all active pointers, so loop and process them here
                 ev.type = COOKED_EVENT_TYPE_POINTER_MOVE;
+                for (uint32_t i = 0; i < motionEvent->pointerCount; ++i) {
+                    bool moveProcessed = _cookEventForPointerIndex(motionEvent, callback, ev, i);
+                    if (moveProcessed) {
+                        // Set if any of the moves was processed by the callback
+                        callbackProcessed = true;
+                    }
+                }
+                break;
             }
+            default:
+                break;
+        }
 
-            ev.motionPointerId = motionEvent->pointers[ptrIndex].id;
-            ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
-            ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[ptrIndex]);
-            ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[ptrIndex]);
-
-            if (ev.motionIsOnScreen) {
-                // use screen size as the motion range
-                ev.motionMinX = 0.0f;
-                ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
-                ev.motionMinY = 0.0f;
-                ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
-            }
-
-            return callback(&ev);
+        if (pointerIndex != GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT) {
+            callbackProcessed = _cookEventForPointerIndex(motionEvent, callback,
+                                                          ev, pointerIndex);
         }
     }
-    return false;
+    return callbackProcessed;
 }
 
 bool CookGameControllerEvent(const int32_t gameControllerIndex, CookedEventCallback callback) {
