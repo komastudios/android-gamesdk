@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "892895bb_797dea98",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-07-11T15:26:36Z",
+      "side": 1,
+      "message": "Good job on getting these done, Tom!",
+      "revId": "49a027bee477490274999a58011bfaf1b007eca0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2e3c272_67a91c56",
+        "filename": "buildSrc/src/main/java/com/google/androidgamesdk/ToolchainEnumerator.kt",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-07-11T15:26:36Z",
+      "side": 1,
+      "message": "nit: you should be able to remove this comment now",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 60
+      },
+      "revId": "49a027bee477490274999a58011bfaf1b007eca0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
