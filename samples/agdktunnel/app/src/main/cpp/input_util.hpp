@@ -19,6 +19,7 @@
 
 #include "engine.hpp"
 #include "our_key_codes.hpp"
+#include "pointer_cache.hpp"
 
 // event type
 #define COOKED_EVENT_TYPE_JOY 0
@@ -72,7 +73,8 @@ typedef bool (*CookedEventCallback)(struct CookedEvent *event);
 bool CookGameActivityKeyEvent(GameActivityKeyEvent *keyEvent, CookedEventCallback callback);
 
 bool
-CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCallback callback);
+CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCallback callback,
+                            PointerCache &pointerCache);
 
 bool CookGameControllerEvent(const int32_t gameControllerIndex, CookedEventCallback callback);
 

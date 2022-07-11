@@ -583,7 +583,7 @@ void NativeEngine::HandleGameActivityInput() {
             } else {
                 // Didn't belong to a game controller, process it ourselves if it is a touch event
                 CookGameActivityMotionEvent(motionEvent,
-                                            _cooked_event_callback);
+                                            _cooked_event_callback, mPointerCache);
             }
         }
         android_app_clear_motion_events(inputBuffer);
