@@ -20,6 +20,7 @@
 #include "common.hpp"
 #include "game_asset_manager.hpp"
 #include "memory_consumer.hpp"
+#include "pointer_cache.hpp"
 #include "texture_manager.hpp"
 #include "tuning_manager.hpp"
 #include "data_loader_machine.hpp"
@@ -97,6 +98,9 @@ private:
 
     // known active motion axis ids (bitfield)
     uint64_t mActiveAxisIds;
+
+    // Cache of active pointer touches
+    PointerCache mPointerCache;
 
     // android_app structure
     struct android_app *mApp;

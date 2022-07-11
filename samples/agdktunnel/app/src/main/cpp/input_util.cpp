@@ -77,6 +77,58 @@ static int32_t _checkControllerButton(const uint32_t buttonsDown, const InputAct
     return 0;
 }
 
+void _updatePointerCache(GameActivityMotionEvent *motionEvent, PointerCache &pointerCache) {
+    if (motionEvent->pointerCount > 0) {
+        const int action = motionEvent->action;
+        const int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
+        uint32_t pointerIndex = GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT;
+        PointerState pointerState = POINTER_STATE_INACTIVE;
+
+        switch (actionMasked) {
+            case AMOTION_EVENT_ACTION_DOWN:
+                pointerIndex = 0;
+                pointerState = POINTER_STATE_DOWN;
+                break;
+            case AMOTION_EVENT_ACTION_POINTER_DOWN:
+                pointerIndex = ((action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK)
+                        >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT);
+                pointerState = POINTER_STATE_DOWN;
+                break;
+            case AMOTION_EVENT_ACTION_UP:
+                pointerIndex = 0;
+                pointerState = POINTER_STATE_UP;
+                break;
+            case AMOTION_EVENT_ACTION_POINTER_UP:
+                pointerIndex = ((action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK)
+                        >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT);
+                pointerState = POINTER_STATE_UP;
+                break;
+            case AMOTION_EVENT_ACTION_MOVE: {
+                // Move includes all active pointers, so loop and process them here
+                for (uint32_t i = 0; i < motionEvent->pointerCount; ++i) {
+                    pointerCache.PointerEvent(motionEvent->pointers[i].id, motionEvent->source,
+                                              GameActivityPointerAxes_getX(
+                                                      &motionEvent->pointers[i]),
+                                              GameActivityPointerAxes_getY(
+                                                      &motionEvent->pointers[i]),
+                                              POINTER_STATE_MOVE);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        if (pointerState != POINTER_STATE_INACTIVE && pointerIndex < motionEvent->pointerCount) {
+            pointerCache.PointerEvent(motionEvent->pointers[pointerIndex].id, motionEvent->source,
+                                      GameActivityPointerAxes_getX(
+                                              &motionEvent->pointers[pointerIndex]),
+                                      GameActivityPointerAxes_getY(
+                                              &motionEvent->pointers[pointerIndex]),
+                                      pointerState);
+        }
+    }
+}
+
 bool isMovementKey(const int32_t keyCode) {
     return keyCode == KEYCODE_W ||
            keyCode == KEYCODE_A ||
@@ -109,44 +161,51 @@ bool CookGameActivityKeyEvent(GameActivityKeyEvent *keyEvent, CookedEventCallbac
 }
 
 bool
-CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCallback callback) {
-    if (motionEvent->pointerCount > 0) {
-        int action = motionEvent->action;
-        int actionMasked = action & AMOTION_EVENT_ACTION_MASK;
-        uint32_t ptrIndex = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
-                                 AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCallback callback,
+                            PointerCache &pointerCache) {
+    bool callbackProcessed = false;
+    _updatePointerCache(motionEvent, pointerCache);
 
-        if (ptrIndex < motionEvent->pointerCount) {
-            struct CookedEvent ev;
-            memset(&ev, 0, sizeof(ev));
-
-            if (actionMasked == AMOTION_EVENT_ACTION_DOWN ||
-                actionMasked == AMOTION_EVENT_ACTION_POINTER_DOWN) {
+    // We only want single touch input for the game, so if we have an active 'oldest' touch,
+    // report that and ignore the other pointers
+    if (pointerCache.GetActivePointerCount() > 0 &&
+        pointerCache.IsOldestOriginalPointerStillActive()) {
+        struct CookedEvent ev;
+        memset(&ev, 0, sizeof(ev));
+        const uint32_t pointerIndex = OLDEST_POINTER_INDEX;
+        switch (pointerCache.GetPointerState(pointerIndex)) {
+            case POINTER_STATE_INACTIVE:
+                break;
+            case POINTER_STATE_DOWN:
                 ev.type = COOKED_EVENT_TYPE_POINTER_DOWN;
-            } else if (actionMasked == AMOTION_EVENT_ACTION_UP ||
-                       actionMasked == AMOTION_EVENT_ACTION_POINTER_UP) {
+                break;
+            case POINTER_STATE_UP:
                 ev.type = COOKED_EVENT_TYPE_POINTER_UP;
-            } else {
+                break;
+            case POINTER_STATE_MOVE:
                 ev.type = COOKED_EVENT_TYPE_POINTER_MOVE;
-            }
-
-            ev.motionPointerId = motionEvent->pointers[ptrIndex].id;
-            ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
-            ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[ptrIndex]);
-            ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[ptrIndex]);
-
-            if (ev.motionIsOnScreen) {
-                // use screen size as the motion range
-                ev.motionMinX = 0.0f;
-                ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
-                ev.motionMinY = 0.0f;
-                ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
-            }
-
-            return callback(&ev);
+                break;
         }
+        const PointerCacheEntry &cacheEntry = pointerCache.GetPointerCacheEntry(pointerIndex);
+        ev.motionPointerId = cacheEntry.pointerId;
+        ev.motionIsOnScreen = cacheEntry.pointerSource == AINPUT_SOURCE_TOUCHSCREEN;
+        ev.motionX = cacheEntry.lastMotionX;
+        ev.motionY = cacheEntry.lastMotionY;
+
+        if (ev.motionIsOnScreen) {
+            // use screen size as the motion range
+            ev.motionMinX = 0.0f;
+            ev.motionMaxX = SceneManager::GetInstance()->GetScreenWidth();
+            ev.motionMinY = 0.0f;
+            ev.motionMaxY = SceneManager::GetInstance()->GetScreenHeight();
+        }
+
+        callbackProcessed = callback(&ev);
     }
-    return false;
+
+    // We've processed any up events, release 'up' pointers from the cache
+    pointerCache.ReleaseUpPointers();
+    return callbackProcessed;
 }
 
 bool CookGameControllerEvent(const int32_t gameControllerIndex, CookedEventCallback callback) {

@@ -482,6 +482,7 @@ void NativeEngine::HandleCommand(int32_t cmd) {
             break;
         case APP_CMD_RESUME:
             VLOGD("NativeEngine: APP_CMD_RESUME");
+            mPointerCache.ResetPointerCache();
             mGameAssetManager->OnResume();
             mgr->OnResume();
             break;
@@ -583,7 +584,7 @@ void NativeEngine::HandleGameActivityInput() {
             } else {
                 // Didn't belong to a game controller, process it ourselves if it is a touch event
                 CookGameActivityMotionEvent(motionEvent,
-                                            _cooked_event_callback);
+                                            _cooked_event_callback, mPointerCache);
             }
         }
         android_app_clear_motion_events(inputBuffer);

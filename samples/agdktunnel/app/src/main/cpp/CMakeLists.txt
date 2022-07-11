@@ -93,6 +93,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
      obstacle_generator.cpp
      our_shader.cpp
      play_scene.cpp
+     pointer_cache.cpp
      scene.cpp
      scene_manager.cpp
      sfxman.cpp
