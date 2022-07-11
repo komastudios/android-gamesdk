@@ -67,15 +67,14 @@ def getProtocPath() {
     return "../../../../third_party/protobuf-3.0.0/install/"  + platformName
 }
 
-task buildTuningForkBinFiles(type: Exec) {
+task buildTuningForkBinFiles(type: JavaExec) {
     dependsOn createJar
-    commandLine "java",
-            "-jar",
-            "../../../../src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
+    main "-jar"
+    args(   "../../../../src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
-            getProtocPath()
+            getProtocPath())
 }
 
 tasks.preBuild.dependsOn("buildTuningForkBinFiles")
