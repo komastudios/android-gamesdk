@@ -33,6 +33,42 @@
       "message": "So the pointer cache allows us to, at anytime, see what order our pointers were placed on the screen. But why is this information ever useful?\n\n\u003eThe pointer cache tracks all active touches, so multi touch actions could be added in the future.\n\nBut we can do multi touch actions by just assigning a role to a pointer when we get a pointer_down. For example for pinch and zoom we just assign the first two pointers down as the pointers which control the zoom and ignore any pointers after.\n\nThe only way I can see this cache being helpful is if a pointer is removed (pointer_up) and we want to fallback to use the oldest pointer *which is already down*. But I can\u0027t think of any time this is actually done across any app I use?\n\nSo this would allow agdktunnel to fallback to the next oldest pointer which is already down if we remove our pointer. But I think this isn\u0027t standard. I think people expect that they will have to place another finger on the screen to start controlling again even if they have fingers on the screen already. because the fingers are either already being ignored (and so the user expects them to continue being ignored) or the fingers are being used for something and they shouldn\u0027t switch role regardless of how old they are.\n\nBecause if this is generally useful I would like to consider adding it to game activity. ",
       "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd9a844e_69326907",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-07-12T18:15:03Z",
+      "side": 1,
+      "message": "See my other comment, the pointer cache wasn\u0027t really necessary at all, and complicates using it as a snippet, so I pulled it out entirely.",
+      "parentUuid": "7d5d80e6_0e349228",
+      "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b9df4df_7399effc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-07-12T18:15:03Z",
+      "side": 1,
+      "message": "So, I made it more complicated than it actually needed to be because I liked having the age sorting. But the game code doesn\u0027t actually need it, and it complicates using it as a snippet so I just pulled out the pointer cache entirely.",
+      "parentUuid": "10753f54_4319c828",
+      "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
