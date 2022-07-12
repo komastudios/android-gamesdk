@@ -41,6 +41,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f06a442b_107fb2f2",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-07-12T20:15:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e35c72c_d2ccaa47",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 27
+      },
+      "revId": "a91702bdc304823f981da94c3fc62c9c451471e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1d73c756_81a70a76",
@@ -64,6 +88,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d677cb25_60e4b158",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-07-12T20:15:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d73c756_81a70a76",
+      "range": {
+        "startLine": 161,
+        "startChar": 17,
+        "endLine": 161,
+        "endChar": 42
+      },
+      "revId": "a91702bdc304823f981da94c3fc62c9c451471e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7d85c226_9728fce0",
@@ -77,6 +125,30 @@
       "writtenOn": "2022-07-12T19:35:34Z",
       "side": 1,
       "message": "when looping through all pointers, the secondary pointers would overwrite the one inside the game code (it saves an ID internally there, I think), and apply the coordinates, it would be a jump or something unusual, for example, assuming the primary is at (1, 1), and a secondary is (1079, 1919):\n1) game side remember the primary at (1,1) at the first\n2) move the secondary to (1070, 1919): just a short move, so we get ACTION_MOVE\n3) we loop through the 2 pointers, primary no change, it is ok.\n4) for the secondary pointer, we send down ID and coordinates:\n    - game code update id to the secondary\n    - game code update coordinate from (1,1) --\u003e (1079, 1919).This is a pretty big jump, may not be intentional?\n\nJust my guess, may you kindly confirm? thank you",
+      "range": {
+        "startLine": 164,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 17
+      },
+      "revId": "a91702bdc304823f981da94c3fc62c9c451471e9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9821adb4_1eb6adb5",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-07-12T20:15:28Z",
+      "side": 1,
+      "message": "The cooked events include the pointer id. For the game touch controls, the game code keeps track of the pointer id it is using to steer, and ignores down/up/move events from other pointer ids. So sending more up/down events and all the move events has no bearing on gameplay control.\n\nThe UI code doesn\u0027t. However, since the only controls are basic button taps, I\u0027m not really worried about that behavior. It might be worth refactoring the UI event handling at some point, but it isn\u0027t required for this change.\n\nThe flip side of this code being simple is it is the game\u0027s job to keep track of the pointer ids associated with the events (which it does for the steering control)",
+      "parentUuid": "7d85c226_9728fce0",
       "range": {
         "startLine": 164,
         "startChar": 0,
