@@ -16,6 +16,23 @@
       "message": "Question: if excluding index from the CacheEntry, would that make interface clear to follow: from app side, ID is the only one that is valid to access the app cache.  ",
       "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10753f54_4319c828",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-07-12T11:26:48Z",
+      "side": 1,
+      "message": "So the pointer cache allows us to, at anytime, see what order our pointers were placed on the screen. But why is this information ever useful?\n\n\u003eThe pointer cache tracks all active touches, so multi touch actions could be added in the future.\n\nBut we can do multi touch actions by just assigning a role to a pointer when we get a pointer_down. For example for pinch and zoom we just assign the first two pointers down as the pointers which control the zoom and ignore any pointers after.\n\nThe only way I can see this cache being helpful is if a pointer is removed (pointer_up) and we want to fallback to use the oldest pointer *which is already down*. But I can\u0027t think of any time this is actually done across any app I use?\n\nSo this would allow agdktunnel to fallback to the next oldest pointer which is already down if we remove our pointer. But I think this isn\u0027t standard. I think people expect that they will have to place another finger on the screen to start controlling again even if they have fingers on the screen already. because the fingers are either already being ignored (and so the user expects them to continue being ignored) or the fingers are being used for something and they shouldn\u0027t switch role regardless of how old they are.\n\nBecause if this is generally useful I would like to consider adding it to game activity. ",
+      "revId": "ff78c4318fdcbcab9f060d00294d3f97699f16f3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
