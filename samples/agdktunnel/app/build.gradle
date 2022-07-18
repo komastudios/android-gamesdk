@@ -166,15 +166,16 @@ def getProtocPath() {
     return GameSDKPath + "/third_party/protobuf-3.0.0/install/"  + platformName
 }
 
-task buildTuningForkBinFiles(type: JavaExec) {
+task buildTuningForkBinFiles(type: Exec) {
     dependsOn prepare_proto
     dependsOn createJar
-    main "-jar"
-    args   (GameSDKPath + "/src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
+    commandLine "java",
+            "-jar",
+            GameSDKPath + "/src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
-            getProtocPath())
+            getProtocPath()
 }
 
 if (APTEnabled.toBoolean()) {
