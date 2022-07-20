@@ -1,6 +1,10 @@
 RELEASE NOTES
 
 
+Version 2022.3.0
+================
+-Decreased number of library permutations built for each library
+
 Version 2022.2.0
 ================
 - GameActivity
