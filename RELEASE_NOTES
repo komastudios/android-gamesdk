@@ -1,6 +1,13 @@
 RELEASE NOTES
 
 
+Version 2022.3.0
+================
+-All libraries
+    -Decreased number of library permutations built for each library
+-GameActivity
+    -Add the missing historical axis values from the MotionEvent java class to GameActivityMotionEvent
+
 Version 2022.2.0
 ================
 - GameActivity
