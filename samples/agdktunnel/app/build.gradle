@@ -167,7 +167,6 @@ def getProtocPath() {
 }
 
 task buildTuningForkBinFiles(type: JavaExec) {
-    dependsOn prepare_proto
     dependsOn createJar
     main "-jar"
     args   (GameSDKPath + "/src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
@@ -178,9 +177,9 @@ task buildTuningForkBinFiles(type: JavaExec) {
 }
 
 if (APTEnabled.toBoolean()) {
+    preBuild.dependsOn prepare_proto
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
 }
-preBuild.dependsOn prepare_proto
 
 task copyTexturesToAssets(type: Copy) {
     def assetsDir = new File(projectDir, 'src/main/assets/no_asset_packs_textures')
