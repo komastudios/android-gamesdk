@@ -34,6 +34,9 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     export JAVA_HOME=$(pwd)/../prebuilts/jdk/jdk11/linux-x86
 fi
 
+# stop any remaining Gradle daemons, b/205883835
+./gradlew --stop
+
 # Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
