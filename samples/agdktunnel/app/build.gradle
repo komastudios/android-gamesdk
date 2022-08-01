@@ -16,7 +16,6 @@
 
 import org.gradle.internal.os.OperatingSystem;
 
-apply from: GameSDKPath + '/prepproto.gradle'
 apply plugin: 'com.android.application'
 
 // See README for details on enabling APT and PAD
@@ -177,6 +176,7 @@ task buildTuningForkBinFiles(type: JavaExec) {
 }
 
 if (APTEnabled.toBoolean()) {
+    apply from: GameSDKPath + '/prepproto.gradle'
     preBuild.dependsOn prepare_proto
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
 }
