@@ -215,9 +215,9 @@ void NDKChoreographerThread::looperThread() {
     pthread_setname_np(pthread_self(), name);
 
     while (mThreadRunning) {
-        // mutex should be unlocked before sleeping on pollAll
+        // mutex should be unlocked before sleeping on pollOnce
         mWaitingMutex.unlock();
-        ALooper_pollAll(-1, &outFd, &outEvents, &outData);
+        ALooper_pollOnce(-1, &outFd, &outEvents, &outData);
         mWaitingMutex.lock();
     }
     if (mAChoreographer_unregisterRefreshRateCallback &&
