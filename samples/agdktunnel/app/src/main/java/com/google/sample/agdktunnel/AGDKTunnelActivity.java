@@ -25,12 +25,15 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
+
+import androidx.annotation.Keep;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.androidgamesdk.GameActivity;
 
+@Keep
 public class AGDKTunnelActivity extends GameActivity {
 
     private PGSManager mPGSManager;

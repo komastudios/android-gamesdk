@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
+import androidx.annotation.Keep;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.DisplayCutoutCompat;
@@ -385,6 +386,7 @@ public class GameActivity
     }
   }
 
+  @Keep
   void setWindowFlags(int flags, int mask) {
     getWindow().setFlags(flags, mask);
   }
@@ -403,6 +405,7 @@ public class GameActivity
     return insets;
   }
 
+  @Keep
   public Insets getWindowInsets(int type) {
     WindowInsetsCompat allInsets = ViewCompat.getRootWindowInsets(mSurfaceView);
     Insets insets = allInsets.getInsets(type);
@@ -412,6 +415,7 @@ public class GameActivity
       return insets;
   }
 
+  @Keep
   public Insets getWaterfallInsets() {
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mSurfaceView);
     DisplayCutoutCompat cutout = insets.getDisplayCutout();
@@ -449,6 +453,7 @@ public class GameActivity
    * Set the inputType and actionId in order to customize how the IME behaves.
    * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo.
    */
+  @Keep
   public void setImeEditorInfo(EditorInfo info) {
     imeEditorInfo = info;
   }
@@ -459,6 +464,7 @@ public class GameActivity
    * This is called from the native side by GameActivity_setImeEditorInfo.
    * See https://developer.android.com/reference/android/view/inputmethod/EditorInfo.
    */
+  @Keep
   public void setImeEditorInfoFields(int inputType, int actionId, int imeOptions) {
     EditorInfo info = getImeEditorInfo();
     info.inputType = inputType;
