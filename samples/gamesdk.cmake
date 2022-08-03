@@ -100,7 +100,7 @@ function(add_gamesdk_target)
             OUTPUT
                 ${SWAPPY_DEP_LIB} ${TUNINGFORK_DEP_LIB}  ${MEMORY_ADVICE_DEP_LIB} ${OBOE_DEP_LIB}
             COMMAND
-                ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local -Pndk=${GAMESDK_ANDROID_NDK_VERSION}
+                ${GAMESDK_GRADLE_BIN} buildLocal -Plibraries=${GAMESDK_LIBRARIES} -PandroidApiLevel=${GAMESDK_ANDROID_API_LEVEL} -PbuildType=${GAMESDK_BUILD_TYPE} -PpackageName=local -Pndk=${GAMESDK_ANDROID_NDK_VERSION} --info
             VERBATIM
             WORKING_DIRECTORY
                 "${GAMESDK_ROOT_DIR}"
