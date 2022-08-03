@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import androidx.annotation.Keep;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -34,6 +35,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.androidgamesdk.gametextinput.GameTextInput.Pair;
 import java.util.BitSet;
 
+@Keep
 public class InputConnection
     extends BaseInputConnection
     implements View.OnKeyListener, OnApplyWindowInsetsListener {
