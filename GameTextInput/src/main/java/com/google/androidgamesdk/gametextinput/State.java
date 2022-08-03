@@ -15,7 +15,10 @@
  */
 package com.google.androidgamesdk.gametextinput;
 
+import androidx.annotation.Keep;
+
 // The state of an editable text region.
+@Keep
 public final class State {
   public State(String text_in, int selectionStart_in, int selectionEnd_in,
       int composingRegionStart_in, int composingRegionEnd_in) {
