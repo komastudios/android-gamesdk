@@ -73,6 +73,8 @@ class CMakeWrapper {
                 nativeLibrary -> nativeLibrary.nativeLibraryName
             })
 
+            print("Building library with command: ")
+            print(cmdLine)
             try {
                 project.exec {
                     val protocBinDir = toolchain.getProtobufInstallPath() +

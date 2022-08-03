@@ -82,9 +82,9 @@ class ExternalAndroidProjectBuilder(
 
     private fun getGradleBuildCommandLine(): List<String> {
         if (OperatingSystem.current().isWindows) {
-            return listOf("cmd", "/c", "gradlew.bat build")
+            return listOf("cmd", "/c", "gradlew.bat build --info")
         }
 
-        return listOf("/bin/bash", "-c", "./gradlew build")
+        return listOf("/bin/bash", "-c", "./gradlew build --info")
     }
 }
