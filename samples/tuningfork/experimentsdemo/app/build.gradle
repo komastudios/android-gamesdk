@@ -7,7 +7,7 @@ android {
     ndkVersion "20.0.5594570"
     defaultConfig {
         applicationId "com.tuningfork.experimentsdemo"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 17
         versionName "1.0"
