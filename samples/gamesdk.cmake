@@ -114,6 +114,13 @@ function(add_gamesdk_target)
         add_dependencies(memory_advice memory_advice_lib)
         add_dependencies(oboe oboe_lib)
     else()
+        set(BUILD_NAME ${ANDROID_ABI}_API19_NDK23_${GAMESDK_ANDROID_STL}_${GAMESDK_BUILD_TYPE})
+        set(GAMESDK_LIBS_DIR "${GAMESDK_PACKAGE_DIR}/libs/${BUILD_NAME}")
+        set(GAMESDK_SHARED_LIBS_DIR "${GAMESDK_PACKAGE_DIR}/libs/${ANDROID_ABI}")
+        get_filename_component(SWAPPY_DEP_LIB "${GAMESDK_LIBS_DIR}/libswappy_static.a" REALPATH)
+        get_filename_component(TUNINGFORK_DEP_LIB "${GAMESDK_LIBS_DIR}/libtuningfork_static.a" REALPATH)
+        get_filename_component(MEMORY_ADVICE_DEP_LIB "${GAMESDK_LIBS_DIR}/libmemory_advice_static.a" REALPATH)
+        get_filename_component(OBOE_DEP_LIB "${GAMESDK_LIBS_DIR}/liboboe_static.a" REALPATH)
         # Validity check to ensure that the library files exist
         if(NOT EXISTS ${SWAPPY_DEP_LIB} AND
             NOT EXISTS ${TUNINGFORK_DEP_LIB} AND
