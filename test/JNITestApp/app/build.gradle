@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.google.jnitestapp"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 7
         versionName "1.0"
