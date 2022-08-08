@@ -23,11 +23,11 @@ class ToolchainEnumerator {
     private val aarStls = listOf("c++_shared")
 
     private val allNdkToSdkMap = mapOf(
-        "r23" to listOf(19)
+        "r23" to listOf(19, 24)
     )
 
     private val expressNdkToSdkMap = mapOf(
-        "r23" to listOf(19)
+        "r23" to listOf(19, 24)
     )
 
     fun enumerate(
