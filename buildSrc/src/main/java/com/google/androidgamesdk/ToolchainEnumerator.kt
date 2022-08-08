@@ -35,10 +35,10 @@ class ToolchainEnumerator {
         project: Project
     ): List<EnumeratedToolchain> {
         return when (toolchainSet) {
-            ToolchainSet.ALL -> enumerateAllToolchains(project, allNdkToSdkMap)
+            ToolchainSet.ALL -> enumerateAllAarToolchains(project, allNdkToSdkMap)
             ToolchainSet.AAR -> enumerateAllAarToolchains(project, allNdkToSdkMap)
-            ToolchainSet.EXPRESS -> enumerateAllToolchains(project, expressNdkToSdkMap)
-            ToolchainSet.EXPRESS_AAR -> enumerateAllToolchains(project, expressNdkToSdkMap)
+            ToolchainSet.EXPRESS -> enumerateAllAarToolchains(project, allNdkToSdkMap)
+            ToolchainSet.EXPRESS_AAR -> enumerateAllAarToolchains(project, allNdkToSdkMap)
         }
     }
 
@@ -56,7 +56,8 @@ class ToolchainEnumerator {
         // In the AAR, library search is handled by Prefab, that looks for API 21 for 64 bits architectures
         // even if a lower API level is requested. We need to build a different set of libraries for 32 and
         // 64 bits as a consequence.
-        val aar32BitsNdkToSdkMap = ndkToSdkMap
+        val aar32BitsNdkToSdkMap = ndkToSdkMap.entries.associate {
+            it.key to it.value.filter { sdk -> sdk<21 } }
         val aar64BitsNdkToSdkMap = ndkToSdkMap.entries.associate {
             it.key to it.value.filter { sdk -> sdk>=21 } }
 
