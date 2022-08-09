@@ -462,6 +462,24 @@
       "parentUuid": "217dd1cd_f4d2200b",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eefa37b3_255b6ae2",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-08-09T18:45:13Z",
+      "side": 1,
+      "message": "Some notes from API council:\n\n1. Change the API back to `void*` and `size_t`, since our ABI checking won\u0027t be able to track this anyway (sorry for the back and forth!)\n2. Keep the struct defs you added since they\u0027re useful for documentation, but move them to a separate header (`paddleboat_controller_mapping.h`?)\n3. Add a second API that just takes an fd instead of the mapped file.\n\nThere are some tricks and some changes to the API that we could make that would make it possible for our ABI checking to prove stability for this API, but none of us really liked the hoops that it would require jumping through, so we\u0027ve decided that\u0027s not worth it after all. Should still follow my other comment about using explicit padding for the structs (mark them packed, add explicit padding) to ensure that there are no issues between platforms.",
+      "parentUuid": "72e2abab_8e6a1697",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
