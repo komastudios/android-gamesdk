@@ -306,9 +306,9 @@ def copyNativeLibraryToPrefabDir(buildInfo, outFolder, library) {
     def assetsFolder = joinPath(buildFolder, 'assets')
     def prefabRoot = prefabDir(outFolder, libraryName)
     def sharedLibBuildFolder = joinPath(prefabRoot, 'libs',
-            'android.' + buildKey)
+            'android.' + buildKey.replace("_static_","_shared_"))
     def staticLibBuildFolder = joinPath(prefabRoot + '_static', 'libs',
-            'android.' + buildKey)
+            'android.' + buildKey.replace("_shared_","_static_"))
     def staticsFolder = joinPath(getOutPath(), buildKey)
     def sharedIncludeBuildFolder = joinPath(prefabRoot, 'include', libraryName)
     def staticIncludeBuildFolder = joinPath(prefabRoot + '_static', 'include', libraryName)
