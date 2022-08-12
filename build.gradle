@@ -274,7 +274,7 @@ task cleanPath(type: Delete) {
  * prefab folder being generated, filtering non-game controller classes.
  */
 def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/${library.hybridProjectDir}-release.aar");
+    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/games-controller-release.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
     return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
@@ -849,7 +849,7 @@ tasks.withType(BuildTask) {
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.isHybridLibrary()) dependsOn ":games-controller:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
@@ -903,7 +903,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 }
                 removeUnneededPrefabDirs(tempPrefabDir, library)
                 // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.hybridProjectDir}-release.aar")
+                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "games-controller-release.aar")
                 def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
                 def aarPrefabPatcher = new AarPrefabPatcher()
                 aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
@@ -971,7 +971,7 @@ task format {
             fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'GameTextInput/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'GameActivity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameController/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
+            fileTree(dir: 'games-controller/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
 
         formattedFiles.files.each { file ->
             exec {
