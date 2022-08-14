@@ -50,9 +50,9 @@ task prepare_proto_before() {
     env['PYTHONPATH'] = sixDir + System.getProperty("path.separator") + env['PYTHONPATH']
     // Install python-protobuf
     exec {
-        workingDir "${gameSdkRoot}/third_party/protobuf-3.0.0/python"
+        workingDir "${gameSdkRoot}"
         setEnvironment env
-        commandLine "python", "setup.py", "install", "--user"
+        commandLine "pip", "install", "-e", "../external/protobuf/python/"
     }
     // Generate nano-pb requirements
     exec {
