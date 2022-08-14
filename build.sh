@@ -18,6 +18,8 @@ export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake/linux-x86
 
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
+ls ../external/protobuf/python/
+
 # Use the distribution path given to the script by the build bot in DIST_DIR. Otherwise,
 # build in the default location.
 if [[ -z $DIST_DIR ]]
