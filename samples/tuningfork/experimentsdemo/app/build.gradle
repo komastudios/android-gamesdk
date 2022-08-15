@@ -49,7 +49,7 @@ dependencies {
 }
 
 task createJar(type: GradleBuild) {
-    buildFile = '../../../../src/tuningfork/tools/validation/build.gradle'
+    buildFile = '../../../../games-performance-tuner/tools/validation/build.gradle'
     tasks = ['createJar']
 }
 
@@ -64,7 +64,7 @@ def getProtocPath() {
 task buildTuningForkBinFiles(type: JavaExec) {
     dependsOn createJar
     main "-jar"
-    args(   "../../../../src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
+    args(   "../../../../games-performance-tuner/tools/validation/build/libs/TuningforkApkValidationTool.jar",
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
