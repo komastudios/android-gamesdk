@@ -5,9 +5,9 @@ set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
 
-include("../protobuf/protobuf.cmake")
-set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/modp_b64")
-set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
+include("./protobuf/protobuf.cmake")
+set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external/modp_b64")
+set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -34,9 +34,9 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
 
 include_directories( . )
 include_directories(${PROTOBUF_NANO_SRC_DIR})
-include_directories( ../../include )
-include_directories( ../../src/swappy )
-include_directories( ../common )
+include_directories( ../include )
+include_directories( ../src/swappy )
+include_directories( ../src/common )
 include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
 include_directories( ${THIRDPARTY_DIR}/date/include )
@@ -79,11 +79,11 @@ set( TUNINGFORK_SRCS
   http_backend/http_request.cpp
   http_backend/json_serializer.cpp
   http_backend/ultimate_uploader.cpp
-  ../common/apk_utils.cpp
-  ../common/jni/jni_helper.cpp
-  ../common/jni/jni_wrap.cpp
-  ../common/jni/jnictx.cpp
-  ../common/system_utils.cpp
+  ../src/common/apk_utils.cpp
+  ../src/common/jni/jni_helper.cpp
+  ../src/common/jni/jni_wrap.cpp
+  ../src/common/jni/jnictx.cpp
+  ../src/common/system_utils.cpp
   proto/protobuf_util.cpp
   unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
