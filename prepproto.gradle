@@ -52,7 +52,7 @@ task prepare_proto_before() {
     exec {
         workingDir "${gameSdkRoot}"
         setEnvironment env
-        commandLine "pip", "install", "-e", "../external/protobuf/python/"
+	commandLine "pip", "install", "-e", "../external/protobuf/python/"
     }
     // Generate nano-pb requirements
     exec {
