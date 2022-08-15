@@ -16,6 +16,8 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
+find_package(games-performance-tuner REQUIRED CONFIG)
+
 message( STATUS "A CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Werror" )
@@ -30,7 +32,7 @@ add_subdirectory("${ANDROID_GTEST_DIR}"
   googletest-build
 )
 
-include("../../src/protobuf/protobuf.cmake")
+include("../../games-performance-tuner/protobuf/protobuf.cmake")
 
 # Save the generation dir as it gets overwritten when we add_subdirectory tuningfork
 set(PGENS_DIR "${PROTO_GENS_DIR}")
@@ -44,13 +46,10 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
 )
 
 option(TUNINGFORK_TEST_OPTION "" ON)
-add_subdirectory("../../src/tuningfork"
-  tuningfork-build
-)
 
 include_directories(
   "${ANDROID_GTEST_DIR}/googletest/include"
-  ../../src/tuningfork
+  ../../games-performance-tuner
   ../../src/common
   ../../include
   ../common
@@ -108,7 +107,7 @@ target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compar
 target_link_libraries(tuningfork_test
   android
   gtest
-  tuningfork_static
+  games-performance-tuner::tuningfork_static
   protobuf-static
   log
   GLESv2
@@ -117,7 +116,7 @@ target_link_libraries(tuningfork_test
 target_link_libraries(tuningfork_test_lib
   android
   gtest
-  tuningfork_static
+  games-performance-tuner::tuningfork_static
   protobuf-static
   log
   GLESv2

@@ -15,6 +15,7 @@ export ANDROID_HOME=$(pwd)/../prebuilts/sdk
 export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r23
 export BUILDBOT_SCRIPT=true
 export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake/linux-x86
+export PATH="$PATH:../prebuilts/ninja/linux-x86/"
 
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
