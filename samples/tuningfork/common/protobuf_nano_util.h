@@ -1,1 +1,1 @@
-../../../src/tuningfork/proto/protobuf_nano_util.h
+../../../games-performance-tuner/proto/protobuf_nano_util.h
