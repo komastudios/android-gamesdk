@@ -42,11 +42,16 @@ android {
             path "CMakeLists.txt"
         }
     }
+    buildFeatures {
+        prefab true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "androidx.games:games-performance-tuner:1.6.0"
+    implementation "androidx.games:games-frame-pacing:1.10.1"
 
     // GMS Core dependencies
     implementation "com.google.android.gms:play-services-clearcut:16.0.0"
