@@ -480,6 +480,24 @@
       "parentUuid": "72e2abab_8e6a1697",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57903968_7c796fb5",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-08-16T19:19:50Z",
+      "side": 1,
+      "message": "I\u0027ve switched the API back to void*, moved the mapping structs into a discrete header file and added packing attributes to the structs.\n\nI\u0027m a little hesitant to add another API function involving some sort of file specifier. By fd instead of the mapped file, is the request for a path string to a file? A FILE *? \n\nI had just made the API a memory buffer due to the multiple ways the client might be storing the file, i.e. if there is going to be a FILE * version for convenience there probably also needs to be a AAsset version. They might have downloaded the file from a server, the Paddleboat error codes don\u0027t currently have any I/O related errors because the library does not internal file I/O, etc. The \u0027power users\u0027 who might use this API almost certainly have their own engine asset management systems.",
+      "parentUuid": "eefa37b3_255b6ae2",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
