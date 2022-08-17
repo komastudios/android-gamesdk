@@ -35,7 +35,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     export JAVA_HOME=$(pwd)/../prebuilts/jdk/jdk11/linux-x86
 fi
 
-# Build the Game SDK distribution zip and the zips for Maven AARs
+## Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
@@ -77,6 +77,27 @@ else
     ./gradlew packageMavenZip -Plibraries=paddleboat      -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=memory_advice   -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+fi
+
+if [[ $1 != "maven-only" ]]
+then
+    mkdir -p "$dist_dir/$package_name/apks/samples"
+    mkdir -p "$dist_dir/$package_name/apks/test"
+    pushd ./samples/tuningfork/insightsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    pushd ./samples/tuningfork/experimentsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
+    pushd ./test/tuningfork/testapp/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/test/tuningforktest.apk"
 fi
 
 # Calculate hash of the zip file
