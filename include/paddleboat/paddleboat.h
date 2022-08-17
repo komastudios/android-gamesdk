@@ -1,1 +1,1 @@
-../../GameController/src/main/cpp/paddleboat/include/paddleboat.h
+../../games-controller/src/main/cpp/paddleboat/include/paddleboat.h
