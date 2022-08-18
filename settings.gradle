@@ -1,6 +1,6 @@
 rootProject.name = 'androidgamesdk'
-include ':GameActivity'
-include ':GameTextInput'
+include ':games-activity'
+include ':games-text-input'
 include ':games-controller'
 include ':games-performance-tuner'
 include ':src:extras'
