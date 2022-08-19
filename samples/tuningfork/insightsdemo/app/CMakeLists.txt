@@ -18,7 +18,7 @@ include("../../../gamesdk.cmake")
 # (with auto completions) and debug Tuning Fork from Android Studio using this sample.
 #add_gamesdk_sources()
 
-include("../../../../src/protobuf/protobuf.cmake")
+include("../../../../games-performance-tuner/protobuf/protobuf.cmake")
 
 protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/dev_tuningfork.proto)
 protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/tuningfork.proto)
