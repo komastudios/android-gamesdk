@@ -93,31 +93,7 @@ def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
                         .buildDebugApkTo("apks/test", "swappytest.apk")
         )
 
-def tuningForkNativeLibrary = new NativeLibrary(versions['tuningfork'])
-        .setUsesProtobuf()
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'tuningfork', 'insightsdemo'))
-                        .copySourcesTo("samples/tuningfork/insightsdemo")
-                        .buildDebugApkTo("apks/samples", "insightsdemo.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('src', 'tuningfork', 'tools', 'validation'))
-                        .copySourcesTo("src/tuningfork/tools/validation"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("src/tuningfork/tools/TuningForkMonitor")
-                        .buildDebugApkTo("apks/tools", "TuningForkMonitor.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("test/tuningfork/testapp")
-                        .buildDebugApkTo("apks/test", "tuningforktest.apk"))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('samples', 'tuningfork', "common")))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('src', 'protobuf')))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('third_party', 'protobuf-3.0.0')))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('..', 'external', 'nanopb-c'), joinPath('external', 'nanopb-c')))
-        .addSampleExtraFolder(
-                new SampleFolder(joinPath('src', 'tuningfork', 'proto')).include('tuningfork.proto'))
+def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
 def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
         .setUsesTensorflow()
@@ -848,7 +824,6 @@ tasks.withType(BuildTask) {
     dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
@@ -1054,7 +1029,6 @@ task buildAarStructure {
     dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.getUsesProtobuf()) dependsOn prepare_proto
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
@@ -1125,7 +1099,22 @@ task prepareMavenZipContent {
             def libraryName = androidLibrary.aarLibraryName
             def aarVersion = androidLibrary.aarVersion
             def path = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
-            assert file(path).exists()
+            if (androidLibrary.projectName == "games-performance-tuner") {
+                assert file("../out/outputs/aar/games-performance-tuner-release.aar").exists()
+                copy {
+                    from file("../out/outputs/aar/games-performance-tuner-release.aar")
+                    into file(joinPath(mavenZipContentFolder))
+                    rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
+                }
+            } else {
+                assert file(path).exists()
+                copy {
+                    from file(path)
+                    into file(joinPath(mavenZipContentFolder))
+                    rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
+                }
+            }
+
             copy {
                 from file(path)
                 into file(joinPath(mavenZipContentFolder))
