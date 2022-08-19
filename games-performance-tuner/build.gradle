@@ -57,9 +57,11 @@ android {
     }
     prefab {
         tuningfork {
+            headers "include"
         }
 
         tuningfork_static {
+            headers "include"
         }
     }
 
