@@ -35,7 +35,7 @@ add_library( protobuf-static
 )
 target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
 
-add_library( {CMAKE_PROJECT_NAME}
+add_library( ${CMAKE_PROJECT_NAME}
              SHARED
              src/main/cpp/insightsdemo.cpp
              ../../common/Renderer.cpp
@@ -44,7 +44,7 @@ add_library( {CMAKE_PROJECT_NAME}
              ${PROTO_GENS_DIR}/full/tuningfork.pb.cc
 )
 
-target_link_libraries( {CMAKE_PROJECT_NAME}
+target_link_libraries( ${CMAKE_PROJECT_NAME}
         games-frame-pacing::swappy_static
         games-performance-tuner::tuningfork_static
         protobuf-static
