@@ -66,6 +66,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "50217267_23525eb7",
+        "filename": "game-activity/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-08-22T15:26:16Z",
+      "side": 1,
+      "message": "No the null file is required by Cmake. it doesn\u0027t allow you to create a library with no sources but the android gradle plugin code requires you to have a library. So I created an empty library. It\u0027s hacky but I\u0027m not sure what else to do",
+      "parentUuid": "720351f9_8d3da7e5",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 70
+      },
+      "revId": "1d5ab6519b06bbb0e4eed87e9f88104c2dd1808b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "00915ec4_cc916938",
         "filename": "game-activity/CMakeLists.txt",
         "patchSetId": 5
