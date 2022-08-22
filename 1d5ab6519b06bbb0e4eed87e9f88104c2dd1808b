@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1edc2713_d6fbc358",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-08-22T15:10:02Z",
+      "side": 1,
+      "message": "some nit questions, looks good. ",
+      "revId": "1d5ab6519b06bbb0e4eed87e9f88104c2dd1808b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78dda35e_22e21f01",
+        "filename": "game-activity/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-08-22T15:10:02Z",
+      "side": 1,
+      "message": "question: if set this one to a variable first, the use the variable in \"set\" statement, might be better for code reading?",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 72
+      },
+      "revId": "1d5ab6519b06bbb0e4eed87e9f88104c2dd1808b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "720351f9_8d3da7e5",
+        "filename": "game-activity/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-08-22T15:10:02Z",
+      "side": 1,
+      "message": "question: the null file is required by prefab?",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 70
+      },
+      "revId": "1d5ab6519b06bbb0e4eed87e9f88104c2dd1808b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00915ec4_cc916938",
+        "filename": "game-activity/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-08-22T15:10:02Z",
+      "side": 1,
+      "message": "nit: probably remove the space between \"(\" and \"game-activity\" to be consistent with the rest",
+      "range": {
+        "startLine": 36,
+        "startChar": 21,
+        "endLine": 36,
+        "endChar": 23
+      },
+      "revId": "1d5ab6519b06bbb0e4eed87e9f88104c2dd1808b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
