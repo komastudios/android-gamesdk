@@ -121,17 +121,7 @@ def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input']
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
-        .setHybridLibrary()
-        .setMinimumAndroidApiLevel(19)
-        .setMinimumNdkVersion(19)
-        .setSupportedStlVersions(["c++_shared", "c++_static"])
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'game_controller'))
-                        .copySourcesTo("samples/game_controller"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'agdktunnel'))
-                        .copySourcesTo("samples/agdktunnel"))
+def gameControllerLibrary = new AndroidArchiveLibrary(versions['paddleboat'])
 
 // Download third party libraries that are distributed in the Game SDK
 // but not part of the Game SDK sources.
@@ -243,17 +233,6 @@ task cleanPath(type: Delete) {
     delete getPackagePath()
     delete getTempPath()
     delete getBuildPath()
-}
-
-/**
- * Take the classes.jar from outputs/aar/GameController.aar and copy it to the
- * prefab folder being generated, filtering non-game controller classes.
- */
-def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/games-controller-release.aar");
-    def buildFolder = joinPath(getPackagePath(), outFolder)
-    def aarPrefabPatcher = new AarPrefabPatcher()
-    return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
 }
 
 def prefabBuildFolder(outFolder) {
@@ -710,12 +689,6 @@ Collection<NativeLibrary> filterNativeLibraries(allLibraries) {
     }
 }
 
-Collection<NativeLibrary> filterLibrariesByHybridStatus(allLibraries, isHybrid) {
-    return filterLibraries(allLibraries).findAll { library ->
-        library.isHybridLibrary == isHybrid
-    }
-}
-
 Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
     return filterLibraries(allLibraries).findAll { library ->
         library instanceof AndroidArchiveLibrary
@@ -824,11 +797,12 @@ tasks.withType(BuildTask) {
     dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller::assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        if (androidLibrary.projectName != "games-controller")
+            dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     def packageName = getPackageName()
@@ -858,36 +832,6 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
         nativeBuild().each {
             copyNativeLibs(it, packageName, nativeLibraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
-        }
-        // We need to copy the classes.jar out of a hybrid library and make sure
-        // it only has the relevant classes and also patch hybrid libraries with their native components.
-        nativeLibraries.each { library ->
-            if (library.isHybridLibrary()) {
-                // Put classes.jar in 'libs' root and make sure it only has relevant classes
-                def outFolder = joinPath(packageName, "libs")
-                def filteredJarFile = copyHybridClassesFromAar(library, outFolder)
-                // Patch aar with native libraries.
-                // Use a temporary dir to avoid pollution with other prefab libraries.
-                def tempPrefabDir = getPackageName()+"_"+library.hybridProjectDir
-                copy {
-                    from filteredJarFile
-                    into tempPrefabDir
-                }
-                buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
-                    copyNativeLibraryToPrefabDir(buildInfo, tempPrefabDir, library)
-                }
-                removeUnneededPrefabDirs(tempPrefabDir, library)
-                // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "games-controller-release.aar")
-                def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
-                def aarPrefabPatcher = new AarPrefabPatcher()
-                aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
-                // Finally copy to zip root.
-                copy {
-                    from aarPath
-                    into getFullPackagePath()
-                }
-            }
         }
 
         copyNativeLibrariesIncludes(packageName, nativeLibraries)
@@ -1029,11 +973,12 @@ task buildAarStructure {
     dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
+        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        if (androidLibrary.projectName != "GameController")
+            dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     doFirst {
