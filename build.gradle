@@ -945,7 +945,7 @@ task format {
             fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'games-text-input/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'games-activity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'game-activity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'games-controller/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
 
         formattedFiles.files.each { file ->
