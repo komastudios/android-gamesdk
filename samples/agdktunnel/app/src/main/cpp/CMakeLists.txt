@@ -28,7 +28,7 @@ set(GAMESDK_BASE_DIR "../../../../../..")
 
 set(PROTOBUF_NANO_SRC_DIR "${GAMESDK_BASE_DIR}/../external/nanopb-c")
 # Include the protobuf utility file from the Android Game SDK
-include("${GAMESDK_BASE_DIR}/src/protobuf/protobuf.cmake")
+include("${GAMESDK_BASE_DIR}/games-performance-tuner/protobuf/protobuf.cmake")
 # Directory of nano protobuf library source files
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 if("${USE_APT}" STREQUAL "true")
