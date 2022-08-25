@@ -35,7 +35,7 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
 include_directories( . )
 include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories( ../include )
-include_directories( ../src/swappy )
+include_directories( ../games-frame-pacing )
 include_directories( ../src/common )
 include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
