@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
 #  single gamesdk lib. There may be other issues in code, but since we're theoretically building
 #  for Android and not Windows/Mac/etc., that seems like it shouldn't be an issue.
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
-    set(SWAPPY_LOCATION "${GameSDKDir}/src/swappy")
+    set(SWAPPY_LOCATION "${GameSDKDir}/games-frame-pacing")
     set(SWAPPY_LOCATION_COMMON "${SWAPPY_LOCATION}/common")
     set(SWAPPY_LOCATION_OPENGL "${SWAPPY_LOCATION}/opengl")
     set(SWAPPY_LOCATION_VULKAN "${SWAPPY_LOCATION}/vulkan")

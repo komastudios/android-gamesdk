@@ -75,23 +75,7 @@ def getGitCommit() {
     return sout.toString().trim()
 }
 
-def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "bouncyball"))
-                        .copySourcesTo("samples/bouncyball")
-                        .buildDebugApkTo("apks/samples", "bouncyball.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "cube"))
-                        .copySourcesTo("samples/cube")
-                        .buildDebugApkTo("apks/samples", "cube.apk")
-                        .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
-       .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('third_party', "cube"))
-                        .copySourcesTo("third_party/cube"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("test/swappy/testapp")
-                        .buildDebugApkTo("apks/test", "swappytest.apk")
-        )
+def swappyNativeLibrary = new AndroidArchiveLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
@@ -821,7 +805,7 @@ task buildSpecific(type: BuildTask) {
 tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-    dependsOn ':src:extras:assembleRelease'
+    dependsOn ':games-frame-pacing:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
@@ -1025,8 +1009,7 @@ addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
 task buildAarStructure {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-
-    dependsOn ':src:extras:assembleRelease'
+    dependsOn ':games-frame-pacing:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
         if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
@@ -1099,7 +1082,14 @@ task prepareMavenZipContent {
             def libraryName = androidLibrary.aarLibraryName
             def aarVersion = androidLibrary.aarVersion
             def path = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
-            if (androidLibrary.projectName == "games-performance-tuner") {
+            if (androidLibrary.projectName == "games-frame-pacing") {
+                assert file("../out/outputs/aar/games-frame-pacing-release.aar").exists()
+                copy {
+                    from file("../out/outputs/aar/games-frame-pacing-release.aar")
+                    into file(joinPath(mavenZipContentFolder))
+                    rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
+                }
+            } else if (androidLibrary.projectName == "games-performance-tuner") {
                 assert file("../out/outputs/aar/games-performance-tuner-release.aar").exists()
                 copy {
                     from file("../out/outputs/aar/games-performance-tuner-release.aar")
