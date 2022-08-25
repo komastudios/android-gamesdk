@@ -22,8 +22,8 @@ set ( SOURCE_LOCATION_COMMON "${SOURCE_LOCATION}/common" )
 set ( SOURCE_LOCATION_OPENGL "${SOURCE_LOCATION}/opengl" )
 set ( SOURCE_LOCATION_VULKAN "${SOURCE_LOCATION}/vulkan" )
 
-include_directories( ../../include )
-include_directories( ../common )
+include_directories( ../include )
+include_directories( ../src/common )
 include_directories( common )
 include_directories( opengl )
 include_directories( vulkan )
@@ -45,8 +45,9 @@ if (ANDROID_NDK_MAJOR GREATER 17)
 endif()
 
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ../intermediates/dex/release/mergeDexRelease && ${CMAKE_LINKER} ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
-     WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+     COMMAND tree . && cd ${CMAKE_CURRENT_SOURCE_DIR}/extras/out/intermediates/dex/release/mergeDexRelease
+     && ${CMAKE_LINKER}  ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
      )
 
 set_source_files_properties(
@@ -78,7 +79,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkFallback.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
-             ${SOURCE_LOCATION}/../common/system_utils.cpp
+             ${SOURCE_LOCATION}/../src/common/system_utils.cpp
              ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o
              # Add new source files here
              )
