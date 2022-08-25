@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SWAPPY_PATTERN="src/swappy/.*[.](cpp|h)$"
+SWAPPY_PATTERN="games-frame-pacing/.*[.](cpp|h)$"
 TUNINGFORK_PATTERN="src/tuningfork/.*[.](cpp|h)$"
 
 SWAPPY_COMMON_H="include/swappy/swappy_common.h"
