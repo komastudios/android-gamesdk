@@ -75,23 +75,7 @@ def getGitCommit() {
     return sout.toString().trim()
 }
 
-def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "bouncyball"))
-                        .copySourcesTo("samples/bouncyball")
-                        .buildDebugApkTo("apks/samples", "bouncyball.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "cube"))
-                        .copySourcesTo("samples/cube")
-                        .buildDebugApkTo("apks/samples", "cube.apk")
-                        .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
-       .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('third_party', "cube"))
-                        .copySourcesTo("third_party/cube"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("test/swappy/testapp")
-                        .buildDebugApkTo("apks/test", "swappytest.apk")
-        )
+def swappyNativeLibrary = new AndroidArchiveLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
