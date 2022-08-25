@@ -39,7 +39,7 @@ include_directories(
   ../../include
 )
 
-set ( SOURCE_LOCATION_COMMON "../../src/swappy/common" )
+set ( SOURCE_LOCATION_COMMON "../../games-frame-pacing/common" )
 
 set(TEST_SRCS
   ${SOURCE_LOCATION_COMMON}/SwappyCommon.cpp
