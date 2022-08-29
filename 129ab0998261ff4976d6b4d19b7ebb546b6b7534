@@ -552,6 +552,24 @@
       "parentUuid": "30df94c2_a2b12300",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "822359e3_0b57089a",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-08-29T21:21:55Z",
+      "side": 1,
+      "message": "Renamed.",
+      "parentUuid": "87052ee6_036b95e6",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
