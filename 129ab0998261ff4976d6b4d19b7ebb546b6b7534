@@ -534,6 +534,24 @@
       "parentUuid": "5a5f6c55_f70741ab",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87052ee6_036b95e6",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-08-29T21:07:15Z",
+      "side": 1,
+      "message": "\u003e Given the really niche nature of the remap functions, I don\u0027t think it is worth adding additional helper wrappers.\n\nSince we\u0027re in jetpack and not the NDK, they\u0027re easy enough to add later if they end up being important, so SGTM.\n\n\u003e I\u0027ve added `Paddleboat_addControllerRemapDataFromFile` using a file descriptor\n\nnit: let\u0027s name it `Paddleboat_addControllerRemapDataFromFd` in case we ever do want to add a `FILE*` variant.",
+      "parentUuid": "30df94c2_a2b12300",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
