@@ -16,6 +16,24 @@
       "message": "sorry about this breaking. I\u0027ve actually already merged a fix.",
       "revId": "522429183d3d1f49851812c3e449b41ff14556e6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c917892c_b63fcea9",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 15
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-08-29T20:42:30Z",
+      "side": 1,
+      "message": "I had to rebase to pull in the directory changes and it seems to have added this file from your fix commit. Not entirely sure how to back it out of the CL.",
+      "parentUuid": "8786f31f_6672c650",
+      "revId": "522429183d3d1f49851812c3e449b41ff14556e6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

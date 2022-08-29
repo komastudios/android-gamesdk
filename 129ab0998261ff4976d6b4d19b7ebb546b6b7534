@@ -516,6 +516,24 @@
       "parentUuid": "57903968_7c796fb5",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "30df94c2_a2b12300",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-08-29T20:42:30Z",
+      "side": 1,
+      "message": "I\u0027ve added `Paddleboat_addControllerRemapDataFromFile` using a file descriptor, and added a paddleboat error code for a generic file i/o error.\n\nGiven the really niche nature of the remap functions, I don\u0027t think it is worth adding additional helper wrappers. The comment about downloaded files was an aside that the client may not ever bother serializing the downloaded file to device storage.",
+      "parentUuid": "5a5f6c55_f70741ab",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
