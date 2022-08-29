@@ -498,6 +498,24 @@
       "parentUuid": "eefa37b3_255b6ae2",
       "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a5f6c55_f70741ab",
+        "filename": "GameController/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1043845
+      },
+      "writtenOn": "2022-08-29T19:07:45Z",
+      "side": 1,
+      "message": "Sorry for the delayed response (again).\n\n\u003e By fd instead of the mapped file, is the request for a path string to a file? A FILE *? \n\nJust an `int` (a normal fd). It\u0027d basically be an overload. I suspect you could even make it an inline in the header if you don\u0027t want it to be a part of the ABI (I don\u0027t think we have done that before, so I\u0027ve drafted a guideline to see if it\u0027s acceptable: https://critique.corp.google.com/cl/470777122)\n\n`FILE*` and `AAsset` helpers might be useful as well.\n\nI don\u0027t understand the issue with downloaded files though. By the time it reaches you it\u0027s the same as any other file.",
+      "parentUuid": "57903968_7c796fb5",
+      "revId": "129ab0998261ff4976d6b4d19b7ebb546b6b7534",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
