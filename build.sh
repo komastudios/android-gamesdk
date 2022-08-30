@@ -35,7 +35,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     export JAVA_HOME=$(pwd)/../prebuilts/jdk/jdk11/linux-x86
 fi
 
-# Build the Game SDK distribution zip and the zips for Maven AARs
+## Build the Game SDK distribution zip and the zips for Maven AARs
 if [[ $1 == "full" ]]
 then
     package_name=fullsdk
@@ -68,7 +68,36 @@ then
 else
     # The default is to build the express zip
     package_name=gamesdk-express
-    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name -Pexpress
+    ./gradlew packageZip -Plibraries=swappy,tuningfork,oboe,game_activity,game_text_input,paddleboat,memory_advice -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=swappy          -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=tuningfork      -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=oboe            -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_activity   -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=game_text_input -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=paddleboat      -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew packageMavenZip -Plibraries=memory_advice   -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+fi
+
+if [[ $1 != "maven-only" ]]
+then
+    mkdir -p "$dist_dir/$package_name/apks/samples"
+    mkdir -p "$dist_dir/$package_name/apks/test"
+    pushd ./samples/tuningfork/insightsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    pushd ./samples/tuningfork/experimentsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
+    pushd ./test/tuningfork/testapp/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/test/tuningforktest.apk"
 fi
 
 # Calculate hash of the zip file

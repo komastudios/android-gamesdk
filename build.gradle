@@ -250,7 +250,7 @@ task cleanPath(type: Delete) {
  * prefab folder being generated, filtering non-game controller classes.
  */
 def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/${library.hybridProjectDir}-release.aar");
+    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/games-controller-release.aar");
     def buildFolder = joinPath(getPackagePath(), outFolder)
     def aarPrefabPatcher = new AarPrefabPatcher()
     return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
@@ -878,7 +878,7 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
                 }
                 removeUnneededPrefabDirs(tempPrefabDir, library)
                 // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.hybridProjectDir}-release.aar")
+                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "games-controller-release.aar")
                 def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
                 def aarPrefabPatcher = new AarPrefabPatcher()
                 aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
@@ -944,9 +944,9 @@ task format {
             fileTree(dir: 'include', include: ['**/*.h'], excludes: ["third_party"]) +
             fileTree(dir: 'test/swappy', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
             fileTree(dir: 'test/tuningfork', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameTextInput/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameActivity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
-            fileTree(dir: 'GameController/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
+            fileTree(dir: 'games-text-input/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'game-activity/prefab-src', include: ['**/*.cpp', '**/*.c', '**/*.h']) +
+            fileTree(dir: 'games-controller/src', include: ['**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp'])
 
         formattedFiles.files.each { file ->
             exec {
