@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f8abf63_17516081",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 18
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2022-09-02T15:39:00Z",
+      "side": 1,
+      "message": "Generally LGTM from an input + NDK API point of view. ",
+      "revId": "06a2f5f1a1ced44ee2d9f2ca73a9fdda29d87b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c94fd22_e691fffa",
+        "filename": "games-controller/src/main/cpp/GameControllerMappingFile.h",
+        "patchSetId": 18
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2022-09-02T15:39:00Z",
+      "side": 1,
+      "message": "Where is this information format described? I followed the link to Paddleboat_addControllerRemapDataFromFileBuffer and the DAC guide, but neither of them mentioned allow list / deny list filtering that I could see.",
+      "range": {
+        "startLine": 167,
+        "startChar": 34,
+        "endLine": 168,
+        "endChar": 18
+      },
+      "revId": "06a2f5f1a1ced44ee2d9f2ca73a9fdda29d87b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb46011b_47e72857",
+        "filename": "games-controller/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 18
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1006497
+      },
+      "writtenOn": "2022-09-02T15:39:00Z",
+      "side": 1,
+      "message": "By \"integrated sensor\" do you mean one integrated into the phone instead of the controller? Would be nice to be explicit here since this library is primarily about game controllers so I would assume that\u0027s what you\u0027re implicitly referring to here.",
+      "range": {
+        "startLine": 348,
+        "startChar": 10,
+        "endLine": 348,
+        "endChar": 60
+      },
+      "revId": "06a2f5f1a1ced44ee2d9f2ca73a9fdda29d87b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
