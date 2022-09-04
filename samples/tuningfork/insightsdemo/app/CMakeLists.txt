@@ -11,6 +11,10 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTAT
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGOOGLE_PROTOBUF_NO_RTTI -DHAVE_PTHREAD")
 
+get_filename_component(_fullpath "../../../../external/nanopb-c" REALPATH)
+if (EXISTS "${_fullpath}")
+    set( PROTOBUF_NANO_SRC_DIR "../../../../external/nanopb-c")
+endif()
 set( GAMESDK_BUILD_TUNINGFORK ON)
 include("../../../gamesdk.cmake")
 
