@@ -83,18 +83,34 @@ then
     pushd ./samples/tuningfork/insightsdemo/
     ./gradlew ":app:assembleDebug"
     popd
-    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
-    pushd ./samples/tuningfork/experimentsdemo/
-    ./gradlew ":app:assembleDebug"
-    popd
-    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     pushd ./test/tuningfork/testapp/
     ./gradlew ":app:assembleDebug"
     popd
+    pushd ./samples/tuningfork/experimentsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/test/tuningforktest.apk"
+    cp -r samples/tuningfork $dist_dir/$package_name/
+    pushd $dist_dir/$package_name
+    if [[ -z "$(ls -1 agdk-libraries-*.zip 2>/dev/null | grep agdk)" ]] ; then
+      echo 'Could not find the zip "agdk-libraries-*.zip".'
+      exit
+    fi
+    zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
+    popd
+    zip -ur $dist_dir/$package_name/agdk-libraries-*.zip "samples/tuningfork/insightsdemo/" -x "samples/tuningfork/insightsdemo/.idea/*"\
+      "samples/tuningfork/insightsdemo/app/build/*" "samples/tuningfork/insightsdemo/app/.cxx/*"\
+      "samples/tuningfork/insightsdemo/.gradle/*"
+    zip -ur $dist_dir/$package_name/agdk-libraries-*.zip "games-performance-tuner/tools/validation" -x "games-performance-tuner/tools/validation/.idea/*"\
+      "games-performance-tuner/tools/validation/build/*" "games-performance-tuner/tools/validation/.gradle/*"
+    zip -ur $dist_dir/$package_name/agdk-libraries-*.zip "third_party/protobuf-3.0.0/"
 fi
 
 # Calculate hash of the zip file
