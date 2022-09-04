@@ -76,6 +76,7 @@ else
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
+# Add the tuningfork samples and apks into the Game SDK distribution zip
 if [[ $1 != "maven-only" ]]
 then
     mkdir -p "$dist_dir/$package_name/apks/samples"
@@ -83,18 +84,28 @@ then
     pushd ./samples/tuningfork/insightsdemo/
     ./gradlew ":app:assembleDebug"
     popd
-    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
-    pushd ./samples/tuningfork/experimentsdemo/
-    ./gradlew ":app:assembleDebug"
-    popd
-    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     pushd ./test/tuningfork/testapp/
     ./gradlew ":app:assembleDebug"
     popd
+    pushd ./samples/tuningfork/experimentsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/test/tuningforktest.apk"
+    cp -r samples/tuningfork $dist_dir/$package_name/
+    pushd $dist_dir/$package_name
+    if [[ -z "$(ls -1 agdk-libraries-*.zip 2>/dev/null | grep agdk)" ]] ; then
+      echo 'Could not find the zip "agdk-libraries-*.zip".'
+      exit
+    fi
+    zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
+    popd
 fi
 
 # Calculate hash of the zip file
