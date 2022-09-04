@@ -86,18 +86,23 @@ then
     pushd ./samples/tuningfork/insightsdemo/
     ./gradlew ":app:assembleDebug"
     popd
-    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
-    pushd ./samples/tuningfork/experimentsdemo/
-    ./gradlew ":app:assembleDebug"
-    popd
-    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     pushd ./test/tuningfork/testapp/
     ./gradlew ":app:assembleDebug"
     popd
+    pushd ./samples/tuningfork/experimentsdemo/
+    ./gradlew ":app:assembleDebug"
+    popd
+    cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/test/tuningforktest.apk"
+    pushd $dist_dir/$package_name
+    zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
+    zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
+    popd
 fi
 
 # Calculate hash of the zip file
