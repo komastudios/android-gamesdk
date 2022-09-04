@@ -88,6 +88,17 @@ then
     popd
     cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
+    echo  "Tom: ../**"
+    ls  ../**
+    echo  "Tom: ../build/**"
+    ls  ../build/**
+    echo  "Tom: $dist_dir/$package_name"
+    ls $dist_dir/$package_name
+    echo  "Tom: end ../build/**"
+    pushd $dist_dir/$package_name
+    zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
+    popd
+    #zip -ur ../build/agdk-libraries-*.zip "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
     pushd ./samples/tuningfork/experimentsdemo/
     ./gradlew ":app:assembleDebug"
     popd
