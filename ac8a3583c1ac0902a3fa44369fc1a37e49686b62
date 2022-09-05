@@ -16,6 +16,24 @@
       "message": "Can we also add info about how to add ninja to the path",
       "revId": "ac8a3583c1ac0902a3fa44369fc1a37e49686b62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0253cba5_d222a3bb",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2022-09-05T13:07:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ea99adfe_2042e24f",
+      "revId": "ac8a3583c1ac0902a3fa44369fc1a37e49686b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

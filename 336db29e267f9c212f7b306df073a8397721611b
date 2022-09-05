@@ -16,6 +16,24 @@
       "message": "What about for mac and windows?",
       "revId": "336db29e267f9c212f7b306df073a8397721611b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "955da44d_afad3b6b",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2022-09-05T13:07:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aebca712_3d522a67",
+      "revId": "336db29e267f9c212f7b306df073a8397721611b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
