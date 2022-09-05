@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aebca712_3d522a67",
+        "filename": "README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-05T12:14:03Z",
+      "side": 1,
+      "message": "What about for mac and windows?",
+      "revId": "336db29e267f9c212f7b306df073a8397721611b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
