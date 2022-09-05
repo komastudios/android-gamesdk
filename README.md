@@ -4,6 +4,20 @@
 
 Unless you need to compile AGDK from sources, it's recommended that you use the package with the pre-compiled library. You can download it on https://developer.android.com/games/agdk.
 
+## Requirements
+
+AGDK requires an existing Python2 or Python3 installation. To validate if you have Python2 installed, do
+
+```bash
+which python
+```
+
+If this returns nothing, you don't have Python2 installed. In this case, it's recommended to install it:
+
+```bash
+sudo apt install python python-setuptools
+```
+
 ## Build AGDK
 
 In order to build AGDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/).
@@ -13,6 +27,11 @@ On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), w
 mkdir android-games-sdk
 cd android-games-sdk
 repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
+```
+Ninja binary must be in your PATH:
+
+```bash
+export PATH="$PATH:`pwd`/../prebuilts/ninja/linux-x86"
 ```
 
 ### Build with locally installed SDK/NDK
