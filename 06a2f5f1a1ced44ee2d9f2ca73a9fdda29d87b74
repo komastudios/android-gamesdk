@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a0c6f2c2_892488d8",
+        "filename": "games-controller/src/main/cpp/GameControllerMappingFile.h",
+        "patchSetId": 18
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-09-06T14:20:56Z",
+      "side": 1,
+      "message": "The DAC documentation will be updated, but not until 1.2 goes beta or RC.",
+      "parentUuid": "4c94fd22_e691fffa",
+      "range": {
+        "startLine": 167,
+        "startChar": 34,
+        "endLine": 168,
+        "endChar": 18
+      },
+      "revId": "06a2f5f1a1ced44ee2d9f2ca73a9fdda29d87b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eb46011b_47e72857",
         "filename": "games-controller/src/main/cpp/paddleboat/include/paddleboat.h",
         "patchSetId": 18
@@ -54,6 +78,30 @@
       "writtenOn": "2022-09-02T15:39:00Z",
       "side": 1,
       "message": "By \"integrated sensor\" do you mean one integrated into the phone instead of the controller? Would be nice to be explicit here since this library is primarily about game controllers so I would assume that\u0027s what you\u0027re implicitly referring to here.",
+      "range": {
+        "startLine": 348,
+        "startChar": 10,
+        "endLine": 348,
+        "endChar": 60
+      },
+      "revId": "06a2f5f1a1ced44ee2d9f2ca73a9fdda29d87b74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "745b1596_4c3f1e6b",
+        "filename": "games-controller/src/main/cpp/paddleboat/include/paddleboat.h",
+        "patchSetId": 18
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-09-06T14:20:56Z",
+      "side": 1,
+      "message": "I\u0027ll update the refdocs before release (and the updated guide will also explain, but that won\u0027t happen until beta)",
+      "parentUuid": "eb46011b_47e72857",
       "range": {
         "startLine": 348,
         "startChar": 10,
