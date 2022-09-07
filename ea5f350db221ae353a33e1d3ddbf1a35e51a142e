@@ -63,6 +63,30 @@
       },
       "revId": "ea5f350db221ae353a33e1d3ddbf1a35e51a142e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e790e39_577ae647",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-09-07T00:02:31Z",
+      "side": 1,
+      "message": "Hi Nate, coming back to this CL now that the Input SDK has been released to GMaven\n\nCan you please take a look?",
+      "parentUuid": "c4e0c20e_693761e9",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 60
+      },
+      "revId": "ea5f350db221ae353a33e1d3ddbf1a35e51a142e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
