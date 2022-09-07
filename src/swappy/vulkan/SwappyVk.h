@@ -89,6 +89,8 @@ class SwappyVk {
     void SetFunctionProvider(const SwappyVkFunctionProvider* pFunctionProvider);
     bool InitFunctions();
 
+    bool IsEnabled(VkSwapchainKHR swapchain, bool* isEnabled);
+
    private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>
