@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "20eca622_789d129c",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-09-07T15:31:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c8556cc7_b2aca915",
+      "range": {
+        "startLine": 330,
+        "startChar": 55,
+        "endLine": 330,
+        "endChar": 65
+      },
+      "revId": "551e7441a6bee38af6021bfe34a82c6e92ffe048",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d8f7d352_af069faf",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-09-06T21:22:43Z",
       "side": 1,
       "message": "nit: this seems like an error. I think we should then have the `enabled` as out parameter and return true/false based on whether this function failed or not.",
+      "range": {
+        "startLine": 332,
+        "startChar": 3,
+        "endLine": 333,
+        "endChar": 39
+      },
+      "revId": "551e7441a6bee38af6021bfe34a82c6e92ffe048",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "509a7b68_b1b5dd3b",
+        "filename": "include/swappy/swappyVk.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1904290
+      },
+      "writtenOn": "2022-09-07T15:31:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8f7d352_af069faf",
       "range": {
         "startLine": 332,
         "startChar": 3,
