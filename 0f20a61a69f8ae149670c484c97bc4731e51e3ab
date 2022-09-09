@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5edfa34_0885d310",
+        "filename": "src/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-09T14:58:15Z",
+      "side": 0,
+      "message": "These were missed when moving swappy/paddleboat to their own gradle files. Cleaning up now as these lines do nothing now",
+      "revId": "0f20a61a69f8ae149670c484c97bc4731e51e3ab",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
