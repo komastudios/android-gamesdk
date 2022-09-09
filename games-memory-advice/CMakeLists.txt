@@ -3,14 +3,14 @@ project(memory-advice C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
-include("../../samples/gamesdk.cmake")
+include("../samples/gamesdk.cmake")
 
-set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
-set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/resources")
-set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
-set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/tensorflow")
-set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external")
-set( TFLITE_FLATBUFFERS_SCHEMA_DIR "${CMAKE_CURRENT_BINARY_DIR}/../flatbuffers/include")
+#find_package(tensorflow-lite REQUIRED CONFIG)
+
+set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
+set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/resources")
+set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
+set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -19,14 +19,6 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
 
-set( CPUINFO_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/cpuinfo")
-set( CLOG_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/cpuinfo")
-set( PTHREADPOOL_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/pthreadpool")
-set( FXDIV_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FXdiv")
-set( FP16_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/FP16")
-set( PSIMD_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/psimd")
-set( XNNPACK_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/xnnpack")
-set( EIGEN_SOURCE_DIR "${EXTERNAL_SOURCE_DIR}/eigen")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-s")
@@ -40,10 +32,11 @@ string(APPEND PARAMS_STRING "\n )PARAMS\";\n}\n")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/advisor_parameters.cpp" "${PARAMS_STRING}")
 
 include_directories( . )
-include_directories( ../../include )
-include_directories( ../common )
+include_directories( ../include )
+include_directories( ../src/common )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${THIRD_PARTY_DIR} )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/headers )
 
 function(bundle_static_library tgt_name bundled_tgt_name)
   list(APPEND static_libs ${tgt_name})
@@ -138,28 +131,6 @@ function(bundle_static_library tgt_name bundled_tgt_name)
 
 endfunction()
 
-add_subdirectory(
-  "${EXTERNAL_SOURCE_DIR}/abseil-cpp"
-  "${CMAKE_CURRENT_BINARY_DIR}/abseil-cpp"
-  EXCLUDE_FROM_ALL
-)
-
-set(TFLITE_INCLUDE_DIRS
-  "${TENSORFLOW_SOURCE_DIR}"
-  "${TFLITE_FLATBUFFERS_SCHEMA_DIR}"
-)
-include_directories(
-  BEFORE
-  ${TFLITE_INCLUDE_DIRS}
-)
-
-add_subdirectory(
-  "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
-  "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite"
-  EXCLUDE_FROM_ALL
-)
-
-
 set(MEMORY_ADVICE_SRCS
   c_header_check.c
   core/memory_advice.cpp
@@ -170,33 +141,42 @@ set(MEMORY_ADVICE_SRCS
   core/state_watcher.cpp
   core/predictor.cpp
   test/basic.cpp
-  ../common/jni/jni_helper.cpp
-  ../common/jni/jni_wrap.cpp
-  ../common/jni/jnictx.cpp
-  ../common/apk_utils.cpp
-  ../common/system_utils.cpp
+  ../src/common/jni/jni_helper.cpp
+  ../src/common/jni/jni_wrap.cpp
+  ../src/common/jni/jnictx.cpp
+  ../src/common/apk_utils.cpp
+  ../src/common/system_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   advisor_parameters.cpp
   ${MEMORYADVICE_RESOURCES_DIR}/realtime.tflite
   ${MEMORYADVICE_RESOURCES_DIR}/oom_features.json
 )
 
-add_library(memory_advice_static_pre STATIC ${MEMORY_ADVICE_SRCS})
+#link_directories("${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/jni/arm64-v8a")
+#link_directories(${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/jni/${CMAKE_ANDROID_ARCH_ABI})
+#link_directories("${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/jni/x86")
+#link_directories("${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/jni/x86_64")
+
+#find_library(TENSORFLOW_LITE_LIB tensorflowlite_jni)
+
+add_library( tflite SHARED IMPORTED )
+# You can define two import-locations: one for debug and one for release.
+set_target_properties( tflite PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/res/tensorflow-lite-2.9.0/jni/${CMAKE_ANDROID_ARCH_ABI}/libtensorflowlite_jni.so )
+
+add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})
 add_library(memory_advice SHARED ${MEMORY_ADVICE_SRCS})
 target_link_libraries(memory_advice
   PUBLIC
   android
   log
-  absl::flags
-  tensorflow-lite
+  tflite
 )
 
-target_link_libraries(memory_advice_static_pre
+target_link_libraries(memory_advice_static
   PUBLIC
   android
   log
-  absl::flags
-  tensorflow-lite
+  tflite
 )
 
-bundle_static_library(memory_advice_static_pre memory_advice_static)
+#bundle_static_library(memory_advice_static_pre memory_advice_static)

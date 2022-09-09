@@ -1,15 +1,13 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     ndkVersion "23.1.7779620"
 
     defaultConfig {
         applicationId "com.memory_advice.hogger"
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdkVersion 20
+        targetSdkVersion 31
         versionCode 17
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -20,6 +18,8 @@ android {
     }
 
     buildTypes {
+        debug {
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -28,11 +28,18 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
+            version "3.18.0+"
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+    buildFeatures {
+        prefab true
     }
 }
 
@@ -41,4 +48,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'org.tensorflow:tensorflow-lite:2.9.0'
+    implementation project(':games-memory-advice')
+    //implementation project(':games-frame-pacing')
 }

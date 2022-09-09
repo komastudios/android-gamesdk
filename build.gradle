@@ -4,7 +4,6 @@ import com.google.androidgamesdk.ExternalAndroidProject
 import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
-import com.google.androidgamesdk.TensorflowPatcher
 import com.google.androidgamesdk.BuildInfoFile
 import com.google.androidgamesdk.Toolchain
 import com.google.androidgamesdk.ToolchainSet
@@ -76,17 +75,7 @@ def swappyNativeLibrary = new AndroidArchiveLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
-def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
-        .setUsesTensorflow()
-        .setMinimumNdkVersion(20)
-        .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
-                        .copySourcesTo("samples/memory_advice/hogger")
-                        .buildDebugApkTo("apks/samples", "hogger.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('test', "memory_advice", "testapp"))
-                        .buildDebugApkTo("apks/test", "memoryadvicetest.apk"))
+def memoryAdviceNativeLibrary = new AndroidArchiveLibrary(versions['memory_advice'])
 
 def gameActivityLibrary = new AndroidArchiveLibrary(versions['game_activity'])
         // This can be removed after migrating to prefabPublishing:
@@ -97,13 +86,6 @@ def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input']
         .setPrefabFolderName("prefab-src")
 
 def gameControllerLibrary = new AndroidArchiveLibrary(versions['paddleboat'])
-
-task prepare_tensorflow {
-    doLast {
-        def tensorflowPatcher = new TensorflowPatcher(project)
-        tensorflowPatcher.patch();
-    }
-}
 
 allprojects {
     buildDir = getOutPath()
@@ -738,7 +720,6 @@ tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
@@ -909,7 +890,6 @@ task buildAarStructure {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
