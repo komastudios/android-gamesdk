@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("hogger");
 
         // Explicitly load the MemoryAdvice native library (Optional).
-        //System.loadLibrary("memory_advice");
+        System.loadLibrary("memory_advice");
     }
 
     private final class CheckMemoryAdviceTask extends TimerTask {

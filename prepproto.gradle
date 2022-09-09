@@ -42,7 +42,7 @@ def getEnvironment() {
 }
 
 task prepare_proto_before() {
-    def gameSdkRoot = buildscript.sourceFile.getParent()
+    /*def gameSdkRoot = buildscript.sourceFile.getParent()
     def protocBinDir = protobufInstallDir() + "/bin"
     def sixDir = "${gameSdkRoot}/../external/six"
     def env = getEnvironment()
@@ -59,16 +59,19 @@ task prepare_proto_before() {
         workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
         setEnvironment env
         commandLine 'make'
-    }
+    }*/
 }
 
 task prepare_proto(dependsOn: prepare_proto_before) {
+    /*
     def gameSdkRoot = buildscript.sourceFile.getParent()
     exec {
         workingDir "${gameSdkRoot}"
         commandLine "python"
         args = ["ab_info.py"]
     }
+
+     */
 }
 
 
