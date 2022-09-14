@@ -6,17 +6,7 @@ Unless you need to compile AGDK from sources, it's recommended that you use the 
 
 ## Requirements
 
-AGDK requires an existing Python2 or Python3 installation. To validate if you have Python2 installed, do
-
-```bash
-which python
-```
-
-If this returns nothing, you don't have Python2 installed. In this case, it's recommended to install it:
-
-```bash
-sudo apt install python python-setuptools
-```
+AGDK requires Python executable named "python". A supported version of Python is supplied at `prebuilts/python/PLATFORM_NAME/bin/python`. The easiest way is to create a symlink to that executable and put it into any directory that is in your PATH.
 
 ## Build AGDK
 
