@@ -500,17 +500,7 @@ def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
     def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
     def packageFolder = joinPath(getPackagePath(), outFolder)
 
-    // Inject the sources of the "header only" library, in Prefab format.
-    // This can be removed once projects are upgraded to use prefabPublishing.
-    if (!library.prefabFolderName.isEmpty()) {
-        def prefabFolderPath = joinPath(getProjectDir().getPath(), library.projectName, library.prefabFolderName)
-        def aarPrefabPatcher = new AarPrefabPatcher()
-        aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
-        // Remove GameController classes if we are not GameController.
-        if (library.libraryInfo.nickname!="paddleboat")
-            aarPrefabPatcher.filterClasses(aarPath, "com/google/android/games/paddleboat", null)
-    }
-
+    assert file(aarPath).exists()
     copy {
         from aarPath
         into packageFolder
@@ -757,12 +747,10 @@ tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller::assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        if (androidLibrary.projectName != "games-controller")
-            dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     def packageName = getPackageName()
@@ -930,12 +918,10 @@ task buildAarStructure {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        if (androidLibrary.projectName != "GameController")
-            dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
     }
 
     doFirst {
