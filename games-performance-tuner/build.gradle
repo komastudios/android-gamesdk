@@ -20,7 +20,7 @@ plugins {
 
 apply from: '../prepproto.gradle'
 
-buildDir="../../out"
+buildDir="../../out_tuningfork"
 
 android {
 
