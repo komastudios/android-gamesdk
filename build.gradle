@@ -780,12 +780,18 @@ tasks.withType(BuildTask) {
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller::assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        if (androidLibrary.projectName != "games-controller")
-            dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
+
+        def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
+        def packageFolder = joinPath(getPackagePath(), outFolder)
+        assert file(aarPath).exists()
+        copy {
+            from aarPath
+            into packageFolder
+        }
     }
 
     def packageName = getPackageName()
@@ -954,12 +960,18 @@ task buildAarStructure {
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     nativeLibraries.each { nativeLibrary ->
         if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.libraryInfo.nickname == "paddleboat") dependsOn ":games-controller:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
-        if (androidLibrary.projectName != "GameController")
-            dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleRelease"
+
+        def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
+        def packageFolder = joinPath(getPackagePath(), outFolder)
+        assert file(aarPath).exists()
+        copy {
+            from aarPath
+            into packageFolder
+        }
     }
 
     doFirst {
