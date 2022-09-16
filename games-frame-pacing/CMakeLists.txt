@@ -31,8 +31,18 @@ include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
 
-# Dex linking requires an extra option for later versions of clang lld
-if (ANDROID_NDK_MAJOR GREATER 17)
+
+# In order to support ChoreographerCallbacks back on older android versions we have a hack here
+# which adds the dex file from :games-frame-pacing:extras to our binary.
+# Android studio seems to use two different linkers and only one of those linkers requires we pass
+# in the emulation option "-m".
+# This linker which will be found in a path similar to this:
+# 21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ld
+# does not require the "-m" option.
+# The more general linker which can be found in a path similar to this:
+# 21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/bin/ld.lld
+# does require the "-m" option
+if(CMAKE_LINKER MATCHES ".*/ld.lld" AND ANDROID_NDK_MAJOR GREATER 17)
   if ( ANDROID_NDK_ABI_NAME MATCHES "armeabi-v7a")
     set (LINKER_TARGET_EMULATION_OPTION "-m" "armelf_linux_eabi")
   elseif(ANDROID_NDK_ABI_NAME MATCHES "arm64-v8a")
