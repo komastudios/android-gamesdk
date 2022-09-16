@@ -16,6 +16,24 @@
       "message": "Do we need these lines commented? Maybe just remove it?\nIf we need it for a reason then add a comment like \"Uncomment following lines for X\" like it was for the bottom commented lines in the previous version.",
       "revId": "b746d4c5b7210b104e3980b35b6a9dba9da662e4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57273af8_d519a603",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-16T13:32:06Z",
+      "side": 1,
+      "message": "I think we should keep them for times when we want to load from maven (QA will need to do this occasionally). I\u0027ll add a comment",
+      "parentUuid": "97597bf5_1ffd0bf5",
+      "revId": "b746d4c5b7210b104e3980b35b6a9dba9da662e4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
