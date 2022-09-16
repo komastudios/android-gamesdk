@@ -74,7 +74,7 @@ repositories {
 
 
 tasks.whenTaskAdded {
-    if (it.name.startsWith('buildCMakeRelWithDebInfo')) {
+    if (it.name.startsWith('buildCMake')) {
         it.dependsOn ":games-frame-pacing:extras:assembleRelease"
     }
 }
