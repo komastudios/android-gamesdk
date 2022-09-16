@@ -120,9 +120,9 @@ void Paddleboat_setMouseStatusCallback(
 }
 
 void Paddleboat_setPhysicalKeyboardStatusCallback(
-        Paddleboat_PhysicalKeyboardStatusCallback /*statusCallback*/,
-        void */*userData*/) {
-    // TODO: stub function in this CL
+        Paddleboat_PhysicalKeyboardStatusCallback statusCallback,
+        void *userData) {
+    GameControllerManager::setPhysicalKeyboardStatusCallback(statusCallback, userData);
 }
 
 Paddleboat_ErrorCode Paddleboat_getControllerData(
@@ -172,8 +172,7 @@ Paddleboat_MouseStatus Paddleboat_getMouseStatus() {
 }
 
 bool Paddleboat_getPhysicalKeyboardStatus() {
-    // TODO: stub function in this CL
-    return false;
+    return GameControllerManager::getPhysicalKeyboardStatus();
 }
 
 void Paddleboat_addControllerRemapData(
