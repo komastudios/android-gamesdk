@@ -5,11 +5,11 @@ plugins {
 buildDir="../../out_game_text_input"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 19
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
