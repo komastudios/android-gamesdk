@@ -34,6 +34,24 @@
       "parentUuid": "97597bf5_1ffd0bf5",
       "revId": "b746d4c5b7210b104e3980b35b6a9dba9da662e4",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92a5d899_68fd982b",
+        "filename": "samples/agdktunnel/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-16T15:38:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "57273af8_d519a603",
+      "revId": "b746d4c5b7210b104e3980b35b6a9dba9da662e4",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
