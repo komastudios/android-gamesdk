@@ -110,10 +110,10 @@ dependencies {
     // Be aware that when using libraries from Maven, the versions here may target
     // a future release that does not exist yet, which is why a locally built
     // library is used when agdktunnel depends on the latest features.
-    implementation "androidx.games:games-frame-pacing:1.9.0"
-    implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
-    implementation "androidx.games:games-controller:1.0.0"
-    implementation "androidx.games:games-activity:1.1.0"
+//    implementation "androidx.games:games-frame-pacing:1.9.0"
+//    implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
+//    implementation "androidx.games:games-controller:1.0.0"
+//    implementation "androidx.games:games-activity:1.1.0"
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
@@ -124,11 +124,10 @@ dependencies {
         implementation files("$playcoreDir/playcore.aar")
     }
 
-    // Uncomment to use a locally-built library.
-    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
-    //                                               'GameController.aar',
-    //                                               'games-frame-pacing-1.9.0.aar',
-    //                                               'games-performance-tuner-1.5.0.aar'])
+    implementation project(':game-activity')
+    implementation project(':games-performance-tuner')
+    implementation project(':games-frame-pacing')
+    implementation project(':games-controller')
 }
 
 android.lintOptions {
