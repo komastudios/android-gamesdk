@@ -650,15 +650,6 @@ Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
 class BuildTask extends DefaultTask {
 }
 
-task build(type: DefaultTask) {
-    doFirst {
-        throw new GradleException("""
-Do not use the default build task for building the AGDK.
-Use buildLocal, buildSpecific or one of the packaging tasks.
-""")
-    }
-}
-
 def isExpressPackage() {
     return project.hasProperty("express")
 }
