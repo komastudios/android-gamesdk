@@ -16,6 +16,24 @@
       "message": "fixes compiler warning",
       "revId": "f2e2e72c7f7c8a2784a65109c0b23c1895e7a3b6",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c76777c2_44a57db3",
+        "filename": "samples/bouncyball/app/src/main/AndroidManifest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-16T12:50:55Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1bd5b049_c1dab55d",
+      "revId": "f2e2e72c7f7c8a2784a65109c0b23c1895e7a3b6",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
