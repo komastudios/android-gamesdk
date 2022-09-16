@@ -63,6 +63,10 @@ android {
         tuningfork_static {
             headers "include"
         }
+
+        unitytuningfork {
+            headers "include"
+        }
     }
 
 }
