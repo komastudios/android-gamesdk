@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41f3c9f8_dbab5625",
+        "filename": "samples/bouncyball/app/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-16T12:49:47Z",
+      "side": 0,
+      "message": "We have been slowly adding new abis to this. I was just about to add x86_64 but actually after adding this ABI we have no need for this filtering anymore. I have tested x86_64 works.",
+      "revId": "f1fdee9bbfcebafc5dacebda1e65890cf1d0ca7f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
