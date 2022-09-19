@@ -79,6 +79,15 @@ namespace {
         }
     }
 
+    void KeyboardCallback(bool keyboardConnected, void *userData) {
+        if (userData != nullptr) {
+            DemoScene *scene = reinterpret_cast<DemoScene *>(userData);
+            scene->KeyboardStatusEvent(keyboardConnected);
+        }
+
+    }
+    }
+
     void VibrationParameters(const char *labelText, const char *labelTag, const float vMin,
                              const float vMax, const float vStep, float *vValue) {
         char plusString[16];
@@ -138,6 +147,7 @@ DemoScene::DemoScene() {
     mDontTrimDeadzone = false;
     mPreferencesActive = false;
     mRegisteredStatusCallback = false;
+    mKeyboardConnected = false;
 }
 
 DemoScene::~DemoScene() {
@@ -232,8 +242,9 @@ void DemoScene::RenderUI() {
     SetupUIWindow();
 
     if (!RenderPreferences()) {
-        // Display mouse data on the same line as the preferences button
+        // Display keyboard/mouse data on the same line as the preferences button
         ImGui::SameLine(0.0f, 48.0f);
+        RenderKeyboardData();
         RenderMouseData();
         RenderControllerTabs();
     }
@@ -360,15 +371,24 @@ void DemoScene::RenderControllerTabs() {
     }
 }
 
+void DemoScene::RenderKeyboardData() {
+    if (mKeyboardConnected) {
+        ImGui::Text("K:Y ");
+    } else {
+        ImGui::Text("K:N ");
+    }
+    ImGui::SameLine();
+}
+
 void DemoScene::RenderMouseData() {
     const Paddleboat_MouseStatus mouseStatus = Paddleboat_getMouseStatus();
     if (mouseStatus == PADDLEBOAT_MOUSE_NONE) {
-        ImGui::Text("Mouse: No");
+        ImGui::Text("M:No");
         return;
     } else if (mouseStatus == PADDLEBOAT_MOUSE_CONTROLLER_EMULATED) {
-        ImGui::Text("Mouse: Vir ");
+        ImGui::Text("M:Vi ");
     } else if (mouseStatus == PADDLEBOAT_MOUSE_PHYSICAL) {
-        ImGui::Text("Mouse: Phy ");
+        ImGui::Text("M:Ph ");
     }
     ImGui::SameLine();
     Paddleboat_Mouse_Data mouseData;
@@ -946,11 +966,13 @@ void DemoScene::MotionDataEvent(const int32_t controllerIndex,
 void DemoScene::OnInstall() {
     Paddleboat_setControllerStatusCallback(GameControllerCallback, this);
     Paddleboat_setMotionDataCallback(MotionDataCallback, this);
+    Paddleboat_setPhysicalKeyboardStatusCallback(KeyboardCallback, this);
     mRegisteredStatusCallback = true;
 }
 
 void DemoScene::OnUninstall() {
     Paddleboat_setControllerStatusCallback(nullptr, nullptr);
     Paddleboat_setMotionDataCallback(nullptr, nullptr);
+    Paddleboat_setPhysicalKeyboardStatusCallback(nullptr, nullptr);
     mRegisteredStatusCallback = false;
 }

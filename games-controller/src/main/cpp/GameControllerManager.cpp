@@ -119,6 +119,16 @@ void Java_com_google_android_games_paddleboat_GameControllerManager_onMouseDisco
     paddleboat::GameControllerManager::onMouseDisconnection(deviceId);
 }
 
+void Java_com_google_android_games_paddleboat_GameControllerManager_onKeyboardConnected(
+        JNIEnv *env, jobject gcmObject, jint deviceId) {
+    paddleboat::GameControllerManager::onKeyboardConnection(deviceId);
+}
+
+void Java_com_google_android_games_paddleboat_GameControllerManager_onKeyboardDisconnected(
+        JNIEnv *env, jobject gcmObject, jint deviceId) {
+    paddleboat::GameControllerManager::onKeyboardDisconnection(deviceId);
+}
+
 }  // extern "C"
 
 namespace paddleboat {
@@ -171,6 +181,12 @@ const JNINativeMethod GCM_NATIVE_METHODS[] = {
     {"onMotionData", "(IIJFFF)V",
      reinterpret_cast<void *>(
          Java_com_google_android_games_paddleboat_GameControllerManager_onMotionData)},
+    {"onKeyboardConnected", "(I)V",
+     reinterpret_cast<void *>(
+         Java_com_google_android_games_paddleboat_GameControllerManager_onKeyboardConnected)},
+    {"onKeyboardDisconnected", "(I)V",
+     reinterpret_cast<void *>(
+         Java_com_google_android_games_paddleboat_GameControllerManager_onKeyboardDisconnected)},
     {"onMouseConnected", "(I)V",
      reinterpret_cast<void *>(
          Java_com_google_android_games_paddleboat_GameControllerManager_onMouseConnected)},
@@ -1156,6 +1172,34 @@ void GameControllerManager::onMotionData(const int32_t deviceId,
     }
 }
 
+bool GameControllerManager::getPhysicalKeyboardStatus() {
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        return gcm->mPhysicalKeyboardConnected;
+    }
+    return false;
+}
+
+void GameControllerManager::onKeyboardConnection(const int32_t /*deviceId*/) {
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        gcm->mPhysicalKeyboardConnected = true;
+        if (gcm->mKeyboardCallback != nullptr) {
+            gcm->mKeyboardCallback(true, gcm->mKeyboardCallbackUserData);
+        }
+    }
+}
+
+void GameControllerManager::onKeyboardDisconnection(const int32_t /*deviceId*/) {
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        gcm->mPhysicalKeyboardConnected = false;
+        if (gcm->mKeyboardCallback != nullptr) {
+            gcm->mKeyboardCallback(false, gcm->mKeyboardCallbackUserData);
+        }
+    }
+}
+
 void GameControllerManager::onMouseConnection(const int32_t deviceId) {
     GameControllerManager *gcm = getInstance();
     if (gcm) {
@@ -1252,6 +1296,17 @@ void GameControllerManager::setMouseStatusCallback(
         gcm->mMouseCallback = statusCallback;
         gcm->mMouseCallbackUserData = userData;
     }
+}
+
+void GameControllerManager::setPhysicalKeyboardStatusCallback(
+        Paddleboat_PhysicalKeyboardStatusCallback statusCallback, void *userData) {
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        gcm->mKeyboardCallback = statusCallback;
+        gcm->mKeyboardCallbackUserData = userData;
+    }
+}
+
 }
 
 jclass GameControllerManager::getGameControllerClass() {
