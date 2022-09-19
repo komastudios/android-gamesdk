@@ -54,6 +54,8 @@ class GameControllerManager {
 
     static bool isInitialized();
 
+    static bool getPhysicalKeyboardStatus();
+
     // Get/Set whether AKEYCODE_BACK is 'eaten' or allowed to pass through to
     // the system This can be used to block the OS backing out of the game, or
     // allowing it if the game is in an appropriate state (i.e. the title
@@ -74,6 +76,9 @@ class GameControllerManager {
 
     static void setMouseStatusCallback(
         Paddleboat_MouseStatusCallback statusCallback, void *userData);
+
+    static void setPhysicalKeyboardStatusCallback(
+            Paddleboat_PhysicalKeyboardStatusCallback statusCallback, void *userData);
 
     static void onStop(JNIEnv *env);
 
@@ -127,6 +132,10 @@ class GameControllerManager {
 
     static void onDisconnection(const int32_t deviceId);
 
+    static void onKeyboardConnection(const int32_t deviceId);
+
+    static void onKeyboardDisconnection(const int32_t deviceId);
+
     static void onMotionData(const int32_t deviceId, const int32_t motionType,
                              const uint64_t timestamp, const float dataX,
                              const float dataY, const float dataZ);
@@ -178,6 +187,7 @@ class GameControllerManager {
     bool mGCMClassInitialized = false;
     bool mBackButtonConsumed = true;
     bool mMotionEventReporting = false;
+    bool mPhysicalKeyboardConnected = false;
 
     int32_t mApiLevel = 16;
     int32_t mBatteryWait = BATTERY_REFRESH_WAIT;
@@ -206,6 +216,9 @@ class GameControllerManager {
     void *mStatusCallbackUserData = nullptr;
     // device debug helper
     int32_t mLastKeyEventKeyCode = 0;
+
+    Paddleboat_PhysicalKeyboardStatusCallback mKeyboardCallback = nullptr;
+    void *mKeyboardCallbackUserData = nullptr;
 
     Paddleboat_MouseStatus mMouseStatus = PADDLEBOAT_MOUSE_NONE;
     int32_t mMouseDeviceIds[MAX_MOUSE_DEVICES] = {INVALID_MOUSE_ID,
