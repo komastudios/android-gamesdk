@@ -66,12 +66,15 @@ public class GameControllerManager {
     private static final int GAMECONTROLLER_SOURCE_MASK =
             InputDevice.SOURCE_DPAD | InputDevice.SOURCE_JOYSTICK | InputDevice.SOURCE_GAMEPAD;
     private static final int MOUSE_SOURCE_MASK = InputDevice.SOURCE_MOUSE;
+    private static final int KEYBOARD_SOURCE_MASK = InputDevice.SOURCE_KEYBOARD;
     private boolean nativeReady;
     private final boolean printControllerInfo;
     private boolean reportMotionEvents;
     private final InputManager inputManager;
+    private final ArrayList<Integer> keyboardDeviceIds;
     private final ArrayList<Integer> mouseDeviceIds;
     private final ArrayList<Integer> pendingControllerDeviceIds;
+    private final ArrayList<Integer> pendingKeyboardDeviceIds;
     private final ArrayList<Integer> pendingMouseDeviceIds;
     private final ArrayList<GameControllerInfo> gameControllers;
     private GameControllerThread gameControllerThread;
@@ -91,8 +94,10 @@ public class GameControllerManager {
         reportMotionEvents = false;
         inputManager = (InputManager) appContext.getSystemService(Context.INPUT_SERVICE);
         printControllerInfo = appPrintControllerInfo;
+		keyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
         mouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
         pendingControllerDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+		pendingKeyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
         pendingMouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
         gameControllers = new ArrayList<GameControllerInfo>(MAX_GAMECONTROLLERS);
 
@@ -104,7 +109,7 @@ public class GameControllerManager {
     static public int getControllerFlagsForDevice(InputDevice inputDevice) {
         int controllerFlags = 0;
 
-        boolean hasVirtualMouse = isDeviceOfSource(inputDevice.getId(), MOUSE_SOURCE_MASK);
+        boolean hasVirtualMouse = isDeviceOfSource(inputDevice.getId(), MOUSE_SOURCE_MASK, true);
         if (hasVirtualMouse) {
             controllerFlags |= DEVICEFLAG_VIRTUAL_MOUSE;
         }
@@ -172,7 +177,8 @@ public class GameControllerManager {
         return 0;
     }
 
-    private static boolean isDeviceOfSource(int deviceId, int matchingSourceMask) {
+    private static boolean isDeviceOfSource(int deviceId, int matchingSourceMask,
+                                            boolean needsMotionRanges) {
         boolean isSource = false;
         InputDevice inputDevice = InputDevice.getDevice(deviceId);
         int inputDeviceSources = inputDevice.getSources();
@@ -181,7 +187,11 @@ public class GameControllerManager {
         if (inputDevice.isVirtual() == false) {
             if ((inputDeviceSources & sourceMask) != 0) {
                 List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
-                if (motionRanges.size() > 0) {
+                if (needsMotionRanges) {
+                    if (motionRanges.size() > 0) {
+                        isSource = true;
+                    }
+                } else {
                     isSource = true;
                 }
             }
@@ -215,6 +225,37 @@ public class GameControllerManager {
         }
     }
 
+    void checkForDeviceRemovals(int[] deviceIds, ArrayList<Integer> pendingDeviceIds,
+                                ArrayList<Integer> activeDeviceIds) {
+        if (!nativeReady) {
+            for (int index = 0; index < pendingDeviceIds.size(); ++index) {
+                boolean foundDevice = false;
+                for (int deviceId : deviceIds) {
+                    if (pendingDeviceIds.get(index) == deviceId) {
+                        foundDevice = true;
+                        break;
+                    }
+                }
+                if (!foundDevice) {
+                    pendingDeviceIds.remove(index--);
+                }
+            }
+        }
+        for (int index = 0; index < activeDeviceIds.size(); ++index) {
+            int activeDeviceId = activeDeviceIds.get(index);
+            boolean foundDevice = false;
+            for (int deviceId : deviceIds) {
+                if (activeDeviceId == deviceId) {
+                    foundDevice = true;
+                    break;
+                }
+            }
+            if (!foundDevice) {
+                onInputDeviceRemoved(activeDeviceId);
+            }
+        }
+    }
+
     void checkForControllerRemovals(int[] deviceIds) {
         if (!nativeReady) {
             for (int index = 0; index < pendingControllerDeviceIds.size(); ++index) {
@@ -244,36 +285,6 @@ public class GameControllerManager {
         }
     }
 
-    void checkForMouseRemovals(int[] deviceIds) {
-        if (!nativeReady) {
-            for (int index = 0; index < pendingMouseDeviceIds.size(); ++index) {
-                boolean foundDevice = false;
-                for (int deviceId : deviceIds) {
-                    if (pendingMouseDeviceIds.get(index) == deviceId) {
-                        foundDevice = true;
-                        break;
-                    }
-                }
-                if (!foundDevice) {
-                    pendingMouseDeviceIds.remove(index--);
-                }
-            }
-        }
-        for (int index = 0; index < mouseDeviceIds.size(); ++index) {
-            int mouseDeviceId = mouseDeviceIds.get(index);
-            boolean foundDevice = false;
-            for (int deviceId : deviceIds) {
-                if (mouseDeviceId == deviceId) {
-                    foundDevice = true;
-                    break;
-                }
-            }
-            if (!foundDevice) {
-                onInputDeviceRemoved(mouseDeviceId);
-            }
-        }
-    }
-
     void processControllerAddition(int deviceId) {
         boolean foundDevice = false;
         if (!nativeReady) {
@@ -299,6 +310,31 @@ public class GameControllerManager {
         }
     }
 
+    void processKeyboardAddition(int deviceId) {
+        boolean foundDevice = false;
+        if (!nativeReady) {
+            for (int index = 0; index < pendingKeyboardDeviceIds.size(); ++index) {
+                if (pendingKeyboardDeviceIds.get(index) == deviceId) {
+                    foundDevice = true;
+                    break;
+                }
+            }
+            if (!foundDevice) {
+                pendingKeyboardDeviceIds.add(deviceId);
+            }
+        } else {
+            for (int index = 0; index < keyboardDeviceIds.size(); ++index) {
+                if (keyboardDeviceIds.get(index) == deviceId) {
+                    foundDevice = true;
+                    break;
+                }
+            }
+            if (!foundDevice) {
+                onKeyboardDeviceAdded(deviceId);
+            }
+        }
+    }
+
     void processMouseAddition(int deviceId) {
         boolean foundDevice = false;
         if (!nativeReady) {
@@ -319,14 +355,14 @@ public class GameControllerManager {
                 }
             }
             if (!foundDevice) {
-                onMouseAdded(deviceId);
+                onMouseDeviceAdded(deviceId);
             }
         }
     }
 
     boolean getIsGameController(int deviceId) {
         boolean isGameController = false;
-        if (isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK)) {
+        if (isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK, true)) {
             InputDevice inputDevice = InputDevice.getDevice(deviceId);
             if (inputDevice != null) {
                 String deviceName = inputDevice.getName();
@@ -346,18 +382,22 @@ public class GameControllerManager {
         // Scan for additions
         for (int deviceId : deviceIds) {
             boolean isGameController = getIsGameController(deviceId);
-            boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK);
+            boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK, true);
+            boolean isKeyboard = isDeviceOfSource(deviceId, KEYBOARD_SOURCE_MASK, false);
 
             if (isMouse && !isGameController) {
                 processMouseAddition(deviceId);
+            } else if (isKeyboard && !isGameController) {
+                processKeyboardAddition(deviceId);
             } else if (isGameController) {
                 processControllerAddition(deviceId);
             }
         }
 
-        // Scan for controller and mouse removals
+        // Scan for controller, keyboard, and mouse removals
         checkForControllerRemovals(deviceIds);
-        checkForMouseRemovals(deviceIds);
+        checkForDeviceRemovals(deviceIds, pendingKeyboardDeviceIds, keyboardDeviceIds);
+        checkForDeviceRemovals(deviceIds, pendingMouseDeviceIds, mouseDeviceIds);
     }
 
     GameControllerInfo onGameControllerAdded(int deviceId) {
@@ -378,7 +418,49 @@ public class GameControllerManager {
         return gameControllerInfo;
     }
 
-    void onMouseAdded(int deviceId) {
+    void onKeyboardDeviceAdded(int deviceId) {
+        if (printControllerInfo) {
+            Log.d(TAG, "onKeyboardDeviceAdded id: " + deviceId + " name: " +
+                    InputDevice.getDevice(deviceId).getName());
+            logControllerInfo(deviceId);
+        }
+        keyboardDeviceIds.add(deviceId);
+        // Only send a connection message for the first keyboard device,
+        // secondary keyboards shouldn't trigger connection messages
+        if (keyboardDeviceIds.size() == 1) {
+            onKeyboardConnected(deviceId);
+        }
+    }
+
+    boolean onKeyboardDeviceRemoved(int deviceId) {
+        boolean removed = false;
+        // Remove from pending connected if it hadn't been processed yet
+        for (int index = 0; index < pendingKeyboardDeviceIds.size(); ++index) {
+            if (pendingKeyboardDeviceIds.get(index) == deviceId) {
+                pendingKeyboardDeviceIds.remove(index);
+                removed = true;
+                break;
+            }
+        }
+
+        for (int index = 0; index < keyboardDeviceIds.size(); ++index) {
+            if (keyboardDeviceIds.get(index) == deviceId) {
+                keyboardDeviceIds.remove(index);
+                if (nativeReady) {
+                    // Only send a disconnection message if all keyboards
+                    // have been removed
+                    if (keyboardDeviceIds.size() == 0) {
+                        onKeyboardDisconnected(deviceId);
+                    }
+                }
+                removed = true;
+                break;
+            }
+        }
+        return removed;
+    }
+
+    void onMouseDeviceAdded(int deviceId) {
         if (mouseDeviceIds.size() < MAX_MICE) {
             if (printControllerInfo) {
                 Log.d(TAG, "onMouseDeviceAdded id: " + deviceId + " name: " +
@@ -439,10 +521,13 @@ public class GameControllerManager {
 
     public void onInputDeviceAdded(int deviceId) {
         boolean isGameController = getIsGameController(deviceId);
-        boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK);
+        boolean isMouse = isDeviceOfSource(deviceId, MOUSE_SOURCE_MASK, true);
+        boolean isKeyboard = isDeviceOfSource(deviceId, KEYBOARD_SOURCE_MASK, false);
 
         if (isMouse && !isGameController) {
             processMouseAddition(deviceId);
+        } else if (isKeyboard && !isGameController) {
+            processKeyboardAddition(deviceId);
         } else if (isGameController) {
             processControllerAddition(deviceId);
         }
@@ -451,6 +536,7 @@ public class GameControllerManager {
     public void onInputDeviceRemoved(int deviceId) {
         onMouseDeviceRemoved(deviceId);
         onGameControllerDeviceRemoved(deviceId);
+        onKeyboardDeviceRemoved(deviceId);
     }
 
     public void onInputDeviceChanged(int deviceId) {
@@ -508,7 +594,7 @@ public class GameControllerManager {
         pendingControllerDeviceIds.clear();
 
         for (int deviceId : pendingMouseDeviceIds) {
-            onMouseAdded(deviceId);
+            onMouseDeviceAdded(deviceId);
         }
     }
 
@@ -835,6 +921,10 @@ public class GameControllerManager {
                                              float[] axisFlatArray, float[] axisFloorArray);
 
     public native void onControllerDisconnected(int deviceId);
+
+    public native void onKeyboardConnected(int deviceId);
+
+    public native void onKeyboardDisconnected(int deviceid);
 
     public native void onMotionData(int deviceId, int motionType, long timestamp,
                                     float dataX, float dataY, float dataZ);
