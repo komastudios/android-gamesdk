@@ -41,8 +41,8 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version '3.10.2'
             path 'src/main/cpp/CMakeLists.txt'
+            version "3.18.1+"
         }
     }
     buildFeatures {
@@ -69,7 +69,10 @@ dependencies {
     // implementations to use Maven. Be aware that this may target a future
     // release which does not yet exist, which is why a locally build
     // library is the default option.
-    implementation fileTree(dir: 'libs', include: ['GameActivity.aar', 'GameController.aar'])
+    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar', 'GameController.aar'])
+
+    implementation project(":game-activity")
+    implementation project(":games-controller")
     // implementation "androidx.games:games-activity:1.1.0-beta03"
     // implementation "androidx.games:games-controller:1.1.0-beta01"
 }
