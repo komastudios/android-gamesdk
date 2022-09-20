@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "329b5795_fddba504",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-20T17:23:17Z",
+      "side": 1,
+      "message": "Just curious why do we const a int32_t passed by value? this will be always be copied, right? so no need to const it?",
+      "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8650752f_096c7847",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-20T17:23:17Z",
+      "side": 1,
+      "message": "I assume this order makes sense and that we DO want these to be mutually exclusive. Like if we have a keyboard with a mouse pad attached we don\u0027t want to call processMouseAddition and then processKeyboardAddition for this single device we just call processMouseAddition, right?",
+      "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99d73139_528bc784",
+        "filename": "samples/game_controller/gameactivity/gradle.properties",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-20T17:23:17Z",
+      "side": 1,
+      "message": "Sorry about the instability/breakages here. We\u0027re working on replacing the custom build system with the standard gradle way of doing things and some breakages are slipping through",
+      "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
