@@ -76,11 +76,12 @@ else
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
 fi
 
-# Add the tuningfork samples and apks into the Game SDK distribution zip
 if [[ $1 != "maven-only" ]]
 then
     mkdir -p "$dist_dir/$package_name/apks/samples"
     mkdir -p "$dist_dir/$package_name/apks/test"
+
+    # Add the tuningfork samples and apks into the Game SDK distribution zip
     pushd ./samples/tuningfork/insightsdemo/
     ./gradlew ":app:assembleDebug"
     popd
@@ -90,13 +91,64 @@ then
     pushd ./samples/tuningfork/experimentsdemo/
     ./gradlew ":app:assembleDebug"
     popd
+
+    # Add the swappy samples
+    pushd samples/bouncyball
+    ./gradlew ":app:assembleDebug"
+    popd
+    pushd third_party/cube
+    ./gradlew ":app:assembleDebug"
+    popd
+
+    # Add the game controller samples
+    pushd samples/game_controller/
+    mkdir third-party
+    pushd third-party
+    git clone https://github.com/ocornut/imgui
+    popd
+    popd
+    pushd samples/game_controller/gameactivity
+    ./gradlew ":app:assembleDebug"
+    popd
+    pushd samples/game_controller/nativeactivity
+    ./gradlew ":app:assembleDebug"
+    popd
+
+    pushd samples/agdktunnel/third-party/glm
+    git clone https://github.com/g-truc/glm.git
+    popd
+    pushd samples/agdktunnel/
+    ./gradlew ":app:assembleDebug"
+    popd
+
+    # Add the game text input samples
+    pushd samples/game_text_input/game_text_input_testbed
+    ./gradlew ":app:assembleDebug"
+    popd
+
     cp samples/tuningfork/insightsdemo/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
     cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
     cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/test/tuningforktest.apk"
-    cp -r samples/tuningfork $dist_dir/$package_name/
+
+    cp samples/game_controller/nativeactivity/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/game_controller_nativeactivity.apk"
+    cp samples/game_controller/gameactivity/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/game_controller_gameactivity.apk"
+
+    cp samples/bouncyball/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/bouncyball.apk"
+    cp third_party/cube/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/cube.apk"
+
+    cp samples/agdktunnel/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/agdktunnel.apk"
+
+    cp samples/game_text_input/game_text_input_testbed/app/build/outputs/apk/debug/app-debug.apk \
+      "$dist_dir/$package_name/apks/samples/game_text_input.apk"
+
     pushd $dist_dir/$package_name
     if [[ -z "$(ls -1 agdk-libraries-*.zip 2>/dev/null | grep agdk)" ]] ; then
       echo 'Could not find the zip "agdk-libraries-*.zip".'
@@ -105,6 +157,13 @@ then
     zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
     zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
+
+    zip -ur agdk-libraries-*.zip "apks/samples/game_controller_nativeactivity.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/game_controller_gameactivity.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/bouncyball.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/cube.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/agdktunnel.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/game_text_input.apk"
     popd
 fi
 
