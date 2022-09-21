@@ -16,6 +16,24 @@
       "message": "It is ok for our internal process, but not for the folks out there. We need developers to properly accept the licence while installing SDK/NDK",
       "revId": "9759bfee1a15d040c618799b01d323979f3fad97",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de2f3b0f_706b4d4d",
+        "filename": "README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-09-21T14:11:55Z",
+      "side": 1,
+      "message": "In that case we still want to explain how to accept this license. Because we vendor the sdk it\u0027s not straight forward (usually android studio gives you a popup but we don\u0027t have that when using the command line). \n\nI think this link covers how to do it but I\u0027m not sure.\nhttps://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences",
+      "parentUuid": "b7abeda5_ac9115d7",
+      "revId": "9759bfee1a15d040c618799b01d323979f3fad97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
