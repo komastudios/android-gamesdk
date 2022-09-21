@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fe5b4da_9b6d7b45",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-09-21T18:08:48Z",
+      "side": 1,
+      "message": "Mostly force of habit to const all the things that don\u0027t need to be otherwise. Does mean accidentally assigning to the param in the function body throws an error though.",
+      "parentUuid": "329b5795_fddba504",
+      "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8650752f_096c7847",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-09-20T17:23:17Z",
       "side": 1,
       "message": "I assume this order makes sense and that we DO want these to be mutually exclusive. Like if we have a keyboard with a mouse pad attached we don\u0027t want to call processMouseAddition and then processKeyboardAddition for this single device we just call processMouseAddition, right?",
+      "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84229f09_e0120abb",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-09-21T18:08:48Z",
+      "side": 1,
+      "message": "Those *should* be separate device ids, but that\u0027s a good thought, it wouldn\u0027t handle a frankendevice properly. I\u0027ve adjusted the logic and streamlined the rescan version to just call onDeviceAdded to reduce duplication. Device disconnection code scans all the internal tables so it isn\u0027t actually a problem for a device id to live in more than one table.\n\nI also added a comment because I realized one thing that isn\u0027t obvious is that some mouse devices also report an additional keyboard (in a different device id), which depending on the device can or can\u0027t be filtered out. Made that a bit clearer.",
+      "parentUuid": "8650752f_096c7847",
       "revId": "9cab23dc63237601d07d6fd1d0d4d0e35c8ee154",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
