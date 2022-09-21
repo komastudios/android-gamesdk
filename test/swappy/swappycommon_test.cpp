@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "swappy/common/SwappyCommon.h"
+#include "common/SwappyCommon.h"
 
 #include <functional>
 #include <optional>
