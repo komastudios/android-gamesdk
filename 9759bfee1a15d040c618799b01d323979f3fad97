@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7abeda5_ac9115d7",
+        "filename": "README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2022-09-21T13:32:57Z",
+      "side": 1,
+      "message": "It is ok for our internal process, but not for the folks out there. We need developers to properly accept the licence while installing SDK/NDK",
+      "revId": "9759bfee1a15d040c618799b01d323979f3fad97",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
