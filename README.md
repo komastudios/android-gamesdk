@@ -147,6 +147,13 @@ ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuni
 
 Samples are classic Android projects, using CMake to build the native code. They are also all triggering the build of AGDK.
 
+### Accepting the AGDK license
+
+To accept the license, run the eollowing command from the `gamesdk` directory:
+```bash
+cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
+```
+
 ### Using Grade command line:
 
 ```bash
