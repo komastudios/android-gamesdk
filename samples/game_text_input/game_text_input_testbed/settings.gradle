@@ -1,2 +1,4 @@
 include ':app'
 rootProject.name = "Game Text Input Testbed"
+include ':game-text-input'
+project(':game-text-input').projectDir = file('../../../game-text-input')
