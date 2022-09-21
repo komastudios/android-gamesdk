@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "325dbf22_e46821b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-09-21T18:21:28Z",
+      "side": 1,
+      "message": "Lost the +2 on the rebase to remove the gradle.properties changes from the CL.",
+      "revId": "86ceed1d01117051275d442123a6b0f0e356fc4d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
