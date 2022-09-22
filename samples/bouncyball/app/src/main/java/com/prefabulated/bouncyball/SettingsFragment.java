@@ -54,6 +54,7 @@ public class SettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        @SuppressWarnings( "deprecation" )
         Display display = getActivity().getWindowManager().getDefaultDisplay();
 
         mSwapIntervalKey = getResources().getString(R.string.swap_interval_key);
@@ -72,6 +73,7 @@ public class SettingsFragment
         TreeSet<Float> fpsSet = new TreeSet<Float>();
         if (Build.VERSION.SDK_INT >= 23) {
             mCurrentMode = display.getMode();
+            @SuppressWarnings( "deprecation" )
             Display.Mode[] supportedModes =
                     getActivity().getWindowManager().getDefaultDisplay().getSupportedModes();
             for (Display.Mode mode : supportedModes) {
@@ -84,6 +86,7 @@ public class SettingsFragment
                 }
             }
         } else {
+            @SuppressWarnings( "deprecation" )
             float refreshRate =
                     getActivity().getWindowManager().getDefaultDisplay().getRefreshRate();
             for (int interval = 1; refreshRate / interval >= 20; interval++) {
