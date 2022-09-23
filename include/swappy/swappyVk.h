@@ -326,6 +326,13 @@ uint64_t SwappyVk_getSwapIntervalNS(VkSwapchainKHR swapchain);
 int SwappyVk_getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                           int allocated_entries,
                                           VkSwapchainKHR swapchain);
+/**
+ * @brief Check if Swappy is enabled for the specified swapchain.
+ *
+ * @return false if SwappyVk_initAndGetRefreshCycleDuration was not
+ * called for the specified swapchain, true otherwise.
+ */
+bool SwappyVk_isEnabled(VkSwapchainKHR swapchain, bool* isEnabled);
 
 #ifdef __cplusplus
 }  // extern "C"

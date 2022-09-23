@@ -22,8 +22,8 @@ set ( SOURCE_LOCATION_COMMON "${SOURCE_LOCATION}/common" )
 set ( SOURCE_LOCATION_OPENGL "${SOURCE_LOCATION}/opengl" )
 set ( SOURCE_LOCATION_VULKAN "${SOURCE_LOCATION}/vulkan" )
 
-include_directories( ../../include )
-include_directories( ../common )
+include_directories( ../include )
+include_directories( ../src/common )
 include_directories( common )
 include_directories( opengl )
 include_directories( vulkan )
@@ -31,8 +31,18 @@ include_directories( ${ANDROID_NDK}/sources/third_party/vulkan/src/common )
 
 message( STATUS "Building swappy_static to ${CMAKE_CURRENT_BINARY_DIR}/build" )
 
-# Dex linking requires an extra option for later versions of clang lld
-if (ANDROID_NDK_MAJOR GREATER 17)
+
+# In order to support ChoreographerCallbacks back on older android versions we have a hack here
+# which adds the dex file from :games-frame-pacing:extras to our binary.
+# Android studio seems to use two different linkers and only one of those linkers requires we pass
+# in the emulation option "-m".
+# This linker which will be found in a path similar to this:
+# 21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ld
+# does not require the "-m" option.
+# The more general linker which can be found in a path similar to this:
+# 21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/bin/ld.lld
+# does require the "-m" option
+if(CMAKE_LINKER MATCHES ".*/ld.lld" AND ANDROID_NDK_MAJOR GREATER 17)
   if ( ANDROID_NDK_ABI_NAME MATCHES "armeabi-v7a")
     set (LINKER_TARGET_EMULATION_OPTION "-m" "armelf_linux_eabi")
   elseif(ANDROID_NDK_ABI_NAME MATCHES "arm64-v8a")
@@ -45,8 +55,9 @@ if (ANDROID_NDK_MAJOR GREATER 17)
 endif()
 
 add_custom_command(OUTPUT classes_dex.o
-     COMMAND cd ../intermediates/dex/release/mergeDexRelease && ${CMAKE_LINKER} ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
-     WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/extras/out/intermediates/dex/release/mergeDexRelease
+     && ${CMAKE_LINKER}  ${LINKER_TARGET_EMULATION_OPTION} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o classes.dex
+     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
      )
 
 set_source_files_properties(
@@ -78,7 +89,7 @@ add_library( swappy_static
              ${SOURCE_LOCATION_VULKAN}/SwappyVkBase.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkFallback.cpp
              ${SOURCE_LOCATION_VULKAN}/SwappyVkGoogleDisplayTiming.cpp
-             ${SOURCE_LOCATION}/../common/system_utils.cpp
+             ${SOURCE_LOCATION}/../src/common/system_utils.cpp
              ${CMAKE_CURRENT_BINARY_DIR}/classes_dex.o
              # Add new source files here
              )

@@ -20,7 +20,7 @@ plugins {
 
 apply from: '../prepproto.gradle'
 
-buildDir="../../out"
+buildDir="../../out_tuningfork"
 
 android {
 
@@ -61,6 +61,10 @@ android {
         }
 
         tuningfork_static {
+            headers "include"
+        }
+
+        unitytuningfork {
             headers "include"
         }
     }

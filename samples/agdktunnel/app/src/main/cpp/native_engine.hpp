@@ -69,7 +69,7 @@ public:
     DataLoaderStateMachine *BeginSavedGameLoad();
 
     // Saves data to local storage and to cloud if it is enabled
-    bool SaveProgress(int level);
+    bool SaveProgress(int level, bool forceSave = false);
 
     DataLoaderStateMachine *GetDataStateMachine() { return mDataStateMachine; }
 

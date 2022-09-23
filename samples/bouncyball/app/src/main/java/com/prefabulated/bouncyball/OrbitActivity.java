@@ -278,6 +278,7 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
         // Get display metrics
 
         WindowManager wm = getWindowManager();
+        @SuppressWarnings( "deprecation" )
         Display display = wm.getDefaultDisplay();
         float refreshRateHz = display.getRefreshRate();
         Log.i(LOG_TAG, String.format("Refresh rate: %.1f Hz", refreshRateHz));
