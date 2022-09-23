@@ -14,3 +14,7 @@
  * limitations under the License.
  */
 include ':app'
+include ':game-activity'
+include ':games-controller'
+project(':game-activity').projectDir    = file('../../../game-activity')
+project(':games-controller').projectDir = file('../../../games-controller')

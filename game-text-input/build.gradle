@@ -5,11 +5,11 @@ plugins {
 buildDir="../../out_game_text_input"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 19
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -27,23 +27,30 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-// TODO(florianrival@) Enabling this will trigger "Cannot query the value of this property because it has no value available." error.
-//    buildFeatures {
-//        prefabPublishing true
-//    }
-//    prefab {
-//        gametextinput {
-//            headers "src/main/cpp/include"
-//            libraryName "game-text-input"
-//        }
-//    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+            version "3.18.0+"
+        }
+    }
+    buildFeatures {
+        prefabPublishing true
+    }
+    prefab {
+        gametextinput {
+            name "game-text-input"
+            headers "prefab-src/modules/game-text-input/include/"
+        }
+        gametextinput_static {
+            name "game-text-input_static"
+            headers "prefab-src/modules/game-text-input/include/"
+        }
+    }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.core:core:1.5.0'
     implementation 'com.google.android.material:material:1.1.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

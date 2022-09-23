@@ -4,7 +4,6 @@ import com.google.androidgamesdk.ExternalAndroidProject
 import com.google.androidgamesdk.ExternalAndroidProjectBuilder
 import com.google.androidgamesdk.SpecificToolchain
 import com.google.androidgamesdk.LocalToolchain
-import com.google.androidgamesdk.OboeDownloader
 import com.google.androidgamesdk.TensorflowPatcher
 import com.google.androidgamesdk.BuildInfoFile
 import com.google.androidgamesdk.Toolchain
@@ -31,8 +30,6 @@ import static com.google.androidgamesdk.ToolchainEnumerator.filterBuiltLibraries
 
 import groovy.io.FileType
 import groovy.transform.Field
-
-apply from: 'prepproto.gradle'
 
 buildscript {
     repositories {
@@ -75,23 +72,7 @@ def getGitCommit() {
     return sout.toString().trim()
 }
 
-def swappyNativeLibrary = new NativeLibrary(versions['swappy'])
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "bouncyball"))
-                        .copySourcesTo("samples/bouncyball")
-                        .buildDebugApkTo("apks/samples", "bouncyball.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "cube"))
-                        .copySourcesTo("samples/cube")
-                        .buildDebugApkTo("apks/samples", "cube.apk")
-                        .setDebugApkLocation("third_party/cube/app/build/outputs/apk/debug/app-debug.apk"))
-       .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('third_party', "cube"))
-                        .copySourcesTo("third_party/cube"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject("test/swappy/testapp")
-                        .buildDebugApkTo("apks/test", "swappytest.apk")
-        )
+def swappyNativeLibrary = new AndroidArchiveLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
@@ -107,12 +88,6 @@ def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
                 new ExternalAndroidProject(joinPath('test', "memory_advice", "testapp"))
                         .buildDebugApkTo("apks/test", "memoryadvicetest.apk"))
 
-def oboeNativeLibrary = new NativeLibrary(versions['oboe'])
-        .setThirdParty()
-        .setMinimumAndroidApiLevel(19)
-        .setMinimumNdkVersion(19)
-        .setSupportedStlVersions(["c++_shared", "c++_static"])
-
 def gameActivityLibrary = new AndroidArchiveLibrary(versions['game_activity'])
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
@@ -121,29 +96,7 @@ def gameTextInputLibrary = new AndroidArchiveLibrary(versions['game_text_input']
         // This can be removed after migrating to prefabPublishing:
         .setPrefabFolderName("prefab-src")
 
-def gameControllerLibrary = new NativeLibrary(versions['paddleboat'])
-        .setHybridLibrary()
-        .setMinimumAndroidApiLevel(19)
-        .setMinimumNdkVersion(19)
-        .setSupportedStlVersions(["c++_shared", "c++_static"])
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'game_controller'))
-                        .copySourcesTo("samples/game_controller"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', 'agdktunnel'))
-                        .copySourcesTo("samples/agdktunnel"))
-
-// Download third party libraries that are distributed in the Game SDK
-// but not part of the Game SDK sources.
-task prepare_third_party_libraries {
-    outputs.dir("src/oboe")
-    outputs.dir("include/oboe")
-
-    doLast {
-        def oboeDownloader = new OboeDownloader(project)
-        oboeDownloader.fetchAndInstall();
-    }
-}
+def gameControllerLibrary = new AndroidArchiveLibrary(versions['paddleboat'])
 
 task prepare_tensorflow {
     doLast {
@@ -167,7 +120,6 @@ def allLibraries = [
         swappyNativeLibrary,
         tuningForkNativeLibrary,
         memoryAdviceNativeLibrary,
-        oboeNativeLibrary,
         gameActivityLibrary,
         gameTextInputLibrary,
         gameControllerLibrary,
@@ -243,17 +195,6 @@ task cleanPath(type: Delete) {
     delete getPackagePath()
     delete getTempPath()
     delete getBuildPath()
-}
-
-/**
- * Take the classes.jar from outputs/aar/GameController.aar and copy it to the
- * prefab folder being generated, filtering non-game controller classes.
- */
-def copyHybridClassesFromAar(library, outFolder) {
-    def hybridAarPath = joinPath(getLibraryOutPath(library), "outputs/aar/games-controller-release.aar");
-    def buildFolder = joinPath(getPackagePath(), outFolder)
-    def aarPrefabPatcher = new AarPrefabPatcher()
-    return aarPrefabPatcher.extractAarClasses(hybridAarPath, buildFolder)
 }
 
 def prefabBuildFolder(outFolder) {
@@ -559,17 +500,7 @@ def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
     def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
     def packageFolder = joinPath(getPackagePath(), outFolder)
 
-    // Inject the sources of the "header only" library, in Prefab format.
-    // This can be removed once projects are upgraded to use prefabPublishing.
-    if (!library.prefabFolderName.isEmpty()) {
-        def prefabFolderPath = joinPath(getProjectDir().getPath(), library.projectName, library.prefabFolderName)
-        def aarPrefabPatcher = new AarPrefabPatcher()
-        aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
-        // Remove GameController classes if we are not GameController.
-        if (library.libraryInfo.nickname!="paddleboat")
-            aarPrefabPatcher.filterClasses(aarPath, "com/google/android/games/paddleboat", null)
-    }
-
+    assert file(aarPath).exists()
     copy {
         from aarPath
         into packageFolder
@@ -710,12 +641,6 @@ Collection<NativeLibrary> filterNativeLibraries(allLibraries) {
     }
 }
 
-Collection<NativeLibrary> filterLibrariesByHybridStatus(allLibraries, isHybrid) {
-    return filterLibraries(allLibraries).findAll { library ->
-        library.isHybridLibrary == isHybrid
-    }
-}
-
 Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
     return filterLibraries(allLibraries).findAll { library ->
         library instanceof AndroidArchiveLibrary
@@ -723,15 +648,6 @@ Collection<AndroidArchiveLibrary> filterAndroidArchiveLibraries(allLibraries) {
 }
 
 class BuildTask extends DefaultTask {
-}
-
-task build(type: DefaultTask) {
-    doFirst {
-        throw new GradleException("""
-Do not use the default build task for building the AGDK.
-Use buildLocal, buildSpecific or one of the packaging tasks.
-""")
-    }
 }
 
 def isExpressPackage() {
@@ -821,10 +737,7 @@ task buildSpecific(type: BuildTask) {
 tasks.withType(BuildTask) {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-    dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
@@ -858,36 +771,6 @@ e.g. ./gradlew build -Plibraries=swappy,tuningfork,game_activity""")
         nativeBuild().each {
             copyNativeLibs(it, packageName, nativeLibraries, withStaticLibs,
                     withFullBuildKey, flattenLibs, withSharedLibs)
-        }
-        // We need to copy the classes.jar out of a hybrid library and make sure
-        // it only has the relevant classes and also patch hybrid libraries with their native components.
-        nativeLibraries.each { library ->
-            if (library.isHybridLibrary()) {
-                // Put classes.jar in 'libs' root and make sure it only has relevant classes
-                def outFolder = joinPath(packageName, "libs")
-                def filteredJarFile = copyHybridClassesFromAar(library, outFolder)
-                // Patch aar with native libraries.
-                // Use a temporary dir to avoid pollution with other prefab libraries.
-                def tempPrefabDir = getPackageName()+"_"+library.hybridProjectDir
-                copy {
-                    from filteredJarFile
-                    into tempPrefabDir
-                }
-                buildNativeLibraries([library], getBuildType(), getAarToolchainSet()).each { buildInfo ->
-                    copyNativeLibraryToPrefabDir(buildInfo, tempPrefabDir, library)
-                }
-                removeUnneededPrefabDirs(tempPrefabDir, library)
-                // Now add the prefab files to the $hybridProjectDir.aar.
-                def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "games-controller-release.aar")
-                def prefabFolderPath = joinPath(getPackagePath(), tempPrefabDir, "prefab")
-                def aarPrefabPatcher = new AarPrefabPatcher()
-                aarPrefabPatcher.injectPrefabFolder(aarPath, prefabFolderPath)
-                // Finally copy to zip root.
-                copy {
-                    from aarPath
-                    into getFullPackagePath()
-                }
-            }
         }
 
         copyNativeLibrariesIncludes(packageName, nativeLibraries)
@@ -1025,11 +908,7 @@ addZipTask("packageSpecificZip", buildSpecific, "gamesdk.zip")
 task buildAarStructure {
     def nativeLibraries = filterNativeLibraries(allLibraries)
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
-
-    dependsOn ':src:extras:assembleRelease'
     nativeLibraries.each { nativeLibrary ->
-        if (nativeLibrary.isThirdParty()) dependsOn prepare_third_party_libraries
-        if (nativeLibrary.isHybridLibrary()) dependsOn ":${nativeLibrary.hybridProjectDir}:assembleRelease"
         if (nativeLibrary.getUsesTensorflow()) dependsOn prepare_tensorflow
     }
     androidArchiveLibraries.each { androidLibrary ->
@@ -1099,20 +978,11 @@ task prepareMavenZipContent {
             def libraryName = androidLibrary.aarLibraryName
             def aarVersion = androidLibrary.aarVersion
             def path = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
-            if (androidLibrary.projectName == "games-performance-tuner") {
-                assert file("../out/outputs/aar/games-performance-tuner-release.aar").exists()
-                copy {
-                    from file("../out/outputs/aar/games-performance-tuner-release.aar")
-                    into file(joinPath(mavenZipContentFolder))
-                    rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
-                }
-            } else {
-                assert file(path).exists()
-                copy {
-                    from file(path)
-                    into file(joinPath(mavenZipContentFolder))
-                    rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
-                }
+            assert file(path).exists()
+            copy {
+                from file(path)
+                into file(joinPath(mavenZipContentFolder))
+                rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
             }
 
             copy {

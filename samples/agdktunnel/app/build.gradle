@@ -78,22 +78,6 @@ android {
             multiDexEnabled true
         }
     }
-    // Flavor dimension to create mobile and PC build variants
-    flavorDimensions "platform"
-    productFlavors {
-        mobile {
-            getIsDefault().set(true)
-            dimension "platform"
-        }
-        playGamesPC {
-            dimension "platform"
-
-            // x86 ABI compatibility
-            ndk {
-                abiFilters 'x86', 'x86_64'
-            }
-        }
-    }
     externalNativeBuild {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
@@ -126,25 +110,25 @@ dependencies {
     // Be aware that when using libraries from Maven, the versions here may target
     // a future release that does not exist yet, which is why a locally built
     // library is used when agdktunnel depends on the latest features.
-    implementation "androidx.games:games-frame-pacing:1.9.0"
-    implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
-    implementation "androidx.games:games-controller:1.0.0"
-    implementation "androidx.games:games-activity:1.1.0"
+    // Uncomment to use maven artifacts instead of local code
+//    implementation "androidx.games:games-frame-pacing:1.9.0"
+//    implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
+//    implementation "androidx.games:games-controller:1.0.0"
+//    implementation "androidx.games:games-activity:1.1.0"
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
+    implementation 'com.google.android.libraries.play.games:inputmapping:1.0.0-beta'
     // Use the Play Core AAR included with the SDK.
     if(PADEnabled.toBoolean()) {
         implementation files("$playcoreDir/playcore.aar")
     }
-    playGamesPCImplementation 'com.google.android.libraries.play.games:inputmapping:1.0.0-beta'
 
-    // Uncomment to use a locally-built library.
-    //implementation fileTree(dir: 'libs', include: ['GameActivity.aar',
-    //                                               'GameController.aar',
-    //                                               'games-frame-pacing-1.9.0.aar',
-    //                                               'games-performance-tuner-1.5.0.aar'])
+    implementation project(':game-activity')
+    implementation project(':games-performance-tuner')
+    implementation project(':games-frame-pacing')
+    implementation project(':games-controller')
 }
 
 android.lintOptions {

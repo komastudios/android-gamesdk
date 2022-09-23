@@ -18,6 +18,8 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(games-frame-pacing REQUIRED CONFIG)
+
 message( STATUS "A CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror" )
@@ -34,12 +36,12 @@ add_subdirectory("${ANDROID_GTEST_DIR}"
 
 include_directories(
   "${ANDROID_GTEST_DIR}/googletest/include"
-  ../../src
+  ../../games-frame-pacing
   ../../src/common
   ../../include
 )
 
-set ( SOURCE_LOCATION_COMMON "../../src/swappy/common" )
+set ( SOURCE_LOCATION_COMMON "../../games-frame-pacing/common" )
 
 set(TEST_SRCS
   ${SOURCE_LOCATION_COMMON}/SwappyCommon.cpp
