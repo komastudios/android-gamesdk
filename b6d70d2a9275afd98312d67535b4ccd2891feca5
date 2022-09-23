@@ -1,0 +1,1923 @@
+{
+  "comments": [
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "c861a20a_e41b4543",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 12,
+                "startChar": 0,
+                "endLine": 12,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 521,
+                "startChar": 0,
+                "endLine": 522,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 528,
+                "startChar": 0,
+                "endLine": 529,
+                "endChar": 0
+              },
+              "replacement": "    outs \u003d [\"readme.txt\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 543,
+                "startChar": 0,
+                "endLine": 544,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//visibility:private\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 549,
+                "startChar": 0,
+                "endLine": 550,
+                "endChar": 0
+              },
+              "replacement": "    srcs \u003d [value[0] for value in WELL_KNOWN_PROTO_MAP.values() if not value[0].endswith(\"plugin.proto\")],\n    prefix \u003d \"include/google/protobuf\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 551,
+                "startChar": 0,
+                "endLine": 552,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 556,
+                "startChar": 0,
+                "endLine": 557,
+                "endChar": 0
+              },
+              "replacement": "    srcs \u003d [\"src/google/protobuf/compiler/plugin.proto\"],\n    prefix \u003d \"include/google/protobuf/compiler\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 558,
+                "startChar": 0,
+                "endLine": 559,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 563,
+                "startChar": 0,
+                "endLine": 564,
+                "endChar": 0
+              },
+              "replacement": "    srcs \u003d [\":protoc\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 565,
+                "startChar": 0,
+                "endLine": 565,
+                "endChar": 0
+              },
+              "replacement": "    prefix \u003d \"bin/\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 566,
+                "startChar": 0,
+                "endLine": 567,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 575,
+                "startChar": 0,
+                "endLine": 575,
+                "endChar": 0
+              },
+              "replacement": "    srcs \u003d [\n        \"readme.txt\",\n        \":compiler_plugin_protos_files\",\n        \":protoc_files\",\n        \":wkt_protos_files\",\n    ],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 577,
+                "startChar": 0,
+                "endLine": 583,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 905,
+                "startChar": 0,
+                "endLine": 905,
+                "endChar": 0
+              },
+              "replacement": "    lite \u003d True,\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 908,
+                "startChar": 0,
+                "endLine": 909,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1340,
+                "startChar": 0,
+                "endLine": 1341,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1343,
+                "startChar": 0,
+                "endLine": 1343,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1344,
+                "startChar": 0,
+                "endLine": 1345,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1349,
+                "startChar": 0,
+                "endLine": 1349,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1350,
+                "startChar": 0,
+                "endLine": 1351,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1452,
+                "startChar": 0,
+                "endLine": 1453,
+                "endChar": 0
+              },
+              "replacement": "        \"src/google/protobuf/map_lite_unittest.proto\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1455,
+                "startChar": 0,
+                "endLine": 1456,
+                "endChar": 0
+              },
+              "replacement": "        \"src/google/protobuf/unittest_lite.proto\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1462,
+                "startChar": 0,
+                "endLine": 1463,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1465,
+                "startChar": 0,
+                "endLine": 1465,
+                "endChar": 0
+              },
+              "replacement": "    deps \u003d [\":kt_unittest_lite\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1470,
+                "startChar": 0,
+                "endLine": 1470,
+                "endChar": 0
+              },
+              "replacement": "        \"src/google/protobuf/map_proto2_unittest.proto\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1473,
+                "startChar": 0,
+                "endLine": 1474,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1480,
+                "startChar": 0,
+                "endLine": 1480,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1481,
+                "startChar": 0,
+                "endLine": 1482,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1487,
+                "startChar": 0,
+                "endLine": 1488,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1490,
+                "startChar": 0,
+                "endLine": 1490,
+                "endChar": 0
+              },
+              "replacement": "        \"src/google/protobuf/unittest_proto3.proto\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1496,
+                "startChar": 0,
+                "endLine": 1497,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1499,
+                "startChar": 0,
+                "endLine": 1499,
+                "endChar": 0
+              },
+              "replacement": "    deps \u003d [\":kt_proto3_unittest\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1503,
+                "startChar": 0,
+                "endLine": 1503,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/BUILD",
+              "range": {
+                "startLine": 1504,
+                "startChar": 0,
+                "endLine": 1506,
+                "endChar": 0
+              },
+              "replacement": ")\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "1ee4b6b6_9796db24",
+        "filename": "third_party/protobuf-3.20.2/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "98dc6ee4_ab5a4eea",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/WORKSPACE",
+              "range": {
+                "startLine": 31,
+                "startChar": 0,
+                "endLine": 31,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/WORKSPACE",
+              "range": {
+                "startLine": 61,
+                "startChar": 0,
+                "endLine": 61,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/WORKSPACE",
+              "range": {
+                "startLine": 65,
+                "startChar": 0,
+                "endLine": 65,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/WORKSPACE",
+              "range": {
+                "startLine": 68,
+                "startChar": 0,
+                "endLine": 68,
+                "endChar": 0
+              },
+              "replacement": "\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "e7d4bfa1_94192bb5",
+        "filename": "third_party/protobuf-3.20.2/WORKSPACE",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/WORKSPACE` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "5f3831d7_3edbffd2",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/internal.bzl",
+              "range": {
+                "startLine": 17,
+                "startChar": 0,
+                "endLine": 18,
+                "endChar": 0
+              },
+              "replacement": "            \"//:conformance_test_runner\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/internal.bzl",
+              "range": {
+                "startLine": 25,
+                "startChar": 0,
+                "endLine": 26,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "2c91b5bc_d082b907",
+        "filename": "third_party/protobuf-3.20.2/internal.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/internal.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "d9cfe34c_88077fac",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/BUILD",
+              "range": {
+                "startLine": 15,
+                "startChar": 0,
+                "endLine": 16,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/core:release\",  # contains lite.\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/BUILD",
+              "range": {
+                "startLine": 19,
+                "startChar": 0,
+                "endLine": 20,
+                "endChar": 0
+              },
+              "replacement": "    ],\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "80cc16c4_f3f2e9ff",
+        "filename": "third_party/protobuf-3.20.2/java/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "bb8abc26_11888cf3",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 178,
+                "startChar": 0,
+                "endLine": 181,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 196,
+                "startChar": 0,
+                "endLine": 196,
+                "endChar": 0
+              },
+              "replacement": "    command_line \u003d \"--java_out\u003d$(OUT)\",\n    runtime \u003d \":core\",\n    visibility \u003d [\"//visibility:public\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 229,
+                "startChar": 0,
+                "endLine": 229,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 236,
+                "startChar": 0,
+                "endLine": 237,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 339,
+                "startChar": 0,
+                "endLine": 339,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/kotlin-lite:__pkg__\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/core/BUILD",
+              "range": {
+                "startLine": 340,
+                "startChar": 0,
+                "endLine": 341,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "28243f2e_c8000a17",
+        "filename": "third_party/protobuf-3.20.2/java/core/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/core/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "ffbb0671_bffffe36",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/internal/testing.bzl",
+              "range": {
+                "startLine": 53,
+                "startChar": 0,
+                "endLine": 54,
+                "endChar": 0
+              },
+              "replacement": "            test_name \u003d \"%s%s\" % (test_prefix, test_name)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/internal/testing.bzl",
+              "range": {
+                "startLine": 55,
+                "startChar": 0,
+                "endLine": 56,
+                "endChar": 0
+              },
+              "replacement": "        suite_name \u003d prefix + \"_\" + test_name\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "bd99341c_56ac4bea",
+        "filename": "third_party/protobuf-3.20.2/java/internal/testing.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/internal/testing.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "131028d0_828fac18",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 24,
+                "startChar": 0,
+                "endLine": 25,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 27,
+                "startChar": 0,
+                "endLine": 27,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/lite\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 32,
+                "startChar": 0,
+                "endLine": 32,
+                "endChar": 0
+              },
+              "replacement": "    deploy_env \u003d [\n        \"@com_github_jetbrains_kotlin//:kotlin-stdlib\",\n        \"//java/lite\",\n    ],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 41,
+                "startChar": 0,
+                "endLine": 45,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 62,
+                "startChar": 0,
+                "endLine": 63,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 65,
+                "startChar": 0,
+                "endLine": 65,
+                "endChar": 0
+              },
+              "replacement": "        \"test_lite_extensions\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 74,
+                "startChar": 0,
+                "endLine": 75,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 77,
+                "startChar": 0,
+                "endLine": 77,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/lite\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 85,
+                "startChar": 0,
+                "endLine": 85,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.ExtendableMessageLiteExtensionsTest\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 86,
+                "startChar": 0,
+                "endLine": 87,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 96,
+                "startChar": 0,
+                "endLine": 96,
+                "endChar": 0
+              },
+              "replacement": "    lite \u003d True,\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 97,
+                "startChar": 0,
+                "endLine": 98,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 107,
+                "startChar": 0,
+                "endLine": 107,
+                "endChar": 0
+              },
+              "replacement": "    lite \u003d True,\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 108,
+                "startChar": 0,
+                "endLine": 109,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 129,
+                "startChar": 0,
+                "endLine": 130,
+                "endChar": 0
+              },
+              "replacement": "        \"//:java_lite_test_protos\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 132,
+                "startChar": 0,
+                "endLine": 133,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/lite\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 146,
+                "startChar": 0,
+                "endLine": 147,
+                "endChar": 0
+              },
+              "replacement": "        \"//:java_lite_test_protos\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 149,
+                "startChar": 0,
+                "endLine": 150,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/lite\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 166,
+                "startChar": 0,
+                "endLine": 166,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.Proto2LiteTest\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 167,
+                "startChar": 0,
+                "endLine": 168,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 183,
+                "startChar": 0,
+                "endLine": 183,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.Proto3Test\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+              "range": {
+                "startLine": 184,
+                "startChar": 0,
+                "endLine": 185,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "c7fa4ddb_d6618230",
+        "filename": "third_party/protobuf-3.20.2/java/kotlin-lite/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/kotlin-lite/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "1d0b340c_4fdd40f2",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 9,
+                "startChar": 0,
+                "endLine": 10,
+                "endChar": 0
+              },
+              "replacement": "    \"src/test/kotlin/com/google/protobuf/Proto3Test.kt\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 39,
+                "startChar": 0,
+                "endLine": 39,
+                "endChar": 0
+              },
+              "replacement": "    visibility \u003d [\"//java:__subpackages__\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 40,
+                "startChar": 0,
+                "endLine": 41,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 46,
+                "startChar": 0,
+                "endLine": 48,
+                "endChar": 0
+              },
+              "replacement": "        \"src/main/kotlin/com/google/protobuf/Anies.kt\",\n        \"src/main/kotlin/com/google/protobuf/ExtendableMessageExtensions.kt\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 54,
+                "startChar": 0,
+                "endLine": 54,
+                "endChar": 0
+              },
+              "replacement": "    deploy_env \u003d [\n        \"@com_github_jetbrains_kotlin//:kotlin-stdlib\",\n        \"//java/core\",\n    ],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 58,
+                "startChar": 0,
+                "endLine": 67,
+                "endChar": 0
+              },
+              "replacement": "        \":bytestring_lib\",\n        \":full_extensions\",\n        \":only_for_use_in_proto_generated_code_its_generator_and_tests\",\n        \":shared_runtime\",\n        \":well_known_protos_kotlin\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 85,
+                "startChar": 0,
+                "endLine": 85,
+                "endChar": 0
+              },
+              "replacement": "        \"proto2_test\",\n        \"proto3_test\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 87,
+                "startChar": 0,
+                "endLine": 89,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 106,
+                "startChar": 0,
+                "endLine": 106,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.ByteStringsTest\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 107,
+                "startChar": 0,
+                "endLine": 108,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 134,
+                "startChar": 0,
+                "endLine": 135,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 136,
+                "startChar": 0,
+                "endLine": 136,
+                "endChar": 0
+              },
+              "replacement": "        \"@maven//:com_google_truth_truth\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 142,
+                "startChar": 0,
+                "endLine": 142,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.DslListTest\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 143,
+                "startChar": 0,
+                "endLine": 144,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 149,
+                "startChar": 0,
+                "endLine": 151,
+                "endChar": 0
+              },
+              "replacement": "        \"src/test/kotlin/com/google/protobuf/AniesTest.kt\",\n        \"src/test/kotlin/com/google/protobuf/ExtendableMessageExtensionsTest.kt\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 155,
+                "startChar": 0,
+                "endLine": 156,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 159,
+                "startChar": 0,
+                "endLine": 159,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/core\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 167,
+                "startChar": 0,
+                "endLine": 167,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.ExtendableMessageExtensionsTest\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 168,
+                "startChar": 0,
+                "endLine": 169,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 227,
+                "startChar": 0,
+                "endLine": 228,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 232,
+                "startChar": 0,
+                "endLine": 232,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/core\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 245,
+                "startChar": 0,
+                "endLine": 246,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 249,
+                "startChar": 0,
+                "endLine": 249,
+                "endChar": 0
+              },
+              "replacement": "        \"//java/core\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 265,
+                "startChar": 0,
+                "endLine": 265,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.Proto2Test\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 266,
+                "startChar": 0,
+                "endLine": 267,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 282,
+                "startChar": 0,
+                "endLine": 282,
+                "endChar": 0
+              },
+              "replacement": "    test_class \u003d \"com.google.protobuf.kotlin.Proto3Test\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 283,
+                "startChar": 0,
+                "endLine": 284,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+              "range": {
+                "startLine": 292,
+                "startChar": 0,
+                "endLine": 297,
+                "endChar": 0
+              },
+              "replacement": "        \":only_for_use_in_proto_generated_code_its_generator_and_tests\",\n        \":shared_runtime\",\n        \"//java/core\",\n    ],\n)\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "a393e8be_97007623",
+        "filename": "third_party/protobuf-3.20.2/java/kotlin/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/kotlin/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "0d2727cc_02583cf4",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/lite/BUILD",
+              "range": {
+                "startLine": 24,
+                "startChar": 0,
+                "endLine": 27,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/lite/BUILD",
+              "range": {
+                "startLine": 40,
+                "startChar": 0,
+                "endLine": 40,
+                "endChar": 0
+              },
+              "replacement": "    command_line \u003d \"--java_out\u003dlite:$(OUT)\",\n    runtime \u003d \":lite\",\n    visibility \u003d [\"//visibility:public\"],\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "d12c30c5_42b6572c",
+        "filename": "third_party/protobuf-3.20.2/java/lite/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/lite/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "6a1c52d9_5c8cdb40",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/java/util/BUILD",
+              "range": {
+                "startLine": 26,
+                "startChar": 0,
+                "endLine": 26,
+                "endChar": 0
+              },
+              "replacement": "    deploy_env \u003d [\"//java/core\"],\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/java/util/BUILD",
+              "range": {
+                "startLine": 30,
+                "startChar": 0,
+                "endLine": 31,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "590daa0c_220dc225",
+        "filename": "third_party/protobuf-3.20.2/java/util/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/java/util/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "3f5f4598_c0c16da4",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/objectivec/BUILD",
+              "range": {
+                "startLine": 66,
+                "startChar": 0,
+                "endLine": 74,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/objectivec/BUILD",
+              "range": {
+                "startLine": 79,
+                "startChar": 0,
+                "endLine": 79,
+                "endChar": 0
+              },
+              "replacement": "        \"GPBDuration.pbobjc.m\",\n        \"GPBEmpty.pbobjc.m\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/objectivec/BUILD",
+              "range": {
+                "startLine": 81,
+                "startChar": 0,
+                "endLine": 81,
+                "endChar": 0
+              },
+              "replacement": "        \"GPBFieldMask.pbobjc.m\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/objectivec/BUILD",
+              "range": {
+                "startLine": 83,
+                "startChar": 0,
+                "endLine": 83,
+                "endChar": 0
+              },
+              "replacement": "        \"GPBSourceContext.pbobjc.m\",\n        \"GPBStruct.pbobjc.m\",\n        \"GPBTimestamp.pbobjc.m\",\n        \"GPBType.pbobjc.m\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/objectivec/BUILD",
+              "range": {
+                "startLine": 88,
+                "startChar": 0,
+                "endLine": 88,
+                "endChar": 0
+              },
+              "replacement": "        \"GPBWrappers.pbobjc.m\",\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "d0d3ca3d_258edc74",
+        "filename": "third_party/protobuf-3.20.2/objectivec/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/objectivec/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "4a6f94c5_f5291865",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 79,
+                "startChar": 0,
+                "endLine": 80,
+                "endChar": 0
+              },
+              "replacement": "    deps \u003d depset(direct \u003d ctx.files.srcs)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 90,
+                "startChar": 0,
+                "endLine": 91,
+                "endChar": 0
+              },
+              "replacement": "        import_flags \u003d depset(direct \u003d import_flags)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 92,
+                "startChar": 0,
+                "endLine": 93,
+                "endChar": 0
+              },
+              "replacement": "        import_flags \u003d depset(direct \u003d [\"-I.\"])\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 96,
+                "startChar": 0,
+                "endLine": 97,
+                "endChar": 0
+              },
+              "replacement": "            import_flags \u003d depset(transitive \u003d [import_flags], direct \u003d dep.proto.import_flags)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 98,
+                "startChar": 0,
+                "endLine": 99,
+                "endChar": 0
+              },
+              "replacement": "            import_flags \u003d depset(transitive \u003d [import_flags, dep.proto.import_flags])\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 100,
+                "startChar": 0,
+                "endLine": 101,
+                "endChar": 0
+              },
+              "replacement": "            deps \u003d depset(transitive \u003d [deps], direct \u003d dep.proto.deps)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 102,
+                "startChar": 0,
+                "endLine": 103,
+                "endChar": 0
+              },
+              "replacement": "            deps \u003d depset(transitive \u003d [deps, dep.proto.deps])\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf.bzl",
+              "range": {
+                "startLine": 456,
+                "startChar": 0,
+                "endLine": 458,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "f07f6be2_b51989c9",
+        "filename": "third_party/protobuf-3.20.2/protobuf.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/protobuf.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "2b9a6848_b31e66a0",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 10,
+                "startChar": 0,
+                "endLine": 12,
+                "endChar": 0
+              },
+              "replacement": "    values \u003d {}\n    values[\"version\"] \u003d PROTOBUF_VERSION\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 13,
+                "startChar": 0,
+                "endLine": 17,
+                "endChar": 0
+              },
+              "replacement": "    # infer from the current cpp toolchain.\n    toolchain \u003d find_cpp_toolchain(ctx)\n    cpu \u003d toolchain.cpu\n    system_name \u003d toolchain.target_gnu_system_name\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 18,
+                "startChar": 0,
+                "endLine": 25,
+                "endChar": 0
+              },
+              "replacement": "    # rename cpus to match what we want artifacts to be\n    if cpu \u003d\u003d \"systemz\":\n        cpu \u003d \"s390_64\"\n    elif cpu \u003d\u003d \"aarch64\":\n        cpu \u003d \"aarch_64\"\n    elif cpu \u003d\u003d \"ppc64\":\n        cpu \u003d \"ppcle_64\"\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 26,
+                "startChar": 0,
+                "endLine": 34,
+                "endChar": 0
+              },
+              "replacement": "    # use the system name to determine the os and then create platform names\n    if \"apple\" in system_name:\n        values[\"platform\"] \u003d \"osx-\" + cpu\n    elif \"linux\" in system_name:\n        values[\"platform\"] \u003d \"linux-\" + cpu\n    elif \"mingw\" in system_name:\n        if cpu \u003d\u003d \"x86_64\":\n            values[\"platform\"] \u003d \"win64\"\n        else:\n            values[\"platform\"] \u003d \"win32\"\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 35,
+                "startChar": 0,
+                "endLine": 38,
+                "endChar": 0
+              },
+              "replacement": "        values[\"platform\"] \u003d \"unknown\"\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 39,
+                "startChar": 0,
+                "endLine": 41,
+                "endChar": 0
+              },
+              "replacement": "    return PackageVariablesInfo(values \u003d values)\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 43,
+                "startChar": 0,
+                "endLine": 44,
+                "endChar": 0
+              },
+              "replacement": "    implementation \u003d _package_naming_impl,\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+              "range": {
+                "startLine": 45,
+                "startChar": 0,
+                "endLine": 47,
+                "endChar": 0
+              },
+              "replacement": "        # Necessary data dependency for find_cpp_toolchain.\n        \"_cc_toolchain\": attr.label(default \u003d Label(\"@bazel_tools//tools/cpp:current_cc_toolchain\")),\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "2a53a6cd_86ff68ee",
+        "filename": "third_party/protobuf-3.20.2/protobuf_release.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/protobuf_release.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "a3272b25_56b4017d",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/protobuf_version.bzl",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 2,
+                "endChar": 0
+              },
+              "replacement": "PROTOBUF_VERSION \u003d \"3.20.2\"\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "63144598_72c1c8db",
+        "filename": "third_party/protobuf-3.20.2/protobuf_version.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/protobuf_version.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "78e6ff06_53e1eabe",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/third_party/utf8_range/BUILD",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 2,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/third_party/utf8_range/BUILD",
+              "range": {
+                "startLine": 6,
+                "startChar": 0,
+                "endLine": 7,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/third_party/utf8_range/BUILD",
+              "range": {
+                "startLine": 12,
+                "startChar": 0,
+                "endLine": 12,
+                "endChar": 0
+              },
+              "replacement": "    hdrs \u003d [\"utf8_range.h\"],\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "8c625e31_bea89dd4",
+        "filename": "third_party/protobuf-3.20.2/third_party/utf8_range/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/third_party/utf8_range/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "189d1ce5_b64e8d8f",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 21,
+                "startChar": 0,
+                "endLine": 22,
+                "endChar": 0
+              },
+              "replacement": "    toolchains \u003d TOOLCHAINS,\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 48,
+                "startChar": 0,
+                "endLine": 49,
+                "endChar": 0
+              },
+              "replacement": "        \"-I/opt/manylinux/2014/aarch64/usr/include/c++/10\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 50,
+                "startChar": 0,
+                "endLine": 50,
+                "endChar": 0
+              },
+              "replacement": "    linker_path \u003d \"/usr/bin/ld\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 51,
+                "startChar": 0,
+                "endLine": 52,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 54,
+                "startChar": 0,
+                "endLine": 55,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 57,
+                "startChar": 0,
+                "endLine": 57,
+                "endChar": 0
+              },
+              "replacement": "    toolchain_name \u003d \"linux_aarch_64\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 65,
+                "startChar": 0,
+                "endLine": 66,
+                "endChar": 0
+              },
+              "replacement": "        \"-I/usr/powerpc64le-linux-gnu/include/c++/8/\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 81,
+                "startChar": 0,
+                "endLine": 82,
+                "endChar": 0
+              },
+              "replacement": "        \"-I/usr/s390x-linux-gnu/include/c++/8/\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 121,
+                "startChar": 0,
+                "endLine": 122,
+                "endChar": 0
+              },
+              "replacement": "        \"-I/usr/tools/apple_sdks/xcode_13_0/macosx/usr/include\",\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/BUILD",
+              "range": {
+                "startLine": 138,
+                "startChar": 0,
+                "endLine": 139,
+                "endChar": 0
+              },
+              "replacement": "        \"-I/usr/tools/apple_sdks/xcode_13_0/macosx/usr/include\",\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "dfb83d6c_d03790ae",
+        "filename": "third_party/protobuf-3.20.2/toolchain/BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/toolchain/BUILD` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "robotId": "ayeaye",
+      "robotRunId": "AR00000000000029546017",
+      "url": "https://android-build.googleplex.com/builds/treetop/android-review/2229817?revision\u003d1",
+      "fixSuggestions": [
+        {
+          "fixId": "9422ed24_0c13f39f",
+          "description": "Buildifier Suggestion",
+          "replacements": [
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 31,
+                "startChar": 0,
+                "endLine": 41,
+                "endChar": 0
+              },
+              "replacement": "    if \"mingw\" in ctx.attr.target_full_name:\n        artifact_name_patterns \u003d [\n            artifact_name_pattern(\n                category_name \u003d \"executable\",\n                prefix \u003d \"\",\n                extension \u003d \".exe\",\n            ),\n        ]\n    else:\n        artifact_name_patterns \u003d []\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 42,
+                "startChar": 0,
+                "endLine": 88,
+                "endChar": 0
+              },
+              "replacement": "    tool_paths \u003d [\n        tool_path(\n            name \u003d \"gcc\",\n            path \u003d \"/usr/local/bin/clang\",\n        ),\n        tool_path(\n            name \u003d \"ld\",\n            path \u003d ctx.attr.linker_path,\n        ),\n        tool_path(\n            name \u003d \"ar\",\n            path \u003d \"/usr/local/bin/llvm-ar\",\n        ),\n        tool_path(\n            name \u003d \"compat-ld\",\n            path \u003d ctx.attr.linker_path,\n        ),\n        tool_path(\n            name \u003d \"cpp\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"dwp\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"gcov\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"nm\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"objcopy\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"objdump\",\n            path \u003d \"/bin/false\",\n        ),\n        tool_path(\n            name \u003d \"strip\",\n            path \u003d \"/bin/false\",\n        ),\n    ]\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 89,
+                "startChar": 0,
+                "endLine": 107,
+                "endChar": 0
+              },
+              "replacement": "    linker_flags \u003d feature(\n        name \u003d \"default_linker_flags\",\n        enabled \u003d True,\n        flag_sets \u003d [\n            flag_set(\n                actions \u003d all_link_actions,\n                flag_groups \u003d [\n                    flag_group(\n                        flags \u003d [\n                            \"-B\" + ctx.attr.linker_path,\n                            ctx.attr.cpp_flag,\n                            \"--target\u003d\" + ctx.attr.target_full_name,\n                        ] + ctx.attr.extra_linker_flags,\n                    ),\n                ],\n            ),\n        ],\n    )\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 108,
+                "startChar": 0,
+                "endLine": 112,
+                "endChar": 0
+              },
+              "replacement": "    if \"osx\" in ctx.attr.target_full_name:\n        sysroot_action_set \u003d all_link_actions\n    else:\n        sysroot_action_set \u003d all_link_actions + all_compile_actions\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 113,
+                "startChar": 0,
+                "endLine": 131,
+                "endChar": 0
+              },
+              "replacement": "    sysroot_flags \u003d feature(\n        name \u003d \"sysroot_flags\",\n        #Only enable this if a sysroot was specified\n        enabled \u003d (ctx.attr.sysroot !\u003d \"\"),\n        flag_sets \u003d [\n            flag_set(\n                actions \u003d sysroot_action_set,\n                flag_groups \u003d [\n                    flag_group(\n                        flags \u003d [\n                            \"--sysroot\",\n                            ctx.attr.sysroot,\n                        ],\n                    ),\n                ],\n            ),\n        ],\n    )\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 132,
+                "startChar": 0,
+                "endLine": 155,
+                "endChar": 0
+              },
+              "replacement": "    compiler_flags \u003d feature(\n        name \u003d \"default_compile_flags\",\n        enabled \u003d True,\n        flag_sets \u003d [\n            flag_set(\n                actions \u003d all_compile_actions,\n                flag_groups \u003d [\n                    flag_group(\n                        flags \u003d [\n                            ctx.attr.bit_flag,\n                            \"-Wall\",\n                            \"-no-canonical-prefixes\",\n                            \"--target\u003d\" + ctx.attr.target_full_name,\n                            \"-fvisibility\u003dhidden\",\n                        ] + ctx.attr.extra_compiler_flags + [\n                            \"-isystem\",\n                            ctx.attr.toolchain_dir,\n                        ],\n                    ),\n                ],\n            ),\n        ],\n    )\n"
+            },
+            {
+              "path": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+              "range": {
+                "startLine": 156,
+                "startChar": 0,
+                "endLine": 176,
+                "endChar": 0
+              },
+              "replacement": "    return cc_common.create_cc_toolchain_config_info(\n        abi_libc_version \u003d ctx.attr.abi_version,\n        abi_version \u003d ctx.attr.abi_version,\n        artifact_name_patterns \u003d artifact_name_patterns,\n        ctx \u003d ctx,\n        compiler \u003d \"clang\",\n        cxx_builtin_include_directories \u003d [\n            ctx.attr.toolchain_dir,\n            ctx.attr.extra_include,\n            \"/usr/local/include\",\n            \"/usr/local/lib/clang\",\n        ],\n        features \u003d [linker_flags, compiler_flags, sysroot_flags],\n        host_system_name \u003d \"local\",\n        target_cpu \u003d ctx.attr.target_cpu,\n        target_libc \u003d ctx.attr.target_cpu,\n        target_system_name \u003d ctx.attr.target_full_name,\n        toolchain_identifier \u003d ctx.attr.toolchain_name,\n        tool_paths \u003d tool_paths,\n    )\n"
+            }
+          ]
+        }
+      ],
+      "key": {
+        "uuid": "e6707cfc_e3adff59",
+        "filename": "third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1757831
+      },
+      "writtenOn": "2022-09-23T16:20:32Z",
+      "side": 1,
+      "message": "File is not formatted. Run `buildifier third_party/protobuf-3.20.2/toolchain/cc_toolchain_config.bzl` to format the file, or apply the suggested fix.",
+      "revId": "b6d70d2a9275afd98312d67535b4ccd2891feca5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
