@@ -87,8 +87,7 @@ bool Paddleboat_getBackButtonConsumed() {
 }
 
 Paddleboat_Integrated_Motion_Sensor_Flags Paddleboat_getIntegratedMotionSensorFlags() {
-    // TODO: stub function in this CL
-    return PADDLEBOAT_INTEGRATED_SENSOR_NONE;
+    return GameControllerManager::getIntegratedMotionSensorFlags();
 }
 
 void Paddleboat_setBackButtonConsumed(bool consumeBackButton) {
@@ -103,15 +102,16 @@ void Paddleboat_setControllerStatusCallback(
 
 void Paddleboat_setMotionDataCallback(
     Paddleboat_MotionDataCallback motionDataCallback, void *userData) {
-    GameControllerManager::setMotionDataCallback(motionDataCallback, userData);
+    GameControllerManager::setMotionDataCallback(motionDataCallback,
+                                                 PADDLEBOAT_INTEGRATED_SENSOR_NONE, userData);
 }
 
 Paddleboat_ErrorCode Paddleboat_setMotionDataCallbackWithIntegratedFlags(
-        Paddleboat_MotionDataCallback /*motionDataCallback*/,
-        Paddleboat_Integrated_Motion_Sensor_Flags /*integratedSensorFlags*/,
-        void */*userData*/) {
-    // TODO: stub function in this CL
-    return PADDLEBOAT_NO_ERROR;
+        Paddleboat_MotionDataCallback motionDataCallback,
+        Paddleboat_Integrated_Motion_Sensor_Flags integratedSensorFlags,
+        void *userData) {
+    return GameControllerManager::setMotionDataCallback(motionDataCallback,
+                                                        integratedSensorFlags, userData);
 }
 
 void Paddleboat_setMouseStatusCallback(
