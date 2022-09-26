@@ -35,7 +35,12 @@ import java.util.List;
 public class GameControllerListener {
 
     private static final String TAG = "GameControllerListener";
+    // Must match Paddleboat_Motion_Data_Callback_Sensor_Index definition
+    // in paddleboat.h
+    private static final int INTEGRATED_SENSOR_INDEX = (0x40000000);
     private boolean reportMotionEvents;
+    private boolean integratedAccelerometerActive;
+    private boolean integratedGyroscopeActive;
     private int inputDeviceFlags;
     private int inputDeviceId;
     private final GameControllerManager gameControllerManager;
@@ -56,15 +61,24 @@ public class GameControllerListener {
         gameControllerManager = gcManager;
         inputDevice = newDevice;
         inputDeviceFlags = newFlags;
-        inputDeviceId = inputDevice.getId();
+        // If a null input device is specified, we are a listener for integrated sensor
+        // devices
+        if (inputDevice != null) {
+            inputDeviceId = inputDevice.getId();
+            sensorManager = null;
+        } else {
+            inputDeviceId = INTEGRATED_SENSOR_INDEX;
+            sensorManager = gameControllerManager.getAppSensorManager();
+        }
         reportMotionEvents = motionEvents;
+        integratedAccelerometerActive = false;
+        integratedGyroscopeActive = false;
         lightsManager = null;
         lightsSession = null;
         accelerometer = null;
         accelerometerListener = null;
         gyroscope = null;
         gyroscopeListener = null;
-        sensorManager = null;
 
         configureMotion();
     }
@@ -73,12 +87,17 @@ public class GameControllerListener {
         shutdownListener();
         inputDevice = newDevice;
         inputDeviceFlags = newFlags;
-        inputDeviceId = newDevice.getId();
+        if (inputDevice != null) {
+            inputDeviceId = inputDevice.getId();
+        } else {
+            inputDeviceId = INTEGRATED_SENSOR_INDEX;
+            sensorManager = gameControllerManager.getAppSensorManager();
+        }
         configureMotion();
     }
 
     public void shutdownListener() {
-        // Called when the device sends a disconnected or changed event
+        // Called when the controller device sends a disconnected or changed event,
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Log.d(TAG, "shutdownListener");
             synchronized (mLightLock) {
@@ -105,13 +124,74 @@ public class GameControllerListener {
                 sensorManager = null;
             }
         }
-        inputDeviceFlags = 0;
-        inputDevice = null;
+        if (inputDevice != null) {
+            // Only reset if we are not an integrated listener
+            inputDeviceFlags = 0;
+            inputDevice = null;
+        }
     }
 
-    public void setReportMotionEvents() {
-        reportMotionEvents = true;
-        configureMotion();
+    public void setIntegratedAccelerometerActive(boolean active) {
+        synchronized (mSensorLock) {
+            if (sensorManager != null) {
+                if (active && accelerometerListener == null) {
+                    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                    if (accelerometer != null) {
+                        if (gameControllerManager.getPrintControllerInfo()) {
+                            printSensorInformation(accelerometer, "integratedAccelerometer");
+                        }
+                        accelerometerListener =
+                                new GameControllerAccelerometerListener(accelerometer);
+                        Log.d(TAG, "registering listener for integrated accelerometer");
+                        sensorManager.registerListener(accelerometerListener, accelerometer,
+                                SensorManager.SENSOR_DELAY_GAME);
+                    }
+                } else if (!active && accelerometerListener != null) {
+                    if (accelerometerListener != null) {
+                        Log.d(TAG, "unregistering listener for integrated accelerometer");
+                        sensorManager.unregisterListener(accelerometerListener);
+                        accelerometerListener = null;
+                    }
+                }
+                integratedAccelerometerActive = active;
+            }
+        }
+    }
+
+    public void setIntegratedGyroscopeActive(boolean active) {
+        synchronized (mSensorLock) {
+            if (sensorManager != null) {
+                if (active && gyroscopeListener == null) {
+                    gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                    if (gyroscope != null) {
+                        if (gameControllerManager.getPrintControllerInfo()) {
+                            printSensorInformation(gyroscope, "integratedGyroscope");
+                        }
+                        gyroscopeListener =
+                                new GameControllerGyroscopeListener(gyroscope);
+                        Log.d(TAG, "registering listener for integrated gyroscope");
+                        sensorManager.registerListener(gyroscopeListener, gyroscope,
+                                SensorManager.SENSOR_DELAY_GAME);
+                    }
+                } else if (!active && gyroscopeListener != null) {
+                    if (gyroscopeListener != null) {
+                        Log.d(TAG, "unregistering listener for integrated gyroscope");
+                        sensorManager.unregisterListener(gyroscopeListener);
+                        gyroscopeListener = null;
+                    }
+                }
+                integratedGyroscopeActive = active;
+            }
+        }
+    }
+
+    public void setReportMotionEvents(boolean motionEventsActive) {
+        reportMotionEvents = motionEventsActive;
+        if (motionEventsActive) {
+            configureMotion();
+        } else {
+            shutdownListener();
+        }
     }
 
     public void setLight(int lightType, int lightValue) {
@@ -162,9 +242,17 @@ public class GameControllerListener {
     }
 
     private void configureMotion() {
+        if (inputDevice == null) {
+            // Integrated sensor reporting gets configured by the setIntegrated calls
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && reportMotionEvents) {
             synchronized (mSensorLock) {
-                sensorManager = inputDevice.getSensorManager();
+                if (sensorManager == null) {
+                    // Integrated sensor gets assigned at creation, otherwise
+                    // we have to set from the device's own sensor manager
+                    sensorManager = inputDevice.getSensorManager();
+                }
                 if ((inputDeviceFlags & (GameControllerManager.DEVICEFLAG_ACCELEROMETER |
                         GameControllerManager.DEVICEFLAG_GYROSCOPE)) != 0) {
                     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
