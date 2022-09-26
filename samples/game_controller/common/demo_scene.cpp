@@ -35,6 +35,7 @@ namespace {
 
     const char *controllerTabNames[PADDLEBOAT_MAX_CONTROLLERS] = {" #1 ", " #2 ", " #3 ", " #4 ",
                                                                   " #5 ", " #6 ", " #7 ", " #8 "};
+    const char *integratedTabName = " #I ";
     typedef void(DemoScene::*ControllerCategoryRenderFunction)(const int32_t,
             const Paddleboat_Controller_Data&, const Paddleboat_Controller_Info&);
 
@@ -87,6 +88,19 @@ namespace {
 
     }
 
+    void UpdateMotionData(const Paddleboat_Motion_Data *motionData, uint64_t *previousTimestamp,
+                          uint32_t *timestampDelta, float *destMotionData) {
+        if (*previousTimestamp > 0) {
+            uint64_t deltaTime = motionData->timestamp - (*previousTimestamp);
+            // nanoseconds to milliseconds
+            *timestampDelta = static_cast<uint32_t>(deltaTime / 1000000);
+        }
+        destMotionData[0] = motionData->motionX;
+        destMotionData[1] = motionData->motionY;
+        destMotionData[2] = motionData->motionZ;
+        *previousTimestamp = motionData->timestamp;
+    }
+
     void VibrationParameters(const char *labelText, const char *labelTag, const float vMin,
                              const float vMax, const float vStep, float *vValue) {
         char plusString[16];
@@ -135,13 +149,20 @@ DemoScene::DemoScene() {
     mActiveControllerPanelTab = 0;
     mPreviousControllerDataTimestamp = 0;
     mPreviousMouseDataTimestamp = 0;
+    mIntegratedSensorFlags = PADDLEBOAT_INTEGRATED_SENSOR_NONE;
     mPreviousAccelerometerTimestamp = 0;
     mAccelerometerTimestampDelta = 0;
     mPreviousGyroscopeTimestamp = 0;
     mGyroscopeTimestampDelta = 0;
-    for (size_t i = 0; i < DemoScene::MOTION_AXIS_COUNT; ++i) {
+    mPreviousIntegratedAccelerometerTimestamp = 0;
+    mIntegratedAccelerometerTimestampDelta = 0;
+    mPreviousIntegratedGyroscopeTimestamp = 0;
+    mIntegratedGyroscopeTimestampDelta = 0;
+    for (int i = 0; i < DemoScene::MOTION_AXIS_COUNT; ++i) {
         mAccelerometerData[i] = 0.0f;
         mGyroscopeData[i] = 0.0f;
+        mIntegratedAccelerometerData[i] = 0.0f;
+        mIntegratedGyroscopeData[i] = 0.0f;
     }
     mDontTrimDeadzone = false;
     mPreferencesActive = false;
@@ -366,7 +387,18 @@ void DemoScene::RenderControllerTabs() {
                 ImGui::PopStyleColor(1);
             }
         }
+
+        // Add an integrated device stats tab item
+        RenderIntegratedTab();
         ImGui::EndTabBar();
+    }
+}
+
+void DemoScene::RenderIntegratedTab() {
+    if (ImGui::BeginTabItem(integratedTabName, NULL, ImGuiTabItemFlags_None)) {
+        mCurrentControllerIndex = PADDLEBOAT_MAX_CONTROLLERS;
+        RenderIntegratedPanel();
+        ImGui::EndTabItem();
     }
 }
 
@@ -444,6 +476,72 @@ void DemoScene::RenderMouseData() {
         // where we process the mouse data.
         mMouseDataTimestampDelta = mouseData.timestamp - mPreviousMouseDataTimestamp;
         mPreviousMouseDataTimestamp = mouseData.timestamp;
+    }
+}
+
+void DemoScene::RenderIntegratedMotionData() {
+    // Motion axis
+    float motionData[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    const bool hasAccel =
+            ((mIntegratedSensorFlags & PADDLEBOAT_INTEGRATED_SENSOR_ACCELEROMETER) != 0);
+    const bool hasGyro =
+            ((mIntegratedSensorFlags & PADDLEBOAT_INTEGRATED_SENSOR_GYROSCOPE) != 0);;
+    if (hasAccel) {
+        motionData[0] = mIntegratedAccelerometerData[0];
+        motionData[2] = mIntegratedAccelerometerData[1];
+        motionData[4] = mIntegratedAccelerometerData[2];
+    }
+
+    if (hasGyro) {
+        motionData[1] = mIntegratedGyroscopeData[0];
+        motionData[3] = mIntegratedGyroscopeData[1];
+        motionData[5] = mIntegratedGyroscopeData[2];
+    }
+    ImGui::Text("%s", "Integrated sensors");
+    RenderMotionTableData(motionData, mIntegratedAccelerometerTimestampDelta,
+                          mIntegratedGyroscopeTimestampDelta, hasAccel, hasGyro);
+}
+
+void DemoScene::RenderMotionTableData(const float *motionData, const uint32_t accelTimestampDelta,
+                                      const uint32_t gyroTimestampDelta,
+                                      bool hasAccel, bool hasGyro) {
+    if (ImGui::BeginTable("##motiontable", 2, ImGuiTableColumnFlags_WidthFixed,
+                          ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 4.5f))) {
+        ImGui::TableSetupColumn("Accelerometer   ", 0);
+        ImGui::TableSetupColumn("Gyroscope  ", 0);
+        ImGui::TableHeadersRow();
+        for (size_t i = 0; i < 4; ++i) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (hasAccel) {
+                if (i == 0) {
+                    ImGui::Text("%4u", accelTimestampDelta);
+                } else {
+                    ImGui::Text("%.3f", motionData[((i - 1) * 2)]);
+                }
+            } else if (i == 0) {
+                ImGui::Text("None");
+            }
+            ImGui::TableNextColumn();
+            if (hasGyro) {
+                if (i == 0) {
+                    ImGui::Text("%4u", gyroTimestampDelta);
+                } else {
+                    ImGui::Text("%.3f", motionData[((i - 1) * 2) + 1]);
+                }
+            } else if (i == 0) {
+                ImGui::Text("None");
+            }
+        }
+        ImGui::EndTable();
+    }
+}
+
+void DemoScene::RenderIntegratedPanel() {
+    ImGui::Text("%s", "Integrated (non-controller) device info");
+    if (mIntegratedSensorFlags != PADDLEBOAT_INTEGRATED_SENSOR_NONE) {
+        ImGui::Text("%s", "Motion data:");
+        RenderIntegratedMotionData();
     }
 }
 
@@ -770,37 +868,8 @@ void DemoScene::RenderPanel_MotionTab(const int32_t /*controllerIndex*/,
         motionData[3] = mGyroscopeData[1];
         motionData[5] = mGyroscopeData[2];
     }
-
-    if (ImGui::BeginTable("##motiontable", 2, ImGuiTableColumnFlags_WidthFixed,
-                          ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 4.5f))) {
-        ImGui::TableSetupColumn("Accelerometer   ", 0);
-        ImGui::TableSetupColumn("Gyroscope  ", 0);
-        ImGui::TableHeadersRow();
-        for (size_t i = 0; i < 4; ++i) {
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            if (hasAccel) {
-                if (i == 0) {
-                    ImGui::Text("%4u", mAccelerometerTimestampDelta);
-                } else {
-                    ImGui::Text("%.3f", motionData[((i - 1) * 2)]);
-                }
-            } else if (i == 0) {
-                ImGui::Text("None");
-            }
-            ImGui::TableNextColumn();
-            if (hasGyro) {
-                if (i == 0) {
-                    ImGui::Text("%4u", mGyroscopeTimestampDelta);
-                } else {
-                    ImGui::Text("%.3f", motionData[((i - 1) * 2) + 1]);
-                }
-            } else if (i == 0) {
-                ImGui::Text("None");
-            }
-        }
-        ImGui::EndTable();
-    }
+    RenderMotionTableData(motionData, mAccelerometerTimestampDelta,
+                          mGyroscopeTimestampDelta, hasAccel, hasGyro);
 }
 
 void DemoScene::RenderPanel_LightsTab(const int32_t controllerIndex,
@@ -941,34 +1010,35 @@ void DemoScene::KeyboardStatusEvent(const bool keyboardConnected) {
 
 void DemoScene::MotionDataEvent(const int32_t controllerIndex,
                                 const Paddleboat_Motion_Data *motionData) {
-    if (controllerIndex == mCurrentControllerIndex) {
+    if (controllerIndex == PADDLEBOAT_INTEGRATED_SENSOR_INDEX) {
         if (motionData->motionType == PADDLEBOAT_MOTION_ACCELEROMETER) {
-            if (mPreviousAccelerometerTimestamp > 0) {
-                uint64_t deltaTime = motionData->timestamp - mPreviousAccelerometerTimestamp;
-                // nanoseconds to milliseconds
-                mAccelerometerTimestampDelta = static_cast<uint32_t>(deltaTime / 1000000);
-            }
-            mAccelerometerData[0] = motionData->motionX;
-            mAccelerometerData[1] = motionData->motionY;
-            mAccelerometerData[2] = motionData->motionZ;
-            mPreviousAccelerometerTimestamp = motionData->timestamp;
+            UpdateMotionData(motionData, &mPreviousIntegratedAccelerometerTimestamp,
+                             &mIntegratedAccelerometerTimestampDelta,
+                             mIntegratedAccelerometerData);
         } else if (motionData->motionType == PADDLEBOAT_MOTION_GYROSCOPE) {
-            if (mPreviousGyroscopeTimestamp > 0) {
-                uint64_t deltaTime = motionData->timestamp - mPreviousGyroscopeTimestamp;
-                // nanoseconds to milliseconds
-                mGyroscopeTimestampDelta = static_cast<uint32_t>(deltaTime / 1000000);
-            }
-            mGyroscopeData[0] = motionData->motionX;
-            mGyroscopeData[1] = motionData->motionY;
-            mGyroscopeData[2] = motionData->motionZ;
-            mPreviousGyroscopeTimestamp = motionData->timestamp;
+            UpdateMotionData(motionData, &mPreviousIntegratedGyroscopeTimestamp,
+                             &mIntegratedGyroscopeTimestampDelta,
+                             mIntegratedGyroscopeData);
+        }
+    } else if (controllerIndex == mCurrentControllerIndex) {
+        if (motionData->motionType == PADDLEBOAT_MOTION_ACCELEROMETER) {
+            UpdateMotionData(motionData, &mPreviousAccelerometerTimestamp,
+                             &mAccelerometerTimestampDelta,
+                             mAccelerometerData);
+        } else if (motionData->motionType == PADDLEBOAT_MOTION_GYROSCOPE) {
+            UpdateMotionData(motionData, &mPreviousGyroscopeTimestamp,
+                             &mGyroscopeTimestampDelta,
+                             mGyroscopeData);
         }
     }
 }
 
 void DemoScene::OnInstall() {
+    mIntegratedSensorFlags = Paddleboat_getIntegratedMotionSensorFlags();
+
     Paddleboat_setControllerStatusCallback(GameControllerCallback, this);
-    Paddleboat_setMotionDataCallback(MotionDataCallback, this);
+    Paddleboat_setMotionDataCallbackWithIntegratedFlags(MotionDataCallback,
+                                                        mIntegratedSensorFlags, this);
     Paddleboat_setPhysicalKeyboardStatusCallback(KeyboardCallback, this);
     mRegisteredStatusCallback = true;
 }
