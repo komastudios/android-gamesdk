@@ -106,6 +106,9 @@ protected:
     // Registered controller status callback
     bool mRegisteredStatusCallback;
 
+    // Keyboard is connected
+    bool mKeyboardConnected;
+
     // must be implemented by subclass
     virtual void OnButtonClicked(int buttonId);
 
@@ -121,6 +124,8 @@ protected:
     void SetupUIWindow();
 
     bool RenderPreferences();
+
+    void RenderKeyboardData();
 
     void RenderMouseData();
 
@@ -161,6 +166,8 @@ public:
 
     void GameControllerStatusEvent(const int32_t controllerIndex,
                                    const Paddleboat_ControllerStatus status);
+
+    void KeyboardStatusEvent(const bool keyboardConnected);
 
     void MotionDataEvent(const int32_t controllerIndex,
                          const Paddleboat_Motion_Data *motionData);
