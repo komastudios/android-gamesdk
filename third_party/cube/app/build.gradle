@@ -57,5 +57,8 @@ android {
 }
 
 dependencies {
+    // Uncomment this line and comment out "implementation project(":games-controller")"
+    // to use a locally built .aar
+    //implementation fileTree(dir: '../../', include: ['games-frame-pacing-release.aar'])
     implementation project(":games-frame-pacing")
 }

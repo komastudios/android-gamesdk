@@ -116,6 +116,18 @@ dependencies {
 //    implementation "androidx.games:games-controller:1.0.0"
 //    implementation "androidx.games:games-activity:1.1.0"
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
+    // Uncomment this line and comment out "implementation project(":*")" lines
+    // to use a locally built .aar
+    //implementation fileTree(dir: '../../../', include: [
+    //        'game-activity-release.aar',
+    //        'games-performance-tuner-release.aar',
+    //        'games-frame-pacing-release.aar',
+    //        'games-controller-release.aar',
+    //])
+    implementation project(':game-activity')
+    implementation project(':games-performance-tuner')
+    implementation project(':games-frame-pacing')
+    implementation project(':games-controller')
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
@@ -124,11 +136,6 @@ dependencies {
     if(PADEnabled.toBoolean()) {
         implementation files("$playcoreDir/playcore.aar")
     }
-
-    implementation project(':game-activity')
-    implementation project(':games-performance-tuner')
-    implementation project(':games-frame-pacing')
-    implementation project(':games-controller')
 }
 
 android.lintOptions {
