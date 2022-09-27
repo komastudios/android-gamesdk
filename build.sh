@@ -104,9 +104,12 @@ then
     pushd samples/game_controller/
     mkdir -p ./third-party
     pushd third-party
-    git clone https://github.com/ocornut/imgui
+    if [ ! -d "imgui" ] ; then
+        git clone https://github.com/ocornut/imgui
+    fi
     popd
     popd
+
     pushd samples/game_controller/gameactivity
     ./gradlew ":app:assembleDebug"
     popd
@@ -115,7 +118,9 @@ then
     popd
 
     pushd samples/agdktunnel/third-party/glm
-    git clone https://github.com/g-truc/glm.git
+    if [ ! -d "glm" ] ; then
+        git clone https://github.com/g-truc/glm.git
+    fi
     popd
     pushd samples/agdktunnel/
     ./gradlew ":app:assembleDebug"
