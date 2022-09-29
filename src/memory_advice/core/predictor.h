@@ -26,12 +26,10 @@
 #include "apk_utils.h"
 #include "json11/json11.hpp"
 #include "memory_advice/memory_advice.h"
-#include "tensorflow/lite/create_op_resolver.h"
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/interpreter_builder.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/model_builder.h"
-#include "tensorflow/lite/op_resolver.h"
+#include "tensorflow/lite/c/c_api.h"
+#include "tensorflow/lite/c/c_api_experimental.h"
+#include "tensorflow/lite/c/c_api_types.h"
+#include "tensorflow/lite/c/common.h"
 
 namespace memory_advice {
 
@@ -71,11 +69,14 @@ class IPredictor {
 
 class DefaultPredictor : public IPredictor {
    private:
-    std::unique_ptr<tflite::Interpreter> interpreter;
+    // std::unique_ptr<tflite::Interpreter> interpreter;
     std::vector<std::string> features;
-    std::unique_ptr<tflite::FlatBufferModel> model;
-    std::unique_ptr<tflite::OpResolver> resolver;
-    tflite::StderrReporter error_reporter;
+    // std::unique_ptr<tflite::FlatBufferModel> model;
+    TfLiteModel* model;
+    TfLiteInterpreterOptions* options;
+    TfLiteInterpreter* interpreter;
+    // std::unique_ptr<tflite::OpResolver> resolver;
+    // tflite::StderrReporter error_reporter;
     std::unique_ptr<apk_utils::NativeAsset> model_asset;
 
    public:
