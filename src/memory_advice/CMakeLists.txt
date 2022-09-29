@@ -10,7 +10,7 @@ set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryad
 set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
 set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/tensorflow")
 set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external")
-set( TFLITE_FLATBUFFERS_SCHEMA_DIR "${CMAKE_CURRENT_BINARY_DIR}/../flatbuffers/include")
+set( TFLITE_FLATBUFFERS_SCHEMA_DIR "${EXTERNAL_SOURCE_DIR}/flatbuffers/include")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -159,7 +159,6 @@ add_subdirectory(
   EXCLUDE_FROM_ALL
 )
 
-
 set(MEMORY_ADVICE_SRCS
   c_header_check.c
   core/memory_advice.cpp
@@ -181,13 +180,17 @@ set(MEMORY_ADVICE_SRCS
   ${MEMORYADVICE_RESOURCES_DIR}/oom_features.json
 )
 
+#add_library( tflite STATIC IMPORTED )
+#set_target_properties( tflite PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/tensorflow-lite/res/${CMAKE_ANDROID_ARCH_ABI}/libtensorflow-lite.a )
+
+bundle_static_library(tensorflow-lite memory_advice_static)
+
 add_library(memory_advice_static_pre STATIC ${MEMORY_ADVICE_SRCS})
 add_library(memory_advice SHARED ${MEMORY_ADVICE_SRCS})
 target_link_libraries(memory_advice
   PUBLIC
   android
   log
-  absl::flags
   tensorflow-lite
 )
 
@@ -195,8 +198,8 @@ target_link_libraries(memory_advice_static_pre
   PUBLIC
   android
   log
-  absl::flags
   tensorflow-lite
 )
 
-bundle_static_library(memory_advice_static_pre memory_advice_static)
+
+#bundle_static_library(memory_advice_static_pre memory_advice_static)
