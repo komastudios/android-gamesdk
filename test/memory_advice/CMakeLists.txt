@@ -84,25 +84,12 @@ set(TEST_SRCS
         ${CMAKE_CURRENT_BINARY_DIR}/advisor_parameters.cpp
 )
 
-add_executable(memory_advice_test
-  main.cpp
-  ${TEST_SRCS}
-)
-
-# This has to be a shared library because otherwise the linker doesn't see the tests.
 add_library(memory_advice_test_lib
-  SHARED
+  STATIC
   shared_main.cpp
   ${TEST_SRCS}
 )
 
-target_link_libraries(memory_advice_test
-  android
-  gtest
-  memory_advice
-  log
-  GLESv2
-)
 target_link_libraries(memory_advice_test_lib
   android
   gtest
