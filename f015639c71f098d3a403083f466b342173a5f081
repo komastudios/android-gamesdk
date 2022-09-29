@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a354fd91_c576f2ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2022-09-29T13:37:01Z",
+      "side": 1,
+      "message": "We have this as build options -Pstl, which could be \"c++_static\" or \"c++_shared\" . Why we need to hardcode this and not giving developer a choice?",
+      "revId": "f015639c71f098d3a403083f466b342173a5f081",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
