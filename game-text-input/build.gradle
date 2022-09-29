@@ -32,6 +32,7 @@ android {
         cmake {
             path "CMakeLists.txt"
             version "3.18.0+"
+            arguments "-DANDROID_STL=c++_shared"
         }
     }
     buildFeatures {
