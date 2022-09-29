@@ -30,12 +30,15 @@
 #include "apk_utils.h"
 #include "jni/jni_wrap.h"
 #include "memory_advice/memory_advice.h"
+#include "tensorflow/lite/c/c_api.h"
+#include "tensorflow/lite/c/c_api_experimental.h"
+#include "tensorflow/lite/c/c_api_types.h"
+#include "tensorflow/lite/c/common.h"
 
 #define LOG_TAG "MemoryAdvice:DeviceProfiler"
 
 namespace memory_advice {
 
-using namespace tflite;
 using namespace json11;
 
 MemoryAdvice_ErrorCode DefaultPredictor::Init(std::string model_file,
@@ -74,25 +77,22 @@ MemoryAdvice_ErrorCode DefaultPredictor::Init(std::string model_file,
         static_cast<size_t>(AAsset_getLength(*model_asset));
 
     // Create a tensorflow lite model using the asset file
-    model = tflite::FlatBufferModel::BuildFromBuffer(
-        model_buffer, model_capacity, &error_reporter);
-    std::unique_ptr<OpResolver> resolver = tflite::CreateOpResolver();
+
+    model = TfLiteModelCreate(model_buffer, model_capacity);
+
+    options = TfLiteInterpreterOptionsCreate();
 
     // Create a tensorflow lite interpreter from the model
-    if (InterpreterBuilder(*model, *resolver)(&interpreter) != kTfLiteOk) {
-        return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
-    }
+
+    interpreter = TfLiteInterpreterCreate(model, options);
 
     // Finally, resize the input of the model; which is just the number of
     // available features
-    std::vector<int> sizes;
-    sizes.push_back(features.size());
-    if (interpreter->ResizeInputTensor(0, sizes) != kTfLiteOk) {
-        return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
-    }
-    if (interpreter->AllocateTensors() != kTfLiteOk) {
-        return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
-    }
+
+    int* sizes = (int*)calloc(1, sizeof(int));
+    sizes[0] = features.size();
+    TfLiteInterpreterResizeInputTensor(interpreter, 0, sizes, 1);
+    TfLiteInterpreterAllocateTensors(interpreter);
 
     return MEMORYADVICE_ERROR_OK;
 }
@@ -117,14 +117,26 @@ float IPredictor::GetFromPath(std::string feature, Json::object data) {
 }
 
 float DefaultPredictor::Predict(Json::object data) {
+    float* input_data = (float*)calloc(features.size(), sizeof(float));
+
     for (int idx = 0; idx != features.size(); idx++) {
-        interpreter->typed_input_tensor<float>(0)[idx] =
-            GetFromPath(features[idx], data);
+        input_data[idx] = GetFromPath(features[idx], data);
     }
+    TfLiteTensor* input_tensor =
+        TfLiteInterpreterGetInputTensor(interpreter, 0);
+    TfLiteTensorCopyFromBuffer(input_tensor, input_data,
+                               features.size() * sizeof(float));
 
-    interpreter->Invoke();
+    TfLiteInterpreterInvoke(interpreter);
 
-    return *(interpreter->typed_output_tensor<float>(0));
+    float output_data;
+
+    const TfLiteTensor* output_tensor =
+        TfLiteInterpreterGetOutputTensor(interpreter, 0);
+    TfLiteTensorCopyToBuffer(output_tensor, &output_data, 1 * sizeof(float));
+
+    free(input_data);
+    return output_data;
 }
 
 }  // namespace memory_advice
