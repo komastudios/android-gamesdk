@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22b47a0c_fa2020dd",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-03T15:44:09Z",
+      "side": 1,
+      "message": "Should this null check be inside the synchronized (mSensorLock) ? \nIs it possible this can be nulled after this line but before we acquire the lock?",
+      "revId": "04d3d517ceef3fa10a5ade55b9c0a5cd0ceaac6f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
