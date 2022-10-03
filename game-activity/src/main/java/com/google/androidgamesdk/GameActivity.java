@@ -24,6 +24,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,7 +59,8 @@ import java.io.File;
 
 public class GameActivity
     extends AppCompatActivity
-    implements SurfaceHolder.Callback2, Listener, OnApplyWindowInsetsListener {
+    implements SurfaceHolder.Callback2, Listener, OnApplyWindowInsetsListener,
+        OnGlobalLayoutListener {
   private static final String LOG_TAG = "GameActivity";
 
   private static final String DEFAULT_NATIVE_LIB_NAME = "main";
@@ -110,6 +112,27 @@ public class GameActivity
     onTextInputEventNative(mNativeHandle, newState);
   }
 
+  @Override
+  public void onGlobalLayout() {
+    mSurfaceView.getLocationInWindow(mLocation);
+    int w = mSurfaceView.getWidth();
+    int h = mSurfaceView.getHeight();
+
+   if (mLocation[0] != mLastContentX || mLocation[1] != mLastContentY
+           || w != mLastContentWidth || h != mLastContentHeight)
+    {
+      mLastContentX = mLocation[0];
+      mLastContentY = mLocation[1];
+      mLastContentWidth = w;
+      mLastContentHeight = h;
+
+      if (!mDestroyed) {
+        onContentRectChangedNative(mNativeHandle, mLastContentX, mLastContentY,
+                mLastContentWidth, mLastContentHeight);
+      }
+    }
+  }
+
   // Called when we want to set the input state, e.g. before first showing the IME
   public void setTextInputState(State s) {
     if (mSurfaceView == null) return;
@@ -125,6 +148,11 @@ public class GameActivity
   private SurfaceHolder mCurSurfaceHolder;
 
   protected final int[] mLocation = new int[2];
+  protected int mLastContentX;
+  protected int mLastContentY;
+  protected int mLastContentWidth;
+  protected int mLastContentHeight;
+
 
   protected boolean mDestroyed;
 
@@ -171,6 +199,8 @@ public class GameActivity
   protected native void setInputConnectionNative(long handle, InputConnection c);
 
   protected native void onWindowInsetsChangedNative(long handle);
+
+  protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
@@ -226,6 +256,11 @@ public class GameActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     onCreateSurfaceView();
+
+    if (mSurfaceView != null) {
+      mSurfaceView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+    }
+
     onSetUpWindow();
 
     String libname = new String(DEFAULT_NATIVE_LIB_NAME);

@@ -561,6 +561,20 @@ static void onWindowInsetsChanged(GameActivity* activity) {
     android_app_write_cmd(ToApp(activity), APP_CMD_WINDOW_INSETS_CHANGED);
 }
 
+static void onContentRectChanged(GameActivity* activity, const ARect *rect) {
+    LOGV("ContentRectChanged: %p -- (%d %d) (%d %d)", activity, rect->left, rect->top,
+         rect->right, rect->bottom);
+
+    struct android_app* android_app = ToApp(activity);
+
+    pthread_mutex_lock(&android_app->mutex);
+    android_app->contentRect = *rect;
+
+    android_app_write_cmd(android_app, APP_CMD_CONTENT_RECT_CHANGED);
+    pthread_mutex_unlock(&android_app->mutex);
+}
+
+
 JNIEXPORT
 void GameActivity_onCreate(GameActivity* activity, void* savedState,
                            size_t savedStateSize) {
@@ -584,6 +598,7 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
         onNativeWindowRedrawNeeded;
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
     activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
+    activity->callbacks->onContentRectChanged = onContentRectChanged;
     LOGV("Callbacks set: %p", activity->callbacks);
 
     activity->instance =
