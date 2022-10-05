@@ -94,14 +94,12 @@ The command lines presented earlier are a combination of a **build or packaging 
 
 **Build tasks** are:
 * `build`: build the libraries with prebuilt SDK/NDK.
-* `buildSpecific`: build the libraries with a specific prebuilt SDK/NDK/STL.
 * `buildLocal`: build the libraries with your locally installed Android SDK and NDK.
 * `buildUnity`: build the libraries with the (prebuilt) SDK/NDK for use in Unity.
 * `buildAar`: build the libraries with prebuilt SDK/NDK for distribution in a AAR with prefab.
 
 **Packaging tasks** are:
 * `packageZip`: create a zip of the native libraries for distribution.
-* `packageSpecificZip`: create a zip with the libraries compiled for the specified SDK/NDK/STL.
 * `packageLocalZip`: create a zip with the libraries compiled with your locally installed Android SDK and NDK.
 * `packageUnityZip`: create a zip for integration in Unity.
 * `packageMavenZip`: create a zip with the native libraries in a AAR file in Prefab format and a pom file. You can also use `packageAar` to only get the AAR file.
@@ -109,7 +107,6 @@ The command lines presented earlier are a combination of a **build or packaging 
 **Properties** are:
 * `-Plibraries=swappy,tuningfork`: comma-separated list of libraries to build (for packaging/build tasks).
 * `-PpackageName=gamesdk`: the name of the package, for packaging tasks. Defaults to "gamesdk".
-* `-Psdk=14 -Pndk=r16 -Pstl='c++_static'`: the SDK, NDK and STL to use for `buildSpecific` and `packageSpecificZip` tasks.
 * `-PbuildType=Release`: the build type, "Release" (default) or "Debug".
 * Sample related properties:
   * `-PincludeSampleSources`: if specified, build tasks will include in their output the sources of the samples of the libraries that are built.
@@ -123,9 +120,6 @@ ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuni
 
 # All prebuilt SDKs, with sample sources and precompiled samples:
 ANDROID_HOME=`pwd`/../prebuilts/sdk ./gradlew packageZip -Plibraries=swappy,tuningfork -PpackageName=fullsdk -PincludeSampleSources -PincludeSampleArtifacts
-
-# Using a specific prebuilt SDK:
-./gradlew packageSpecificZip -Plibraries=swappy -Psdk=14 -Pndk=r16 -Pstl='c++_static'
 
 # Swappy or Swappy+TuningFork for Unity:
 ./gradlew buildUnity --Plibraries=swappy --PpackageName=swappyUnity
