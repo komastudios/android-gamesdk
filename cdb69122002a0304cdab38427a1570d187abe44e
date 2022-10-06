@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b576d1a_845a4587",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-06T09:33:53Z",
+      "side": 1,
+      "message": "We call TfLiteInterpreterCreate but we don\u0027t ever seem to call the clean up functions:\n```\n// Dispose of the model and interpreter objects.\nTfLiteInterpreterDelete(interpreter);\nTfLiteInterpreterOptionsDelete(options);\nTfLiteModelDelete(model);\n```\nThis is probably a memory leak as TfLiteInterpreterCreate probably allocates memory (c APIs are a PITA)",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e836790_cef21b62",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-06T09:33:53Z",
+      "side": 1,
+      "message": "We have another memory leak here.\n\nThis code should be replaced with:\n\n```\nint sizes \u003d features.size();\nTfLiteInterpreterResizeInputTensor(interpreter, 0, \u0026sizes, 1);\nTfLiteInterpreterAllocateTensors(interpreter);\n```\nThat way we don\u0027t need to free the memory as it will be allocated on the stack and freed when the function exits. This will also be more performant because it avoids a system call",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "719c7893_09f8aa58",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-06T09:33:53Z",
+      "side": 1,
+      "message": "We don\u0027t actually need to use calloc  (as calloc clears the array but we set the values below so there\u0027s not need to zero out the array). Malloc would work file here.\n\nI think we can change this to:\n```\nfloat DefaultPredictor::Predict(Json::object data) {\n    float input_data[features.size()*sizeof(float)];\n    ...\n\n```\n\nagain it\u0027s better if we allocate on the stack because we don\u0027t have to remember to explicitly free it/it\u0027s much faster",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
