@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c15d6fc_b6d9d191",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-10-06T10:55:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b576d1a_845a4587",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e836790_cef21b62",
@@ -35,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e27582e_6a6485fa",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-10-06T10:55:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e836790_cef21b62",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "719c7893_09f8aa58",
@@ -48,6 +84,24 @@
       "writtenOn": "2022-10-06T09:33:53Z",
       "side": 1,
       "message": "We don\u0027t actually need to use calloc  (as calloc clears the array but we set the values below so there\u0027s not need to zero out the array). Malloc would work file here.\n\nI think we can change this to:\n```\nfloat DefaultPredictor::Predict(Json::object data) {\n    float input_data[features.size()*sizeof(float)];\n    ...\n\n```\n\nagain it\u0027s better if we allocate on the stack because we don\u0027t have to remember to explicitly free it/it\u0027s much faster",
+      "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b185ac81_c4c7f6b8",
+        "filename": "src/memory_advice/core/predictor.cpp",
+        "patchSetId": 10
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-10-06T10:55:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "719c7893_09f8aa58",
       "revId": "cdb69122002a0304cdab38427a1570d187abe44e",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
