@@ -16,6 +16,24 @@
       "message": "Should this null check be inside the synchronized (mSensorLock) ? \nIs it possible this can be nulled after this line but before we acquire the lock?",
       "revId": "04d3d517ceef3fa10a5ade55b9c0a5cd0ceaac6f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4da4d1d3_4102a39b",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-10-07T19:57:15Z",
+      "side": 1,
+      "message": "Nothing nulls it for the integrated listener, but you\u0027re right that everything is better off inside the synchronized block in case something did in the future, updated this and setIntegratedGyroscopeActive accordingly.",
+      "parentUuid": "22b47a0c_fa2020dd",
+      "revId": "04d3d517ceef3fa10a5ade55b9c0a5cd0ceaac6f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
