@@ -30,20 +30,6 @@
 
 #include "game-activity/GameActivity.h"
 
-#if (defined NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS_OVERRIDE)
-#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS \
-    NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS_OVERRIDE
-#else
-#define NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS 16
-#endif
-
-#if (defined NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS_OVERRIDE)
-#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS \
-    NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS_OVERRIDE
-#else
-#define NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS 4
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -119,10 +105,10 @@ struct android_poll_source {
 
 struct android_input_buffer {
     /**
-     * Pointer to a read-only array of pointers to GameActivityMotionEvent.
+     * Pointer to a read-only array of GameActivityMotionEvent.
      * Only the first motionEventsCount events are valid.
      */
-    GameActivityMotionEvent motionEvents[NATIVE_APP_GLUE_MAX_NUM_MOTION_EVENTS];
+    GameActivityMotionEvent *motionEvents;
 
     /**
      * The number of valid motion events in `motionEvents`.
@@ -130,15 +116,25 @@ struct android_input_buffer {
     uint64_t motionEventsCount;
 
     /**
-     * Pointer to a read-only array of pointers to GameActivityKeyEvent.
+     * The size of the `motionEvents` buffer.
+     */
+    uint64_t motionEventsBufferSize;
+
+    /**
+     * Pointer to a read-only array of GameActivityKeyEvent.
      * Only the first keyEventsCount events are valid.
      */
-    GameActivityKeyEvent keyEvents[NATIVE_APP_GLUE_MAX_NUM_KEY_EVENTS];
+    GameActivityKeyEvent *keyEvents;
 
     /**
      * The number of valid "Key" events in `keyEvents`.
      */
     uint64_t keyEventsCount;
+
+    /**
+     * The size of the `keyEvents` buffer.
+     */
+    uint64_t keyEventsBufferSize;
 };
 
 /**
