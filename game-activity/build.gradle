@@ -57,13 +57,14 @@ android {
         }
     }
 
-    // This fixes the "2 files found with path 'lib/arm64-v8a/libc++_shared.so'" error we get
-    // when compiling multiple libraries that depend on libc++_shared.so
+    // If we don't include this line the created .aar contains the c++ std lib
+    // at <.aar_file>/jni/<abi>/libc++_shared.so. When we have multiple
+    // libraries containing libc++_shared.so the linker complains because it
+    // can't choose between them. Because we use prefab we don't need to
+    // contents of the <.aar_file>/jni/* folder so we can just exclude it here
+    // to prevent the jni folder from being created.
     packagingOptions {
-        pickFirst 'lib/x86/libc++_shared.so'
-        pickFirst 'lib/x86_64/libc++_shared.so'
-        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        exclude("**.so")
     }
 }
 
