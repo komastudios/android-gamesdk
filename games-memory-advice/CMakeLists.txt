@@ -3,13 +3,13 @@ project(memory-advice C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
-include("../../samples/gamesdk.cmake")
+include("../samples/gamesdk.cmake")
 
-set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
-set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../test/memoryadvice/memoryadvice/src/main/resources")
-set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party")
-set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external/tensorflow")
-set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../external")
+set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
+set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/resources")
+set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
+set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external/tensorflow")
+set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external")
 set( TFLITE_FLATBUFFERS_SCHEMA_DIR "${EXTERNAL_SOURCE_DIR}/flatbuffers/include")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
@@ -40,8 +40,8 @@ string(APPEND PARAMS_STRING "\n )PARAMS\";\n}\n")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/advisor_parameters.cpp" "${PARAMS_STRING}")
 
 include_directories( . )
-include_directories( ../../include )
-include_directories( ../common )
+include_directories( ../include )
+include_directories( ../src/common )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${THIRD_PARTY_DIR} )
 
@@ -157,11 +157,11 @@ set(MEMORY_ADVICE_SRCS
   core/state_watcher.cpp
   core/predictor.cpp
   test/basic.cpp
-  ../common/jni/jni_helper.cpp
-  ../common/jni/jni_wrap.cpp
-  ../common/jni/jnictx.cpp
-  ../common/apk_utils.cpp
-  ../common/system_utils.cpp
+  ../src/common/jni/jni_helper.cpp
+  ../src/common/jni/jni_wrap.cpp
+  ../src/common/jni/jnictx.cpp
+  ../src/common/apk_utils.cpp
+  ../src/common/system_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   advisor_parameters.cpp
   ${MEMORYADVICE_RESOURCES_DIR}/realtime.tflite
@@ -174,7 +174,7 @@ set_target_properties( tflite PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/te
 add_library( tflite_static STATIC IMPORTED )
 set_target_properties( tflite_static PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/tensorflow-lite/res/${CMAKE_ANDROID_ARCH_ABI}/libtensorflow-lite.a )
 
-add_library(memory_advice_static_pre STATIC ${MEMORY_ADVICE_SRCS})
+add_library(memory_advice_static STATIC ${MEMORY_ADVICE_SRCS})
 add_library(memory_advice SHARED ${MEMORY_ADVICE_SRCS})
 target_link_libraries(memory_advice
   PUBLIC
@@ -183,7 +183,7 @@ target_link_libraries(memory_advice
   tflite
 )
 
-target_link_libraries(memory_advice_static_pre
+target_link_libraries(memory_advice_static
   PUBLIC
   android
   log
@@ -191,4 +191,4 @@ target_link_libraries(memory_advice_static_pre
 )
 
 
-bundle_static_library(memory_advice_static_pre memory_advice_static)
+#bundle_static_library(memory_advice_static_pre memory_advice_static)
