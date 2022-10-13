@@ -11,11 +11,11 @@
 set -e # Exit on error
 
 # Set up the environment
-export ANDROID_HOME=$(pwd)/../prebuilts/sdk
-export ANDROID_NDK_HOME=$(pwd)/../prebuilts/ndk/r23
+export ANDROID_HOME=/Users/bkaya/Library/Android/sdk
+export ANDROID_NDK_HOME=/Users/bkaya/Library/Android/sdk/ndk/23.0.7599858
 export BUILDBOT_SCRIPT=true
-export BUILDBOT_CMAKE=$(pwd)/../prebuilts/cmake/linux-x86
-export PATH="$PATH:$(pwd)/../prebuilts/ninja/linux-x86/"
+export BUILDBOT_CMAKE=/Users/bkaya/Library/Android/sdk/cmake/3.18.1
+#export PATH="$PATH:$(pwd)/../prebuilts/ninja/linux-x86/"
 
 cp -Rf samples/sdk_licenses ../prebuilts/sdk/licenses
 
