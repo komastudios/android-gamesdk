@@ -76,17 +76,7 @@ def swappyNativeLibrary = new AndroidArchiveLibrary(versions['swappy'])
 
 def tuningForkNativeLibrary = new AndroidArchiveLibrary(versions['tuningfork'])
 
-def memoryAdviceNativeLibrary = new NativeLibrary(versions['memory_advice'])
-        .setUsesTensorflow()
-        .setMinimumNdkVersion(20)
-        .setAssetsDirectory("test/memoryadvice/memoryadvice/src/main/resources")
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('samples', "memory_advice", "hogger"))
-                        .copySourcesTo("samples/memory_advice/hogger")
-                        .buildDebugApkTo("apks/samples", "hogger.apk"))
-        .addSampleAndroidProject(
-                new ExternalAndroidProject(joinPath('test', "memory_advice", "testapp"))
-                        .buildDebugApkTo("apks/test", "memoryadvicetest.apk"))
+def memoryAdviceNativeLibrary = new AndroidArchiveLibrary(versions['memory_advice'])
 
 def gameActivityLibrary = new AndroidArchiveLibrary(versions['game_activity'])
         // This can be removed after migrating to prefabPublishing:

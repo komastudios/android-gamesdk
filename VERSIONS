@@ -12,4 +12,4 @@ oboe            oboe                    None                    1.0.1    alpha01
 game_activity   games-activity          game-activity           1.2.2    alpha01
 game_text_input games-text-input        game-text-input         1.1.2    alpha01
 paddleboat      games-controller        games-controller        1.1.1    alpha01
-memory_advice   games-memory-advice     None                    1.0.0    beta03
+memory_advice   games-memory-advice     games-memory-advice     1.0.0    beta03
