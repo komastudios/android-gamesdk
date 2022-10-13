@@ -100,6 +100,11 @@ then
     ./gradlew ":app:assembleDebug"
     popd
 
+    # Add the memory_advice samples
+    pushd samples/memory_advice/hogger/
+    ./gradlew ":app:assembleRelease"
+    popd
+
     # Add the game controller samples
     pushd samples/game_controller/
     mkdir -p ./third-party
@@ -148,6 +153,9 @@ then
     cp third_party/cube/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/cube.apk"
 
+    cp samples/memory_advice/hogger/app/build/outputs/apk/release/app-release-unsigned.apk \
+      "$dist_dir/$package_name/apks/samples/hogger.apk"
+
     cp samples/agdktunnel/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/agdktunnel.apk"
 
@@ -167,6 +175,7 @@ then
     zip -ur agdk-libraries-*.zip "apks/samples/game_controller_gameactivity.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/bouncyball.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/cube.apk"
+    zip -ur agdk-libraries-*.zip "apks/samples/hogger.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/agdktunnel.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/game_text_input.apk"
     popd
