@@ -56,6 +56,8 @@ class GameControllerManager {
 
     static bool getPhysicalKeyboardStatus();
 
+    static Paddleboat_Integrated_Motion_Sensor_Flags getIntegratedMotionSensorFlags();
+
     // Get/Set whether AKEYCODE_BACK is 'eaten' or allowed to pass through to
     // the system This can be used to block the OS backing out of the game, or
     // allowing it if the game is in an appropriate state (i.e. the title
@@ -71,8 +73,9 @@ class GameControllerManager {
     static void setControllerStatusCallback(
         Paddleboat_ControllerStatusCallback statusCallback, void *userData);
 
-    static void setMotionDataCallback(
-        Paddleboat_MotionDataCallback motionDataCallback, void *userData);
+    static Paddleboat_ErrorCode setMotionDataCallback(
+        Paddleboat_MotionDataCallback motionDataCallback,
+        Paddleboat_Integrated_Motion_Sensor_Flags integratedFlags, void *userData);
 
     static void setMouseStatusCallback(
         Paddleboat_MouseStatusCallback statusCallback, void *userData);
@@ -185,12 +188,14 @@ class GameControllerManager {
 
     bool mInitialized = false;
     bool mGCMClassInitialized = false;
+    bool mActiveSensorFlagsDirty = false;
     bool mBackButtonConsumed = true;
     bool mMotionEventReporting = false;
     bool mPhysicalKeyboardConnected = false;
 
     int32_t mApiLevel = 16;
     int32_t mBatteryWait = BATTERY_REFRESH_WAIT;
+    uint32_t mIntegratedSensorFlags = 0;
     jobject mContext = NULL;
     jclass mGameControllerClass = NULL;
     jobject mGameControllerObject = NULL;
@@ -198,6 +203,8 @@ class GameControllerManager {
     jmethodID mGetApiLevelMethodId = NULL;
     jmethodID mGetBatteryLevelMethodId = NULL;
     jmethodID mGetBatteryStatusMethodId = NULL;
+    jmethodID mGetIntegratedSensorMethodId = NULL;
+    jmethodID mSetActiveIntegratedSensorsMethodId = NULL;
     jmethodID mSetLightMethodId = NULL;
     jmethodID mSetNativeReadyMethodId = NULL;
     jmethodID mSetReportMotionEventsMethodId = NULL;
@@ -210,6 +217,8 @@ class GameControllerManager {
 
     Paddleboat_MotionDataCallback mMotionDataCallback = nullptr;
     void *mMotionDataCallbackUserData = nullptr;
+    Paddleboat_Integrated_Motion_Sensor_Flags mMotionDataCallbackFlags =
+            PADDLEBOAT_INTEGRATED_SENSOR_NONE;
 
     GameController mGameControllers[PADDLEBOAT_MAX_CONTROLLERS];
     Paddleboat_ControllerStatusCallback mStatusCallback = nullptr;
