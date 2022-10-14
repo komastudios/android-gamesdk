@@ -153,6 +153,10 @@ constexpr const char *GCM_GETBATTERYLEVEL_METHOD_NAME = "getBatteryLevel";
 constexpr const char *GCM_GETBATTERYLEVEL_METHOD_SIGNATURE = "(I)F";
 constexpr const char *GCM_GETBATTERYSTATUS_METHOD_NAME = "getBatteryStatus";
 constexpr const char *GCM_GETBATTERYSTATUS_METHOD_SIGNATURE = "(I)I";
+constexpr const char *GCM_GETINTEGRATED_METHOD_NAME = "getIntegratedSensorFlags";
+constexpr const char *GCM_GETINTEGRATED_METHOD_SIGNATURE = "()I";
+constexpr const char *GCM_SETACTIVESENSOR_METHOD_NAME = "setActiveIntegratedSensors";
+constexpr const char *GCM_SETACTIVESENSOR_METHOD_SIGNATURE = "(I)V";
 constexpr const char *GCM_SETLIGHT_METHOD_NAME = "setLight";
 constexpr const char *GCM_SETLIGHT_METHOD_SIGNATURE = "(III)V";
 constexpr const char *GCM_SETNATIVEREADY_METHOD_NAME = "setNativeReady";
@@ -316,6 +320,10 @@ Paddleboat_ErrorCode GameControllerManager::initMethods(JNIEnv *env) {
          &mGetBatteryLevelMethodId},
         {GCM_GETBATTERYSTATUS_METHOD_NAME,
          GCM_GETBATTERYSTATUS_METHOD_SIGNATURE, &mGetBatteryStatusMethodId},
+        {GCM_GETINTEGRATED_METHOD_NAME,
+         GCM_GETINTEGRATED_METHOD_SIGNATURE, &mGetIntegratedSensorMethodId},
+        {GCM_SETACTIVESENSOR_METHOD_NAME,
+         GCM_SETACTIVESENSOR_METHOD_SIGNATURE, &mSetActiveIntegratedSensorsMethodId},
         {GCM_SETVIBRATION_METHOD_NAME, GCM_SETVIBRATION_METHOD_SIGNATURE,
          &mSetVibrationMethodId},
         {GCM_SETLIGHT_METHOD_NAME, GCM_SETLIGHT_METHOD_SIGNATURE,
@@ -741,6 +749,9 @@ void GameControllerManager::update(JNIEnv *env) {
     if (!gcm->mGCMClassInitialized && gcm->mGameControllerObject != NULL) {
         gcm->mApiLevel = env->CallIntMethod(gcm->mGameControllerObject,
                                             gcm->mGetApiLevelMethodId);
+        gcm->mIntegratedSensorFlags = static_cast<uint32_t>(
+                env->CallIntMethod(gcm->mGameControllerObject,
+                gcm->mGetIntegratedSensorMethodId));
 
         // Tell the GCM class we are ready to receive information about
         // controllers
@@ -761,6 +772,16 @@ void GameControllerManager::update(JNIEnv *env) {
                             gcm->mSetReportMotionEventsMethodId);
         gcm->mMotionEventReporting = true;
     }
+
+    if (gcm->mActiveSensorFlagsDirty) {
+        // Pass the integrated flags to the managed side, so it can determine whether
+        // to enable or disable listening to an integrated sensor
+        env->CallVoidMethod(
+                gcm->mGameControllerObject, gcm->mSetActiveIntegratedSensorsMethodId,
+                static_cast<jint>(gcm->mMotionDataCallbackFlags));
+        gcm->mActiveSensorFlagsDirty = false;
+    }
+
 
     std::lock_guard<std::mutex> lock(gcm->mUpdateMutex);
 
@@ -1150,21 +1171,27 @@ void GameControllerManager::onMotionData(const int32_t deviceId,
     GameControllerManager *gcm = getInstance();
     if (gcm) {
         if (gcm->mMotionDataCallback != nullptr) {
-            for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
-                if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
-                    const GameControllerDeviceInfo &deviceInfo =
-                        gcm->mGameControllers[i].getDeviceInfo();
-                    if (deviceInfo.getInfo().mDeviceId == deviceId) {
-                        Paddleboat_Motion_Data motionData;
-                        motionData.motionType =
-                            static_cast<Paddleboat_Motion_Type>(motionType);
-                        motionData.timestamp = timestamp;
-                        motionData.motionX = dataX;
-                        motionData.motionY = dataY;
-                        motionData.motionZ = dataZ;
-                        gcm->mMotionDataCallback(
-                            i, &motionData, gcm->mMotionDataCallbackUserData);
-                        return;
+            Paddleboat_Motion_Data motionData;
+            motionData.motionType =
+                    static_cast<Paddleboat_Motion_Type>(motionType);
+            motionData.timestamp = timestamp;
+            motionData.motionX = dataX;
+            motionData.motionY = dataY;
+            motionData.motionZ = dataZ;
+
+            if (deviceId == PADDLEBOAT_INTEGRATED_SENSOR_INDEX) {
+                gcm->mMotionDataCallback(PADDLEBOAT_INTEGRATED_SENSOR_INDEX, &motionData,
+                                         gcm->mMotionDataCallbackUserData);
+            } else {
+                for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
+                    if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
+                        const GameControllerDeviceInfo &deviceInfo =
+                                gcm->mGameControllers[i].getDeviceInfo();
+                        if (deviceInfo.getInfo().mDeviceId == deviceId) {
+                            gcm->mMotionDataCallback(
+                                    i, &motionData, gcm->mMotionDataCallbackUserData);
+                            return;
+                        }
                     }
                 }
             }
@@ -1280,13 +1307,22 @@ void GameControllerManager::rescanVirtualMouseControllers() {
     }
 }
 
-void GameControllerManager::setMotionDataCallback(
-    Paddleboat_MotionDataCallback motionDataCallback, void *userData) {
+Paddleboat_ErrorCode GameControllerManager::setMotionDataCallback(
+    Paddleboat_MotionDataCallback motionDataCallback,
+    Paddleboat_Integrated_Motion_Sensor_Flags integratedFlags, void *userData) {
     GameControllerManager *gcm = getInstance();
     if (gcm) {
+        if ((integratedFlags & gcm->mIntegratedSensorFlags) != integratedFlags) {
+            // Return an error if requesting an unavailable integrated sensor
+            return PADDLEBOAT_ERROR_FEATURE_NOT_SUPPORTED;
+        }
         gcm->mMotionDataCallback = motionDataCallback;
         gcm->mMotionDataCallbackUserData = userData;
+        gcm->mMotionDataCallbackFlags = integratedFlags;
+        // Mark to call the managed side with the updated flags on the next update
+        gcm->mActiveSensorFlagsDirty = true;
     }
+    return PADDLEBOAT_NO_ERROR;
 }
 
 void GameControllerManager::setMouseStatusCallback(
@@ -1307,6 +1343,14 @@ void GameControllerManager::setPhysicalKeyboardStatusCallback(
     }
 }
 
+Paddleboat_Integrated_Motion_Sensor_Flags GameControllerManager::getIntegratedMotionSensorFlags() {
+    Paddleboat_Integrated_Motion_Sensor_Flags flags = PADDLEBOAT_INTEGRATED_SENSOR_NONE;
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        flags = static_cast<Paddleboat_Integrated_Motion_Sensor_Flags>(gcm->mIntegratedSensorFlags);
+    }
+    return flags;
+}
 
 jclass GameControllerManager::getGameControllerClass() {
     GameControllerManager *gcm = getInstance();
