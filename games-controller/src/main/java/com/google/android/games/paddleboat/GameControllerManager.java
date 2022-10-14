@@ -56,6 +56,8 @@ public class GameControllerManager {
     public static final int DEVICEFLAG_VIBRATION = 0x08000000;
     public static final int DEVICEFLAG_VIBRATION_DUAL_MOTOR = 0x10000000;
     public static final int DEVICEFLAG_VIRTUAL_MOUSE = 0x40000000;
+    public static final int INTEGRATEDFLAG_ACCELEROMETER = 0x1;
+    public static final int INTEGRATEDFLAG_GYROSCOPE = 0x2;
     public static final int LIGHT_TYPE_PLAYER = 0;
     public static final int LIGHT_TYPE_RGB = 1;
     public static final int MOTION_ACCELEROMETER = 0;
@@ -70,7 +72,12 @@ public class GameControllerManager {
     private boolean nativeReady;
     private final boolean printControllerInfo;
     private boolean reportMotionEvents;
+    private int activeIntegratedSensorMask;
     private final InputManager inputManager;
+    private final SensorManager sensorManager;
+    private final Sensor integratedAccelerometer;
+    private final Sensor integratedGyroscope;
+    private final GameControllerListener integratedListener;
     private final ArrayList<Integer> keyboardDeviceIds;
     private final ArrayList<Integer> mouseDeviceIds;
     private final ArrayList<Integer> pendingControllerDeviceIds;
@@ -80,6 +87,33 @@ public class GameControllerManager {
     private GameControllerThread gameControllerThread;
 
     public GameControllerManager(Context appContext, boolean appPrintControllerInfo) {
+        nativeReady = false;
+        reportMotionEvents = false;
+        activeIntegratedSensorMask = 0;
+        inputManager = (InputManager) appContext.getSystemService(Context.INPUT_SERVICE);
+        sensorManager = (SensorManager)appContext.getSystemService(Context.SENSOR_SERVICE);
+        integratedAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        integratedGyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        int integratedDeviceFlags = 0;
+        // We use the deviceflag instead of integrated flag for the listener settings,
+        // since the controller path is reused internally
+        if (integratedAccelerometer != null) {
+            integratedDeviceFlags |= DEVICEFLAG_ACCELEROMETER;
+        }
+        if (integratedGyroscope != null) {
+            integratedDeviceFlags |= DEVICEFLAG_GYROSCOPE;
+        }
+        // Initialize a listener for integrated sensors, defaulting to off at startup
+        integratedListener = new GameControllerListener(this, null,
+                integratedDeviceFlags, false);
+        printControllerInfo = true; //appPrintControllerInfo;
+        keyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+        mouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+        pendingControllerDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+        pendingKeyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+        pendingMouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
+        gameControllers = new ArrayList<GameControllerInfo>(MAX_GAMECONTROLLERS);
+
         if (appPrintControllerInfo) {
             Log.d(TAG, "device Info:" +
                     "\n  BRAND: " + Build.BRAND +
@@ -87,19 +121,10 @@ public class GameControllerManager {
                     "\n  MANUF: " + Build.MANUFACTURER +
                     "\n  MODEL: " + Build.MODEL +
                     "\nPRODUCT: " + Build.PRODUCT +
-                    "\n    API: " + Build.VERSION.SDK_INT);
+                    "\n    API: " + Build.VERSION.SDK_INT +
+                    "\n  ACCEL: " + (integratedAccelerometer != null) +
+                    "\n   GYRO: " + (integratedGyroscope != null));
         }
-
-        nativeReady = false;
-        reportMotionEvents = false;
-        inputManager = (InputManager) appContext.getSystemService(Context.INPUT_SERVICE);
-        printControllerInfo = appPrintControllerInfo;
-		keyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
-        mouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
-        pendingControllerDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
-		pendingKeyboardDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
-        pendingMouseDeviceIds = new ArrayList<Integer>(MAX_GAMECONTROLLERS);
-        gameControllers = new ArrayList<GameControllerInfo>(MAX_GAMECONTROLLERS);
 
         // Queue up initially connected devices to be processed when
         // the native side signals it is ready
@@ -206,6 +231,10 @@ public class GameControllerManager {
 
     public InputManager getAppInputManager() {
         return inputManager;
+    }
+
+    public SensorManager getAppSensorManager() {
+        return sensorManager;
     }
 
     public void onStop() {
@@ -586,6 +615,40 @@ public class GameControllerManager {
         return Build.VERSION.SDK_INT;
     }
 
+    public int getIntegratedSensorFlags() {
+        int sensorFlags = 0;
+
+        if (integratedAccelerometer != null) {
+            sensorFlags |= INTEGRATEDFLAG_ACCELEROMETER;
+        }
+        if (integratedGyroscope != null) {
+            sensorFlags |= INTEGRATEDFLAG_GYROSCOPE;
+        }
+        return sensorFlags;
+    }
+
+    public void setActiveIntegratedSensors(int sensorMask) {
+        boolean setAccelerometerActive = ((sensorMask & INTEGRATEDFLAG_ACCELEROMETER) != 0);
+        boolean isAccelerometerActive =
+                ((activeIntegratedSensorMask & INTEGRATEDFLAG_ACCELEROMETER) != 0);
+        if (setAccelerometerActive && !isAccelerometerActive) {
+            integratedListener.setIntegratedAccelerometerActive(true);
+        } else if (!setAccelerometerActive && isAccelerometerActive) {
+            integratedListener.setIntegratedAccelerometerActive(false);
+        }
+
+        boolean setGyroscopeActive = ((sensorMask & INTEGRATEDFLAG_GYROSCOPE) != 0);
+        boolean isGyroscopeActive =
+                ((activeIntegratedSensorMask & INTEGRATEDFLAG_GYROSCOPE) != 0);
+        if (setGyroscopeActive && !isGyroscopeActive) {
+            integratedListener.setIntegratedGyroscopeActive(true);
+        } else if (!setGyroscopeActive && isGyroscopeActive) {
+            integratedListener.setIntegratedGyroscopeActive(false);
+        }
+
+        activeIntegratedSensorMask = sensorMask;
+    }
+
     public void setNativeReady() {
         nativeReady = true;
         Log.d(TAG, "setNativeReady");
@@ -609,7 +672,7 @@ public class GameControllerManager {
     public void setReportMotionEvents() {
         reportMotionEvents = true;
         for (GameControllerInfo controller : gameControllers) {
-            controller.GetListener().setReportMotionEvents();
+            controller.GetListener().setReportMotionEvents(true);
         }
     }
 
