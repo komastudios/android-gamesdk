@@ -495,6 +495,11 @@ static bool onTouchEvent(GameActivity* activity,
         inputBuffer->motionEventsBufferSize *= 2;
         inputBuffer->motionEvents = (GameActivityMotionEvent *) realloc(inputBuffer->motionEvents,
             sizeof(GameActivityMotionEvent) * inputBuffer->motionEventsBufferSize);
+
+        if (inputBuffer->motionEvents == NULL) {
+            LOGE("onTouchEvent: out of memory");
+            abort();
+        }
     }
 
     int new_ix = inputBuffer->motionEventsCount;
@@ -555,6 +560,11 @@ static bool onKey(GameActivity* activity, const GameActivityKeyEvent* event) {
         inputBuffer->keyEventsBufferSize = inputBuffer->keyEventsBufferSize * 2;
         inputBuffer->keyEvents = (GameActivityKeyEvent *) realloc(inputBuffer->keyEvents,
             sizeof(GameActivityKeyEvent) * inputBuffer->keyEventsBufferSize);
+
+        if (inputBuffer->keyEvents == NULL) {
+            LOGE("onKey: out of memory");
+            abort();
+        }
     }
 
     int new_ix = inputBuffer->keyEventsCount;
