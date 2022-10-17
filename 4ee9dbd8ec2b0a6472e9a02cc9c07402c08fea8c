@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6512a50f_e1c51fae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-10-17T12:58:08Z",
+      "side": 1,
+      "message": "Just a test commit",
+      "revId": "4ee9dbd8ec2b0a6472e9a02cc9c07402c08fea8c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
