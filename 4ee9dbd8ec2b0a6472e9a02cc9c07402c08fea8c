@@ -16,6 +16,23 @@
       "message": "Just a test commit",
       "revId": "4ee9dbd8ec2b0a6472e9a02cc9c07402c08fea8c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db23ea9b_695b2478",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-17T13:16:24Z",
+      "side": 1,
+      "message": "Nice work ;)",
+      "revId": "4ee9dbd8ec2b0a6472e9a02cc9c07402c08fea8c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
