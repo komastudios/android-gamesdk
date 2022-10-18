@@ -23,6 +23,7 @@ set(GAMEACTIVITY_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-ac
 
 set(GAMEACTIVITY_SRCS
     ${GAMEACTIVITY_SRC_DIR}/game-activity/GameActivity.cpp
+    ${GAMEACTIVITY_SRC_DIR}/game-activity/game_activity_events.cpp
     ${GAMEACTIVITY_SRC_DIR}/game-activity/native_app_glue/android_native_app_glue.c
     ${GAMEACTIVITY_SRC_DIR}/game-text-input/gametextinput.cpp)
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Os")
