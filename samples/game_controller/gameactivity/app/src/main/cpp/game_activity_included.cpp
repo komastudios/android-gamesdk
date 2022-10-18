@@ -15,4 +15,5 @@
  */
 
 // Include the GameActivity implementation
+#include "game-activity/game_activity_events.cpp"
 #include "game-activity/GameActivity.cpp"
