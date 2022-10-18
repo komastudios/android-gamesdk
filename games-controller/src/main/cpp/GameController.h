@@ -20,6 +20,7 @@
 
 #include "GameControllerDeviceInfo.h"
 #include "GameControllerGameActivityMirror.h"
+#include "GameControllerMappingFile.h"
 #include "paddleboat.h"
 
 namespace paddleboat {
@@ -63,6 +64,8 @@ class GameController {
         float axisMultiplier = 1.0f;
         // Adjustment to bring center to 0.0 if necessary
         float axisAdjust = 0.0f;
+        // Invert the axis data
+        bool axisInvert = false;
 
         void resetInfo() {
             axisIndex = -1;
@@ -71,12 +74,15 @@ class GameController {
             axisButtonNegativeMask = 0;
             axisMultiplier = 1.0f;
             axisAdjust = 0.0f;
+            axisInvert = false;
         }
     };
 
     GameController();
 
-    void setupController(const Paddleboat_Controller_Mapping_Data *mappingData);
+    void setupController(const Paddleboat_Controller_Mapping_File_Controller_Entry
+        *controllerEntry, const Paddleboat_Controller_Mapping_File_Axis_Entry *axisEntry,
+        const Paddleboat_Controller_Mapping_File_Button_Entry *buttonEntry);
 
     void initializeDefaultAxisMapping();
 
@@ -146,7 +152,8 @@ class GameController {
     void setupAxis(const GameControllerAxis gcAxis,
                    const int32_t preferredNativeAxisId,
                    const int32_t secondaryNativeAxisId,
-                   const int32_t buttonMask, const int32_t buttonNegativeMask);
+                   const int32_t buttonMask, const int32_t buttonNegativeMask,
+                   const bool axisInvert);
 
     void adjustAxisConstants();
 
@@ -154,6 +161,7 @@ class GameController {
     Paddleboat_ControllerStatus mControllerStatus =
         PADDLEBOAT_CONTROLLER_INACTIVE;
     int32_t mConnectionIndex = -1;
+    uint32_t mAxisInversionBitmask = 0;
     Paddleboat_Controller_Data mControllerData;
     Paddleboat_Controller_Info mControllerInfo;
     int32_t mButtonKeycodes[PADDLEBOAT_BUTTON_COUNT];

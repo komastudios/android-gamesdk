@@ -41,6 +41,11 @@ extern "C" {
 
 void PADDLEBOAT_VERSION_SYMBOL();
 
+// Private, used internally by mapping file check
+uint32_t Paddleboat_getVersion() {
+    return PADDLEBOAT_PACKED_VERSION;
+}
+
 Paddleboat_ErrorCode Paddleboat_init(JNIEnv *env, jobject jcontext) {
     PADDLEBOAT_VERSION_SYMBOL();
     Paddleboat_ErrorCode errorCode = GameControllerManager::init(env, jcontext);
@@ -184,18 +189,18 @@ void Paddleboat_addControllerRemapData(
 }
 
 Paddleboat_ErrorCode Paddleboat_addControllerRemapDataFromFd(
-        const Paddleboat_Remap_Addition_Mode /*addMode*/,
-        const int /*mappingFileDescriptor*/) {
-    // Stub function in this CL
-    return PADDLEBOAT_INVALID_MAPPING_DATA;
+        const Paddleboat_Remap_Addition_Mode addMode,
+        const int mappingFileDescriptor) {
+    return GameControllerManager::addControllerRemapDataFromFd(addMode, mappingFileDescriptor);
 }
 
 Paddleboat_ErrorCode Paddleboat_addControllerRemapDataFromFileBuffer(
-        const Paddleboat_Remap_Addition_Mode /*addMode*/,
-        const void*/*mappingFileBuffer */,
-        const size_t /*mappingFileBufferSize*/) {
-    // TODO: stub function in this CL
-    return PADDLEBOAT_INVALID_MAPPING_DATA;
+        const Paddleboat_Remap_Addition_Mode addMode,
+        const void *mappingFileBuffer,
+        const size_t mappingFileBufferSize) {
+    return GameControllerManager::addControllerRemapDataFromFileBuffer(addMode,
+        reinterpret_cast<const Paddleboat_Controller_Mapping_File_Header *>(mappingFileBuffer),
+        mappingFileBufferSize);
 }
 
 int32_t Paddleboat_getControllerRemapTableData(
