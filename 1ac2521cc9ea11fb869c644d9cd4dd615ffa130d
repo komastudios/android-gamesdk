@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8cb9c781_8870e800",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-10-20T18:54:17Z",
+      "side": 1,
+      "message": "thank you for looking into this, looks good!\nnit for the internal source structure: would it be ok to list those debugging macros into its own header file and shared by both CPP source files?",
+      "revId": "1ac2521cc9ea11fb869c644d9cd4dd615ffa130d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
