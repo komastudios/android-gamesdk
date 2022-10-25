@@ -16,6 +16,24 @@
       "message": "This one seems alright - but there appears to be similar defines in swappy, tuning fork \u0026 memory advice. Should this game activity define follow the same structure perhaps?",
       "revId": "b73f362035307fcbcd843f1fb7070aeb92168f46",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4df0a10b_2c241b17",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2022-10-25T15:49:57Z",
+      "side": 1,
+      "message": "I thought about that but for the other libraries the bugfix version seems to have a higher impact on the outcome number, which would make it difficult for comparing different versions. This way the packed version number would increase with each increment, instead of sometimes decreasing when the bugfix version is reset when the minor version is incremented. I don\u0027t really know why it was done like that in the other libraries.",
+      "parentUuid": "ae743fcc_42b86c80",
+      "revId": "b73f362035307fcbcd843f1fb7070aeb92168f46",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
