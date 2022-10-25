@@ -25,3 +25,5 @@ third_party/protobuf-3.0.0/python/dist/
 # Third party libraries:
 src/oboe
 include/oboe
+samples/game-controller/third-party
+samples/agdktunnel/third-party
