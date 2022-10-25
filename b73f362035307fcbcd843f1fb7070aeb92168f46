@@ -34,6 +34,24 @@
       "parentUuid": "ae743fcc_42b86c80",
       "revId": "b73f362035307fcbcd843f1fb7070aeb92168f46",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72ac5daf_18ad53ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-10-25T16:20:07Z",
+      "side": 1,
+      "message": "The approach in this CL is very reasonable to me, maybe we can find the reasons why the other modules are like that and hopefully change them - unless we know already if someone is using the other format.",
+      "parentUuid": "4df0a10b_2c241b17",
+      "revId": "b73f362035307fcbcd843f1fb7070aeb92168f46",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
