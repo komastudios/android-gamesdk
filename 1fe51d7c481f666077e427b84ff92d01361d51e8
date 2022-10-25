@@ -34,6 +34,24 @@
       "parentUuid": "390481a9_99be9eb5",
       "revId": "1fe51d7c481f666077e427b84ff92d01361d51e8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fc5b90a_972ab8b9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-10-25T15:23:21Z",
+      "side": 1,
+      "message": "I tried to make a simple change to display the Unicode escape sequence, but failed to do that without adding a lot of changes. I suggest to stick to \"?\" for this sample.",
+      "parentUuid": "fc2e17fa_2f30608f",
+      "revId": "1fe51d7c481f666077e427b84ff92d01361d51e8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
