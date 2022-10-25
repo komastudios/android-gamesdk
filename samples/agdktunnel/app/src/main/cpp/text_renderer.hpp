@@ -24,6 +24,7 @@
 class TextRenderer {
 private:
     static const int CHAR_CODES = 128;
+    static const int UNSUPPORTED_CODE = 63; /* "?" is rendered instead. */
     SimpleGeom *mCharGeom[CHAR_CODES];
     TrivialShader *mTrivialShader;
 
