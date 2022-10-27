@@ -126,7 +126,9 @@ TextRenderer *TextRenderer::RenderText(const char *str, float centerX, float cen
             modelMat = glm::translate(glm::mat4(1.0f), glm::vec3(startX, y, 0.0f));
         } else {
             int code = (int) *str;
-            if (code >= 0 && code < CHAR_CODES && mCharGeom[code]) {
+            /** Unsupported characters to show "?" **/
+            code = (code >= 0 && code < CHAR_CODES) ? code : UNSUPPORTED_CODE;
+            if (mCharGeom[code]) {
                 mat = orthoMat * modelMat * scaleMat * mMatrix;
                 mTrivialShader->RenderSimpleGeom(&mat, mCharGeom[code]);
             }
