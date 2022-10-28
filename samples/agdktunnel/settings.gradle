@@ -17,6 +17,8 @@
 include ':app'
 include ':install_time_assets'
 include ':on_demand_assets'
+// Comment all the lines below to use a locally built .aar
+// See app/build.gradle as well
 include ':game-activity'
 include ':games-performance-tuner'
 include ':games-frame-pacing:extras'
