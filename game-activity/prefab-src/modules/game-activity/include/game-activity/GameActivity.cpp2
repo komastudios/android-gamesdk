@@ -463,9 +463,11 @@ static int mainWorkCallback(int fd, int events, void *data) {
 static thread_local std::string g_error_msg;
 
 static jlong initializeNativeCode_native(JNIEnv *env, jobject javaGameActivity,
-                                   jstring internalDataDir, jstring obbDir,
-                                   jstring externalDataDir, jobject jAssetMgr,
-                                   jbyteArray savedState) {
+                                         jstring internalDataDir,
+                                         jstring obbDir,
+                                         jstring externalDataDir,
+                                         jobject jAssetMgr,
+                                         jbyteArray savedState) {
     LOG_TRACE("initializeNativeCode_native");
     NativeCode *code = NULL;
 
@@ -561,7 +563,7 @@ static jstring getDlError_native(JNIEnv *env, jobject javaGameActivity) {
 }
 
 static void terminateNativeCode_native(JNIEnv *env, jobject javaGameActivity,
-                                    jlong handle) {
+                                       jlong handle) {
     LOG_TRACE("terminateNativeCode_native");
     if (handle != 0) {
         NativeCode *code = (NativeCode *)handle;
@@ -1219,8 +1221,8 @@ static void onContentRectChangedNative_native(JNIEnv *env, jobject activity,
             ARect rect;
             rect.left = x;
             rect.top = y;
-            rect.right = x+w;
-            rect.bottom = y+h;
+            rect.right = x + w;
+            rect.bottom = y + h;
             code->callbacks.onContentRectChanged(code, &rect);
         }
     }
@@ -1263,8 +1265,8 @@ static const JNINativeMethod g_methods[] = {
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
-     {"onContentRectChangedNative", "(JIIII)V",
-             (void *)onContentRectChangedNative_native},
+    {"onContentRectChangedNative", "(JIIII)V",
+     (void *)onContentRectChangedNative_native},
 };
 
 static const char *const kGameActivityPathName =
@@ -1363,12 +1365,12 @@ extern "C" int GameActivity_register(JNIEnv *env) {
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_google_androidgamesdk_GameActivity_initializeNativeCode(
-    JNIEnv *env, jobject javaGameActivity,
-    jstring internalDataDir, jstring obbDir, jstring externalDataDir,
-    jobject jAssetMgr, jbyteArray savedState) {
+    JNIEnv *env, jobject javaGameActivity, jstring internalDataDir,
+    jstring obbDir, jstring externalDataDir, jobject jAssetMgr,
+    jbyteArray savedState) {
     GameActivity_register(env);
     jlong nativeCode = initializeNativeCode_native(
-        env, javaGameActivity,internalDataDir, obbDir,
-        externalDataDir, jAssetMgr, savedState);
+        env, javaGameActivity, internalDataDir, obbDir, externalDataDir,
+        jAssetMgr, savedState);
     return nativeCode;
 }
