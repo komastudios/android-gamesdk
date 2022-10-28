@@ -68,6 +68,11 @@ else()
     set(PROTOGEN_SRCS "")
 endif()
 
+set(MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../test/memoryadvice/memoryadvice/src/main/resources")
+
+file(GLOB TF_MODEL_FILES "${MEMORYADVICE_RESOURCES_DIR}/*.*")
+file(COPY ${TF_MODEL_FILES} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../assets)
+
 # now build app's shared lib
 add_library(${CMAKE_PROJECT_NAME} SHARED
      ${PROTOBUF_NANO_SRCS}
