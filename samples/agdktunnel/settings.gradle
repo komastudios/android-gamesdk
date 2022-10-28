@@ -22,10 +22,8 @@ include ':games-performance-tuner'
 include ':games-frame-pacing:extras'
 include ':games-frame-pacing'
 include ':games-controller'
-include ':games-memory-advice'
 project(':game-activity').projectDir                = file('../../game-activity')
 project(':games-performance-tuner').projectDir      = file('../../games-performance-tuner')
 project(':games-frame-pacing').projectDir           = file('../../games-frame-pacing')
 project(':games-frame-pacing:extras').projectDir    = file('../../games-frame-pacing/extras')
 project(':games-controller').projectDir             = file('../../games-controller')
-project(':games-memory-advice').projectDir          = file('../../games-memory-advice')

@@ -123,7 +123,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
      games-controller::paddleboat_static
      games-frame-pacing::swappy_static
      games-performance-tuner::tuningfork_static
-     games-memory-advice::memory_advice_static
+     games-memory-advice::memory_advice
      GLESv3
      glm
      log)
