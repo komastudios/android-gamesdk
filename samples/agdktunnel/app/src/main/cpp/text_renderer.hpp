@@ -36,11 +36,11 @@ public:
 
     ~TextRenderer();
 
-    TextRenderer *SetMatrix(glm::mat4 mat);
+    void SetMatrix(glm::mat4 mat);
 
-    TextRenderer *SetFontScale(float size);
+    void SetFontScale(float size);
 
-    TextRenderer *RenderText(const char *str, float centerX, float centerY);
+    void RenderText(const char *str, float centerX, float centerY);
 
     void SetColor(float r, float g, float b) {
         mColor[0] = r, mColor[1] = g, mColor[2] = b;
@@ -54,7 +54,7 @@ public:
         SetColor(1.0f, 1.0f, 1.0f);
     }
 
-    TextRenderer *ResetMatrix() {
+    void ResetMatrix() {
         return SetMatrix(glm::mat4(1.0f));
     }
 
