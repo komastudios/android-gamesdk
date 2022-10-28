@@ -393,6 +393,7 @@ public class GameActivity
     }
   }
 
+  @Override
   public void surfaceCreated(SurfaceHolder holder) {
     if (!mDestroyed) {
       mCurSurfaceHolder = holder;
@@ -400,6 +401,7 @@ public class GameActivity
     }
   }
 
+  @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     if (!mDestroyed) {
       mCurSurfaceHolder = holder;
@@ -407,6 +409,7 @@ public class GameActivity
     }
   }
 
+  @Override
   public void surfaceRedrawNeeded(SurfaceHolder holder) {
     if (!mDestroyed) {
       mCurSurfaceHolder = holder;
@@ -414,6 +417,7 @@ public class GameActivity
     }
   }
 
+  @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
     mCurSurfaceHolder = null;
     if (!mDestroyed) {

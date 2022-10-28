@@ -727,8 +727,11 @@ static void onSurfaceChanged_native(JNIEnv *env, jobject javaGameActivity,
             // Maybe it was resized?
             int32_t newWidth = ANativeWindow_getWidth(code->nativeWindow);
             int32_t newHeight = ANativeWindow_getHeight(code->nativeWindow);
-            if (newWidth != code->lastWindowWidth ||
-                newHeight != code->lastWindowHeight) {
+
+            if (newWidth != code->lastWindowWidth || newHeight != code->lastWindowHeight) {
+                code->lastWindowWidth = newWidth;
+                code->lastWindowHeight = newHeight;
+
                 if (code->callbacks.onNativeWindowResized != NULL) {
                     code->callbacks.onNativeWindowResized(
                         code, code->nativeWindow, newWidth, newHeight);
