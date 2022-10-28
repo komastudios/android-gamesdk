@@ -51,9 +51,8 @@ TextRenderer::~TextRenderer() {
     }
 }
 
-TextRenderer *TextRenderer::SetFontScale(float scale) {
+void TextRenderer::SetFontScale(float scale) {
     mFontScale = scale;
-    return this;
 }
 
 static void _count_rows_cols(const char *p, int *outCols, int *outRows) {
@@ -74,9 +73,8 @@ static void _count_rows_cols(const char *p, int *outCols, int *outRows) {
     *outRows = textRows;
 }
 
-TextRenderer *TextRenderer::SetMatrix(glm::mat4 m) {
+void TextRenderer::SetMatrix(glm::mat4 m) {
     mMatrix = m;
-    return this;
 }
 
 void TextRenderer::MeasureText(const char *str, float fontScale, float *outWidth,
@@ -91,7 +89,7 @@ void TextRenderer::MeasureText(const char *str, float fontScale, float *outWidth
     }
 }
 
-TextRenderer *TextRenderer::RenderText(const char *str, float centerX, float centerY) {
+void TextRenderer::RenderText(const char *str, float centerX, float centerY) {
     float aspect = SceneManager::GetInstance()->GetScreenAspect();
     glm::mat4 orthoMat = glm::ortho(0.0f, aspect, 0.0f, 1.0f);
     glm::mat4 modelMat, mat, scaleMat;
@@ -138,5 +136,4 @@ TextRenderer *TextRenderer::RenderText(const char *str, float centerX, float cen
     if (hadDepthTest) {
         glEnable(GL_DEPTH_TEST);
     }
-    return this;
 }
