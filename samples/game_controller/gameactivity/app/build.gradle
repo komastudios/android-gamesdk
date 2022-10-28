@@ -62,8 +62,10 @@ dependencies {
     implementation 'androidx.fragment:fragment:1.2.5'
     implementation "com.android.ndk.thirdparty:libpng:1.6.37-alpha-1"
 
-    // Uncomment this line and comment out "implementation project(":games-controller")"
+    // Uncomment the line below (implementation fileTree...) and
+    // comment out "implementation project(":games-controller")"
     // to use a locally built .aar
+    // See ../settings.gradle as well.
     //implementation fileTree(dir: '../../../../', include: ['games-controller-release.aar',
     //                                                       'game-activity-release.aar'])
     implementation project(":game-activity")

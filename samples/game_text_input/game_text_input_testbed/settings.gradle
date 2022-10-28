@@ -1,4 +1,6 @@
 include ':app'
 rootProject.name = "Game Text Input Testbed"
+// Comment all the lines below to use a locally built .aar
+// See app/build.gradle as well
 include ':game-text-input'
 project(':game-text-input').projectDir = file('../../../game-text-input')
