@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a378613_1337236a",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 733,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-10-28T16:33:02Z",
+      "side": 1,
+      "message": "We should probably update this after the call to onNativeWindowResized. Otherwise the data passed into onNativeWindowResized is invalid, right?",
+      "revId": "8b800f461654b126ab5fbe71b20ae9a4d769b497",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
