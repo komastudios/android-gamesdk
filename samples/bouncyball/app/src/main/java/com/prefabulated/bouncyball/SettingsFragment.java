@@ -82,7 +82,11 @@ public class SettingsFragment
                 }
                 float refreshRate = mode.getRefreshRate();
                 for (int interval = 1; refreshRate / interval >= 20; interval++) {
-                    fpsSet.add(refreshRate / interval);
+                    float fps = refreshRate/interval;
+                    //Round the precision to avoid values like 20.000000 & 20.000002 as
+                    // different fps since we operate with 1ms noise ranges anyways.
+                    fps = (float) (Math.floor(fps * 1000) / 1000);
+                    fpsSet.add(fps);
                 }
             }
         } else {
