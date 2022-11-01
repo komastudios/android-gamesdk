@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d7fffe4_52cb69fb",
+        "filename": "games-frame-pacing/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-01T14:31:38Z",
+      "side": 1,
+      "message": "Any reason you don\u0027t declare the variable here? Seems a little C-style to declare it at the top of the method.\n\ngo/cstyle#Local_Variables",
+      "revId": "3950732ee7311505330ddf843ec86d3bd5009cc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78b47814_6c12b2b6",
+        "filename": "games-frame-pacing/common/SwappyCommon.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-01T14:31:38Z",
+      "side": 1,
+      "message": "I wouldn\u0027t add the brackets around the first expression as they don\u0027t change the order of operations (i.e. they\u0027re redundant).\n\nI\u0027m aware some people think they aid readability where order of operation is ambiguous to a human reader but I don\u0027t think that\u0027s the case here.",
+      "revId": "3950732ee7311505330ddf843ec86d3bd5009cc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
