@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "202ded76_b8bdc1e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "I have added a few comments. The overall logic seems correct to me, however I might be missing some context to judge fully.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f16be83_f2091daa",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1497,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "NIT: result could be initialized to PADDLEBOAT_ERROR_NOT_INITIALIZED and set to PADDLEBOAT_ERROR_FILE_IO explicitly when the file IO fails - makes it easy to follow the code and remove the else in the if (gcm) condition.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61a4665f_034e9a1a",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1523,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "NIT: initializing result to PADDLEBOAT_ERROR_NOT_INITIALIZED could help simplify this function slightly.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "601b903e_07f12a6e",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "Adding a comment inside the definition about deprecation could be helpful.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cb1641a_4b1cb5bb",
+        "filename": "games-controller/src/main/cpp/GameControllerMappingInfo.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "Copyright year.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61382a53_65a79dfc",
+        "filename": "games-controller/src/main/cpp/paddleboat_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "This function seems useful for users as well. Any strong reasons to not expose it? Is that mostly because we dont want API changes?",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9420e341_77000bfc",
+        "filename": "games-controller/src/test/cpp/paddleboat_tests.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-01T09:33:19Z",
+      "side": 1,
+      "message": "Mostly a personal preference - not a huge fan of such defines. Especially here, that it is only 3 lines used 3 times.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
