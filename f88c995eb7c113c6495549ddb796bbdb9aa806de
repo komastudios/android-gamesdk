@@ -1,5 +1,46 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d57703b_a5e270fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-01T17:28:32Z",
+      "side": 1,
+      "message": "LGTM, one question inside.",
+      "revId": "f88c995eb7c113c6495549ddb796bbdb9aa806de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87ede2c7_effcfa9a",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 734,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-01T17:28:32Z",
+      "side": 1,
+      "message": "Quick Question:  would it benefit user more if we update code-\u003elastWindowWidth AFTER we invoke code-\u003ecallbacks.onNativeWindowResized()?\n\n1) when we call the clients(users) with onNativeWindowResized, the new dimensions are given as input parameters; so users know that.\n2) If users/clients like to know the previous windows size, they are still cached inside code-\u003elastWindow\u003cWidth/Height\u003e; this would be an extra info to them (in case they need it, and with no extra efforts).\n\nAnd we do not lose anything either by delaying our cache updating. What do you think?\n\nJust a thought, it is open question, feel free to ignore.",
+      "range": {
+        "startLine": 733,
+        "startChar": 0,
+        "endLine": 734,
+        "endChar": 51
+      },
+      "revId": "f88c995eb7c113c6495549ddb796bbdb9aa806de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
