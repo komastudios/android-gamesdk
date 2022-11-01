@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "16ea95fd_ddc3d304",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1497,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f16be83_f2091daa",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61a4665f_034e9a1a",
@@ -48,6 +66,24 @@
       "writtenOn": "2022-11-01T09:33:19Z",
       "side": 1,
       "message": "NIT: initializing result to PADDLEBOAT_ERROR_NOT_INITIALIZED could help simplify this function slightly.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b04b486_2048e9f7",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1523,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61a4665f_034e9a1a",
       "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -69,6 +105,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ecaa5f5_9bd0220e",
+        "filename": "games-controller/src/main/cpp/GameControllerManager.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "601b903e_07f12a6e",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2cb1641a_4b1cb5bb",
@@ -82,6 +136,24 @@
       "writtenOn": "2022-11-01T09:33:19Z",
       "side": 1,
       "message": "Copyright year.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1be8ac0e_9d9f9fc2",
+        "filename": "games-controller/src/main/cpp/GameControllerMappingInfo.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2cb1641a_4b1cb5bb",
       "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -103,6 +175,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65ec67eb_fb6528e4",
+        "filename": "games-controller/src/main/cpp/paddleboat_c.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "I don\u0027t think we\u0027ve generally exposed this as a public function. I vaguely recall discussion on this when the library originally went through API review, but my memory is hazy.",
+      "parentUuid": "61382a53_65a79dfc",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9420e341_77000bfc",
@@ -116,6 +206,24 @@
       "writtenOn": "2022-11-01T09:33:19Z",
       "side": 1,
       "message": "Mostly a personal preference - not a huge fan of such defines. Especially here, that it is only 3 lines used 3 times.",
+      "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b18fa139_3402f796",
+        "filename": "games-controller/src/test/cpp/paddleboat_tests.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2022-11-01T18:50:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9420e341_77000bfc",
       "revId": "9523806364f884d51b064b11bf209afd3eeac42f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
