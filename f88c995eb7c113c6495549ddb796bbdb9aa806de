@@ -18,6 +18,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4b8b20a_6d03a6c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-02T11:54:39Z",
+      "side": 1,
+      "message": "no worries, thank you so much!",
+      "revId": "f88c995eb7c113c6495549ddb796bbdb9aa806de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87ede2c7_effcfa9a",
@@ -55,6 +72,30 @@
       "side": 1,
       "message": "Sorry, this has been already merged. I can do this little change in the next changelist. Although we don\u0027t provide any interface for the client to get these old values.",
       "parentUuid": "87ede2c7_effcfa9a",
+      "range": {
+        "startLine": 733,
+        "startChar": 0,
+        "endLine": 734,
+        "endChar": 51
+      },
+      "revId": "f88c995eb7c113c6495549ddb796bbdb9aa806de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a6b531b_6eb70587",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 734,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-02T11:54:39Z",
+      "side": 1,
+      "message": "thank you for the reply: it is our internal thing member, make sense to keep it as-is (does not make too much of a difference).",
+      "parentUuid": "dfad5807_a4043cdc",
       "range": {
         "startLine": 733,
         "startChar": 0,
