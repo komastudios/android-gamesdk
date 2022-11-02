@@ -88,6 +88,8 @@ public class AGDKTunnelActivity extends GameActivity {
             InputMappingProvider inputMappingProvider = new InputSDKProvider();
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.setInputMappingProvider(inputMappingProvider);
+            inputMappingClient.setInputContext(InputSDKProvider.keyboardInputContext);
+            inputMappingClient.registerRemappingListener(new MyInputRemappingListener());
         }
     }
 
@@ -96,6 +98,7 @@ public class AGDKTunnelActivity extends GameActivity {
         if (isGooglePlayGames()) {
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.clearInputMappingProvider();
+            inputMappingClient.clearRemappingListener();
         }
 
         super.onDestroy();
