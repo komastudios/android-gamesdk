@@ -35,6 +35,23 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca9de075_fe87c3a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-02T12:21:27Z",
+      "side": 1,
+      "message": "ok, thank you for the follow-up after the merge, no worries.",
+      "revId": "f88c995eb7c113c6495549ddb796bbdb9aa806de",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87ede2c7_effcfa9a",
