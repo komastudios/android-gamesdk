@@ -30,6 +30,11 @@
 #define COOKED_EVENT_TYPE_BACK 6
 #define COOKED_EVENT_TYPE_TEXT_INPUT 7
 
+// Input SDK contexts for different controls schemes of the game
+#define INPUT_CONTEXT_UI_SCENE 1
+#define INPUT_CONTEXT_PLAY_SCENE 2
+#define INPUT_CONTEXT_PAUSE_MENU 3
+
 #define KEY_ACTION_DOWN 0
 #define KEY_ACTION_UP 1
 

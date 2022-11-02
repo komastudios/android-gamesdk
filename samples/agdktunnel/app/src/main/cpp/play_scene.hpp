@@ -65,6 +65,8 @@ public:
 
     virtual void OnResume();
 
+    virtual void SetInputSdkContext();
+
 protected:
     // shaders
     OurShader *mOurShader;

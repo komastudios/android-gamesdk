@@ -24,6 +24,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 
@@ -43,6 +44,7 @@ public class AGDKTunnelActivity extends GameActivity {
     private PGSManager mPGSManager;
     private final String mPlayGamesPCSystemFeature =
             "com.google.android.play.feature.HPE_EXPERIENCE";
+    private static final String TAG = "AGDKTunnelActivity";
 
     // Some code to load our native library:
     static {
@@ -149,6 +151,36 @@ public class AGDKTunnelActivity extends GameActivity {
 
     private String getInternalStoragePath() {
         return getFilesDir().getAbsolutePath();
+    }
+
+    private void setInputContext(int contextIndex) {
+        for(InputSDKProvider.InputContextIds context : InputSDKProvider.InputContextIds.values()) {
+            if (context.value() == contextIndex) {
+                setInputContext(context);
+                return;
+            }
+        }
+        Log.e(TAG, String.format(
+                "can't find InputContext with id %d on attempt to change of context",
+                contextIndex));
+    }
+
+    private void setInputContext(InputSDKProvider.InputContextIds context) {
+        InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+        switch(context) {
+            case INPUT_CONTEXT_PLAY_SCENE:
+                inputMappingClient.setInputContext(InputSDKProvider.sPlaySceneInputContext);
+                break;
+            case INPUT_CONTEXT_UI_SCENE:
+                inputMappingClient.setInputContext(InputSDKProvider.sUiSceneInputContext);
+                break;
+            case INPUT_CONTEXT_PAUSE_MENU:
+                inputMappingClient.setInputContext(InputSDKProvider.sPauseMenuInputContext);
+                break;
+            default:
+                Log.e(TAG,
+                        "can't match the requested InputContext on attempt to change of context");
+        }
     }
 
     private boolean isGooglePlayGames() {
