@@ -16,91 +16,285 @@
 
 package com.google.sample.agdktunnel;
 
+import static com.google.android.libraries.play.games.inputmapping.datamodel.InputEnums.REMAP_OPTION_ENABLED;
+import static com.google.android.libraries.play.games.inputmapping.datamodel.InputEnums.REMAP_OPTION_DISABLED;
+
 import android.view.KeyEvent;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputGroup;
 import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputAction;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputControls;
+import com.google.android.libraries.play.games.inputmapping.datamodel.InputContext;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputMap;
 import com.google.android.libraries.play.games.inputmapping.datamodel.MouseSettings;
+import com.google.android.libraries.play.games.inputmapping.datamodel.InputIdentifier;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 public class InputSDKProvider implements InputMappingProvider {
-    public enum InputEventIds {
+    private static final String INPUTMAP_VERSION = "1.0.0";
+
+    public enum InputActionsIds {
+        NAVIGATE_UP,
+        NAVIGATE_LEFT,
+        NAVIGATE_DOWN,
+        NAVIGATE_RIGHT,
+        ENTER_MENU,
+        EXIT_MENU,
         MOVE_UP,
         MOVE_LEFT,
         MOVE_DOWN,
         MOVE_RIGHT,
+        PAUSE_GAME,
         MOUSE_MOVEMENT,
+        ON_PAUSE_SELECT_OPTION,
+        ON_PAUSE_NAVIGATE_UP,
+        ON_PAUSE_NAVIGATE_DOWN,
+        EXIT_PAUSE,
     }
+
+    public enum InputGroupsIds {
+        MENU_DIRECTIONAL_NAVIGATION,
+        MENU_ACTION_KEYS,
+        BASIC_MOVEMENT,
+        MOUSE_MOVEMENT,
+        PAUSE_MENU,
+    }
+
+    public enum InputContextIds {
+        UI_SCENE_CONTROLS(1),
+        PLAY_SCENE_CONTROLS(2),
+        PAUSE_MENU_CONTROLS(3);
+
+        InputContextIds(int value) { this.value = value; }
+
+        private final int value;
+        public int value() { return value; }
+    }
+
+    public enum InputMapIds {
+        GAME_INPUT_MAP,
+    }
+
+    private static final InputAction sNavigateMenuUpInputAction = InputAction.create(
+            "Navigate up",
+            InputActionsIds.NAVIGATE_UP.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_W),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sNavigateMenuLeftInputAction = InputAction.create(
+            "Navigate left",
+            InputActionsIds.NAVIGATE_LEFT.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_A),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sNavigateMenuDownInputAction = InputAction.create(
+            "Navigate down",
+            InputActionsIds.NAVIGATE_DOWN.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_S),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sNavigateMenuRightInputAction = InputAction.create(
+            "Navigate right",
+            InputActionsIds.NAVIGATE_RIGHT.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_D),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputGroup sBasicMenuNavigationInputGroup = InputGroup.create(
+            "Menu navigation keys",
+            Arrays.asList(
+                    sNavigateMenuUpInputAction,
+                    sNavigateMenuLeftInputAction,
+                    sNavigateMenuDownInputAction,
+                    sNavigateMenuRightInputAction),
+            InputGroupsIds.MENU_DIRECTIONAL_NAVIGATION.ordinal(),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sEnterMenuInputAction = InputAction.create(
+            "Enter menu",
+            InputActionsIds.ENTER_MENU.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_ENTER),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sExitMenuInputAction = InputAction.create(
+            "Exit menu",
+            InputActionsIds.EXIT_MENU.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_ESCAPE),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputGroup sMenuActionKeysInputGroup = InputGroup.create(
+            "Menu keys",
+            Arrays.asList(
+                    sEnterMenuInputAction,
+                    sExitMenuInputAction),
+            InputGroupsIds.MENU_ACTION_KEYS.ordinal(),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sMoveUpInputAction = InputAction.create(
+            "Move Up",
+            InputActionsIds.MOVE_UP.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_W),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sMoveLeftInputAction = InputAction.create(
+            "Move Left",
+            InputActionsIds.MOVE_LEFT.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_A),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sMoveDownInputAction = InputAction.create(
+            "Move Down",
+            InputActionsIds.MOVE_DOWN.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_S),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sMoveRightInputAction = InputAction.create(
+            "Move Right",
+            InputActionsIds.MOVE_RIGHT.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_D),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sPauseGameInputAction = InputAction.create(
+            "Pause game",
+            InputActionsIds.PAUSE_GAME.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_ESCAPE),
+                    Collections.emptyList()),
+            REMAP_OPTION_DISABLED);
+
+    private static final InputGroup sMovementInputGroup = InputGroup.create(
+            "Basic movement",
+            Arrays.asList(
+                    sMoveUpInputAction,
+                    sMoveLeftInputAction,
+                    sMoveDownInputAction,
+                    sMoveRightInputAction,
+                    sPauseGameInputAction
+            ),
+            InputGroupsIds.BASIC_MOVEMENT.ordinal(),
+            REMAP_OPTION_ENABLED
+    );
+
+    private static final InputAction sMouseInputAction = InputAction.create(
+            "Move",
+            InputActionsIds.MOUSE_MOVEMENT.ordinal(),
+            InputControls.create(
+                    Collections.emptyList(),
+                    Collections.singletonList(InputControls.MOUSE_LEFT_CLICK)
+            ),
+            REMAP_OPTION_DISABLED);
+
+    private static final InputGroup sMouseMovementInputGroup = InputGroup.create(
+            "Mouse movement",
+            Collections.singletonList(sMouseInputAction),
+            InputGroupsIds.MOUSE_MOVEMENT.ordinal(),
+            REMAP_OPTION_DISABLED
+    );
+
+    private static final InputAction sOnPauseNavigateUpInputAction = InputAction.create(
+            "Up",
+            InputActionsIds.ON_PAUSE_NAVIGATE_UP.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_W),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sOnPauseNavigateDownInputAction = InputAction.create(
+            "Down",
+            InputActionsIds.ON_PAUSE_NAVIGATE_DOWN.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_S),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sOnPauseSelectOptionInputAction = InputAction.create(
+            "Select option",
+            InputActionsIds.ON_PAUSE_SELECT_OPTION.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_ENTER),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputAction sOnPauseResumeGameInputAction = InputAction.create(
+            "Resume game",
+            InputActionsIds.EXIT_PAUSE.ordinal(),
+            InputControls.create(
+                    Collections.singletonList(KeyEvent.KEYCODE_ESCAPE),
+                    Collections.emptyList()),
+            REMAP_OPTION_ENABLED);
+
+    private static final InputGroup sPauseMenuInputGroup = InputGroup.create(
+            "Pause menu",
+            Arrays.asList(
+                    sOnPauseNavigateUpInputAction,
+                    sOnPauseNavigateDownInputAction,
+                    sOnPauseSelectOptionInputAction,
+                    sOnPauseResumeGameInputAction),
+            InputGroupsIds.PAUSE_MENU.ordinal(),
+            REMAP_OPTION_DISABLED
+    );
+
+    public static final InputContext sPlaySceneInputContext = InputContext.create(
+            "In game controls",
+            InputContextIds.PLAY_SCENE_CONTROLS.ordinal(),
+            Arrays.asList(sMovementInputGroup, sMouseMovementInputGroup)
+    );
+
+    public static final InputContext sUiSceneInputContext = InputContext.create(
+            "Main menu",
+            InputContextIds.UI_SCENE_CONTROLS.ordinal(),
+            Arrays.asList(sBasicMenuNavigationInputGroup, sMenuActionKeysInputGroup)
+    );
+
+    public static final InputContext sPauseMenuInputContext = InputContext.create(
+            "Pause menu",
+            InputContextIds.PAUSE_MENU_CONTROLS.ordinal(),
+            Collections.singletonList(sPauseMenuInputGroup)
+    );
+
+    public static final InputMap sGameInputMap = InputMap.create(
+            Arrays.asList(
+                    sBasicMenuNavigationInputGroup,
+                    sMenuActionKeysInputGroup,
+                    sMovementInputGroup,
+                    sMouseMovementInputGroup,
+                    sPauseMenuInputGroup),
+            MouseSettings.create(true, false),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputMapIds.GAME_INPUT_MAP.ordinal()),
+            REMAP_OPTION_ENABLED,
+            Arrays.asList(
+                    InputControls.create(
+                            Collections.singletonList(KeyEvent.KEYCODE_SPACE),
+                            Collections.emptyList()
+                    )
+            )
+    );
 
     @Override
     public InputMap onProvideInputMap() {
-        InputAction moveUpInputAction = InputAction.create(
-            "Move Up",
-            InputEventIds.MOVE_UP.ordinal(),
-            InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_W),
-                Collections.emptyList()
-            )
-        );
-
-        InputAction moveLeftInputAction = InputAction.create(
-            "Move Left",
-            InputEventIds.MOVE_LEFT.ordinal(),
-            InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_A),
-                Collections.emptyList()
-            )
-        );
-
-        InputAction moveDownInputAction = InputAction.create(
-            "Move Down",
-            InputEventIds.MOVE_DOWN.ordinal(),
-            InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_S),
-                Collections.emptyList()
-            )
-        );
-
-        InputAction moveRightInputAction = InputAction.create(
-            "Move Right",
-            InputEventIds.MOVE_RIGHT.ordinal(),
-            InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_D),
-                Collections.emptyList()
-            )
-        );
-
-        InputGroup movementInputGroup = InputGroup.create(
-            "Basic movement",
-            Arrays.asList(
-                moveUpInputAction,
-                moveLeftInputAction,
-                moveDownInputAction,
-                moveRightInputAction
-            )
-        );
-
-        InputAction mouseInputAction = InputAction.create(
-            "Move",
-            InputEventIds.MOUSE_MOVEMENT.ordinal(),
-            InputControls.create(
-                Collections.emptyList(),
-                Collections.singletonList(InputControls.MOUSE_LEFT_CLICK)
-            )
-        );
-
-        InputGroup mouseMovementInputGroup = InputGroup.create(
-            "Mouse movement",
-            Collections.singletonList(mouseInputAction)
-        );
-
-        return InputMap.create(
-            Arrays.asList(movementInputGroup, mouseMovementInputGroup),
-            MouseSettings.create(true, false)
-        );
+        return sGameInputMap;
     }
 }

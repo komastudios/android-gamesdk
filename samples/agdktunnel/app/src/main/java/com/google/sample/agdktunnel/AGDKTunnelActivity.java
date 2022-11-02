@@ -151,6 +151,30 @@ public class AGDKTunnelActivity extends GameActivity {
         return getFilesDir().getAbsolutePath();
     }
 
+    private void setInputContext(int contextIndex) {
+        for(InputSDKProvider.InputContextIds context : InputSDKProvider.InputContextIds.values()) {
+            if (context.value() == contextIndex) {
+                setInputContext(context);
+                return;
+            }
+        }
+    }
+
+    private void setInputContext(InputSDKProvider.InputContextIds context) {
+        InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+        switch(context) {
+            case PLAY_SCENE_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.sPlaySceneInputContext);
+                break;
+            case UI_SCENE_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.sUiSceneInputContext);
+                break;
+            case PAUSE_MENU_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.sPauseMenuInputContext);
+                break;
+        }
+    }
+
     private boolean isGooglePlayGames() {
         PackageManager pm = getPackageManager();
         return pm.hasSystemFeature(mPlayGamesPCSystemFeature);
