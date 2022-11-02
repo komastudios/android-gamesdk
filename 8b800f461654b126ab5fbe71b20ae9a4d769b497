@@ -16,6 +16,24 @@
       "message": "We should probably update this after the call to onNativeWindowResized. Otherwise the data passed into onNativeWindowResized is invalid, right?",
       "revId": "8b800f461654b126ab5fbe71b20ae9a4d769b497",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3a35d5a_7525e9e2",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 733,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2022-11-02T10:32:52Z",
+      "side": 1,
+      "message": "These two variables are never passed to the callback.",
+      "parentUuid": "2a378613_1337236a",
+      "revId": "8b800f461654b126ab5fbe71b20ae9a4d769b497",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
