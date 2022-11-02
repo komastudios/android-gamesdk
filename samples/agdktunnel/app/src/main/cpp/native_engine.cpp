@@ -919,3 +919,11 @@ bool NativeEngine::InitGLObjects() {
     }
     return true;
 }
+
+void NativeEngine::SetInputSdkContext(int context) {
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+    jmethodID setInputContextID =
+            GetJniEnv()->GetMethodID(activityClass, "setInputContext", "(I)V");
+    GetJniEnv()->CallVoidMethod(
+            mApp->activity->javaGameActivity, setInputContextID, (jint)context);
+}
