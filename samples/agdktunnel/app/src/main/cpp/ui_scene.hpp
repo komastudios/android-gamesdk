@@ -96,7 +96,6 @@ public:
 
     virtual ~UiScene();
 
-
     virtual void OnStartGraphics();
 
     virtual void OnKillGraphics();
@@ -114,6 +113,10 @@ public:
     virtual void OnScreenResized(int width, int height);
 
     UiWidget *GetWidgetById(int id);
+
+    void SetInputSdkContext() {
+        NativeEngine::GetInstance()->SetInputSdkContext(MENU_SCENE_CONTROLS);
+    }
 
 private:
     void UpdateTouchFocus(const struct PointerCoords *coords);

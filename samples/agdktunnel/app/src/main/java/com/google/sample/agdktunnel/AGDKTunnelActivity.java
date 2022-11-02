@@ -88,6 +88,7 @@ public class AGDKTunnelActivity extends GameActivity {
             InputMappingProvider inputMappingProvider = new InputSDKProvider();
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.setInputMappingProvider(inputMappingProvider);
+            inputMappingClient.registerRemappingListener(new MyInputRemappingListener());
         }
     }
 
@@ -96,6 +97,7 @@ public class AGDKTunnelActivity extends GameActivity {
         if (isGooglePlayGames()) {
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.clearInputMappingProvider();
+            inputMappingClient.clearRemappingListener();
         }
 
         super.onDestroy();
@@ -149,6 +151,30 @@ public class AGDKTunnelActivity extends GameActivity {
 
     private String getInternalStoragePath() {
         return getFilesDir().getAbsolutePath();
+    }
+
+    private void setInputContext(int contextIndex) {
+        for(InputSDKProvider.InputContextIds context : InputSDKProvider.InputContextIds.values()) {
+            if (context.value() == contextIndex) {
+                setInputContext(context);
+                return;
+            }
+        }
+    }
+
+    private void setInputContext(InputSDKProvider.InputContextIds context) {
+        InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
+        switch(context) {
+            case GAME_SCENE_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.gameSceneContext);
+                break;
+            case MENU_SCENE_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.mainMenuContext);
+                break;
+            case PAUSE_SCENE_CONTROLS:
+                inputMappingClient.setInputContext(InputSDKProvider.pauseGameInputContext);
+                break;
+        }
     }
 
     private boolean isGooglePlayGames() {
