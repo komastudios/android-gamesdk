@@ -865,6 +865,11 @@ void PlayScene::ShowMenu(int menu) {
             // in the animation
             mFrameClock.Reset();
     }
+    if (mMenu) {
+        NativeEngine::GetInstance()->SetInputSdkContext(PAUSE_MENU_CONTROLS);
+    } else {
+        NativeEngine::GetInstance()->SetInputSdkContext(PLAY_SCENE_CONTROLS);
+    }
 }
 
 void PlayScene::HandleMenu(int menuItem) {
@@ -925,6 +930,10 @@ void PlayScene::OnResume() {
             (mMenu == MENU_NONE || mMenu == MENU_PAUSE)) {
         ShowMenu(MENU_LOADING);
     }
+}
+
+void PlayScene::SetInputSdkContext() {
+    NativeEngine::GetInstance()->SetInputSdkContext(PLAY_SCENE_CONTROLS);
 }
 
 void PlayScene::OnScreenResized(int /*width*/, int /*height*/) {
