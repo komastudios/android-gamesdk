@@ -21,14 +21,19 @@ import com.google.android.libraries.play.games.inputmapping.datamodel.InputGroup
 import com.google.android.libraries.play.games.inputmapping.InputMappingProvider;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputAction;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputControls;
+import com.google.android.libraries.play.games.inputmapping.datamodel.InputContext;
 import com.google.android.libraries.play.games.inputmapping.datamodel.InputMap;
 import com.google.android.libraries.play.games.inputmapping.datamodel.MouseSettings;
+import com.google.android.libraries.play.games.inputmapping.datamodel.InputIdentifier;
+import com.google.android.libraries.play.games.inputmapping.datamodel.InputEnums;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 public class InputSDKProvider implements InputMappingProvider {
-    public enum InputEventIds {
+    private static final String INPUTMAP_VERSION = "my.input.map.version";
+
+    public enum InputActionsIds {
         MOVE_UP,
         MOVE_LEFT,
         MOVE_DOWN,
@@ -36,71 +41,127 @@ public class InputSDKProvider implements InputMappingProvider {
         MOUSE_MOVEMENT,
     }
 
-    @Override
-    public InputMap onProvideInputMap() {
-        InputAction moveUpInputAction = InputAction.create(
+    public enum InputGroupsIds {
+        BASIC_MOVEMENT,
+        MOUSE_MOVEMENT,
+    }
+
+    public enum InputMapIds {
+        GAME_INPUT_MAP,
+    }
+
+    public enum InputContextIds {
+        KEYBOARD_MOVEMENT,
+        MOUSE_MOVEMENT,
+    }
+
+    private static final InputAction moveUpInputAction = InputAction.create(
             "Move Up",
-            InputEventIds.MOVE_UP.ordinal(),
             InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_W),
-                Collections.emptyList()
-            )
-        );
+                    Collections.singletonList(KeyEvent.KEYCODE_W),
+                    Collections.emptyList()),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputActionsIds.MOVE_UP.ordinal()),
+            InputEnums.REMAP_OPTION_ENABLED);
 
-        InputAction moveLeftInputAction = InputAction.create(
+    private static final InputAction moveLeftInputAction = InputAction.create(
             "Move Left",
-            InputEventIds.MOVE_LEFT.ordinal(),
             InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_A),
-                Collections.emptyList()
-            )
-        );
+                    Collections.singletonList(KeyEvent.KEYCODE_A),
+                    Collections.emptyList()),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputActionsIds.MOVE_LEFT.ordinal()),
+            InputEnums.REMAP_OPTION_ENABLED);
 
-        InputAction moveDownInputAction = InputAction.create(
+    private static final InputAction moveDownInputAction = InputAction.create(
             "Move Down",
-            InputEventIds.MOVE_DOWN.ordinal(),
             InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_S),
-                Collections.emptyList()
-            )
-        );
+                    Collections.singletonList(KeyEvent.KEYCODE_S),
+                    Collections.emptyList()),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputActionsIds.MOVE_DOWN.ordinal()),
+            InputEnums.REMAP_OPTION_ENABLED);
 
-        InputAction moveRightInputAction = InputAction.create(
+    private static final InputAction moveRightInputAction = InputAction.create(
             "Move Right",
-            InputEventIds.MOVE_RIGHT.ordinal(),
             InputControls.create(
-                Collections.singletonList(KeyEvent.KEYCODE_D),
-                Collections.emptyList()
-            )
-        );
+                    Collections.singletonList(KeyEvent.KEYCODE_D),
+                    Collections.emptyList()),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputActionsIds.MOVE_RIGHT.ordinal()),
+            InputEnums.REMAP_OPTION_ENABLED);
 
-        InputGroup movementInputGroup = InputGroup.create(
+    private static final InputAction mouseInputAction = InputAction.create(
+            "Move",
+            InputControls.create(
+                    Collections.emptyList(),
+                    Collections.singletonList(InputControls.MOUSE_LEFT_CLICK)
+            ),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputActionsIds.MOUSE_MOVEMENT.ordinal()),
+            InputEnums.REMAP_OPTION_DISABLED);
+
+    private static final InputGroup movementInputGroup = InputGroup.create(
             "Basic movement",
             Arrays.asList(
-                moveUpInputAction,
-                moveLeftInputAction,
-                moveDownInputAction,
-                moveRightInputAction
-            )
-        );
+                    moveUpInputAction,
+                    moveLeftInputAction,
+                    moveDownInputAction,
+                    moveRightInputAction
+            ),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputGroupsIds.BASIC_MOVEMENT.ordinal()),
+            InputEnums.REMAP_OPTION_DISABLED
+    );
 
-        InputAction mouseInputAction = InputAction.create(
-            "Move",
-            InputEventIds.MOUSE_MOVEMENT.ordinal(),
-            InputControls.create(
-                Collections.emptyList(),
-                Collections.singletonList(InputControls.MOUSE_LEFT_CLICK)
-            )
-        );
-
-        InputGroup mouseMovementInputGroup = InputGroup.create(
+    private static final InputGroup mouseMovementInputGroup = InputGroup.create(
             "Mouse movement",
-            Collections.singletonList(mouseInputAction)
-        );
+            Collections.singletonList(mouseInputAction),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputGroupsIds.MOUSE_MOVEMENT.ordinal()),
+            InputEnums.REMAP_OPTION_DISABLED
+    );
 
-        return InputMap.create(
+    public static final InputContext mouseInputContext = InputContext.create(
+            "Mouse Input Context",
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputContextIds.MOUSE_MOVEMENT.ordinal()),
+            Collections.singletonList(mouseMovementInputGroup)
+    );
+
+    public static final InputContext keyboardInputContext = InputContext.create(
+            "Keyboard Input Context",
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputContextIds.KEYBOARD_MOVEMENT.ordinal()),
+            Collections.singletonList(movementInputGroup)
+    );
+
+    public static final InputMap gameInputMap = InputMap.create(
             Arrays.asList(movementInputGroup, mouseMovementInputGroup),
-            MouseSettings.create(true, false)
-        );
+            MouseSettings.create(true, false),
+            InputIdentifier.create(
+                    INPUTMAP_VERSION,
+                    InputMapIds.GAME_INPUT_MAP.ordinal()),
+            InputEnums.REMAP_OPTION_ENABLED,
+            Arrays.asList(
+                    InputControls.create(
+                            Collections.singletonList(KeyEvent.KEYCODE_ESCAPE),
+                            Collections.emptyList()
+                    )
+            )
+    );
+
+    @Override
+    public InputMap onProvideInputMap() {
+        return gameInputMap;
     }
 }
