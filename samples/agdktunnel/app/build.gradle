@@ -116,8 +116,10 @@ dependencies {
 //    implementation "androidx.games:games-controller:1.0.0"
 //    implementation "androidx.games:games-activity:1.1.0"
     implementation "androidx.games:games-memory-advice:1.0.0-beta01"
-    // Uncomment this line and comment out "implementation project(":*")" lines
+    // Uncomment the line below (implementation fileTree...)
+    // and comment out "implementation project(":*")" lines
     // to use a locally built .aar
+    // See ../settings.gradle as well.
     //implementation fileTree(dir: '../../../', include: [
     //        'game-activity-release.aar',
     //        'games-performance-tuner-release.aar',
