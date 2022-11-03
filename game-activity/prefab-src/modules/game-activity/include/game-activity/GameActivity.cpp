@@ -864,7 +864,8 @@ static struct {
 extern "C" void GameActivityMotionEvent_destroy(
     GameActivityMotionEvent *c_event) {
     delete c_event->historicalAxisValues;
-    delete c_event->historicalEventTimes;
+    delete c_event->historicalEventTimesMillis;
+    delete c_event->historicalEventTimesNanos;
 }
 
 extern "C" void GameActivityMotionEvent_fromJava(
@@ -972,12 +973,14 @@ extern "C" void GameActivityMotionEvent_fromJava(
     out_event->historicalAxisValues =
         new float[historySize * pointerCount *
                   GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
-    out_event->historicalEventTimes = new long[historySize];
+    out_event->historicalEventTimesMillis = new long[historySize];
+    out_event->historicalEventTimesNanos = new long[historySize];
 
     for (int historyIndex = 0; historyIndex < historySize; historyIndex++) {
-        out_event->historicalEventTimes[historyIndex] = env->CallLongMethod(
+        out_event->historicalEventTimesMillis[historyIndex] = env->CallLongMethod(
             motionEvent, gMotionEventClassInfo.getHistoricalEventTime,
             historyIndex);
+        out_event->historicalEventTimesNanos[historyIndex] = out_event->historicalEventTimesMillis[historyIndex] * 1000000;
         for (int i = 0; i < pointerCount; ++i) {
             int pointerOffset = i * GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
             int historyAxisOffset = historyIndex * pointerCount *
