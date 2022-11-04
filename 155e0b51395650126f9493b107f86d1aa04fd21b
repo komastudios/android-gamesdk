@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c79386cb_1c76e573",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-04T16:32:13Z",
+      "side": 1,
+      "message": "Should this be updated to give more details? - same for key event. The original confusion for ms \u003c-\u003e ns was due to these descriptions.",
+      "revId": "155e0b51395650126f9493b107f86d1aa04fd21b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
