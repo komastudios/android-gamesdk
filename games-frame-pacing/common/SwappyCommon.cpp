@@ -846,8 +846,8 @@ void SwappyCommon::startFrame() {
     const int intervals = (mPipelineMode == PipelineMode::On) ? 2 : 1;
 
     // Use frame statistics to fix any buffer stuffing
-    if (mBufferStuffingFixWait > 0 && mFrameStatistics) {
-        int32_t lastLatency = mFrameStatistics->lastLatencyRecorded();
+    if (mBufferStuffingFixWait > 0 && mLastLatencyRecorded) {
+        int32_t lastLatency = mLastLatencyRecorded();
         int expectedLatency = mAutoSwapInterval * intervals;
         TRACE_INT("ExpectedLatency", expectedLatency);
         if (mBufferStuffingFixCounter == 0) {

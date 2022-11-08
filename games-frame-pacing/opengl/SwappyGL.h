@@ -105,7 +105,7 @@ class SwappyGL {
     std::mutex mEglMutex;
     std::unique_ptr<EGL> mEgl;
 
-    std::shared_ptr<LatencyFrameStatisticsGL> mFrameStatistics;
+    std::unique_ptr<LatencyFrameStatisticsGL> mFrameStatistics;
 
     SwappyCommon mCommonBase;
 };
