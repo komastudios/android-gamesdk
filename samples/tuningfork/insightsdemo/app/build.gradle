@@ -48,7 +48,7 @@ dependencies {
     // and comment out "implementation project("...")"
     // to use a locally built .aar
     // See ../settings.gradle as well.
-    //implementation fileTree(dir: '../../../', include: ['games-performance-tune-release.aar',
+    //implementation fileTree(dir: '../../../../', include: ['games-performance-tuner-release.aar',
     //                                                    'games-frame-pacing-release.aar'])
     implementation project(':games-performance-tuner')
     implementation project(':games-frame-pacing')
