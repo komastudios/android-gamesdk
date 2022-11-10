@@ -16,6 +16,24 @@
       "message": "This is a public API change, right? So the next release will be a major version number change?",
       "revId": "a19dc36a3d86c4f108342309940ce80c85057956",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5196786f_6f7a16dd",
+        "filename": "games-frame-pacing/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-10T14:11:31Z",
+      "side": 0,
+      "message": "No, this is internal to swappy implementation.",
+      "parentUuid": "4dcc498c_2041768d",
+      "revId": "a19dc36a3d86c4f108342309940ce80c85057956",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

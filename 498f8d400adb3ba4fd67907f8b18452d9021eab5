@@ -16,6 +16,24 @@
       "message": "If this callback gets called after SwappyGL_destroy()/SwappyGL::destroyInstance() gets called we will get a segfault because \"swappy\" points to invalid data. \n\nAt a glance I guess this isn\u0027t a problem because we have full control of the code run in mCommonBase and we shouldn\u0027t expect anything to work after SwappyGL_destroy is called?\n\nIt\u0027s always a bit scary to pass a raw pointer to another class when the lifecycle of that pointer is controller somewhere else so I just wanted to double check.",
       "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80b1d231_aaa2d53e",
+        "filename": "games-frame-pacing/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-10T14:11:31Z",
+      "side": 1,
+      "message": "Yes that is correct. mCommonBase is completely within the scope of SwappyGL instance(which is the pointer that swappy refers to). So we should never encounter the situation of null pointer reference. Indeed more safety is what this commit is introducing by avoiding transfer of ownership of FrameStatistics.",
+      "parentUuid": "799e5414_14d03555",
+      "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
