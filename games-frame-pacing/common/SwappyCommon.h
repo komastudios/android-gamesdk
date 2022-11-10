@@ -352,7 +352,7 @@ class SwappyCommon {
     float mLatestFrameRateVote GUARDED_BY(mMutex) = 0.f;
     static constexpr float FRAME_RATE_VOTE_MARGIN = 1.f;  // 1Hz
 
-    // callback for last latency recorded - used for buffer stuffing fix.
+    // Callback for last latency recorded - used for buffer stuffing fix.
     // Latency is returned in number of V-syncs
     std::function<int32_t()> mLastLatencyRecorded;
 
