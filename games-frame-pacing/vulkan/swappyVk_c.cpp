@@ -157,4 +157,16 @@ bool SwappyVk_isEnabled(VkSwapchainKHR swapchain, bool* isEnabled) {
     return swappy.IsEnabled(swapchain, isEnabled);
 }
 
+void SwappyVK_enableStats(VkSwapchainKHR swapchain, bool enabled) {
+    // stub for new API
+}
+
+void SwappyVK_getStats(VkSwapchainKHR swapchain, SwappyStats* swappyStats) {
+    // stub for new API
+}
+
+void SwappyVK_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain,
+                               uint32_t image) {
+    // stub for new API
+}
 }  // extern "C"

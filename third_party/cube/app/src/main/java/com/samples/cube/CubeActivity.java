@@ -2,20 +2,27 @@ package com.samples.cube;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.text.LineBreaker;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.Choreographer;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.Window;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import java.util.Locale;
 
-public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
+public class CubeActivity extends Activity implements Choreographer.FrameCallback, SurfaceHolder.Callback  {
 
     private static final String GPU_WORKLOAD = "com.samples.GPU_WORKLOAD";
     private static final String CPU_WORKLOAD = "com.samples.CPU_WORKLOAD";
@@ -40,7 +47,6 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_cube);
         settingsLayout = findViewById(R.id.settingsLayout);
 
@@ -50,19 +56,9 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
 
         SurfaceView surfaceView = findViewById(R.id.surface_view);
         surfaceView.getHolder().addCallback(this);
-        surfaceView.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                    toggleOptionsPanel();
-                }
-                return true;
-            }
-        });
 
         Intent intent = getIntent();
         String action = intent.getAction();
-        String type = intent.getType();
         switch (action) {
           case Intent.ACTION_MAIN:
             updateGpuWork(0);
@@ -75,6 +71,9 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
             Log.e(APP_NAME, "Unknown intent received: " + action);
             break;
         }
+
+        mInfoOverlay = findViewById(R.id.info_overlay);
+        buildSwappyStatsGrid();
     }
 
     private void toggleOptionsPanel() {
@@ -194,12 +193,15 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
         Log.d(APP_NAME, "Surface created.");
         Surface surface = holder.getSurface();
         nStartCube(surface);
+        mIsRunning = true;
+        Choreographer.getInstance().postFrameCallback(this);
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.d(APP_NAME, "Surface destroyed.");
         nStopCube();
+        mIsRunning = false;
     }
 
     @Override
@@ -213,4 +215,156 @@ public class CubeActivity extends Activity implements SurfaceHolder.Callback  {
     public native void nStopCube();
     public native void nUpdateGpuWorkload(int newWorkload);
     public native void nUpdateCpuWorkload(int newWorkload);
+    public native int nGetSwappyStats(int stat, int bin);
+
+    private void infoOverlayToggle() {
+        if (mInfoOverlay == null) {
+            return;
+        }
+
+        mInfoOverlayEnabled = !mInfoOverlayEnabled;
+        if (mInfoOverlayEnabled) {
+            mInfoOverlay.setVisibility(View.VISIBLE);
+            mInfoOverlayButton.setIcon(R.drawable.ic_info_solid_white_24dp);
+        } else {
+            mInfoOverlay.setVisibility(View.INVISIBLE);
+            mInfoOverlayButton.setIcon(R.drawable.ic_info_outline_white_24dp);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_cube, menu);
+
+        mInfoOverlayButton = menu.findItem(R.id.info_overlay_button);
+        if (mInfoOverlayButton != null) {
+            mInfoOverlayButton.setOnMenuItemClickListener((MenuItem item) -> {
+                infoOverlayToggle();
+                return true;
+            });
+        }
+
+        MenuItem settingsButton = menu.findItem(R.id.settings_item);
+        if (settingsButton != null) {
+            settingsButton.setOnMenuItemClickListener((MenuItem) -> {
+                toggleOptionsPanel();
+                return true;
+            });
+        }
+
+        return true;
+    }
+
+    private void configureGridCell(TextView cell) {
+        // A bunch of optimizations to reduce the cost of setText
+        cell.setEllipsize(null);
+        cell.setMaxLines(1);
+        cell.setSingleLine(true);
+        if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+            cell.setBreakStrategy(LineBreaker.BREAK_STRATEGY_SIMPLE);
+        }
+        cell.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+
+        cell.setTextAppearance(R.style.InfoTextSmall);
+        cell.setText("0");
+    }
+    private void buildSwappyStatsGrid() {
+        GridLayout infoGrid = findViewById(R.id.swappy_stats_grid);
+
+        // Add the header row
+        GridLayout.Spec headerRowSpec = GridLayout.spec(0);
+        for (int column = 0; column < mSwappyGrid[0].length; ++column) {
+            TextView cell = new TextView(getApplicationContext());
+            GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+            cell.setLayoutParams(new GridLayout.LayoutParams(headerRowSpec, colSpec));
+            configureGridCell(cell);
+
+            if (column == 0) {
+                cell.setText("");
+            } else {
+                cell.setText(String.format(Locale.US, "%d", column - 1));
+            }
+            infoGrid.addView(cell);
+            mSwappyGrid[0][column] = cell;
+        }
+
+        // Add the data rows
+        for (int row = 1; row < mSwappyGrid.length; ++row) {
+            GridLayout.Spec rowSpec = GridLayout.spec(row);
+
+            for (int column = 0; column < mSwappyGrid[row].length; ++column) {
+                TextView cell = new TextView(getApplicationContext());
+                GridLayout.Spec colSpec = GridLayout.spec(column, 1.0f);
+                cell.setLayoutParams(new GridLayout.LayoutParams(rowSpec, colSpec));
+                cell.setTextAppearance(R.style.InfoTextSmall);
+                configureGridCell(cell);
+
+                if (column == 0) {
+                    switch (row) {
+                        case 1:
+                            cell.setText(R.string.idle_frames);
+                            break;
+                        case 2:
+                            cell.setText(R.string.late_frames);
+                            break;
+                        case 3:
+                            cell.setText(R.string.offset_frames);
+                            break;
+                        case 4:
+                            cell.setText(R.string.latency_frames);
+                            break;
+                    }
+                } else {
+                    cell.setText("0%");
+                }
+                infoGrid.addView(cell);
+                mSwappyGrid[row][column] = cell;
+            }
+        }
+
+        for (TextView[] row : mSwappyGrid) {
+            for (TextView column : row) {
+                column.setWidth(infoGrid.getWidth() / infoGrid.getColumnCount());
+            }
+        }
+    }
+
+    private void updateSwappyStatsBin(int row, int bin, int value) {
+        if (value == mLastSwappyStatsValues[row - 1][bin]) {
+            return;
+        }
+        mLastSwappyStatsValues[row - 1][bin] = value;
+        mSwappyGrid[row][bin + 1].setText(String.valueOf(value) + "%");
+    }
+
+    @Override
+    public void doFrame(long frameTimeNanos) {
+        long now = System.nanoTime();
+        if (mIsRunning) {
+            Choreographer.getInstance().postFrameCallback(this);
+        }
+        if (now - mLastDumpTime > SWAPPY_GET_STATS_PERIOD) {
+            for (int stat = 0; stat < 4; ++stat) {
+                for (int bin = 0; bin < SWAPPY_STATS_BIN_COUNT; ++bin) {
+                    updateSwappyStatsBin(stat +1, bin, nGetSwappyStats(stat, bin));
+                }
+            }
+            TextView appOffsetView = findViewById(R.id.swappy_stats);
+            appOffsetView.setText(String.format(Locale.US, "SwappyStats: %d Total Frames",
+                nGetSwappyStats(-1, 0)));
+            // Trim off excess precision so we don't drift forward over time
+            mLastDumpTime = now - (now % SWAPPY_GET_STATS_PERIOD);
+        }
+    }
+    private boolean mInfoOverlayEnabled = false;
+    private MenuItem mInfoOverlayButton;
+    private LinearLayout mInfoOverlay;
+    private final TextView[][] mSwappyGrid = new TextView[5][7];
+    private final int[][] mLastSwappyStatsValues = new int[4][6];
+    private static final int SWAPPY_STATS_BIN_COUNT = 6;
+    private static final long SWAPPY_GET_STATS_PERIOD = 1000000000; //1s in ns.
+    private long mLastDumpTime;
+    private boolean mIsRunning;
+
 }
