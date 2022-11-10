@@ -546,6 +546,7 @@ struct demo {
     } swappy_init_data;
 
     bool tracer_injected;
+    bool swappy_enabled;
 };
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -1158,6 +1159,11 @@ static void demo_draw(struct demo *demo) {
         }
     } while (err != VK_SUCCESS);
 
+    if (demo->swappy_enabled) {
+        SwappyVK_recordFrameStart(demo->present_queue,
+                                demo->swapchain,
+                                demo->current_buffer);
+    }
     demo_update_data_buffer(demo);
 
     if (demo->VK_GOOGLE_display_timing_enabled) {
@@ -1553,6 +1559,8 @@ static void demo_prepare_buffers(struct demo *demo) {
                                                    demo->swappy_init_data.jactivity,
                                                    demo->gpu, demo->device, demo->swapchain,
                                                    &demo->refresh_duration));
+
+    assert(SwappyVk_isEnabled(demo->swapchain, &demo->swappy_enabled));
 
     SwappyVk_setWindow(demo->device, demo->swapchain, demo->window);
     // Refresh rate of this demo is locked to 30 FPS.
@@ -4149,6 +4157,10 @@ void main_loop(struct android_app_state *app) {
         uint64_t count = 0;
         while(count++ < demo_.cpu_workload) {}
   }
+}
+
+VkSwapchainKHR get_current_swapchain() {
+    return demo_.swapchain;
 }
 
 #else

@@ -334,6 +334,48 @@ int SwappyVk_getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
  */
 bool SwappyVk_isEnabled(VkSwapchainKHR swapchain, bool* isEnabled);
 
+/**
+ * @brief Toggle statistics collection on/off
+ *
+ * By default, stats collection is off and there is no overhead related to
+ * stats. An app can turn on stats collection by calling
+ * `SwappyVK_enableStats(swapchain, true)`. Then, the app is expected to call
+ * ::SwappyVK_recordFrameStart for each frame before starting to do any CPU
+ * related work. Stats will be logged to logcat with a 'FrameStatistics' tag. An
+ * app can get the stats by calling ::SwappyVK_getStats.
+ *
+ * @param[in]  swapchain - The swapchain for which frame stat collection is
+ *                           configured.
+ * @param      enabled   - Whether to enable/disable frame stat collection.
+ */
+void SwappyVK_enableStats(VkSwapchainKHR swapchain, bool enabled);
+
+/**
+ * @brief Should be called if stats have been enabled with SwappyVK_enableStats.
+ *
+ * When stats collection is enabled with SwappyVK_enableStats, the app is
+ * expected to call this function for each frame before starting to do any CPU
+ * related work. It is assumed that this function will be called after a
+ * successful call to vkAcquireNextImageKHR.
+ *
+ * @param[in]  queue     - The VkQueue associated with the device and swapchain
+ * @param[in]  swapchain - The swapchain where the frame is presented to.
+ * @param[in]  image     - The image in swapchain that corresponds to the frame.
+
+ * @see SwappyVK_enableStats.
+ */
+void SwappyVK_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain, uint32_t image);
+
+/**
+ * @brief Returns the stats collected, if statistics collection was toggled on.
+ *
+ * @param[in]  swapchain   - The swapchain for which stats are being queried.
+ * @param      swappyStats - Pointer to a SwappyStats that will be populated with
+ *                             the collected stats.
+ * @see SwappyStats
+ */
+void SwappyVK_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
