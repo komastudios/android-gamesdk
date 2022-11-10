@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4dcc498c_2041768d",
+        "filename": "games-frame-pacing/common/SwappyCommon.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-10T14:00:46Z",
+      "side": 0,
+      "message": "This is a public API change, right? So the next release will be a major version number change?",
+      "revId": "a19dc36a3d86c4f108342309940ce80c85057956",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

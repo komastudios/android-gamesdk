@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "799e5414_14d03555",
+        "filename": "games-frame-pacing/opengl/SwappyGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-10T14:00:46Z",
+      "side": 1,
+      "message": "If this callback gets called after SwappyGL_destroy()/SwappyGL::destroyInstance() gets called we will get a segfault because \"swappy\" points to invalid data. \n\nAt a glance I guess this isn\u0027t a problem because we have full control of the code run in mCommonBase and we shouldn\u0027t expect anything to work after SwappyGL_destroy is called?\n\nIt\u0027s always a bit scary to pass a raw pointer to another class when the lifecycle of that pointer is controller somewhere else so I just wanted to double check.",
+      "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
