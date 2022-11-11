@@ -50,6 +50,7 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
           *pRefreshDuration, refreshRate);
 
+    mSwapchain = swapchain;
     return true;
 }
 
@@ -95,32 +96,28 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     VkPresentTimeGOOGLE pPresentTimes[pPresentInfo->swapchainCount];
     VkPresentInfoKHR replacementPresentInfo;
     VkPresentTimesInfoGOOGLE presentTimesInfo;
-    if (mCommonBase.needToSetPresentationTime()) {
-        // Setup the new structures to pass:
-        for (uint32_t i = 0; i < pPresentInfo->swapchainCount; i++) {
-            pPresentTimes[i].presentID = mNextPresentID;
-            pPresentTimes[i].desiredPresentTime =
-                mCommonBase.getPresentationTime().time_since_epoch().count();
-        }
-
-        presentTimesInfo = {VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
-                            pPresentInfo->pNext, pPresentInfo->swapchainCount,
-                            pPresentTimes};
-
-        replacementPresentInfo = {
-            pPresentInfo->sType,          &presentTimesInfo,
-            waitSemaphoreCount,           pWaitSemaphores,
-            pPresentInfo->swapchainCount, pPresentInfo->pSwapchains,
-            pPresentInfo->pImageIndices,  pPresentInfo->pResults};
-
-    } else {
-        replacementPresentInfo = {
-            pPresentInfo->sType,          nullptr,
-            waitSemaphoreCount,           pWaitSemaphores,
-            pPresentInfo->swapchainCount, pPresentInfo->pSwapchains,
-            pPresentInfo->pImageIndices,  pPresentInfo->pResults};
+    // Setup the new structures to pass:
+    // if 0 is passed as desired present time, it is ignored by the loader.
+    uint64_t desiredPresentTime =
+        mCommonBase.needToSetPresentationTime()
+            ? mCommonBase.getPresentationTime().time_since_epoch().count()
+            : 0;
+    for (uint32_t i = 0; i < pPresentInfo->swapchainCount; i++) {
+        pPresentTimes[i].presentID = mPresentID;
+        pPresentTimes[i].desiredPresentTime = desiredPresentTime;
     }
-    mNextPresentID++;
+
+    presentTimesInfo = {VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE,
+                        pPresentInfo->pNext, pPresentInfo->swapchainCount,
+                        pPresentTimes};
+
+    replacementPresentInfo = {
+        pPresentInfo->sType,          &presentTimesInfo,
+        waitSemaphoreCount,           pWaitSemaphores,
+        pPresentInfo->swapchainCount, pPresentInfo->pSwapchains,
+        pPresentInfo->pImageIndices,  pPresentInfo->pResults};
+
+    mPresentID++;
 
     res = mpfnQueuePresentKHR(queue, &replacementPresentInfo);
     mCommonBase.onPostSwap(handlers);
@@ -128,6 +125,90 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     return res;
 }
 
+void SwappyVkGoogleDisplayTiming::enableStats(bool enabled) {
+    mFrameStatisticsCommon.enableStats(enabled);
+}
+
+void SwappyVkGoogleDisplayTiming::recordFrameStart(VkQueue queue,
+                                                   uint32_t image) {
+    uint64_t frameStartTime = static_cast<uint64_t>(
+        std::chrono::steady_clock::now().time_since_epoch().count());
+    mPendingFrames.push_back({mPresentID, frameStartTime});
+
+    // No point in querying if the history is too short, as vulkan loader does
+    // not return any history newer than 5 frames.
+    // See MIN_NUM_FRAMES_AGO in
+    // https://android.googlesource.com/platform/frameworks/native/+/refs/heads/master/vulkan/libvulkan/swapchain.cpp
+    if (mPendingFrames.size() < MIN_FRAME_LAG) return;
+
+    // The query for vulkan past presentation timings does not point to any
+    // specific id. Instead, the loader just returns whatever timings are
+    // available to the user. Query all the available timings, which is a max
+    // of 10 in the vulkan loader currently.
+    //
+    // Check through each of the timing if we have a pending frame id, if we do
+    // then populate the histogram with the available timings. There are a
+    // couple of assumptions made here.
+    //  * The maximum size of the vectors here is 10, so simplicity is
+    //  prioritized.
+    //  * The frames are in order.
+    //  * If any of the presentTimings ids are not present in mPendingFrames,
+    //  those are frames that must have been cleared and we do not care about
+    //  the timings anymore.
+    //  * [Performance] Under normal smooth circumstances, this should be 1
+    //  frame handled at a time, if there is a situation where several frames
+    //  are pending, it implies that the gpu & presentation engine are not
+    //  keeping up. So spending a few CPU cycles here to go through a few extra
+    //  frames is not going to impact overall performance.
+    uint32_t pastTimingsCount = MAX_FRAME_LAG;
+    VkResult result = mpfnGetPastPresentationTimingGOOGLE(
+        mDevice, mSwapchain, &pastTimingsCount, &mPastTimes[0]);
+
+    if (result == VK_INCOMPLETE) {
+        ALOGI(
+            "More past presentation times available. Consider increasing "
+            "MAX_FRAME_LAG");
+    }
+    if (result != VK_SUCCESS && result != VK_INCOMPLETE) {
+        ALOGE("Error collecting past presentation times with result %d",
+              result);
+        return;
+    }
+
+    int i = 0;
+    while (i < pastTimingsCount && mPendingFrames.size() > 1) {
+        auto frame = mPendingFrames.front();
+
+        if (frame.id == mPastTimes[i].presentID) {
+            FrameTimings current = {
+                frame.startFrameTime, mPastTimes[i].desiredPresentTime,
+                mPastTimes[i].actualPresentTime, mPastTimes[i].presentMargin};
+
+            mFrameStatisticsCommon.updateFrameStats(
+                current, mCommonBase.getRefreshPeriod().count());
+            i++;
+        }
+        // If the past timings returned do not match, then the pending frame is
+        // too old. So remove it from the list.
+        mPendingFrames.erase(mPendingFrames.begin());
+    }
+
+    // Clear the pending frames if we are lagging too much.
+    if (mPendingFrames.size() > MAX_FRAME_LAG) {
+        while (mPendingFrames.size() > MIN_FRAME_LAG) {
+            mPendingFrames.erase(mPendingFrames.begin());
+        }
+        mFrameStatisticsCommon.invalidateLastFrame();
+    }
+}
+
+void SwappyVkGoogleDisplayTiming::getStats(SwappyStats* swappyStats) {
+    *swappyStats = mFrameStatisticsCommon.getStats();
+}
+
+void SwappyVkGoogleDisplayTiming::clearStats() {
+    mFrameStatisticsCommon.clearStats();
+}
 }  // namespace swappy
 
 #endif  // #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION>=15
