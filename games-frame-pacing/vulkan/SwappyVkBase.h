@@ -145,6 +145,11 @@ class SwappyVkBase {
     int getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                      int allocated_entries);
 
+    virtual void enableStats(bool enabled) = 0;
+    virtual void getStats(SwappyStats* swappyStats) = 0;
+    virtual void recordFrameStart(VkQueue queue, uint32_t image) = 0;
+    virtual void clearStats() = 0;
+
    protected:
     struct VkSync {
         VkFence fence;
