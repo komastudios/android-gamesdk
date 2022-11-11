@@ -99,4 +99,20 @@ VkResult SwappyVkFallback::doQueuePresent(
     return result;
 }
 
+void SwappyVkFallback::enableStats(bool enabled) {
+    ALOGE("Frame Statistics Unsupported - API ignored");
+}
+
+void SwappyVkFallback::getStats(SwappyStats* swappyStats) {
+    ALOGE("Frame Statistics Unsupported - API ignored");
+}
+
+void SwappyVkFallback::recordFrameStart(VkQueue queue, uint32_t image) {
+    ALOGE("Frame Statistics Unsupported - API ignored");
+}
+
+void SwappyVkFallback::clearStats() {
+    ALOGE("Frame Statistics Unsupported - API ignored");
+}
+
 }  // namespace swappy

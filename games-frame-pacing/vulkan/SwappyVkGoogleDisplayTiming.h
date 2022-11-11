@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "FrameStatistics.h"
 #include "SwappyVkBase.h"
 
 namespace swappy {
@@ -70,12 +71,36 @@ class SwappyVkGoogleDisplayTiming : public SwappyVkBase {
                                 VkDevice device,
                                 const SwappyVkFunctionProvider* provider);
 
-    virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                           uint64_t* pRefreshDuration) override;
+    bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
+                                   uint64_t* pRefreshDuration) final;
 
-    virtual VkResult doQueuePresent(
-        VkQueue queue, uint32_t queueFamilyIndex,
-        const VkPresentInfoKHR* pPresentInfo) override;
+    VkResult doQueuePresent(VkQueue queue, uint32_t queueFamilyIndex,
+                            const VkPresentInfoKHR* pPresentInfo) final;
+
+    void enableStats(bool enabled) final;
+    void recordFrameStart(VkQueue queue, uint32_t image) final;
+    void getStats(SwappyStats* swappyStats) final;
+    void clearStats() final;
+
+   private:
+    static constexpr int MAX_FRAME_LAG = 10;
+    // Vulkan loader does not give any frame timings unless they are 5 frames
+    // old. We use this internally to not waste calls.
+    static constexpr int MIN_FRAME_LAG = 5;
+    uint32_t mPresentID = 0;
+
+    VkSwapchainKHR mSwapchain;
+
+    struct VKFrame {
+        uint32_t id;
+        uint64_t startFrameTime;
+        int pastTimingIndex;
+    };
+
+    std::vector<VKFrame> mPendingFrames;
+    // Storage for querying past presentation frames, allocated upfront.
+    VkPastPresentationTimingGOOGLE mPastTimes[MAX_FRAME_LAG];
+    FrameStatistics mFrameStatisticsCommon;
 };
 
 }  // namespace swappy
