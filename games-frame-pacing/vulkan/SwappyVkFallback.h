@@ -39,6 +39,11 @@ class SwappyVkFallback : public SwappyVkBase {
     virtual VkResult doQueuePresent(
         VkQueue queue, uint32_t queueFamilyIndex,
         const VkPresentInfoKHR* pPresentInfo) override;
+
+    void enableStats(bool enabled) final;
+    void recordFrameStart(VkQueue queue, uint32_t image) final;
+    void getStats(SwappyStats* swappyStats) final;
+    void clearStats() final;
 };
 
 }  // namespace swappy
