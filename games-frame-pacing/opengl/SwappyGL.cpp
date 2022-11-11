@@ -193,18 +193,19 @@ void SwappyGL::enableStats(bool enabled) {
     if (enabled) {
         if (!swappy->mFrameStatistics ||
             swappy->mFrameStatistics->isEssential()) {
-            swappy->mFrameStatistics = std::make_shared<FullFrameStatisticsGL>(
+            swappy->mFrameStatistics = std::make_unique<FullFrameStatisticsGL>(
                 *swappy->mEgl, swappy->mCommonBase);
             ALOGI("Enabling stats");
         } else {
             ALOGI("Stats already enabled");
         }
     } else {
-        swappy->mFrameStatistics = std::make_shared<LatencyFrameStatisticsGL>(
+        swappy->mFrameStatistics = std::make_unique<LatencyFrameStatisticsGL>(
             *swappy->mEgl, swappy->mCommonBase);
         ALOGI("Disabling stats");
     }
-    swappy->mCommonBase.setFrameStatistics(swappy->mFrameStatistics);
+    swappy->mCommonBase.setLastLatencyRecordedCallback(
+        [swappy]() { return swappy->mFrameStatistics->lastLatencyRecorded(); });
 }
 
 void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
