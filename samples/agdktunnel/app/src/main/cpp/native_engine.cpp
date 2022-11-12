@@ -236,10 +236,10 @@ static bool _cooked_event_callback(struct CookedEvent *event) {
             mgr->OnPointerMove(event->motionPointerId, &coords);
             return true;
         case COOKED_EVENT_TYPE_KEY_DOWN:
-            mgr->OnKeyDown(event->keyCode);
+            mgr->OnKeyDown(getOurKeyFromAndroidKey(event->keyCode));
             return true;
         case COOKED_EVENT_TYPE_KEY_UP:
-            mgr->OnKeyUp(event->keyCode);
+            mgr->OnKeyUp(getOurKeyFromAndroidKey(event->keyCode));
             return true;
         case COOKED_EVENT_TYPE_BACK:
             return mgr->OnBackKeyPressed();

@@ -59,6 +59,10 @@ protected:
     // must be implemented by subclass
     virtual void OnButtonClicked(int buttonId);
 
+    bool OnBackKeyPressed() {
+        return false;
+    }
+
     virtual void RenderBackground();
 
     // transition start time
