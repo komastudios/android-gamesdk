@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57c5b437_79668d31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2022-11-15T12:27:10Z",
+      "side": 1,
+      "message": "A couple of nits",
+      "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76f3b909_242c5bf8",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2022-11-15T12:27:10Z",
+      "side": 1,
+      "message": "Add comments",
+      "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6bd442a_73a863c2",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 897,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2022-11-15T12:27:10Z",
+      "side": 1,
+      "message": "Add comments",
+      "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
