@@ -894,6 +894,30 @@ void GameActivity_getWindowInsets(GameActivity* activity,
 void GameActivity_setImeEditorInfo(GameActivity* activity, int inputType,
                                    int actionId, int imeOptions);
 
+/**
+ * These are getters for Configuration class members. They may be called from
+ * any thread.
+ */
+int GameActivity_getOrientation(GameActivity* activity);
+int GameActivity_getColorMode(GameActivity* activity);
+int GameActivity_getDensityDpi(GameActivity* activity);
+float GameActivity_getFontScale(GameActivity* activity);
+int GameActivity_getFontWeightAdjustment(GameActivity* activity);
+int GameActivity_getHardKeyboardHidden(GameActivity* activity);
+int GameActivity_getKeyboard(GameActivity* activity);
+int GameActivity_getKeyboardHidden(GameActivity* activity);
+int GameActivity_getMcc(GameActivity* activity);
+int GameActivity_getMnc(GameActivity* activity);
+int GameActivity_getNavigation(GameActivity* activity);
+int GameActivity_getNavigationHidden(GameActivity* activity);
+int GameActivity_getOrientation(GameActivity* activity);
+int GameActivity_getScreenHeightDp(GameActivity* activity);
+int GameActivity_getScreenLayout(GameActivity* activity);
+int GameActivity_getScreenWidthDp(GameActivity* activity);
+int GameActivity_getSmallestScreenWidthDp(GameActivity* activity);
+int GameActivity_getTouchscreen(GameActivity* activity);
+int GameActivity_getUIMode(GameActivity* activity);
+
 #ifdef __cplusplus
 }
 #endif
