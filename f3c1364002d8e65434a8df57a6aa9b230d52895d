@@ -16,6 +16,74 @@
       "message": "Didnt intend to upload it here - This will be gone, just not updating this patch during the review.",
       "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "055e668e_cdcc7ee7",
+        "filename": "games-frame-pacing/vulkan/swappyVk_c.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:30:33Z",
+      "side": 1,
+      "message": "Why are these only stubs? You\u0027ll implement these in another CL? Is that coming soon? \n\nIf not we should create a bug/task to implement these so they don\u0027t remain stubs for 10 years",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac73f555_926242fe",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:30:33Z",
+      "side": 1,
+      "message": "Add newline before this function",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebcfe0eb_c0b0f92d",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:30:33Z",
+      "side": 1,
+      "message": "Where is this used? I just see it set/unset",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e7dc9b3_38e7b43e",
+        "filename": "third_party/cube/app/src/main/res/drawable-anydpi/ic_info_outline_white_24dp.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:30:33Z",
+      "side": 1,
+      "message": "What do these xml files do? I assume I can just skim them for code review?",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }

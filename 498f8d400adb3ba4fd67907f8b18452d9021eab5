@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3163f7c_c5b2583a",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:30:33Z",
+      "side": 0,
+      "message": "why was this removed? So now we just permanently show the options panel?\n\nand if it is removed maybe we can remove the \"import motionevent\" above?",
+      "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
