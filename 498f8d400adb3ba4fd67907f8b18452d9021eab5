@@ -16,6 +16,24 @@
       "message": "why was this removed? So now we just permanently show the options panel?\n\nand if it is removed maybe we can remove the \"import motionevent\" above?",
       "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9c4ba6d_0beec175",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:45:48Z",
+      "side": 0,
+      "message": "Also I think your IDE can automatically tell you which imports aren\u0027t used",
+      "parentUuid": "e3163f7c_c5b2583a",
+      "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
