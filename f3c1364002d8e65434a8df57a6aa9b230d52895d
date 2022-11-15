@@ -37,6 +37,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "efd1be38_67a9ba59",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-15T14:46:30Z",
+      "side": 1,
+      "message": "I\u0027ll add third_party/cube to the repo upload script so this is caught before we upload it",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ac73f555_926242fe",
         "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
         "patchSetId": 3
