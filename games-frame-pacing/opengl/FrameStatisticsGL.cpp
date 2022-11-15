@@ -30,30 +30,11 @@
 
 namespace swappy {
 
-int32_t LatencyFrameStatisticsGL::getFrameDelta(EGLnsecsANDROID start,
-                                                EGLnsecsANDROID end) {
-    const int64_t deltaTimeNano = end - start;
-
-    int32_t numFrames =
-        deltaTimeNano / mSwappyCommon.getRefreshPeriod().count();
-    numFrames = std::max(
-        0, std::min(numFrames, static_cast<int32_t>(MAX_FRAME_BUCKETS) - 1));
-    return numFrames;
-}
-
-LatencyFrameStatisticsGL::LatencyFrameStatisticsGL(
-    const EGL& egl, const SwappyCommon& swappyCommon)
+FrameStatisticsGL::FrameStatisticsGL(const EGL& egl,
+                                     const SwappyCommon& swappyCommon)
     : mEgl(egl), mSwappyCommon(swappyCommon) {}
 
-void LatencyFrameStatisticsGL::updateLatency(
-    swappy::EGL::FrameTimestamps& frameStats, TimePoint frameStartTime) {
-    int latency = getFrameDelta(frameStartTime.time_since_epoch().count(),
-                                frameStats.compositionLatched);
-    TRACE_INT("FrameLatency", latency);
-    mLastLatency = latency;
-}
-
-LatencyFrameStatisticsGL::ThisFrame LatencyFrameStatisticsGL::getThisFrame(
+FrameStatisticsGL::ThisFrame FrameStatisticsGL::getThisFrame(
     EGLDisplay dpy, EGLSurface surface) {
     const TimePoint frameStartTime = std::chrono::steady_clock::now();
 
@@ -74,10 +55,9 @@ LatencyFrameStatisticsGL::ThisFrame LatencyFrameStatisticsGL::getThisFrame(
     if (nextFrameId.first && nextFrameId.second - frame.id > MAX_FRAME_LAG) {
         while (mPendingFrames.size() > 1)
             mPendingFrames.erase(mPendingFrames.begin());
-        mPrevFrameTime = 0;
+        mFrameStatsCommon.invalidateLastFrame();
         frame = mPendingFrames.front();
     }
-#if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION >= 14
     std::unique_ptr<EGL::FrameTimestamps> frameStats =
         mEgl.getFrameTimestamps(frame.dpy, frame.surface, frame.id);
 
@@ -88,121 +68,36 @@ LatencyFrameStatisticsGL::ThisFrame LatencyFrameStatisticsGL::getThisFrame(
     mPendingFrames.erase(mPendingFrames.begin());
 
     return {frame.startFrameTime, std::move(frameStats)};
-#else
-    return {frame.startFrameTime};
-#endif
 }
 
 // called once per swap
-void LatencyFrameStatisticsGL::capture(EGLDisplay dpy, EGLSurface surface) {
-    auto frame = getThisFrame(dpy, surface);
-    if (!frame.stats) return;
-    updateLatency(*frame.stats, frame.startTime);
-}
-
-// NB This is only needed for C++14
-constexpr std::chrono::nanoseconds FullFrameStatisticsGL::LOG_EVERY_N_NS;
-
-FullFrameStatisticsGL::FullFrameStatisticsGL(const EGL& egl,
-                                             const SwappyCommon& swappyCommon)
-    : LatencyFrameStatisticsGL(egl, swappyCommon) {}
-
-int32_t FullFrameStatisticsGL::updateFrames(EGLnsecsANDROID start,
-                                            EGLnsecsANDROID end,
-                                            uint64_t stat[]) {
-    int32_t numFrames = getFrameDelta(start, end);
-    stat[numFrames]++;
-    return numFrames;
-}
-
-void FullFrameStatisticsGL::updateIdleFrames(EGL::FrameTimestamps& frameStats) {
-    updateFrames(frameStats.renderingCompleted, frameStats.compositionLatched,
-                 mStats.idleFrames);
-}
-
-void FullFrameStatisticsGL::updateLatencyFrames(
-    swappy::EGL::FrameTimestamps& frameStats, TimePoint frameStartTime) {
-    int latency =
-        updateFrames(frameStartTime.time_since_epoch().count(),
-                     frameStats.compositionLatched, mStats.latencyFrames);
-    TRACE_INT("FrameLatency", latency);
-    mLastLatency = latency;
-}
-
-void FullFrameStatisticsGL::updateLateFrames(EGL::FrameTimestamps& frameStats) {
-    updateFrames(frameStats.requested, frameStats.presented, mStats.lateFrames);
-}
-
-void FullFrameStatisticsGL::updateOffsetFromPreviousFrame(
-    swappy::EGL::FrameTimestamps& frameStats) {
-    if (mPrevFrameTime != 0) {
-        updateFrames(mPrevFrameTime, frameStats.presented,
-                     mStats.offsetFromPreviousFrame);
-    }
-    mPrevFrameTime = frameStats.presented;
-}
-
-// called once per swap
-void FullFrameStatisticsGL::capture(EGLDisplay dpy, EGLSurface surface) {
+void FrameStatisticsGL::capture(EGLDisplay dpy, EGLSurface surface) {
     auto frame = getThisFrame(dpy, surface);
 
     if (!frame.stats) return;
 
-    std::lock_guard<std::mutex> lock(mMutex);
-    mStats.totalFrames++;
-    updateIdleFrames(*frame.stats);
-    updateLateFrames(*frame.stats);
-    updateOffsetFromPreviousFrame(*frame.stats);
-    updateLatencyFrames(*frame.stats, frame.startTime);
+    FrameTimings current = {
+        static_cast<uint64_t>(frame.startTime.time_since_epoch().count()),
+        static_cast<uint64_t>(frame.stats->requested),
+        static_cast<uint64_t>(frame.stats->presented),
+        static_cast<uint64_t>(frame.stats->compositionLatched -
+                              frame.stats->renderingCompleted)};
 
-    logFrames();
+    mFrameStatsCommon.updateFrameStats(
+        current, mSwappyCommon.getRefreshPeriod().count());
 }
 
-void FullFrameStatisticsGL::logFrames() {
-    static auto previousLogTime = std::chrono::steady_clock::now();
-
-    if (std::chrono::steady_clock::now() - previousLogTime < LOG_EVERY_N_NS) {
-        return;
-    }
-
-    std::string message;
-    ALOGI("== Frame statistics ==");
-    ALOGI("total frames: %" PRIu64, mStats.totalFrames);
-    message += "Buckets:                    ";
-    for (int i = 0; i < MAX_FRAME_BUCKETS; i++)
-        message += "\t[" + swappy::to_string(i) + "]";
-    ALOGI("%s", message.c_str());
-
-    message = "";
-    message += "idle frames:                ";
-    for (int i = 0; i < MAX_FRAME_BUCKETS; i++)
-        message += "\t " + swappy::to_string(mStats.idleFrames[i]);
-    ALOGI("%s", message.c_str());
-
-    message = "";
-    message += "late frames:                ";
-    for (int i = 0; i < MAX_FRAME_BUCKETS; i++)
-        message += "\t " + swappy::to_string(mStats.lateFrames[i]);
-    ALOGI("%s", message.c_str());
-
-    message = "";
-    message += "offset from previous frame: ";
-    for (int i = 0; i < MAX_FRAME_BUCKETS; i++)
-        message += "\t " + swappy::to_string(mStats.offsetFromPreviousFrame[i]);
-    ALOGI("%s", message.c_str());
-
-    message = "";
-    message += "frame latency:              ";
-    for (int i = 0; i < MAX_FRAME_BUCKETS; i++)
-        message += "\t " + swappy::to_string(mStats.latencyFrames[i]);
-    ALOGI("%s", message.c_str());
-
-    previousLogTime = std::chrono::steady_clock::now();
+void FrameStatisticsGL::enableStats(bool enabled) {
+    mFrameStatsCommon.enableStats(enabled);
 }
 
-SwappyStats FullFrameStatisticsGL::getStats() {
-    std::lock_guard<std::mutex> lock(mMutex);
-    return mStats;
+SwappyStats FrameStatisticsGL::getStats() {
+    return mFrameStatsCommon.getStats();
 }
 
+void FrameStatisticsGL::clearStats() { mFrameStatsCommon.clearStats(); }
+
+int32_t FrameStatisticsGL::lastLatencyRecorded() {
+    return mFrameStatsCommon.lastLatencyRecorded();
+}
 }  // namespace swappy
