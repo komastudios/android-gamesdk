@@ -181,31 +181,9 @@ void SwappyGL::enableStats(bool enabled) {
         return;
     }
 
-    if (!swappy->enabled()) {
-        return;
+    if (swappy->mFrameStatistics) {
+        swappy->mFrameStatistics->enableStats(enabled);
     }
-
-    if (!swappy->getEgl()->statsSupported()) {
-        ALOGI("stats are not suppored on this platform");
-        return;
-    }
-
-    if (enabled) {
-        if (!swappy->mFrameStatistics ||
-            swappy->mFrameStatistics->isEssential()) {
-            swappy->mFrameStatistics = std::make_unique<FullFrameStatisticsGL>(
-                *swappy->mEgl, swappy->mCommonBase);
-            ALOGI("Enabling stats");
-        } else {
-            ALOGI("Stats already enabled");
-        }
-    } else {
-        swappy->mFrameStatistics = std::make_unique<LatencyFrameStatisticsGL>(
-            *swappy->mEgl, swappy->mCommonBase);
-        ALOGI("Disabling stats");
-    }
-    swappy->mCommonBase.setLastLatencyRecordedCallback(
-        [swappy]() { return swappy->mFrameStatistics->lastLatencyRecorded(); });
 }
 
 void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
@@ -215,8 +193,9 @@ void SwappyGL::recordFrameStart(EGLDisplay display, EGLSurface surface) {
         return;
     }
 
-    if (swappy->mFrameStatistics)
+    if (swappy->mFrameStatistics) {
         swappy->mFrameStatistics->capture(display, surface);
+    }
 }
 
 void SwappyGL::getStats(SwappyStats *stats) {
@@ -224,9 +203,19 @@ void SwappyGL::getStats(SwappyStats *stats) {
     if (!swappy) {
         return;
     }
-
-    if (swappy->mFrameStatistics && !swappy->mFrameStatistics->isEssential())
+    if (swappy->mFrameStatistics) {
         *stats = swappy->mFrameStatistics->getStats();
+    }
+}
+
+void SwappyGL::clearStats() {
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    if (swappy->mFrameStatistics) {
+        swappy->mFrameStatistics->clearStats();
+    }
 }
 
 SwappyGL *SwappyGL::getInstance() {
@@ -300,6 +289,14 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
         return;
     }
 
+    if (mEgl->statsSupported()) {
+        mFrameStatistics =
+            std::make_unique<FrameStatisticsGL>(*mEgl, mCommonBase);
+        mCommonBase.setLastLatencyRecordedCallback(
+            [this]() { return this->mFrameStatistics->lastLatencyRecorded(); });
+    } else {
+        ALOGI("stats are not suppored on this platform");
+    }
     ALOGI("SwappyGL initialized successfully");
 }
 

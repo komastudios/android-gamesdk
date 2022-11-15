@@ -23,6 +23,7 @@
 
 #include "EGL.h"
 #include "FrameStatistics.h"
+#include "SwappyCommon.h"
 #include "Thread.h"
 
 using TimePoint = std::chrono::steady_clock::time_point;
@@ -30,29 +31,25 @@ using namespace std::chrono_literals;
 
 namespace swappy {
 
-class SwappyCommon;
-
-// Just records latency
-class LatencyFrameStatisticsGL : public FrameStatistics {
+class FrameStatisticsGL {
    public:
-    LatencyFrameStatisticsGL(const EGL& egl, const SwappyCommon& swappyCommon);
-    ~LatencyFrameStatisticsGL() = default;
-    int32_t lastLatencyRecorded() const override { return mLastLatency; }
-    bool isEssential() const override { return true; }
-    virtual SwappyStats getStats() override { return {}; }
+    FrameStatisticsGL(const EGL& egl, const SwappyCommon& swappyCommon);
+    ~FrameStatisticsGL() = default;
 
-    virtual void capture(EGLDisplay dpy, EGLSurface surface);
+    void enableStats(bool enabled);
+    void capture(EGLDisplay dpy, EGLSurface surface);
+    SwappyStats getStats();
+    void clearStats();
+
+    int32_t lastLatencyRecorded();
 
    protected:
     static constexpr int MAX_FRAME_LAG = 10;
-    int32_t getFrameDelta(EGLnsecsANDROID start, EGLnsecsANDROID end);
     struct ThisFrame {
         TimePoint startTime;
         std::unique_ptr<EGL::FrameTimestamps> stats;
     };
     ThisFrame getThisFrame(EGLDisplay dpy, EGLSurface surface);
-    void updateLatency(EGL::FrameTimestamps& frameStats,
-                       TimePoint frameStartTime);
 
     const EGL& mEgl;
     const SwappyCommon& mSwappyCommon;
@@ -64,36 +61,7 @@ class LatencyFrameStatisticsGL : public FrameStatistics {
         TimePoint startFrameTime;
     };
     std::vector<EGLFrame> mPendingFrames;
-    EGLnsecsANDROID mPrevFrameTime = 0;
-    std::atomic<int32_t> mLastLatency = {0};
-};
-
-class FullFrameStatisticsGL : public LatencyFrameStatisticsGL {
-   public:
-    FullFrameStatisticsGL(const EGL& egl, const SwappyCommon& swappyCommon);
-    ~FullFrameStatisticsGL() = default;
-
-    void capture(EGLDisplay dpy, EGLSurface surface) override;
-
-    SwappyStats getStats() override;
-
-    bool isEssential() const override { return false; }
-
-   private:
-    static constexpr std::chrono::nanoseconds LOG_EVERY_N_NS = 1s;
-
-    int updateFrames(EGLnsecsANDROID start, EGLnsecsANDROID end,
-                     uint64_t stat[]);
-    void updateIdleFrames(EGL::FrameTimestamps& frameStats) REQUIRES(mMutex);
-    void updateLateFrames(EGL::FrameTimestamps& frameStats) REQUIRES(mMutex);
-    void updateOffsetFromPreviousFrame(EGL::FrameTimestamps& frameStats)
-        REQUIRES(mMutex);
-    void updateLatencyFrames(EGL::FrameTimestamps& frameStats,
-                             TimePoint frameStartTime) REQUIRES(mMutex);
-    void logFrames() REQUIRES(mMutex);
-
-    std::mutex mMutex;
-    SwappyStats mStats GUARDED_BY(mMutex) = {};
+    FrameStatistics mFrameStatsCommon;
 };
 
 }  // namespace swappy
