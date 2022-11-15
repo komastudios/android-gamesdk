@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "95bb3a4d_ecfc343a",
+        "filename": "games-frame-pacing/vulkan/swappyVk_c.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-15T15:10:09Z",
+      "side": 1,
+      "message": "Yes, the implementation is in progress. My attempt was to split the commits into manageable sizes and get some early reviews. Waiting for all the CLs to review fully is fine by me.",
+      "parentUuid": "055e668e_cdcc7ee7",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "efd1be38_67a9ba59",
         "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
         "patchSetId": 3
@@ -48,6 +66,24 @@
       "writtenOn": "2022-11-15T14:46:30Z",
       "side": 1,
       "message": "I\u0027ll add third_party/cube to the repo upload script so this is caught before we upload it",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4e90bf8_8df6df64",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-15T15:10:09Z",
+      "side": 1,
+      "message": "that is a good idea - Thank you.",
+      "parentUuid": "efd1be38_67a9ba59",
       "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -88,6 +124,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9abf22f2_0a2ac33a",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-15T15:10:09Z",
+      "side": 1,
+      "message": "It should have been used for setting up the choreographer callback in doFrame. Looks like I missed that.",
+      "parentUuid": "ebcfe0eb_c0b0f92d",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3e7dc9b3_38e7b43e",
         "filename": "third_party/cube/app/src/main/res/drawable-anydpi/ic_info_outline_white_24dp.xml",
         "patchSetId": 3
@@ -99,6 +153,24 @@
       "writtenOn": "2022-11-15T14:30:33Z",
       "side": 1,
       "message": "What do these xml files do? I assume I can just skim them for code review?",
+      "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e64f1bc_f984decb",
+        "filename": "third_party/cube/app/src/main/res/drawable-anydpi/ic_info_outline_white_24dp.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-15T15:10:09Z",
+      "side": 1,
+      "message": "These are just icons (copied from bouncy ball)",
+      "parentUuid": "3e7dc9b3_38e7b43e",
       "revId": "f3c1364002d8e65434a8df57a6aa9b230d52895d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }

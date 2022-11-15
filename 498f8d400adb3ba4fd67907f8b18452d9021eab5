@@ -34,6 +34,24 @@
       "parentUuid": "e3163f7c_c5b2583a",
       "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "368fc986_b7bf2a98",
+        "filename": "third_party/cube/app/src/main/java/com/samples/cube/CubeActivity.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-15T15:10:09Z",
+      "side": 0,
+      "message": "Yes - I want to make the UI similar to bouncy ball where the frame statistics overlay can be toggled.",
+      "parentUuid": "b9c4ba6d_0beec175",
+      "revId": "498f8d400adb3ba4fd67907f8b18452d9021eab5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
