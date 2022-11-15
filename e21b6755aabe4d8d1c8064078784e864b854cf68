@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a063ad9_3a2f36c1",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2022-11-15T12:45:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76f3b909_242c5bf8",
+      "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c6bd442a_73a863c2",
@@ -48,6 +66,24 @@
       "writtenOn": "2022-11-15T12:27:10Z",
       "side": 1,
       "message": "Add comments",
+      "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79defbab_cf3dc420",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 897,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2022-11-15T12:45:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6bd442a_73a863c2",
       "revId": "e21b6755aabe4d8d1c8064078784e864b854cf68",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
