@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9583a2c0_d0e9c80f",
+        "filename": "games-frame-pacing/opengl/FrameStatisticsGL.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:59:16Z",
+      "side": 0,
+      "message": "all that red removed code looks great :)",
+      "revId": "2ae19de42cd71e23fd89a66dbfbef8c550608406",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50066478_bc3a7522",
+        "filename": "games-frame-pacing/common/FrameStatistics.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:59:16Z",
+      "side": 1,
+      "message": "We could move this to the header? up to you",
+      "revId": "fa712f64cc0ba0a8f709f78acfbf0e25df5978a0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f39b2da_0b1862a3",
+        "filename": "games-frame-pacing/common/FrameStatistics.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:59:16Z",
+      "side": 1,
+      "message": "REQUIRES(mMutex) \nwow I\u0027ve never seen this before, neat.",
+      "revId": "fa712f64cc0ba0a8f709f78acfbf0e25df5978a0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
