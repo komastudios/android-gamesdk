@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e3319b3_870bf551",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:22:40Z",
+      "side": 1,
+      "message": "is this a quick bug fix to avoid making another cl? seems like a pretty big change? what does this do? \n\nif it is a bug fix can we add a bit onto the end of the commit message explaining it (\"also fixed issue with ...\")? it\u0027d be nice to be able to ```git blame``` this and have the commit make sense",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5cfc6b1_f3b44f7a",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:22:40Z",
+      "side": 1,
+      "message": "Can we link to the vulkan documentation here that says this? unless you have a strong feeling about adding links in code\n\nIt\u0027s a weird quirk and I couldn\u0027t find a good explanation of this with 3-4 minutes of googling. Even though your explanation covers it I think it would be good to link to the documentation too so readers understand that this isn\u0027t a quirk in swappy but an actual limitation of the vulkan loader",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33fa97b1_659b34a5",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:22:40Z",
+      "side": 1,
+      "message": "Just to make sure I understand this correctly mPendingFrames.size() should never really go below MIN_FRAME_LAG because vulkan doesn\u0027t give us any info on the most recent 5 frames, right?\nas you said \"as vulkan loader does not return any history newer than 5 frames\"\nSo if we replaced this with ```mPendingFrames.size() \u003e\u003d MIN_FRAME_LAG``` we wouldn\u0027t expect any change in behaviour?",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69aa5165_15bd496f",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:22:40Z",
+      "side": 1,
+      "message": "Opinion: For readability I\u0027d format this like:\n```FrameTimings current \u003d {\n    frame.startFrameTime,\n    mPastTimes[i].desiredPresentTime,\n    mPastTimes[i].actualPresentTime,\n    mPastTimes[i].presentMargin\n};```",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a2dc893_ee47470d",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:22:40Z",
+      "side": 1,
+      "message": "https://stackoverflow.com/questions/29412412/does-final-imply-override\n\nFinal does not imply override so we lose information here (I actually did have to go manually check if this was overriding a function).",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
