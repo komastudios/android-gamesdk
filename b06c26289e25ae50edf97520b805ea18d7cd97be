@@ -55,6 +55,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1f4b01cf_42a1bf1a",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-11-22T14:51:03Z",
+      "side": 1,
+      "message": "Do we have some maximum size for mPendingFrames? It would be better if didn\u0027t touch the heap at all when we\u0027re in the frame loop. A system call can be expensive so most of our code uses preallocated buffers with a max size. Is it possible to have this preallocated? It would also be ok if the allocations are just very rare.",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d5cfc6b1_f3b44f7a",
         "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
         "patchSetId": 2
