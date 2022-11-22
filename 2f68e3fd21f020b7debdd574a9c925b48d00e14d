@@ -16,6 +16,24 @@
       "message": "Ideally these _included.cpp files (three of them) have to be removed altogether, and static library would be added as a dependency instead.",
       "revId": "2f68e3fd21f020b7debdd574a9c925b48d00e14d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13a74dec_aaa4da35",
+        "filename": "samples/game_controller/gameactivity/app/src/main/cpp/game_activity_included.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-22T08:28:05Z",
+      "side": 1,
+      "message": "removing this change from this commit to address the static library in a separate commit.",
+      "parentUuid": "2ad341ac_d3ff5f0b",
+      "revId": "2f68e3fd21f020b7debdd574a9c925b48d00e14d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
