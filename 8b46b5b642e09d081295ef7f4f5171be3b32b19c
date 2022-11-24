@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c13f7c93_66e9b5fd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-24T13:28:33Z",
+      "side": 1,
+      "message": "Nit: Vulkan should be capitalised (\u0027Vulkan\u0027 not \u0027vulkan\u0027)",
+      "range": {
+        "startLine": 7,
+        "startChar": 4,
+        "endLine": 7,
+        "endChar": 5
+      },
+      "revId": "8b46b5b642e09d081295ef7f4f5171be3b32b19c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f1da5d1_578aeefa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-24T13:28:33Z",
+      "side": 1,
+      "message": "Nit: Swappy should be capitalised (\u0027Swappy\u0027 not \u0027swappy\u0027)",
+      "range": {
+        "startLine": 7,
+        "startChar": 26,
+        "endLine": 7,
+        "endChar": 27
+      },
+      "revId": "8b46b5b642e09d081295ef7f4f5171be3b32b19c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4ab5024_03c7db07",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-24T13:28:33Z",
+      "side": 1,
+      "message": "Just pedantry from me.",
+      "revId": "8b46b5b642e09d081295ef7f4f5171be3b32b19c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a74754c6_56e9c036",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-24T13:28:33Z",
+      "side": 1,
+      "message": "Nit: all comments should end in a period \u0027.\u0027.",
+      "revId": "8b46b5b642e09d081295ef7f4f5171be3b32b19c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d096f3c1_d77b0055",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-24T13:28:33Z",
+      "side": 1,
+      "message": "Nit: \u0027Set up\u0027 not \u0027Setup\u0027. Setup is a noun, set up is a verb.",
+      "range": {
+        "startLine": 99,
+        "startChar": 7,
+        "endLine": 99,
+        "endChar": 13
+      },
+      "revId": "8b46b5b642e09d081295ef7f4f5171be3b32b19c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
