@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1921d566_724b75b2",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "No, this is a new member in the class.",
+      "parentUuid": "5e3319b3_870bf551",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1f4b01cf_42a1bf1a",
         "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
         "patchSetId": 2
@@ -66,6 +84,24 @@
       "writtenOn": "2022-11-22T14:51:03Z",
       "side": 1,
       "message": "Do we have some maximum size for mPendingFrames? It would be better if didn\u0027t touch the heap at all when we\u0027re in the frame loop. A system call can be expensive so most of our code uses preallocated buffers with a max size. Is it possible to have this preallocated? It would also be ok if the allocations are just very rare.",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b88e3e27_5a7850fc",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "Yeah - I had the same thought. I will make it a separate commit where I adjust both GL \u0026 vulkan for this : b/260322611",
+      "parentUuid": "1f4b01cf_42a1bf1a",
       "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -89,6 +125,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c1a8588a_3348e7c9",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "Sure.",
+      "parentUuid": "d5cfc6b1_f3b44f7a",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33fa97b1_659b34a5",
         "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
         "patchSetId": 2
@@ -100,6 +154,24 @@
       "writtenOn": "2022-11-22T14:22:40Z",
       "side": 1,
       "message": "Just to make sure I understand this correctly mPendingFrames.size() should never really go below MIN_FRAME_LAG because vulkan doesn\u0027t give us any info on the most recent 5 frames, right?\nas you said \"as vulkan loader does not return any history newer than 5 frames\"\nSo if we replaced this with ```mPendingFrames.size() \u003e\u003d MIN_FRAME_LAG``` we wouldn\u0027t expect any change in behaviour?",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad93d065_a67a02a2",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "That is correct, however I wanted this 5 frame thing to be failsafe. In case android loader changes this value - the worst that can happen with the current implementation is that we will artificially delay querying stats. However if we change this logic to use 5 frames, we may risk querying frame data and throwing it away. So, here we just check all our pending frames if there is any matching data from the returned frame date in the vulkan query.",
+      "parentUuid": "33fa97b1_659b34a5",
       "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -123,6 +195,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "520b9b5d_7d0f2de4",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "Agreed - but I leave it upto clangformat usually.",
+      "parentUuid": "69aa5165_15bd496f",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7a2dc893_ee47470d",
         "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.h",
         "patchSetId": 2
@@ -134,6 +224,24 @@
       "writtenOn": "2022-11-22T14:22:40Z",
       "side": 1,
       "message": "https://stackoverflow.com/questions/29412412/does-final-imply-override\n\nFinal does not imply override so we lose information here (I actually did have to go manually check if this was overriding a function).",
+      "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afef7f64_1616548d",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-24T13:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a2dc893_ee47470d",
       "revId": "b06c26289e25ae50edf97520b805ea18d7cd97be",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
