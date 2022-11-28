@@ -313,4 +313,28 @@ bool SwappyVk::IsEnabled(VkSwapchainKHR swapchain, bool* isEnabled) {
     return true;
 }
 
+void SwappyVk::enableStats(VkSwapchainKHR swapchain, bool enabled) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->enableStats(enabled);
+}
+
+void SwappyVk::getStats(VkSwapchainKHR swapchain, SwappyStats* swappyStats) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->getStats(swappyStats);
+}
+
+void SwappyVk::recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain,
+                                uint32_t image) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->recordFrameStart(queue, image);
+}
+
+void SwappyVk::clearStats(VkSwapchainKHR swapchain) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end()) it->second->clearStats();
+}
+
 }  // namespace swappy

@@ -157,4 +157,29 @@ bool SwappyVk_isEnabled(VkSwapchainKHR swapchain, bool* isEnabled) {
     return swappy.IsEnabled(swapchain, isEnabled);
 }
 
+void SwappyVk_enableStats(VkSwapchainKHR swapchain, bool enabled) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.enableStats(swapchain, enabled);
+}
+
+void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats* swappyStats) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.getStats(swapchain, swappyStats);
+}
+
+void SwappyVk_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain,
+                               uint32_t image) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.recordFrameStart(queue, swapchain, image);
+}
+
+void SwappyVk_clearStats(VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.clearStats(swapchain);
+}
+
 }  // extern "C"

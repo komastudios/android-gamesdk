@@ -33,12 +33,17 @@ class SwappyVkFallback : public SwappyVkBase {
                      VkPhysicalDevice physicalDevice, VkDevice device,
                      const SwappyVkFunctionProvider* provider);
 
-    virtual bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
-                                           uint64_t* pRefreshDuration) override;
+    bool doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
+                                   uint64_t* pRefreshDuration) override final;
 
-    virtual VkResult doQueuePresent(
+    VkResult doQueuePresent(
         VkQueue queue, uint32_t queueFamilyIndex,
-        const VkPresentInfoKHR* pPresentInfo) override;
+        const VkPresentInfoKHR* pPresentInfo) override final;
+
+    void enableStats(bool enabled) override final;
+    void recordFrameStart(VkQueue queue, uint32_t image) override final;
+    void getStats(SwappyStats* swappyStats) override final;
+    void clearStats() override final;
 };
 
 }  // namespace swappy
