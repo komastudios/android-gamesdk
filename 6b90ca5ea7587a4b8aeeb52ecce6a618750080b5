@@ -1,5 +1,29 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aeb29966_ac2fb524",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-11-28T12:41:03Z",
+      "side": 1,
+      "message": "Nit, vulkan -\u003e Vulkan, and througout.",
+      "range": {
+        "startLine": 138,
+        "startChar": 60,
+        "endLine": 138,
+        "endChar": 61
+      },
+      "revId": "6b90ca5ea7587a4b8aeeb52ecce6a618750080b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
