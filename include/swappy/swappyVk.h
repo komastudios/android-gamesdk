@@ -25,8 +25,11 @@
 #include "jni.h"
 #include "swappy_common.h"
 
+#ifndef VK_NO_PROTOTYPES
 #define VK_NO_PROTOTYPES 1
 #include <vulkan/vulkan.h>
+#undef VK_NO_PROTOTYPES
+#endif
 
 #ifdef __cplusplus
 extern "C" {
