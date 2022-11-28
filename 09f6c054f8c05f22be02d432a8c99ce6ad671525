@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a67750ae_1e34e9db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116648
+      },
+      "writtenOn": "2022-11-28T16:50:56Z",
+      "side": 1,
+      "message": "This is from Unity\u0027s email thread, may you kindly take a look? thank you!",
+      "revId": "09f6c054f8c05f22be02d432a8c99ce6ad671525",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
