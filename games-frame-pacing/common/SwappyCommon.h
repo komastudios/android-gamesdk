@@ -28,7 +28,6 @@
 #include "CPUTracer.h"
 #include "ChoreographerFilter.h"
 #include "ChoreographerThread.h"
-#include "FrameStatistics.h"
 #include "SwappyDisplayManager.h"
 #include "Thread.h"
 #include "swappy/swappyGL.h"
@@ -118,17 +117,16 @@ class SwappyCommon {
 
     void setANativeWindow(ANativeWindow* window);
 
-    void setFrameStatistics(
-        const std::shared_ptr<FrameStatistics>& frameStats) {
-        mFrameStatistics = frameStats;
-    }
-
     void setBufferStuffingFixWait(int32_t nFrames) {
         mBufferStuffingFixWait = std::max(0, nFrames);
     }
 
     int getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                      int allocated_entries);
+
+    void setLastLatencyRecordedCallback(std::function<int32_t()> callback) {
+        mLastLatencyRecorded = callback;
+    }
 
    protected:
     // Used for testing
@@ -354,6 +352,10 @@ class SwappyCommon {
     float mLatestFrameRateVote GUARDED_BY(mMutex) = 0.f;
     static constexpr float FRAME_RATE_VOTE_MARGIN = 1.f;  // 1Hz
 
+    // Callback for last latency recorded - used for buffer stuffing fix.
+    // Latency is returned in number of V-syncs
+    std::function<int32_t()> mLastLatencyRecorded;
+
     // If zero, don't apply the double buffering fix. If non-zero, apply
     // the fix after this number of bad frames.
     int mBufferStuffingFixWait = 0;
@@ -364,8 +366,6 @@ class SwappyCommon {
     // Counts the number of consecutive missed frames (as judged by expected
     // latency).
     int mMissedFrameCounter = 0;
-
-    std::shared_ptr<FrameStatistics> mFrameStatistics;
 };
 
 }  // namespace swappy

@@ -19,9 +19,21 @@
 #include <cstdint>
 
 #include "paddleboat.h"
+#include "GameControllerMappingFile.h"
 
 namespace paddleboat {
-const Paddleboat_Controller_Mapping_Data *GetInternalControllerData();
+// Interim until PaddleboatMappingTool is finished
+typedef struct Paddleboat_Internal_Mapping_Header {
+    uint32_t axisTableEntryCount;
+    uint32_t buttonTableEntryCount;
+    uint32_t controllerTableEntryCount;
+    uint32_t stringTableEntryCount;
+    const Paddleboat_Controller_Mapping_File_Axis_Entry *axisTable;
+    const Paddleboat_Controller_Mapping_File_Button_Entry *buttonTable;
+    const Paddleboat_Controller_Mapping_File_Controller_Entry *controllerTable;
+    const Paddleboat_Controller_Mapping_File_String_Entry *stringTable;
+} Paddleboat_Internal_Mapping_Header;
 
-int32_t GetInternalControllerDataCount();
+const Paddleboat_Internal_Mapping_Header *GetInternalMappingHeader();
+
 }  // namespace paddleboat

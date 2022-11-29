@@ -91,6 +91,13 @@ class SwappyVk {
 
     bool IsEnabled(VkSwapchainKHR swapchain, bool* isEnabled);
 
+    // Frame statistics.
+    void enableStats(VkSwapchainKHR swapchain, bool enabled);
+    void getStats(VkSwapchainKHR swapchain, SwappyStats* swappyStats);
+    void recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain,
+                          uint32_t image);
+    void clearStats(VkSwapchainKHR swapchain);
+
    private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>

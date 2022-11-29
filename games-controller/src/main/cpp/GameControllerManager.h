@@ -22,6 +22,7 @@
 #include <mutex>
 
 #include "GameController.h"
+#include "GameControllerMappingInfo.h"
 #include "ThreadUtil.h"
 
 namespace paddleboat {
@@ -35,7 +36,6 @@ class GameControllerManager {
 
     static constexpr int32_t MAX_MOUSE_DEVICES = 2;
     static constexpr int32_t INVALID_MOUSE_ID = -1;
-    static constexpr int32_t MAX_REMAP_TABLE_SIZE = 256;
 
     // Assuming update is getting called at 60Hz, wait one minute in between
     // checking battery status
@@ -45,8 +45,6 @@ class GameControllerManager {
     GameControllerManager(JNIEnv *env, jobject jcontext, ConstructorTag);
 
     ~GameControllerManager();
-
-    static inline int32_t getRemapTableSize() { return MAX_REMAP_TABLE_SIZE; }
 
     static Paddleboat_ErrorCode init(JNIEnv *env, jobject jcontext);
 
@@ -130,6 +128,15 @@ class GameControllerManager {
         const int32_t destRemapTableEntryCount,
         Paddleboat_Controller_Mapping_Data *mappingData);
 
+    static Paddleboat_ErrorCode addControllerRemapDataFromFd(
+            const Paddleboat_Remap_Addition_Mode addMode,
+            const int fileDescriptor);
+
+    static Paddleboat_ErrorCode addControllerRemapDataFromFileBuffer(
+            const Paddleboat_Remap_Addition_Mode addMode,
+            const Paddleboat_Controller_Mapping_File_Header *mappingFileHeader,
+            const size_t mappingFileBufferSize);
+
     // Called from the JNI bridge functions
     static GameControllerDeviceInfo *onConnection();
 
@@ -183,7 +190,7 @@ class GameControllerManager {
 
     void releaseGlobals(JNIEnv *env);
 
-    const Paddleboat_Controller_Mapping_Data *getMapForController(
+    const Paddleboat_Controller_Mapping_File_Controller_Entry *getMapForController(
         const GameController &gameController);
 
     bool mInitialized = false;
@@ -212,8 +219,7 @@ class GameControllerManager {
 
     uint64_t mActiveAxisMask = 0;
 
-    int32_t mRemapEntryCount = 0;
-    Paddleboat_Controller_Mapping_Data mMappingTable[MAX_REMAP_TABLE_SIZE];
+    GameControllerMappingInfo mMappingInfo;
 
     Paddleboat_MotionDataCallback mMotionDataCallback = nullptr;
     void *mMotionDataCallbackUserData = nullptr;

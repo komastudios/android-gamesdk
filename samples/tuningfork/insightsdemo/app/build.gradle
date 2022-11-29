@@ -44,9 +44,11 @@ android {
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
-    // Uncomment this line and comment out "implementation project("...")"
+    // Uncomment the line below (implementation fileTree...)
+    // and comment out "implementation project("...")"
     // to use a locally built .aar
-    //implementation fileTree(dir: '../../../', include: ['games-performance-tune-release.aar',
+    // See ../settings.gradle as well.
+    //implementation fileTree(dir: '../../../../', include: ['games-performance-tuner-release.aar',
     //                                                    'games-frame-pacing-release.aar'])
     implementation project(':games-performance-tuner')
     implementation project(':games-frame-pacing')

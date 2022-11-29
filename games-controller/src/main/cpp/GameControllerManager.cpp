@@ -18,7 +18,11 @@
 #include <android/api-level.h>
 
 #include <cstdlib>
+#include <fcntl.h>
 #include <memory>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "GameControllerInternalConstants.h"
 #include "GameControllerLog.h"
@@ -358,13 +362,25 @@ GameControllerManager::GameControllerManager(JNIEnv *env, jobject jcontext,
     mMouseData.mouseX = 0.0f;
     mMouseData.mouseY = 0.0f;
     mInitialized = true;
-    memset(mMappingTable, 0, sizeof(mMappingTable));
-    mRemapEntryCount = GetInternalControllerDataCount();
-    const Paddleboat_Controller_Mapping_Data *mappingData =
-        GetInternalControllerData();
-    const size_t copySize =
-        mRemapEntryCount * sizeof(Paddleboat_Controller_Mapping_Data);
-    memcpy(mMappingTable, mappingData, copySize);
+
+    const Paddleboat_Internal_Mapping_Header *mappingHeader = GetInternalMappingHeader();
+    mMappingInfo.mAxisTableEntryCount = mappingHeader->axisTableEntryCount;
+    mMappingInfo.mButtonTableEntryCount = mappingHeader->buttonTableEntryCount;
+    mMappingInfo.mControllerTableEntryCount = mappingHeader->controllerTableEntryCount;
+    mMappingInfo.mStringTableEntryCount = mappingHeader->stringTableEntryCount;
+    memcpy(mMappingInfo.mAxisTable, mappingHeader->axisTable,
+           sizeof(Paddleboat_Controller_Mapping_File_Axis_Entry) *
+                   mMappingInfo.mAxisTableEntryCount);
+    memcpy(mMappingInfo.mButtonTable, mappingHeader->buttonTable,
+           sizeof(Paddleboat_Controller_Mapping_File_Button_Entry) *
+                   mMappingInfo.mButtonTableEntryCount);
+    memcpy(mMappingInfo.mControllerTable, mappingHeader->controllerTable,
+           sizeof(Paddleboat_Controller_Mapping_File_Controller_Entry) *
+                   mMappingInfo.mControllerTableEntryCount);
+    memcpy(mMappingInfo.mStringTable, mappingHeader->stringTable,
+           sizeof(Paddleboat_Controller_Mapping_File_String_Entry) *
+                   mMappingInfo.mStringTableEntryCount);
+
     // Our minimum supported API level, we will retrieve the actual runtime API
     // level later on calling getApiLevel
     mApiLevel = 16;
@@ -795,7 +811,7 @@ void GameControllerManager::update(JNIEnv *env) {
                     // device, if one does not exist, nullptr is passed and
                     // GameController will fallback to default axis and button
                     // mapping.
-                    const Paddleboat_Controller_Mapping_Data *mapData =
+                    const Paddleboat_Controller_Mapping_File_Controller_Entry *mapData =
                         gcm->getMapForController(gcm->mGameControllers[i]);
 #if defined LOG_INPUT_EVENTS
                     if (mapData != nullptr) {
@@ -822,7 +838,11 @@ void GameControllerManager::update(JNIEnv *env) {
                                 ->mProductId);
                     }
 #endif
-                    gcm->mGameControllers[i].setupController(mapData);
+                    const uint32_t axisIndex = mapData != nullptr ? mapData->axisTableIndex : 0;
+                    const uint32_t buttonIndex = mapData != nullptr ? mapData->buttonTableIndex : 0;
+                    gcm->mGameControllers[i].setupController(mapData,
+                        &gcm->mMappingInfo.mAxisTable[axisIndex],
+                        &gcm->mMappingInfo.mButtonTable[buttonIndex]);
                     // Update the active axis mask to include any new axis used
                     // by the new controller
                     gcm->mActiveAxisMask |=
@@ -1472,70 +1492,87 @@ void GameControllerManager::updateMouseDataTimestamp() {
     mMouseData.timestamp = static_cast<uint64_t>(timestamp);
 }
 
-void GameControllerManager::addControllerRemapData(
-    const Paddleboat_Remap_Addition_Mode addMode,
-    const int32_t remapTableEntryCount,
-    const Paddleboat_Controller_Mapping_Data *mappingData) {
+Paddleboat_ErrorCode GameControllerManager::addControllerRemapDataFromFd(
+   const Paddleboat_Remap_Addition_Mode addMode, const int fileDescriptor) {
+    Paddleboat_ErrorCode result = PADDLEBOAT_ERROR_NOT_INITIALIZED;
     GameControllerManager *gcm = getInstance();
     if (gcm) {
-        if (addMode == PADDLEBOAT_REMAP_ADD_MODE_REPLACE_ALL) {
-            gcm->mRemapEntryCount =
-                (remapTableEntryCount < MAX_REMAP_TABLE_SIZE)
-                    ? remapTableEntryCount
-                    : MAX_REMAP_TABLE_SIZE;
-            const size_t copySize = gcm->mRemapEntryCount *
-                                    sizeof(Paddleboat_Controller_Mapping_Data);
-            memcpy(gcm->mMappingTable, mappingData, copySize);
-        } else if (addMode == PADDLEBOAT_REMAP_ADD_MODE_DEFAULT) {
-            for (int32_t i = 0; i < remapTableEntryCount; ++i) {
-                MappingTableSearch mapSearch(&gcm->mMappingTable[0],
-                                             gcm->mRemapEntryCount);
-                mapSearch.initSearchParameters(
-                    mappingData[i].vendorId, mappingData[i].productId,
-                    mappingData[i].minimumEffectiveApiLevel,
-                    mappingData[i].maximumEffectiveApiLevel);
-                GameControllerMappingUtils::findMatchingMapEntry(&mapSearch);
-                bool success = GameControllerMappingUtils::insertMapEntry(
-                    &mappingData[i], &mapSearch);
-                if (!success) {
-                    break;
+        struct stat fileStat;
+        // assume file i/o failed unless we reach addControllerRemapDataFromFileBuffer, which
+        // returns its own error code result
+        result = PADDLEBOAT_ERROR_FILE_IO;
+        if (fstat(fileDescriptor, &fileStat) == 0) {
+            const size_t fileSize = static_cast<size_t>(fileStat.st_size);
+            void *fileBuffer = malloc(fileStat.st_size);
+            if (fileBuffer != nullptr) {
+                if (read(fileDescriptor, fileBuffer, fileSize) == static_cast<ssize_t>(fileSize)) {
+                    result = GameControllerManager::addControllerRemapDataFromFileBuffer(addMode,
+                        reinterpret_cast<const Paddleboat_Controller_Mapping_File_Header *>
+                        (fileBuffer), fileSize);
                 }
-                gcm->mRemapEntryCount += 1;
+                free(fileBuffer);
             }
         }
     }
+    return result;
+}
+
+Paddleboat_ErrorCode GameControllerManager::addControllerRemapDataFromFileBuffer(
+    const Paddleboat_Remap_Addition_Mode addMode,
+    const Paddleboat_Controller_Mapping_File_Header *mappingFileHeader,
+    const size_t mappingFileBufferSize) {
+    Paddleboat_ErrorCode result = PADDLEBOAT_ERROR_NOT_INITIALIZED;
+    GameControllerManager *gcm = getInstance();
+    if (gcm) {
+        result = GameControllerMappingUtils::validateMapFile(mappingFileHeader,
+                                                             mappingFileBufferSize);
+        if (result == PADDLEBOAT_NO_ERROR) {
+            switch (addMode) {
+                case PADDLEBOAT_REMAP_ADD_MODE_DEFAULT:
+                    result = GameControllerMappingUtils::mergeControllerRemapData(
+                            mappingFileHeader, mappingFileBufferSize, gcm->mMappingInfo);
+                    break;
+                case PADDLEBOAT_REMAP_ADD_MODE_REPLACE_ALL:
+                    result = GameControllerMappingUtils::overwriteControllerRemapData(
+                            mappingFileHeader, mappingFileBufferSize, gcm->mMappingInfo);
+                    break;
+            }
+        }
+    }
+    return result;
+}
+
+void GameControllerManager::addControllerRemapData(
+    const Paddleboat_Remap_Addition_Mode /*addMode*/,
+    const int32_t /*remapTableEntryCount*/,
+    const Paddleboat_Controller_Mapping_Data */*mappingData*/) {
+    /*
+     * Paddleboat 1.2 deprecated this function in favor of addControllerRemapDataFromFileBuffer
+     * and addControllerRemapDataFromFd. The new functions use a more efficient system with
+     * additional features.
+     */
 }
 
 int32_t GameControllerManager::getControllerRemapTableData(
-    const int32_t destRemapTableEntryCount,
-    Paddleboat_Controller_Mapping_Data *mappingData) {
-    GameControllerManager *gcm = getInstance();
-    if (!gcm) {
-        return 0;
-    }
-    if (mappingData != nullptr) {
-        size_t copySize = (gcm->mRemapEntryCount < destRemapTableEntryCount)
-                              ? gcm->mRemapEntryCount
-                              : destRemapTableEntryCount;
-        copySize *= sizeof(Paddleboat_Controller_Mapping_Data);
-        memcpy(mappingData, gcm->mMappingTable, copySize);
-    }
-    return gcm->mRemapEntryCount;
+    const int32_t /*destRemapTableEntryCount*/,
+    Paddleboat_Controller_Mapping_Data */*mappingData*/) {
+    return 0;
 }
 
-const Paddleboat_Controller_Mapping_Data *
-GameControllerManager::getMapForController(
-    const GameController &gameController) {
-    const Paddleboat_Controller_Mapping_Data *returnMap = nullptr;
+const Paddleboat_Controller_Mapping_File_Controller_Entry *
+GameControllerManager::getMapForController(const GameController &gameController) {
+    const Paddleboat_Controller_Mapping_File_Controller_Entry *returnEntry = nullptr;
     const GameControllerDeviceInfo &deviceInfo = gameController.getDeviceInfo();
-    MappingTableSearch mapSearch(&mMappingTable[0], mRemapEntryCount);
+    MappingTableSearch mapSearch(&mMappingInfo.mControllerTable[0],
+                                 mMappingInfo.mControllerTableEntryCount);
     mapSearch.initSearchParameters(deviceInfo.getInfo().mVendorId,
                                    deviceInfo.getInfo().mProductId, mApiLevel,
                                    mApiLevel);
     bool success = GameControllerMappingUtils::findMatchingMapEntry(&mapSearch);
     if (success) {
-        returnMap = &mapSearch.mappingRoot[mapSearch.tableIndex];
+        returnEntry = &mapSearch.mappingRoot[mapSearch.tableIndex];
     }
-    return returnMap;
+    return returnEntry;
 }
+
 }  // namespace paddleboat
