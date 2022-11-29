@@ -115,9 +115,11 @@ dependencies {
 //    implementation "androidx.games:games-performance-tuner:1.5.0-beta01"
 //    implementation "androidx.games:games-controller:1.0.0"
 //    implementation "androidx.games:games-activity:1.1.0"
-//    implementation "androidx.games:games-memory-advice:1.0.0-beta01"
-    // Uncomment this line and comment out "implementation project(":*")" lines
+    implementation "androidx.games:games-memory-advice:1.0.0-beta01"
+    // Uncomment the line below (implementation fileTree...)
+    // and comment out "implementation project(":*")" lines
     // to use a locally built .aar
+    // See ../settings.gradle as well.
     //implementation fileTree(dir: '../../../', include: [
     //        'game-activity-release.aar',
     //        'games-performance-tuner-release.aar',
@@ -128,7 +130,6 @@ dependencies {
     implementation project(':games-performance-tuner')
     implementation project(':games-frame-pacing')
     implementation project(':games-controller')
-    implementation project(':games-memory-advice')
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"

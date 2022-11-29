@@ -16,17 +16,55 @@
 
 #pragma once
 
-#include <swappy/swappyGL_extra.h>
+#include <swappy/swappy_common.h>
+
+#include <atomic>
+#include <chrono>
+#include <mutex>
+
+#include "Thread.h"
+
+using namespace std::chrono_literals;
 
 namespace swappy {
 
+/* FrameTimings is defined so that EGL & vulkan can convert their timestamps
+ * into this common struct. Within the common frame statistics, this is all the
+ * information that is needed.
+ */
+typedef struct {
+    uint64_t startFrameTime;
+    uint64_t desiredPresentTime;
+    uint64_t actualPresentTime;
+    uint64_t presentMargin;
+} FrameTimings;
+
 class FrameStatistics {
    public:
-    virtual ~FrameStatistics() {}
-    virtual int32_t lastLatencyRecorded() const = 0;
-    // Only the essential latency statistics, not full.
-    virtual bool isEssential() const = 0;
-    virtual SwappyStats getStats() = 0;
+    ~FrameStatistics() = default;
+
+    void enableStats(bool enabled);
+    void updateFrameStats(FrameTimings currentFrameTimings,
+                          uint64_t refreshPeriod);
+    SwappyStats getStats();
+    void clearStats();
+    void invalidateLastFrame();
+
+    int32_t lastLatencyRecorded() { return mLastLatency; }
+
+   private:
+    static constexpr std::chrono::nanoseconds LOG_EVERY_N_NS = 1s;
+    void logFrames() REQUIRES(mMutex);
+
+    int32_t getFrameDelta(int64_t deltaTimeNS, uint64_t refreshPeriod);
+
+    std::mutex mMutex;
+    SwappyStats mStats GUARDED_BY(mMutex) = {};
+    std::atomic<int32_t> mLastLatency = {0};
+    FrameTimings mLast;
+
+    // A flag to enable or disable frame stats histogram update.
+    bool mFullStatsEnabled = false;
 };
 
 }  // namespace swappy

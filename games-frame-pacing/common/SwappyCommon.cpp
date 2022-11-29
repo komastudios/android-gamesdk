@@ -289,6 +289,12 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
     int lateFrames = 0;
     bool presentationTimeIsNeeded;
 
+    // We do not want to hold the mutex while waiting, so make a local copy of
+    // the flag.
+    mMutex.lock();
+    bool localAutoSwapIntervalEnabled = mAutoSwapIntervalEnabled;
+    mMutex.unlock();
+
     const nanoseconds cpuTime =
         (mStartFrameTime.time_since_epoch().count() == 0)
             ? 0ns
@@ -297,10 +303,12 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
 
     preWaitCallbacks();
 
-    // if we are running slower than the threshold there is no point to sleep,
+    // if we are running slower than the threshold (if auto swap interval is
+    // enabled) there is no point to sleep,
     // just let the app run as fast as it can
     if (mCommonSettings.refreshPeriod * mAutoSwapInterval <=
-        mAutoSwapIntervalThreshold.load()) {
+            mAutoSwapIntervalThreshold.load() ||
+        !localAutoSwapIntervalEnabled) {
         waitUntilTargetFrame();
 
         // wait for the previous frame to be rendered
@@ -838,8 +846,8 @@ void SwappyCommon::startFrame() {
     const int intervals = (mPipelineMode == PipelineMode::On) ? 2 : 1;
 
     // Use frame statistics to fix any buffer stuffing
-    if (mBufferStuffingFixWait > 0 && mFrameStatistics) {
-        int32_t lastLatency = mFrameStatistics->lastLatencyRecorded();
+    if (mBufferStuffingFixWait > 0 && mLastLatencyRecorded) {
+        int32_t lastLatency = mLastLatencyRecorded();
         int expectedLatency = mAutoSwapInterval * intervals;
         TRACE_INT("ExpectedLatency", expectedLatency);
         if (mBufferStuffingFixCounter == 0) {

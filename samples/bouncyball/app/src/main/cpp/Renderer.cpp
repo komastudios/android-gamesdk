@@ -67,7 +67,7 @@ void Renderer::setWindow(ANativeWindow *window, int32_t width, int32_t height) {
 
 void Renderer::start() {
 
-    mSwappyEnabled = SwappyGL_isEnabled();
+    mSwappyEnabled = SwappyGL_isEnabled() && mSwappyEnabled;
 
     mWorkerThread.run([this](ThreadState *threadState) {
         threadState->isStarted = true;

@@ -57,12 +57,9 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         ${COMMON_SRC_DIR}/controllerui_data.cpp
         ${COMMON_SRC_DIR}/controllerui_util.cpp
         ${COMMON_SRC_DIR}/demo_scene.cpp
-        game_activity_included.cpp
-        game_input_included.cpp
         ${COMMON_SRC_DIR}/imgui_manager.cpp
         ${COMMON_SRC_DIR}/input_util.cpp
         jni_util.cpp
-        native_app_glue_included.cpp
         native_engine.cpp
         ${COMMON_SRC_DIR}/scene.cpp
         ${COMMON_SRC_DIR}/scene_manager.cpp
@@ -89,7 +86,7 @@ target_compile_options(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
         android
         imgui
-        game-activity::game-activity
+        game-activity::game-activity_static
         games-controller::paddleboat_static
         png16::png16-static
         atomic

@@ -67,6 +67,8 @@ class SwappyGL {
     static void enableStats(bool enabled);
     static void recordFrameStart(EGLDisplay display, EGLSurface surface);
     static void getStats(SwappyStats *stats);
+    static void clearStats();
+
     static bool isEnabled();
     static void destroyInstance();
 
@@ -105,7 +107,7 @@ class SwappyGL {
     std::mutex mEglMutex;
     std::unique_ptr<EGL> mEgl;
 
-    std::shared_ptr<LatencyFrameStatisticsGL> mFrameStatistics;
+    std::unique_ptr<FrameStatisticsGL> mFrameStatistics;
 
     SwappyCommon mCommonBase;
 };
