@@ -1209,23 +1209,6 @@ static void setInputConnection_native(JNIEnv *env, jobject activity,
     GameTextInput_setInputConnection(code->gameTextInput, inputConnection);
 }
 
-static void onContentRectChangedNative_native(JNIEnv *env, jobject activity,
-                                              jlong handle, jint x, jint y,
-                                              jint w, jint h) {
-    if (handle != 0) {
-        NativeCode *code = (NativeCode *)handle;
-
-        if (code->callbacks.onContentRectChanged != nullptr) {
-            ARect rect;
-            rect.left = x;
-            rect.top = y;
-            rect.right = x+w;
-            rect.bottom = y+h;
-            code->callbacks.onContentRectChanged(code, &rect);
-        }
-    }
-}
-
 static const JNINativeMethod g_methods[] = {
     {"initializeNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;"
@@ -1263,8 +1246,6 @@ static const JNINativeMethod g_methods[] = {
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
-     {"onContentRectChangedNative", "(JIIII)V",
-             (void *)onContentRectChangedNative_native},
 };
 
 static const char *const kGameActivityPathName =
