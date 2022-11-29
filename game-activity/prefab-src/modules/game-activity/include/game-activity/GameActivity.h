@@ -522,12 +522,6 @@ typedef struct GameActivityCallbacks {
      * Call GameActivity_getWindowInsets to retrieve the insets themselves.
      */
     void (*onWindowInsetsChanged)(GameActivity* activity);
-
-    /**
-     * Callback called when the rectangle in the window where the content
-     * should be placed has changed.
-     */
-    void (*onContentRectChanged)(GameActivity *activity, const ARect *rect);
 } GameActivityCallbacks;
 
 /** \brief Handle the freeing of the GameActivityMotionEvent struct. */
