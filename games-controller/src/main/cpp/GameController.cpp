@@ -319,14 +319,8 @@ int32_t GameController::processGameActivityKeyEvent(
     return processKeyEventInternal(event->keyCode, event->action);
 }
 
-int32_t GameController::processGameActivityMotionEvent(
-    const Paddleboat_GameActivityMotionEvent *event, const size_t eventSize) {
-    int32_t handledEvent = IGNORED_EVENT;
-    if (event->pointerCount > 0) {
-        handledEvent =
-            processMotionEventInternal(event->pointers->axisValues, nullptr);
-    }
-    return handledEvent;
+int32_t GameController::processGameActivityMotionEvent(const float *axisValues) {
+    return processMotionEventInternal(axisValues, nullptr);
 }
 
 int32_t GameController::processKeyEvent(const AInputEvent *event) {

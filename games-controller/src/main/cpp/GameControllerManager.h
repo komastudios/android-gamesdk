@@ -164,6 +164,10 @@ class GameControllerManager {
    private:
     static GameControllerManager *getInstance();
 
+    const float *getAxisValuesFromGameActivityMotionEvent(const void *event,
+                                                          const size_t eventSize,
+                                                          const uint32_t pointerIndex);
+
     Paddleboat_ErrorCode initMethods(JNIEnv *env);
 
     bool isLightTypeSupported(const Paddleboat_Controller_Info &controllerInfo,

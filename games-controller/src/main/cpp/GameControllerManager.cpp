@@ -487,38 +487,44 @@ int32_t GameControllerManager::processGameActivityMotionInputEvent(
         GameControllerManager *gcm = getInstance();
         if (gcm) {
             std::lock_guard<std::mutex> lock(gcm->mUpdateMutex);
+            // The fields we access are the same on original and V2 structs
             const Paddleboat_GameActivityMotionEvent *motionEvent =
                 reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(
                     event);
-            const int32_t eventSource = motionEvent->source;
-            const int32_t eventDeviceId = motionEvent->deviceId;
-            const int32_t dpadSource = eventSource & AINPUT_SOURCE_DPAD;
-            const int32_t gamepadSource = eventSource & AINPUT_SOURCE_GAMEPAD;
-            const int32_t joystickSource = eventSource & AINPUT_SOURCE_JOYSTICK;
-            const int32_t mouseSource = eventSource & AINPUT_SOURCE_MOUSE;
-            if (dpadSource == AINPUT_SOURCE_DPAD ||
-                gamepadSource == AINPUT_SOURCE_GAMEPAD ||
-                joystickSource == AINPUT_SOURCE_JOYSTICK) {
-                for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
-                    if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
-                        if (gcm->mGameControllers[i].getControllerStatus() ==
-                            PADDLEBOAT_CONTROLLER_ACTIVE) {
-                            const GameControllerDeviceInfo &deviceInfo =
-                                gcm->mGameControllers[i].getDeviceInfo();
-                            if (deviceInfo.getInfo().mDeviceId ==
-                                eventDeviceId) {
-                                handledEvent =
-                                    gcm->mGameControllers[i]
-                                        .processGameActivityMotionEvent(
-                                            motionEvent, eventSize);
-                                break;
+            // Axis values are different depending on struct version
+            const float *axisValues = gcm->getAxisValuesFromGameActivityMotionEvent(event,
+                                                                                    eventSize, 0);
+            if (axisValues != nullptr) {
+                const int32_t eventSource = motionEvent->source;
+                const int32_t eventDeviceId = motionEvent->deviceId;
+                const int32_t dpadSource = eventSource & AINPUT_SOURCE_DPAD;
+                const int32_t gamepadSource = eventSource & AINPUT_SOURCE_GAMEPAD;
+                const int32_t joystickSource = eventSource & AINPUT_SOURCE_JOYSTICK;
+                const int32_t mouseSource = eventSource & AINPUT_SOURCE_MOUSE;
+                if (dpadSource == AINPUT_SOURCE_DPAD ||
+                    gamepadSource == AINPUT_SOURCE_GAMEPAD ||
+                    joystickSource == AINPUT_SOURCE_JOYSTICK) {
+                    for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
+                        if (gcm->mGameControllers[i].getConnectionIndex() >= 0) {
+                            if (gcm->mGameControllers[i].getControllerStatus() ==
+                                PADDLEBOAT_CONTROLLER_ACTIVE) {
+                                const GameControllerDeviceInfo &deviceInfo =
+                                        gcm->mGameControllers[i].getDeviceInfo();
+                                if (deviceInfo.getInfo().mDeviceId ==
+                                    eventDeviceId) {
+                                    handledEvent =
+                                            gcm->mGameControllers[i]
+                                                    .processGameActivityMotionEvent(
+                                                            axisValues);
+                                    break;
+                                }
                             }
                         }
                     }
+                } else if (mouseSource == AINPUT_SOURCE_MOUSE) {
+                    handledEvent = gcm->processGameActivityMouseEvent(
+                            event, eventSize, eventDeviceId);
                 }
-            } else if (mouseSource == AINPUT_SOURCE_MOUSE) {
-                handledEvent = gcm->processGameActivityMouseEvent(
-                    event, eventSize, eventDeviceId);
             }
         }
     }
@@ -652,17 +658,38 @@ int32_t GameControllerManager::processMouseEvent(const AInputEvent *event) {
     return handledEvent;
 }
 
+const float *GameControllerManager::getAxisValuesFromGameActivityMotionEvent(
+        const void *event, const size_t eventSize, const uint32_t pointerIndex) {
+    if (pointerIndex < PADDLEBOAT_MAX_NUM_POINTERS_IN_MOTION_EVENT) {
+        if (eventSize == sizeof(Paddleboat_GameActivityMotionEvent)) {
+            const Paddleboat_GameActivityMotionEvent *motionEvent =
+                    reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
+            if (pointerIndex < motionEvent->pointerCount) {
+                return motionEvent->pointers[pointerIndex].axisValues;
+            }
+        }
+        // assume V2
+        const Paddleboat_GameActivityMotionEventV2 *motionEventV2 =
+                reinterpret_cast<const Paddleboat_GameActivityMotionEventV2 *>(event);
+        if (pointerIndex < motionEventV2->pointerCount) {
+            return motionEventV2->pointers[pointerIndex].axisValues;
+        }
+    }
+    return nullptr;
+}
+
 int32_t GameControllerManager::processGameActivityMouseEvent(
     const void *event, const size_t eventSize, const int32_t eventDeviceId) {
     int32_t handledEvent = IGNORED_EVENT;
 
-    // Always update the virtual pointer data in the appropriate controller data
-    // structures
-    const Paddleboat_GameActivityMotionEvent *motionEvent =
-        reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event);
-    if (motionEvent->pointerCount > 0) {
-        const Paddleboat_GameActivityPointerInfo *pointerInfo =
-            motionEvent->pointers;
+    // Button state same for all versions of struct, currently
+    const int32_t buttonState =
+            (reinterpret_cast<const Paddleboat_GameActivityMotionEvent *>(event))->buttonState;
+    // location of axis values dependent on struct version
+    const float *axisValues = getAxisValuesFromGameActivityMotionEvent(event, eventSize, 0);
+    if (axisValues != nullptr) {
+        // Always update the virtual pointer data in the appropriate controller data
+        // structures
         for (size_t i = 0; i < PADDLEBOAT_MAX_CONTROLLERS; ++i) {
             if (mGameControllers[i].getConnectionIndex() >= 0) {
                 if (mGameControllers[i].getControllerStatus() ==
@@ -673,12 +700,10 @@ int32_t GameControllerManager::processGameActivityMouseEvent(
                         Paddleboat_Controller_Data &controllerData =
                             mGameControllers[i].getControllerData();
                         controllerData.virtualPointer.pointerX =
-                            pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
+                            axisValues[AMOTION_EVENT_AXIS_X];
                         controllerData.virtualPointer.pointerY =
-                            pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
-                        const float axisP =
-                            pointerInfo
-                                ->axisValues[AMOTION_EVENT_AXIS_PRESSURE];
+                            axisValues[AMOTION_EVENT_AXIS_Y];
+                        const float axisP = axisValues[AMOTION_EVENT_AXIS_PRESSURE];
 
                         const bool hasTouchpadButton =
                             ((controllerInfo.controllerFlags &
@@ -703,7 +728,7 @@ int32_t GameControllerManager::processGameActivityMouseEvent(
                                 controllerData.virtualPointer.pointerX;
                             mMouseData.mouseY =
                                 controllerData.virtualPointer.pointerY;
-                            mMouseData.buttonsDown = motionEvent->buttonState;
+                            mMouseData.buttonsDown = buttonState;
                             mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
                             updateMouseDataTimestamp();
                         }
@@ -712,31 +737,19 @@ int32_t GameControllerManager::processGameActivityMouseEvent(
                 }
             }
         }
-    }
 
-    if (mMouseStatus == PADDLEBOAT_MOUSE_PHYSICAL) {
-        for (size_t i = 0; i < MAX_MOUSE_DEVICES; ++i) {
-            if (mMouseDeviceIds[i] == eventDeviceId) {
-                if (motionEvent->pointerCount > 0) {
-                    const Paddleboat_GameActivityPointerInfo *pointerInfo =
-                        motionEvent->pointers;
-
-                    mMouseData.mouseX =
-                        pointerInfo->axisValues[AMOTION_EVENT_AXIS_X];
-                    mMouseData.mouseY =
-                        pointerInfo->axisValues[AMOTION_EVENT_AXIS_Y];
-                    const int32_t buttonState = motionEvent->buttonState;
+        if (mMouseStatus == PADDLEBOAT_MOUSE_PHYSICAL) {
+            for (size_t i = 0; i < MAX_MOUSE_DEVICES; ++i) {
+                if (mMouseDeviceIds[i] == eventDeviceId) {
+                    mMouseData.mouseX = axisValues[AMOTION_EVENT_AXIS_X];
+                    mMouseData.mouseY = axisValues[AMOTION_EVENT_AXIS_Y];
                     mMouseData.buttonsDown = static_cast<uint32_t>(buttonState);
-                    const float axisHScroll =
-                        pointerInfo->axisValues[AMOTION_EVENT_AXIS_HSCROLL];
-                    const float axisVScroll =
-                        pointerInfo->axisValues[AMOTION_EVENT_AXIS_VSCROLL];
+                    const float axisHScroll = axisValues[AMOTION_EVENT_AXIS_HSCROLL];
+                    const float axisVScroll = axisValues[AMOTION_EVENT_AXIS_VSCROLL];
                     // These are treated as cumulative deltas and reset when the
                     // calling application requests the mouse data.
-                    mMouseData.mouseScrollDeltaH +=
-                        static_cast<int32_t>(axisHScroll);
-                    mMouseData.mouseScrollDeltaV +=
-                        static_cast<int32_t>(axisVScroll);
+                    mMouseData.mouseScrollDeltaH += static_cast<int32_t>(axisHScroll);
+                    mMouseData.mouseScrollDeltaV += static_cast<int32_t>(axisVScroll);
                     updateMouseDataTimestamp();
                 }
                 handledEvent = HANDLED_EVENT;
