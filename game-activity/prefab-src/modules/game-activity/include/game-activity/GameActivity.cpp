@@ -189,30 +189,6 @@ static struct {
 } gInsetsClassInfo;
 
 /*
- * JNI fields of the Configuration Java class.
- */
-static struct ConfigurationClassInfo {
-    jfieldID colorMode;
-    jfieldID densityDpi;
-    jfieldID fontScale;
-    jfieldID fontWeightAdjustment;
-    jfieldID hardKeyboardHidden;
-    jfieldID keyboard;
-    jfieldID keyboardHidden;
-    jfieldID mcc;
-    jfieldID mnc;
-    jfieldID navigation;
-    jfieldID navigationHidden;
-    jfieldID orientation;
-    jfieldID screenHeightDp;
-    jfieldID screenLayout;
-    jfieldID screenWidthDp;
-    jfieldID smallestScreenWidthDp;
-    jfieldID touchscreen;
-    jfieldID uiMode;
-} gConfigurationClassInfo;
-
-/*
  * JNI methods of the WindowInsetsCompat.Type Java class.
  */
 static struct {
@@ -244,31 +220,6 @@ enum {
     CMD_SET_SOFT_INPUT_STATE,
     CMD_SET_IME_EDITOR_INFO
 };
-
-/*
- * Last known Configuration values. They may be accessed from the different
- * thread, this is why they are made atomic.
- */
-static struct Configuration {
-    std::atomic_int colorMode;
-    std::atomic_int densityDpi;
-    std::atomic<float> fontScale;
-    std::atomic_int fontWeightAdjustment;
-    std::atomic_int hardKeyboardHidden;
-    std::atomic_int keyboard;
-    std::atomic_int keyboardHidden;
-    std::atomic_int mcc;
-    std::atomic_int mnc;
-    std::atomic_int navigation;
-    std::atomic_int navigationHidden;
-    std::atomic_int orientation;
-    std::atomic_int screenHeightDp;
-    std::atomic_int screenLayout;
-    std::atomic_int screenWidthDp;
-    std::atomic_int smallestScreenWidthDp;
-    std::atomic_int touchscreen;
-    std::atomic_int uiMode;
-} gConfiguration;
 
 /*
  * Write a command to be executed by the GameActivity on the application main
@@ -391,8 +342,6 @@ struct NativeCode : public GameActivity {
     ARect insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
 };
 
-static void readConfigurationValues(NativeCode *code, jobject javaConfig);
-
 extern "C" void GameActivity_finish(GameActivity *activity) {
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_FINISH, 0);
@@ -513,10 +462,10 @@ static int mainWorkCallback(int fd, int events, void *data) {
 // ------------------------------------------------------------------------
 static thread_local std::string g_error_msg;
 
-static jlong initializeNativeCode_native(
-    JNIEnv *env, jobject javaGameActivity, jstring internalDataDir,
-    jstring obbDir, jstring externalDataDir, jobject jAssetMgr,
-    jbyteArray savedState, jobject javaConfig) {
+static jlong initializeNativeCode_native(JNIEnv *env, jobject javaGameActivity,
+                                   jstring internalDataDir, jstring obbDir,
+                                   jstring externalDataDir, jobject jAssetMgr,
+                                   jbyteArray savedState) {
     LOG_TRACE("initializeNativeCode_native");
     NativeCode *code = NULL;
 
@@ -590,9 +539,6 @@ static jlong initializeNativeCode_native(
         rawSavedState = env->GetByteArrayElements(savedState, NULL);
         rawSavedSize = env->GetArrayLength(savedState);
     }
-
-    readConfigurationValues(code, javaConfig);
-
     GameActivity_onCreate(code, rawSavedState, rawSavedSize);
 
     code->gameTextInput = GameTextInput_init(env, 0);
@@ -700,50 +646,11 @@ static void onStop_native(JNIEnv *env, jobject javaGameActivity, jlong handle) {
     }
 }
 
-static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
-    gConfiguration.colorMode =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.colorMode);
-    gConfiguration.densityDpi =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.densityDpi);
-    gConfiguration.fontScale =
-        code->env->GetFloatField(javaConfig, gConfigurationClassInfo.fontScale);
-    gConfiguration.fontWeightAdjustment = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.fontWeightAdjustment);
-    gConfiguration.hardKeyboardHidden = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.hardKeyboardHidden);
-    gConfiguration.mcc =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.mcc);
-    gConfiguration.mnc =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.mnc);
-    gConfiguration.navigation =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.navigation);
-    gConfiguration.navigationHidden = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.navigationHidden);
-    gConfiguration.orientation =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.orientation);
-    gConfiguration.screenHeightDp = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.screenHeightDp);
-    gConfiguration.screenLayout = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.screenLayout);
-    gConfiguration.screenWidthDp = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.screenWidthDp);
-    gConfiguration.smallestScreenWidthDp = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.smallestScreenWidthDp);
-    gConfiguration.touchscreen =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.touchscreen);
-    gConfiguration.uiMode =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.uiMode);
-
-    checkAndClearException(code->env, "Configuration.get");
-}
-
 static void onConfigurationChanged_native(JNIEnv *env, jobject javaGameActivity,
-                                          jlong handle, jobject javaNewConfig) {
+                                          jlong handle) {
     LOG_TRACE("onConfigurationChanged_native");
     if (handle != 0) {
         NativeCode *code = (NativeCode *)handle;
-        readConfigurationValues(code, javaNewConfig);
-
         if (code->callbacks.onConfigurationChanged != NULL) {
             code->callbacks.onConfigurationChanged(code);
         }
@@ -923,78 +830,6 @@ extern "C" void GameActivity_setImeEditorInfo(GameActivity *activity,
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_SET_IME_EDITOR_INFO, inputType,
                actionId, imeOptions);
-}
-
-extern "C" int GameActivity_getColorMode(GameActivity *) {
-    return gConfiguration.colorMode;
-}
-
-extern "C" int GameActivity_getDensityDpi(GameActivity *) {
-    return gConfiguration.densityDpi;
-}
-
-extern "C" float GameActivity_getFontScale(GameActivity *) {
-    return gConfiguration.fontScale;
-}
-
-extern "C" int GameActivity_getFontWeightAdjustment(GameActivity *) {
-    return gConfiguration.fontWeightAdjustment;
-}
-
-extern "C" int GameActivity_getHardKeyboardHidden(GameActivity *) {
-    return gConfiguration.hardKeyboardHidden;
-}
-
-extern "C" int GameActivity_getKeyboard(GameActivity *) {
-    return gConfiguration.keyboard;
-}
-
-extern "C" int GameActivity_getKeyboardHidden(GameActivity *) {
-    return gConfiguration.keyboardHidden;
-}
-
-extern "C" int GameActivity_getMcc(GameActivity *) {
-    return gConfiguration.mcc;
-}
-
-extern "C" int GameActivity_getMnc(GameActivity *) {
-    return gConfiguration.mnc;
-}
-
-extern "C" int GameActivity_getNavigation(GameActivity *) {
-    return gConfiguration.navigation;
-}
-
-extern "C" int GameActivity_getNavigationHidden(GameActivity *) {
-    return gConfiguration.navigationHidden;
-}
-
-extern "C" int GameActivity_getOrientation(GameActivity *) {
-    return gConfiguration.orientation;
-}
-
-extern "C" int GameActivity_getScreenHeightDp(GameActivity *) {
-    return gConfiguration.screenHeightDp;
-}
-
-extern "C" int GameActivity_getScreenLayout(GameActivity *) {
-    return gConfiguration.screenLayout;
-}
-
-extern "C" int GameActivity_getScreenWidthDp(GameActivity *) {
-    return gConfiguration.screenWidthDp;
-}
-
-extern "C" int GameActivity_getSmallestScreenWidthDp(GameActivity *) {
-    return gConfiguration.smallestScreenWidthDp;
-}
-
-extern "C" int GameActivity_getTouchscreen(GameActivity *) {
-    return gConfiguration.touchscreen;
-}
-
-extern "C" int GameActivity_getUIMode(GameActivity *) {
-    return gConfiguration.uiMode;
 }
 
 static struct {
@@ -1399,8 +1234,7 @@ static void onContentRectChangedNative_native(JNIEnv *env, jobject activity,
 static const JNINativeMethod g_methods[] = {
     {"initializeNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;"
-     "Ljava/lang/String;Landroid/content/res/AssetManager;"
-     "[BLandroid/content/res/Configuration;)J",
+     "Ljava/lang/String;Landroid/content/res/AssetManager;[B)J",
      (void *)initializeNativeCode_native},
     {"getDlError", "()Ljava/lang/String;", (void *)getDlError_native},
     {"terminateNativeCode", "(J)V", (void *)terminateNativeCode_native},
@@ -1409,7 +1243,7 @@ static const JNINativeMethod g_methods[] = {
     {"onSaveInstanceStateNative", "(J)[B", (void *)onSaveInstanceState_native},
     {"onPauseNative", "(J)V", (void *)onPause_native},
     {"onStopNative", "(J)V", (void *)onStop_native},
-    {"onConfigurationChangedNative", "(JLandroid/content/res/Configuration;)V",
+    {"onConfigurationChangedNative", "(J)V",
      (void *)onConfigurationChanged_native},
     {"onTrimMemoryNative", "(JI)V", (void *)onTrimMemory_native},
     {"onWindowFocusChangedNative", "(JZ)V",
@@ -1434,16 +1268,15 @@ static const JNINativeMethod g_methods[] = {
     {"setInputConnectionNative",
      "(JLcom/google/androidgamesdk/gametextinput/InputConnection;)V",
      (void *)setInputConnection_native},
-    {"onContentRectChangedNative", "(JIIII)V",
-     (void *)onContentRectChangedNative_native},
+     {"onContentRectChangedNative", "(JIIII)V",
+             (void *)onContentRectChangedNative_native},
 };
 
 static const char *const kGameActivityPathName =
     "com/google/androidgamesdk/GameActivity";
 
 static const char *const kInsetsPathName = "androidx/core/graphics/Insets";
-static const char *const kConfigurationPathName =
-    "android/content/res/Configuration";
+
 static const char *const kWindowInsetsCompatTypePathName =
     "androidx/core/view/WindowInsetsCompat$Type";
 
@@ -1501,51 +1334,12 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                   "getWaterfallInsets", "()Landroidx/core/graphics/Insets;");
     GET_METHOD_ID(gGameActivityClassInfo.setImeEditorInfoFields, activity_class,
                   "setImeEditorInfoFields", "(III)V");
-
     jclass insets_class;
     FIND_CLASS(insets_class, kInsetsPathName);
     GET_FIELD_ID(gInsetsClassInfo.left, insets_class, "left", "I");
     GET_FIELD_ID(gInsetsClassInfo.right, insets_class, "right", "I");
     GET_FIELD_ID(gInsetsClassInfo.top, insets_class, "top", "I");
     GET_FIELD_ID(gInsetsClassInfo.bottom, insets_class, "bottom", "I");
-
-    jclass configuration_class;
-    FIND_CLASS(configuration_class, kConfigurationPathName);
-    GET_FIELD_ID(gConfigurationClassInfo.colorMode, configuration_class,
-                 "colorMode", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.densityDpi, configuration_class,
-                 "densityDpi", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.fontScale, configuration_class,
-                 "fontScale", "F");
-    GET_FIELD_ID(gConfigurationClassInfo.fontWeightAdjustment,
-                 configuration_class, "fontWeightAdjustment", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.hardKeyboardHidden,
-                 configuration_class, "hardKeyboardHidden", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.keyboard, configuration_class,
-                 "keyboard", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.keyboardHidden, configuration_class,
-                 "keyboardHidden", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.mcc, configuration_class, "mcc", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.mnc, configuration_class, "mnc", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.navigation, configuration_class,
-                 "navigation", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.navigationHidden, configuration_class,
-                 "navigationHidden", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.orientation, configuration_class,
-                 "orientation", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.screenHeightDp, configuration_class,
-                 "screenHeightDp", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.screenLayout, configuration_class,
-                 "screenLayout", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.screenWidthDp, configuration_class,
-                 "screenWidthDp", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.smallestScreenWidthDp,
-                 configuration_class, "smallestScreenWidthDp", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.touchscreen, configuration_class,
-                 "touchscreen", "I");
-    GET_FIELD_ID(gConfigurationClassInfo.uiMode, configuration_class, "uiMode",
-                 "I");
-
     jclass windowInsetsCompatType_class;
     FIND_CLASS(windowInsetsCompatType_class, kWindowInsetsCompatTypePathName);
     gWindowInsetsCompatTypeClassInfo.clazz =
@@ -1574,12 +1368,12 @@ extern "C" int GameActivity_register(JNIEnv *env) {
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_google_androidgamesdk_GameActivity_initializeNativeCode(
-    JNIEnv *env, jobject javaGameActivity, jstring internalDataDir,
-    jstring obbDir, jstring externalDataDir, jobject jAssetMgr,
-    jbyteArray savedState, jobject javaConfig) {
+    JNIEnv *env, jobject javaGameActivity,
+    jstring internalDataDir, jstring obbDir, jstring externalDataDir,
+    jobject jAssetMgr, jbyteArray savedState) {
     GameActivity_register(env);
     jlong nativeCode = initializeNativeCode_native(
-        env, javaGameActivity, internalDataDir, obbDir, externalDataDir,
-        jAssetMgr, savedState, javaConfig);
+        env, javaGameActivity,internalDataDir, obbDir,
+        externalDataDir, jAssetMgr, savedState);
     return nativeCode;
 }

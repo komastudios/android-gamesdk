@@ -157,7 +157,7 @@ public class GameActivity
   protected boolean mDestroyed;
 
   protected native long initializeNativeCode(String internalDataPath, String obbPath,
-      String externalDataPath, AssetManager assetMgr, byte[] savedState, Configuration config);
+      String externalDataPath, AssetManager assetMgr, byte[] savedState);
 
   protected native String getDlError();
 
@@ -173,7 +173,7 @@ public class GameActivity
 
   protected native void onStopNative(long handle);
 
-  protected native void onConfigurationChangedNative(long handle, Configuration newConfig);
+  protected native void onConfigurationChangedNative(long handle);
 
   protected native void onTrimMemoryNative(long handle, int level);
 
@@ -304,8 +304,8 @@ public class GameActivity
         savedInstanceState != null ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
 
     mNativeHandle = initializeNativeCode(getAbsolutePath(getFilesDir()),
-        getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)), getAssets(),
-        nativeSavedState, getResources().getConfiguration());
+        getAbsolutePath(getObbDir()), getAbsolutePath(getExternalFilesDir(null)),
+        getAssets(), nativeSavedState);
 
     if (mNativeHandle == 0) {
       throw new UnsatisfiedLinkError(
@@ -373,7 +373,7 @@ public class GameActivity
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
     if (!mDestroyed) {
-      onConfigurationChangedNative(mNativeHandle, newConfig);
+      onConfigurationChangedNative(mNativeHandle);
     }
   }
 
