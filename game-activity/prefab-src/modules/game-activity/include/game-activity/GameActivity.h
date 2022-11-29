@@ -268,8 +268,6 @@ inline float GameActivityPointerAxes_getOrientation(
  *
  * This is 1:1 mapping to the information contained in a Java `MotionEvent`
  * (see https://developer.android.com/reference/android/view/MotionEvent).
- * The only exception is the event times, which are reported as
- * nanoseconds in this struct.
  */
 typedef struct GameActivityMotionEvent {
     int32_t deviceId;
@@ -292,8 +290,7 @@ typedef struct GameActivityMotionEvent {
         pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
 
     int historySize;
-    long* historicalEventTimesMillis;
-    long* historicalEventTimesNanos;
+    long* historicalEventTimes;
     float* historicalAxisValues;
 
     float precisionX;
@@ -305,8 +302,6 @@ typedef struct GameActivityMotionEvent {
  *
  * This is 1:1 mapping to the information contained in a Java `KeyEvent`
  * (see https://developer.android.com/reference/android/view/KeyEvent).
- * The only exception is the event times, which are reported as
- * nanoseconds in this struct.
  */
 typedef struct GameActivityKeyEvent {
     int32_t deviceId;
