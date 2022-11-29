@@ -89,9 +89,7 @@ class GameController {
     int32_t processGameActivityKeyEvent(
         const Paddleboat_GameActivityKeyEvent *event, const size_t eventSize);
 
-    int32_t processGameActivityMotionEvent(
-        const Paddleboat_GameActivityMotionEvent *event,
-        const size_t eventSize);
+    int32_t processGameActivityMotionEvent(const float *axisValues);
 
     int32_t processKeyEvent(const AInputEvent *event);
 
