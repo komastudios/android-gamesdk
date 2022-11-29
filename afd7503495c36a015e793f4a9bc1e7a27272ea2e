@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e2bd341_aff6cea6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-11-29T17:38:13Z",
+      "side": 1,
+      "message": "should have no merge conflict once aosp/2320217 is merged.",
+      "revId": "afd7503495c36a015e793f4a9bc1e7a27272ea2e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
