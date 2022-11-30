@@ -25,7 +25,9 @@
 #include "jni.h"
 #include "swappy_common.h"
 
+#ifndef VK_NO_PROTOTYPES
 #define VK_NO_PROTOTYPES 1
+#endif
 #include <vulkan/vulkan.h>
 
 #ifdef __cplusplus
