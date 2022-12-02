@@ -69,7 +69,7 @@ public class InputEnabledTextView extends View implements Listener {
     // Called when the IME has changed the input
     @Override
     public void stateChanged(State newState, boolean dismissed) {
-        System.out.println("stateChanged: " + newState + " dismissed: " + dismissed);
+        System.out.println("GameTextInput: stateChanged: " + newState + " dismissed: " + dismissed);
         onTextInputEventNative(newState);
     }
 
