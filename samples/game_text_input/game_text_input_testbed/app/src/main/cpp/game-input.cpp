@@ -82,6 +82,11 @@ Java_com_gametextinput_testbed_MainActivity_hideIme(JNIEnv *env, jobject thiz) {
 }
 
 extern "C" JNIEXPORT void JNICALL
+Java_com_gametextinput_testbed_MainActivity_restartInput(JNIEnv *env, jobject thiz) {
+  GameTextInput_restartInput(gameTextInput);
+}
+
+extern "C" JNIEXPORT void JNICALL
 Java_com_gametextinput_testbed_MainActivity_sendSelectionToStart(JNIEnv *env,
                                                              jobject thiz) {
   GameTextInput_getState(gameTextInput, [](void* context, const GameTextInputState* state) {

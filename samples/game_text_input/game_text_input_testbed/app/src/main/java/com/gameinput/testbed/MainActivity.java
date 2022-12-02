@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     native void setInputConnectionNative(InputConnection c);
     native void showIme();
     native void hideIme();
+    native void restartInput();
     native void sendSelectionToStart();
     native void sendSelectionToEnd();
 
@@ -66,21 +67,21 @@ public class MainActivity extends AppCompatActivity {
             EditorInfo editorInfo = new EditorInfo();
             editorInfo.inputType = InputType.TYPE_NULL;
             inputEnabledTextView.mInputConnection.setEditorInfo(editorInfo);
-            inputEnabledTextView.mInputConnection.restartInput();
+            restartInput();
         });
         Button typeTextButton = (Button) findViewById(R.id.type_text_button);
         typeTextButton.setOnClickListener(view -> {
             EditorInfo editorInfo = new EditorInfo();
             editorInfo.inputType = InputType.TYPE_CLASS_TEXT;
             inputEnabledTextView.mInputConnection.setEditorInfo(editorInfo);
-            inputEnabledTextView.mInputConnection.restartInput();
+            restartInput();
         });
         Button typeNumberButton = (Button) findViewById(R.id.type_number_button);
         typeNumberButton.setOnClickListener(view -> {
             EditorInfo editorInfo = new EditorInfo();
             editorInfo.inputType = InputType.TYPE_CLASS_NUMBER;
             inputEnabledTextView.mInputConnection.setEditorInfo(editorInfo);
-            inputEnabledTextView.mInputConnection.restartInput();
+            restartInput();
         });
 
         onCreated();

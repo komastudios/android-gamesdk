@@ -174,6 +174,12 @@ enum HideImeFlags {
 void GameTextInput_hideIme(GameTextInput *input, uint32_t flags);
 
 /**
+ * Restarts the input method. Calls InputMethodManager.restartInput().
+ * @param input A valid GameTextInput library handle.
+ */
+void GameTextInput_restartInput(GameTextInput *input);
+
+/**
  * Call a callback with the current GameTextInput state, which may have been
  * modified by changes in the IME and calls to GameTextInput_setState. We use a
  * callback rather than returning the state in order to simplify ownership of
