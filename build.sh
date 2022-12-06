@@ -110,7 +110,7 @@ then
     mkdir -p ./third-party
     pushd third-party
     if [ ! -d "imgui" ] ; then
-        git clone https://github.com/ocornut/imgui
+        git clone https://github.com/ocornut/imgui -b v1.89
     fi
     popd
     popd
