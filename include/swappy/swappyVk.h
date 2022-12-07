@@ -261,6 +261,14 @@ uint64_t SwappyVk_getFenceTimeoutNS();
 void SwappyVk_injectTracer(const SwappyTracer* tracer);
 
 /**
+ * @brief Remove callbacks that were previously added using
+ * SwappyVk_injectTracer.
+ *
+ * @param[in]  tracer - Collection of callback functions
+ */
+void SwappyVk_uninjectTracer(const SwappyTracer* tracer);
+
+/**
  * @brief A structure enabling you to provide your own Vulkan function wrappers
  * by calling ::SwappyVk_setFunctionProvider.
  *

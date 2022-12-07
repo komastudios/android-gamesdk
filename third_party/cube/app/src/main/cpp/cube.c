@@ -1567,6 +1567,9 @@ static void demo_prepare_buffers(struct demo *demo) {
       tracer.startFrame = swappy_trace_test_startFrame;
       tracer.swapIntervalChanged = swappy_trace_test_swapIntervalChanged;
       SwappyVk_injectTracer(&tracer);
+      // Test uninject tracer function.
+      SwappyVk_uninjectTracer(&tracer);
+      SwappyVk_injectTracer(&tracer);
       demo->tracer_injected = true;
     }
 
