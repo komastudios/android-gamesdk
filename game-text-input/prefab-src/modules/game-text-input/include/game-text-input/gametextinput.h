@@ -26,11 +26,20 @@
 #include <jni.h>
 #include <stdint.h>
 
+#include "common/gamesdk_common.h"
 #include "gamecommon.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define GAMETEXTINPUT_MAJOR_VERSION 2
+#define GAMETEXTINPUT_MINOR_VERSION 0
+#define GAMETEXTINPUT_BUGFIX_VERSION 0
+#define GAMETEXTINPUT_PACKED_VERSION                            \
+    ANDROID_GAMESDK_PACKED_VERSION(GAMETEXTINPUT_MAJOR_VERSION, \
+                                   GAMETEXTINPUT_MINOR_VERSION, \
+                                   GAMETEXTINPUT_BUGFIX_VERSION)
 
 /**
  * This struct holds a span within a region of text from start (inclusive) to

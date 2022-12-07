@@ -25,9 +25,19 @@
 #include <jni.h>
 #include <stdint.h>
 
+#include "common/gamesdk_common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define MEMORY_ADVICE_MAJOR_VERSION 2
+#define MEMORY_ADVICE_MINOR_VERSION 0
+#define MEMORY_ADVICE_BUGFIX_VERSION 0
+#define MEMORY_ADVICE_PACKED_VERSION                         \
+    ANDROID_GAMESDK_PACKED_VERSION(TUNINGFORK_MAJOR_VERSION, \
+                                   TUNINGFORK_MINOR_VERSION, \
+                                   TUNINGFORK_BUGFIX_VERSION)
 
 /**
  * @brief All the error codes that can be returned by MemoryAdvice functions.

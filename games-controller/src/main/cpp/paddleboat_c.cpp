@@ -21,15 +21,6 @@ using namespace paddleboat;
 
 extern "C" {
 
-// Internal macros to track Paddleboat version, do not use directly.
-#define PADDLEBOAT_MAJOR_VERSION 1
-#define PADDLEBOAT_MINOR_VERSION 2
-#define PADDLEBOAT_BUGFIX_VERSION 0
-
-#define PADDLEBOAT_PACKED_VERSION                                          \
-    ((PADDLEBOAT_MAJOR_VERSION << 24) | (PADDLEBOAT_MINOR_VERSION << 16) | \
-     (PADDLEBOAT_BUGFIX_VERSION))
-
 #define PADDLEBOAT_VERSION_CONCAT_NX(PREFIX, MAJOR, MINOR, BUGFIX) \
     PREFIX##_##MAJOR##_##MINOR##_##BUGFIX
 #define PADDLEBOAT_VERSION_CONCAT(PREFIX, MAJOR, MINOR, BUGFIX) \

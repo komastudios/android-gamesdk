@@ -18,6 +18,7 @@ project(gametextinput C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-text-input/include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
 set(GAMETEXTINPUT_SRCS
     ./prefab-src/modules/game-text-input/include/game-text-input/gametextinput.cpp)
