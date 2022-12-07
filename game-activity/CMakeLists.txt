@@ -18,6 +18,7 @@ project(gameactivity C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-activity/include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
 set(GAMEACTIVITY_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-activity/include/")
 

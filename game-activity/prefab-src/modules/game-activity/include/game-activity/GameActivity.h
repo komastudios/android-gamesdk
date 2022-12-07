@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "common/gamesdk_common.h"
 #include "game-activity/GameActivityEvents.h"
 #include "game-text-input/gametextinput.h"
 
@@ -43,13 +44,13 @@
 extern "C" {
 #endif
 
-#define GAMEACTIVITY_MAJOR_VERSION 1
-#define GAMEACTIVITY_MINOR_VERSION 2
-#define GAMEACTIVITY_BUGFIX_VERSION 2
-
-#define GAMEACTIVITY_PACKED_VERSION                                           \
-    ((GAMEACTIVITY_MAJOR_VERSION << 16) | (GAMEACTIVITY_MINOR_VERSION << 8) | \
-     (GAMEACTIVITY_BUGFIX_VERSION))
+#define GAMEACTIVITY_MAJOR_VERSION 2
+#define GAMEACTIVITY_MINOR_VERSION 0
+#define GAMEACTIVITY_BUGFIX_VERSION 0
+#define GAMEACTIVITY_PACKED_VERSION                            \
+    ANDROID_GAMESDK_PACKED_VERSION(GAMEACTIVITY_MAJOR_VERSION, \
+                                   GAMEACTIVITY_MINOR_VERSION, \
+                                   GAMEACTIVITY_BUGFIX_VERSION)
 
 /**
  * {@link GameActivityCallbacks}

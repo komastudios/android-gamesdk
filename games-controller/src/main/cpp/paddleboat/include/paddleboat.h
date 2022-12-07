@@ -37,9 +37,19 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "common/gamesdk_common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define PADDLEBOAT_MAJOR_VERSION 2
+#define PADDLEBOAT_MINOR_VERSION 0
+#define PADDLEBOAT_BUGFIX_VERSION 0
+#define PADDLEBOAT_PACKED_VERSION                            \
+    ANDROID_GAMESDK_PACKED_VERSION(PADDLEBOAT_MAJOR_VERSION, \
+                                   PADDLEBOAT_MINOR_VERSION, \
+                                   PADDLEBOAT_BUGFIX_VERSION)
 
 /**
  * @brief Maximum number of simultaneously connected controllers.
