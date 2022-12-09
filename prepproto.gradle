@@ -54,11 +54,28 @@ task prepare_proto_before() {
         setEnvironment env
         commandLine "python", "setup.py", "install", "--user"
     }
-    // Generate nano-pb requirements
-    exec {
-        workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
-        setEnvironment env
-        commandLine 'make'
+    // Generate nano-pb requirements.
+    // Nanopb provides a Makefile to generate the requirements, however on windows it
+    // is not trivial to work with make. Instead we just use protoc to generate the requirements
+    // which is what the Makefile does as well to begin with.
+    if (OperatingSystem.current().isWindows()) {
+	exec {
+	    workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
+	    setEnvironment env
+	    commandLine "${protocBinDir}/protoc.exe", "nanopb.proto", "--python_out=."
+	}
+	exec {
+	    workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
+	    setEnvironment env
+	    commandLine "${protocBinDir}/protoc.exe", "plugin.proto", "--python_out=."
+	}
+    }
+    else {
+        exec {
+            workingDir "${gameSdkRoot}/../external/nanopb-c/generator/proto"
+            setEnvironment env
+            commandLine "make"
+	}
     }
     outputs.upToDateWhen { false }
 }
