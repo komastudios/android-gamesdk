@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65dfb5b0_3c44b650",
+        "filename": "hooks/check_library_versions.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-12-14T12:17:47Z",
+      "side": 1,
+      "message": "can this be replaced with some sort of \"for each\"? it seems weird to have a hardcoded 5",
+      "revId": "0a1369ebdff25793663749406c8f405b20833ed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
