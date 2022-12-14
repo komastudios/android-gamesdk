@@ -51,6 +51,8 @@ struct RequestInfo {
     std::string soc_manufacturer;
     int64_t swap_total_bytes;
     uint32_t swappy_version;
+    int32_t height_pixels;
+    int32_t width_pixels;
 
     // Note that this will include an empty experiment_id and
     // current_fidelity_parameters.

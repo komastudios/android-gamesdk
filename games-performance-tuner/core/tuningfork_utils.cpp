@@ -249,7 +249,9 @@ Json::object DeviceSpecJson(const RequestInfo& request_info) {
                         {"soc_model", request_info.soc_model},
                         {"soc_manufacturer", request_info.soc_manufacturer},
                         {"swap_total_bytes",
-                         static_cast<double>(request_info.swap_total_bytes)}};
+                         static_cast<double>(request_info.swap_total_bytes)},
+                        {"height_pixels", request_info.height_pixels},
+                        {"width_pixels", request_info.width_pixels}};
 }
 
 }  // namespace json_utils

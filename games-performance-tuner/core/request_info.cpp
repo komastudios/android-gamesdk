@@ -127,6 +127,14 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
             info.soc_manufacturer =
                 gamesdk::jni::android::os::Build::SOC_MANUFACTURER().C();
         }
+
+        gamesdk::jni::android::util::DisplayMetrics display_metrics;
+        gamesdk::jni::AppContext()
+            .getWindowManager()
+            .getDefaultDisplay()
+            .getMetrics(display_metrics);
+        info.height_pixels = display_metrics.heightPixels();
+        info.width_pixels = display_metrics.widthPixels();
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
     info.swappy_version = settings.c_settings.swappy_version;
