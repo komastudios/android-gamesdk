@@ -50,7 +50,9 @@ RequestInfo test_device_info{
     "SOC_MODEL" /*soc_model*/,
     "SOC_MANUFACTURER" /*soc_manufacturer*/,
     234 /*swap_total_bytes*/,
-    ANDROID_GAMESDK_PACKED_VERSION(2, 7, 0) /*swappy_version*/};
+    ANDROID_GAMESDK_PACKED_VERSION(2, 7, 0) /*swappy_version*/,
+    1024 /*height_pixels*/,
+    768 /*width_pixels*/};
 
 std::string test_device_info_ser = R"TF({
   "brand": "BRAND",
@@ -61,12 +63,14 @@ std::string test_device_info_ser = R"TF({
   "gles_version": {
     "major": 5, "minor": 21907
   },
+  "height_pixels": 1024,
   "model": "MODEL",
   "product": "PRODUCT",
   "soc_manufacturer": "SOC_MANUFACTURER",
   "soc_model": "SOC_MODEL",
   "swap_total_bytes": 234,
-  "total_memory_bytes": 2387
+  "total_memory_bytes": 2387,
+  "width_pixels": 768
 })TF";
 
 void CheckDeviceInfo(const RequestInfo& info) {
@@ -92,12 +96,14 @@ std::string report_start = R"TF({
         "major": 5,
         "minor": 21907
       },
+      "height_pixels": 1024,
       "model": "MODEL",
       "product": "PRODUCT",
       "soc_manufacturer": "SOC_MANUFACTURER",
       "soc_model": "SOC_MODEL",
       "swap_total_bytes": 234,
-      "total_memory_bytes": 2387
+      "total_memory_bytes": 2387,
+      "width_pixels": 768
     },
     "game_sdk_info": {
       "session_id": "sess",

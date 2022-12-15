@@ -32,12 +32,14 @@ const std::string session_context = R"TF(
       "major": 0,
       "minor": 0
     },
+    "height_pixels": 0,
     "model": "",
     "product": "",
     "soc_manufacturer": "",
     "soc_model": "",
     "swap_total_bytes": 123,
-    "total_memory_bytes": 0
+    "total_memory_bytes": 0,
+    "width_pixels": 0
   },
   "game_sdk_info": {
     "session_id": "",
@@ -63,12 +65,14 @@ const std::string session_context_loading = R"TF(
       "major": 0,
       "minor": 0
     },
+    "height_pixels": 0,
     "model": "",
     "product": "",
     "soc_manufacturer": "",
     "soc_model": "",
     "swap_total_bytes": 123,
-    "total_memory_bytes": 0
+    "total_memory_bytes": 0,
+    "width_pixels": 0
   },
   "game_sdk_info": {
     "session_id": "",
