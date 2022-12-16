@@ -130,7 +130,10 @@ static jclass loadClass(JNIEnv* env, jobject activity, const char* name,
     jstring className = env->NewStringUTF(name);
     jclass targetClass = static_cast<jclass>(
         env->CallObjectMethod(classLoaderObj, loadClass, className));
-    if (env->ExceptionCheck()) {
+    if (!env->ExceptionCheck()) {
+        env->RegisterNatives(targetClass, nativeMethods,
+                     nativeMethodsSize);
+    } else {
         env->ExceptionClear();
 
 #ifdef ANDROIDGAMESDK_NO_BINARY_DEX_LINKAGE
