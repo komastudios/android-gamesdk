@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca7ca59c_2a6788bd",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-12-20T11:02:16Z",
+      "side": 1,
+      "message": "Expression should be in positive form for readability, e.g. prefer \n\nif (a) {\n  // this\n} else {\n  // that\n}\n\nto \n\nif (!a) {\n  // that\n} else {\n  // this\n}",
+      "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
