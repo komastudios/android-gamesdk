@@ -16,6 +16,24 @@
       "message": "Expression should be in positive form for readability, e.g. prefer \n\nif (a) {\n  // this\n} else {\n  // that\n}\n\nto \n\nif (!a) {\n  // that\n} else {\n  // this\n}",
       "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c92002fc_1cf26b2a",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-12-20T16:32:54Z",
+      "side": 1,
+      "message": "This negatively affects readability though. It means this code path now spans 120 lines (all the way to the end of this if statement) vs the 15 lines it takes up now. \n\nI could change it to:\n```\nif (!env-\u003eExceptionCheck()) {\n    env-\u003eRegisterNatives(targetClass, nativeMethods,\n                     nativeMethodsSize);\n}\n\nif (env-\u003eExceptionCheck()) {\n...\n```\nWhat do you think?",
+      "parentUuid": "ca7ca59c_2a6788bd",
+      "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
