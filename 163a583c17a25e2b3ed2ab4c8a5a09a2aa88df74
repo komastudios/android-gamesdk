@@ -52,6 +52,24 @@
       "parentUuid": "c92002fc_1cf26b2a",
       "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05d66ef4_b2828022",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2022-12-21T09:44:54Z",
+      "side": 1,
+      "message": "Let me give a bit more detail. The no-negative clauses requirement is pretty long standing at Google and has a history. e.g. \n\nhttps://engdoc.corp.google.com/eng/doc/tott/episodes/530.md?cl\u003dhead\n\n“15. Avoid negative if-statements. Prefer positive if-statements.”\nhttps://g3doc.corp.google.com/company/teams/cloud-data-residency/cpp-guidelines.md?cl\u003dhead#coding-guidelines\n\nA similar issue https://go/suzhang-readability-snippets#use-positive-boolean\n\n\nSuch that when a negative clause is seen the code naturally looks \u0027off\u0027 to a reviewer.\n\nI agree the big leap to the \u0027else\u0027 condition isn\u0027t ideal. That I think is an effect of the overly large conditional statement to begin with.",
+      "parentUuid": "854f570b_a6ea10d9",
+      "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
