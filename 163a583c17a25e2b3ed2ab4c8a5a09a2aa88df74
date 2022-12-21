@@ -70,6 +70,24 @@
       "parentUuid": "854f570b_a6ea10d9",
       "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3bb467c_2c0d8e33",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-12-21T09:47:05Z",
+      "side": 1,
+      "message": "I think doing it in the else clause is not as bad for readability because the other fallback steps (InMemoryDexClassLoader \u0026 PathClassLoader) are doing the same when they call RegisterNatives(..). We can improve the readability by adding a short comment at the top of this logic explaining this trickle down approach \u0026 saying that any successful invocation would do a RegisterNatives(..) call.",
+      "parentUuid": "854f570b_a6ea10d9",
+      "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
