@@ -146,7 +146,7 @@ android.lintOptions {
 
 // Android Performance Tuner validation setup and protoc compile tasks
 task createJar(type: GradleBuild) {
-    buildFile = GameSDKPath + '/src/tuningfork/tools/validation/build.gradle'
+    buildFile = GameSDKPath + '/games-performance-tuner/tools/validation/build.gradle'
     tasks = ['createJar']
 }
 
@@ -161,7 +161,7 @@ def getProtocPath() {
 task buildTuningForkBinFiles(type: JavaExec) {
     dependsOn createJar
     main "-jar"
-    args   (GameSDKPath + "/src/tuningfork/tools/validation/build/libs/TuningforkApkValidationTool.jar",
+    args   (GameSDKPath + "/games-performance-tuner/tools/validation/build/libs/TuningforkApkValidationTool.jar",
             "--tuningforkPath",
             "src/main/assets/tuningfork",
             "--protoCompiler",
