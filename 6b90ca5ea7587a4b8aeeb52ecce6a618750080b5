@@ -22,6 +22,30 @@
       },
       "revId": "6b90ca5ea7587a4b8aeeb52ecce6a618750080b5",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d5f86f0_c2864b9f",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2022-12-22T08:37:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "aeb29966_ac2fb524",
+      "range": {
+        "startLine": 138,
+        "startChar": 60,
+        "endLine": 138,
+        "endChar": 61
+      },
+      "revId": "6b90ca5ea7587a4b8aeeb52ecce6a618750080b5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
