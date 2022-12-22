@@ -88,6 +88,24 @@
       "parentUuid": "854f570b_a6ea10d9",
       "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "413b72d8_41c5f198",
+        "filename": "src/common/JNIUtil.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2022-12-22T14:24:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c3bb467c_2c0d8e33",
+      "revId": "163a583c17a25e2b3ed2ab4c8a5a09a2aa88df74",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
