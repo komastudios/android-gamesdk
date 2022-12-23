@@ -24,6 +24,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 
@@ -88,6 +89,7 @@ public class AGDKTunnelActivity extends GameActivity {
             InputMappingProvider inputMappingProvider = new InputSDKProvider();
             InputMappingClient inputMappingClient = Input.getInputMappingClient(this);
             inputMappingClient.setInputMappingProvider(inputMappingProvider);
+            inputMappingClient.registerRemappingListener(new InputSDKRemappingListener());
         }
     }
 
