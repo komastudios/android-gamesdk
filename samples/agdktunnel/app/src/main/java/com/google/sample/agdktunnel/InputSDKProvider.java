@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class InputSDKProvider implements InputMappingProvider {
-    private static final String INPUTMAP_VERSION = "1.0.0";
+    public static final String INPUTMAP_VERSION = "1.0.0";
 
     public enum InputActionsIds {
         NAVIGATE_UP,
