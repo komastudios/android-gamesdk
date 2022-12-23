@@ -16,6 +16,24 @@
       "message": "(Low priority) Hi, I am writing the migration guide based on this CL, including the best practices. Please let me know if you think something of this CL can be improved",
       "revId": "ec6272d09efa441e2e02e1f32b00390d97574c5b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "525a87cf_5eb7f144",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-23T02:22:15Z",
+      "side": 1,
+      "message": "Mark as resolved",
+      "parentUuid": "d25b2056_8378079c",
+      "revId": "ec6272d09efa441e2e02e1f32b00390d97574c5b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
