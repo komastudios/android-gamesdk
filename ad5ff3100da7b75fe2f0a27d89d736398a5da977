@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "485f5636_524e8499",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.hpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-12-29T00:08:27Z",
+      "side": 1,
+      "message": "add\n// input context ?\nAlso do we want to rename to INPUT_CONTEXT_MENU / INPUT_CONTEXT_GAMEPLAY etc?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 27
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "13112dba_f4355e48",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-12-29T00:08:27Z",
+      "side": 1,
+      "message": "What if a match was never found?",
+      "range": {
+        "startLine": 155,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 9
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47e46524_7725bfae",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2022-12-29T00:08:27Z",
+      "side": 1,
+      "message": "Prefer a default case for switch",
+      "range": {
+        "startLine": 165,
+        "startChar": 8,
+        "endLine": 165,
+        "endChar": 14
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
