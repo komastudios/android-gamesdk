@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b47c1ce_33c91bfd",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-29T19:14:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1bd76579_6cf1134d",
+      "range": {
+        "startLine": 19,
+        "startChar": 49,
+        "endLine": 19,
+        "endChar": 57
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4cdb3e11_6bb694f6",
@@ -37,6 +61,30 @@
       "writtenOn": "2022-12-29T01:32:06Z",
       "side": 1,
       "message": "Can long be enough? Do we need to box this?",
+      "range": {
+        "startLine": 43,
+        "startChar": 8,
+        "endLine": 43,
+        "endChar": 12
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "896c7b26_88d4c8ca",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-29T19:14:26Z",
+      "side": 1,
+      "message": "long is enough",
+      "parentUuid": "4cdb3e11_6bb694f6",
       "range": {
         "startLine": 43,
         "startChar": 8,
@@ -70,6 +118,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "20e8c6f2_ca507320",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-29T19:14:26Z",
+      "side": 1,
+      "message": "We are looking for the input action in the *current* InputMap, so version is not relevant, however, if the developer updates their InputMap and input action with ID X is different in previous version, then this method should be `getCurrentVersionInputActionFromPreviousVersion(int id, String previousVersion);`\n\nVersion field is only relevant if the game has updated their keybindings, the logic inside this function should be specific to the diff between the current and previous version.\n\nI have updated the example to reflect this logic\n\nThanks.",
+      "parentUuid": "99bd900f_762299ff",
+      "range": {
+        "startLine": 44,
+        "startChar": 41,
+        "endLine": 44,
+        "endChar": 75
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ac15d51a_a813c45d",
@@ -93,6 +165,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb5d2b2b_744ba5b2",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-29T19:14:26Z",
+      "side": 1,
+      "message": "These are just examples to help developers.",
+      "parentUuid": "ac15d51a_a813c45d",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 76
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d65651b8_a6591e7a",
@@ -106,6 +202,30 @@
       "writtenOn": "2022-12-29T01:32:06Z",
       "side": 1,
       "message": "I prefer let this function return an Option.empty() if nothing found, instead of using a passed in default.",
+      "range": {
+        "startLine": 72,
+        "startChar": 15,
+        "endLine": 72,
+        "endChar": 33
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e94d60bf_185a811f",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2022-12-29T19:14:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d65651b8_a6591e7a",
       "range": {
         "startLine": 72,
         "startChar": 15,
