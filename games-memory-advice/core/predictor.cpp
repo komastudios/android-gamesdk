@@ -45,6 +45,10 @@ MemoryAdvice_ErrorCode DefaultPredictor::Init(std::string model_file,
                                               std::string features_file) {
     apk_utils::NativeAsset features_asset(features_file.c_str());
 
+    if (!features_asset.IsValid()) {
+        return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
+    }
+
     // Get the features list from the corresponding asset,
     // which is a list of strings denoted with quotation marks
     std::string features_string(
@@ -71,6 +75,10 @@ MemoryAdvice_ErrorCode DefaultPredictor::Init(std::string model_file,
 
     // Read the tflite model from the given asset file
     model_asset = std::make_unique<apk_utils::NativeAsset>(model_file.c_str());
+
+    if (!model_asset->IsValid()) {
+        return MEMORYADVICE_ERROR_TFLITE_MODEL_INVALID;
+    }
     const char* model_buffer =
         static_cast<const char*>(AAsset_getBuffer(*model_asset));
     const size_t model_capacity =
