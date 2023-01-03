@@ -414,10 +414,6 @@ inline void TuningFork_CProtobufSerialization_free(
 TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
                                      JNIEnv* env, jobject context);
 
-// The functions below will return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED
-// if TuningFork_init
-//  has not first been called.
-
 /**
  * @brief A blocking call to get fidelity parameters from the server.
  * You do not need to call this if you pass in a fidelity_params_callback as
@@ -437,6 +433,8 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
  * Settings.initial_request_timeout_ms is used.
  * @return TUNINGFORK_ERROR_TIMEOUT if there was a timeout before params could
  * be downloaded.
+ * @return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED if TuningFork_init has
+ * not been called.
  * @return TUNINGFORK_ERROR_OK on success.
  */
 TuningFork_ErrorCode TuningFork_getFidelityParameters(
