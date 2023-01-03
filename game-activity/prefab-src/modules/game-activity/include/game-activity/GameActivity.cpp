@@ -599,8 +599,12 @@ static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
         code->env->GetIntField(javaConfig, gConfigurationClassInfo.densityDpi);
     gConfiguration.fontScale =
         code->env->GetFloatField(javaConfig, gConfigurationClassInfo.fontScale);
-    gConfiguration.fontWeightAdjustment = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.fontWeightAdjustment);
+
+    if (gConfigurationClassInfo.fontWeightAdjustment != NULL) {
+        gConfiguration.fontWeightAdjustment = code->env->GetIntField(
+            javaConfig, gConfigurationClassInfo.fontWeightAdjustment);
+    }
+
     gConfiguration.hardKeyboardHidden = code->env->GetIntField(
         javaConfig, gConfigurationClassInfo.hardKeyboardHidden);
     gConfiguration.mcc =
@@ -1061,8 +1065,12 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                  "densityDpi", "I");
     GET_FIELD_ID(gConfigurationClassInfo.fontScale, configuration_class,
                  "fontScale", "F");
-    GET_FIELD_ID(gConfigurationClassInfo.fontWeightAdjustment,
-                 configuration_class, "fontWeightAdjustment", "I");
+
+    if (android_get_device_api_level() >= 31) {
+        GET_FIELD_ID(gConfigurationClassInfo.fontWeightAdjustment,
+                     configuration_class, "fontWeightAdjustment", "I");
+    }
+
     GET_FIELD_ID(gConfigurationClassInfo.hardKeyboardHidden,
                  configuration_class, "hardKeyboardHidden", "I");
     GET_FIELD_ID(gConfigurationClassInfo.keyboard, configuration_class,
