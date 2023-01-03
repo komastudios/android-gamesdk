@@ -22,8 +22,11 @@
 #include "pb_encode.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
+
+#if defined(USE_APT)
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
+#endif
 
 #include "game_consts.hpp"
 #include "tuning_manager.hpp"
@@ -32,6 +35,7 @@
 
 /** @cond INTERNAL */
 
+#if defined(USE_APT)
 /**
  * Internal to this file - do not use.
  */
@@ -40,7 +44,6 @@ extern "C" void TuningFork_CProtobufSerialization_Dealloc(
 
 /** @endcond */
 
-#if defined(USE_APT)
 namespace {
     constexpr TuningFork_InstrumentKey TFTICK_CHOREOGRAPHER = TFTICK_USERDEFINED_BASE;
 
@@ -195,13 +198,16 @@ void TuningManager::HandleChoreographerFrame() {
 #endif
 }
 
-void TuningManager::PostFrameTick(const TuningFork_InstrumentKey frameKey) {
+void TuningManager::PostFrameTick(const uint16_t frameKey) {
+    UNUSED(frameKey);
+#if defined(USE_APT)
     if (mTFInitialized) {
         TuningFork_ErrorCode tfError = TuningFork_frameTick(frameKey);
         if (tfError != TUNINGFORK_ERROR_OK) {
             ALOGE("Error calling TuningFork_frameTick: %d", tfError);
         }
     }
+#endif
 }
 
 #if defined(USE_APT)

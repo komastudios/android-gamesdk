@@ -122,11 +122,14 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
      oboe::oboe
      games-controller::paddleboat_static
      games-frame-pacing::swappy_static
-     games-performance-tuner::tuningfork_static
      games-memory-advice::memory_advice
      GLESv3
      glm
      log)
+
+if("${USE_APT}" STREQUAL "true")
+    target_link_libraries(${CMAKE_PROJECT_NAME} games-performance-tuner::tuningfork_static)
+endif()
 
 if("${USE_ASSET_PACKS}" STREQUAL "false")
     add_definitions("-DNO_ASSET_PACKS")

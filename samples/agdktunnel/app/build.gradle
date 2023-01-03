@@ -127,7 +127,11 @@ dependencies {
     //        'games-controller-release.aar',
     //])
     implementation project(':game-activity')
-    implementation project(':games-performance-tuner')
+
+    if (APTEnabled.toBoolean()) {
+        implementation project(':games-performance-tuner')
+    }
+
     implementation project(':games-frame-pacing')
     implementation project(':games-controller')
 
