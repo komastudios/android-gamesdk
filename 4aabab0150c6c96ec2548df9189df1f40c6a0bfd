@@ -16,6 +16,24 @@
       "message": "The colorMode might also needed to be fixed? maybe look at the rest of the newly added functions, confirm they are there with GameActivity supported minmium API level (right now is 19 or 21)?  thank you.",
       "revId": "4aabab0150c6c96ec2548df9189df1f40c6a0bfd",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e10ed59_cadb6028",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-01-04T07:47:56Z",
+      "side": 1,
+      "message": "Done, thanks. I\u0027ve also checked that everything else fits under API v. 17",
+      "parentUuid": "d091235c_c42de1a8",
+      "revId": "4aabab0150c6c96ec2548df9189df1f40c6a0bfd",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
