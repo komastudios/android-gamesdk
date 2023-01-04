@@ -593,14 +593,21 @@ static void onStop_native(JNIEnv *env, jobject javaGameActivity, jlong handle) {
 }
 
 static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
-    gConfiguration.colorMode =
-        code->env->GetIntField(javaConfig, gConfigurationClassInfo.colorMode);
+    if (gConfigurationClassInfo.colorMode != NULL) {
+        gConfiguration.colorMode = code->env->GetIntField(
+            javaConfig, gConfigurationClassInfo.colorMode);
+    }
+
     gConfiguration.densityDpi =
         code->env->GetIntField(javaConfig, gConfigurationClassInfo.densityDpi);
     gConfiguration.fontScale =
         code->env->GetFloatField(javaConfig, gConfigurationClassInfo.fontScale);
-    gConfiguration.fontWeightAdjustment = code->env->GetIntField(
-        javaConfig, gConfigurationClassInfo.fontWeightAdjustment);
+
+    if (gConfigurationClassInfo.fontWeightAdjustment != NULL) {
+        gConfiguration.fontWeightAdjustment = code->env->GetIntField(
+            javaConfig, gConfigurationClassInfo.fontWeightAdjustment);
+    }
+
     gConfiguration.hardKeyboardHidden = code->env->GetIntField(
         javaConfig, gConfigurationClassInfo.hardKeyboardHidden);
     gConfiguration.mcc =
@@ -1055,14 +1062,22 @@ extern "C" int GameActivity_register(JNIEnv *env) {
 
     jclass configuration_class;
     FIND_CLASS(configuration_class, kConfigurationPathName);
-    GET_FIELD_ID(gConfigurationClassInfo.colorMode, configuration_class,
-                 "colorMode", "I");
+
+    if (android_get_device_api_level() >= 26) {
+        GET_FIELD_ID(gConfigurationClassInfo.colorMode, configuration_class,
+                     "colorMode", "I");
+    }
+
     GET_FIELD_ID(gConfigurationClassInfo.densityDpi, configuration_class,
                  "densityDpi", "I");
     GET_FIELD_ID(gConfigurationClassInfo.fontScale, configuration_class,
                  "fontScale", "F");
-    GET_FIELD_ID(gConfigurationClassInfo.fontWeightAdjustment,
-                 configuration_class, "fontWeightAdjustment", "I");
+
+    if (android_get_device_api_level() >= 31) {
+        GET_FIELD_ID(gConfigurationClassInfo.fontWeightAdjustment,
+                     configuration_class, "fontWeightAdjustment", "I");
+    }
+
     GET_FIELD_ID(gConfigurationClassInfo.hardKeyboardHidden,
                  configuration_class, "hardKeyboardHidden", "I");
     GET_FIELD_ID(gConfigurationClassInfo.keyboard, configuration_class,
