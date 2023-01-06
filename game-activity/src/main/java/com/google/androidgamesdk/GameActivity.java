@@ -88,22 +88,38 @@ public class GameActivity
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    return onTouchEventNative(mNativeHandle, event);
+    if (onTouchEventNative(mNativeHandle, event)) {
+      return true;
+    } else {
+      return super.onTouchEvent(event);
+    }
   }
 
   @Override
   public boolean onGenericMotionEvent(MotionEvent event) {
-    return onTouchEventNative(mNativeHandle, event);
+    if (onTouchEventNative(mNativeHandle, event)) {
+      return true;
+    } else {
+      return super.onGenericMotionEvent(event);
+    }
   }
 
   @Override
   public boolean onKeyUp(final int keyCode, KeyEvent event) {
-    return onKeyUpNative(mNativeHandle, event);
+    if (onKeyUpNative(mNativeHandle, event)) {
+      return true;
+    } else {
+      return super.onKeyUp(keyCode, event);
+    }
   }
 
   @Override
   public boolean onKeyDown(final int keyCode, KeyEvent event) {
-    return onKeyDownNative(mNativeHandle, event);
+    if (onKeyDownNative(mNativeHandle, event)) {
+      return true;
+    } else {
+      return super.onKeyDown(keyCode, event);
+    }
   }
 
   // Called when the IME has changed the input
