@@ -386,6 +386,16 @@ void SwappyVk_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain, uint32_t
  */
 void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
 
+/**
+ * @brief Clears the frame statistics collected so far.
+ *
+ * All the frame statistics collected are reset to 0, frame statistics are
+ * collected normally after this call.
+ *
+ * @param[in]  swapchain   - The swapchain for which stats are being cleared.
+ */
+void SwappyVk_clearStats(VkSwapchainKHR swapchain);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

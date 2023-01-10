@@ -127,8 +127,7 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nStart(JNIEnv * /* env */, jobjec
     ALOGI("start");
     Renderer::getInstance()->start();
     // Clear stats when we come back from the settings activity.
-    SwappyGL_enableStats(false);
-    SwappyGL_enableStats(true);
+    SwappyGL_clearStats();
 }
 
 JNIEXPORT void JNICALL

@@ -109,6 +109,14 @@ void SwappyGL_recordFrameStart(EGLDisplay display, EGLSurface surface);
  */
 void SwappyGL_getStats(SwappyStats *swappyStats);
 
+/**
+ * @brief Clears the frame statistics collected so far.
+ *
+ * All the frame statistics collected are reset to 0, frame statistics are
+ * collected normally after this call.
+ */
+void SwappyGL_clearStats();
+
 /** @brief Remove callbacks that were previously added using
  * SwappyGL_injectTracer. */
 void SwappyGL_uninjectTracer(const SwappyTracer *t);
