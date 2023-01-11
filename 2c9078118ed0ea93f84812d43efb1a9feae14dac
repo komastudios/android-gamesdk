@@ -16,6 +16,29 @@
       "message": "I am fixing more than one problem with this CL, including AGDK Tunnel receiving input from physical keyboards in text fields and using ESCAPE key to show pause menu\n\nPTAL",
       "revId": "2c9078118ed0ea93f84812d43efb1a9feae14dac",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2468ba3_c5523518",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2023-01-11T16:35:33Z",
+      "side": 1,
+      "message": "nit: the logic changed here, OURKEY_ENTER and OURKEY_ESCAPE will be passed, does the comment need to be removed?",
+      "range": {
+        "startLine": 127,
+        "startChar": 16,
+        "endLine": 127,
+        "endChar": 28
+      },
+      "revId": "2c9078118ed0ea93f84812d43efb1a9feae14dac",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
