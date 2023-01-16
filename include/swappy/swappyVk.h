@@ -25,7 +25,9 @@
 #include "jni.h"
 #include "swappy_common.h"
 
+#ifndef VK_NO_PROTOTYPES
 #define VK_NO_PROTOTYPES 1
+#endif
 #include <vulkan/vulkan.h>
 
 #ifdef __cplusplus
@@ -261,6 +263,14 @@ uint64_t SwappyVk_getFenceTimeoutNS();
 void SwappyVk_injectTracer(const SwappyTracer* tracer);
 
 /**
+ * @brief Remove callbacks that were previously added using
+ * SwappyVk_injectTracer.
+ *
+ * @param[in]  tracer - Collection of callback functions
+ */
+void SwappyVk_uninjectTracer(const SwappyTracer* tracer);
+
+/**
  * @brief A structure enabling you to provide your own Vulkan function wrappers
  * by calling ::SwappyVk_setFunctionProvider.
  *
@@ -375,6 +385,16 @@ void SwappyVk_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain, uint32_t
  * @see SwappyStats
  */
 void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
+
+/**
+ * @brief Clears the frame statistics collected so far.
+ *
+ * All the frame statistics collected are reset to 0, frame statistics are
+ * collected normally after this call.
+ *
+ * @param[in]  swapchain   - The swapchain for which stats are being cleared.
+ */
+void SwappyVk_clearStats(VkSwapchainKHR swapchain);
 
 #ifdef __cplusplus
 }  // extern "C"
