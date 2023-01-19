@@ -24,6 +24,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48c06340_f15b6b28",
+        "filename": "samples/agdktunnel/app/src/main/cpp/input_util.hpp",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2023-01-19T21:41:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "485f5636_524e8499",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 27
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "13112dba_f4355e48",
@@ -47,6 +71,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d16df9f8_a2551743",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2023-01-19T21:41:07Z",
+      "side": 1,
+      "message": "Similar to the other case. I am logging an error if no contextId is found.",
+      "parentUuid": "13112dba_f4355e48",
+      "range": {
+        "startLine": 155,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 9
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "47e46524_7725bfae",
@@ -60,6 +108,30 @@
       "writtenOn": "2022-12-29T00:08:27Z",
       "side": 1,
       "message": "Prefer a default case for switch",
+      "range": {
+        "startLine": 165,
+        "startChar": 8,
+        "endLine": 165,
+        "endChar": 14
+      },
+      "revId": "ad5ff3100da7b75fe2f0a27d89d736398a5da977",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6df92e44_bfe149ed",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/AGDKTunnelActivity.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2023-01-19T21:41:07Z",
+      "side": 1,
+      "message": "There is not a \"default\" input context, nor there is a way in the InputSDK to disable contexts, so if there is a failure in setting correctly the InputContext then the game will continue with the latest context set.\n\nI am logging an error in the default case.",
+      "parentUuid": "47e46524_7725bfae",
       "range": {
         "startLine": 165,
         "startChar": 8,
