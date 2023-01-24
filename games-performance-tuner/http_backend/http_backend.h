@@ -41,6 +41,11 @@ class HttpBackend : public IBackend {
         ProtobufSerialization& fidelity_params,
         std::string& experiment_id) override;
 
+    // Perform a blocking call to get quality level predictions from the server.
+    TuningFork_ErrorCode PredictQualityLevels(
+        HttpRequest& request, ProtobufArray& fidelity_params,
+        uint32_t target_frame_time_ms) override;
+
     // Perform a blocking call to upload telemetry info to a server.
     virtual TuningFork_ErrorCode UploadTelemetry(
         const std::string& tuningfork_log_event) override;
