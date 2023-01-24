@@ -78,6 +78,7 @@ set( TUNINGFORK_SRCS
   http_backend/http_backend.cpp
   http_backend/http_request.cpp
   http_backend/json_serializer.cpp
+  http_backend/predict_quality_levels.cpp
   http_backend/ultimate_uploader.cpp
   ../src/common/apk_utils.cpp
   ../src/common/jni/jni_helper.cpp

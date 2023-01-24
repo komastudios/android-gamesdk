@@ -72,6 +72,19 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
     return result;
 }
 
+// Blocking call to get quality predictions from the server.
+TuningFork_ErrorCode TuningFork_predictQualityLevels(
+    TuningFork_CProtobufArray *qualityLevels, uint32_t target_frame_time_ms,
+    uint32_t timeout_ms) {
+    tf::ProtobufArray predictions;
+
+    TuningFork_ErrorCode result =
+        tf::PredictQualityLevels(predictions, target_frame_time_ms, timeout_ms);
+    if (result == TUNINGFORK_ERROR_OK && qualityLevels)
+        tf::ToCProtobufArray(predictions, *qualityLevels);
+    return result;
+}
+
 // Protobuf serialization of the current annotation
 TuningFork_ErrorCode TuningFork_setCurrentAnnotation(
     const TuningFork_CProtobufSerialization *annotation) {
