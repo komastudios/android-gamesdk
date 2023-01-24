@@ -131,6 +131,10 @@ def getDistPath() {
     return new File("$projectDir/../dist").getPath()
 }
 
+def getBuildInfoPath() {
+	return getDistPath()+"/build-info"
+}
+
 def getTempPath() {
     return new File("$projectDir/../.temp").getPath()
 }
@@ -1003,11 +1007,24 @@ task packageMavenZip(type: Zip) {
 }
 
 task jetpadJson {
+
+    doFirst {
+        // Clear the package and output path to ensure build info is not polluted
+        // by previous build tasks.
+        delete getBuildInfoPath()
+    }
+
     doLast {
-        def buildInfoFile = new BuildInfoFile()
-        buildInfoFile.writeLibrariesBuildInfoFile(
+	mkdir getBuildInfoPath()
+
+	def buildInfoFile = new BuildInfoFile()
+        buildInfoFile.writeLibrariesAggregateBuildInfoFile(
                 filterNativeLibraries(allLibraries),
                 filterAndroidArchiveLibraries(allLibraries),
                 getDistPath(), getPackageName())
+	buildInfoFile.writeLibrariesIndividualBuildInfoFiles(
+                filterAndroidArchiveLibraries(allLibraries),
+                getBuildInfoPath(), getPackageName())
+
     }
 }
