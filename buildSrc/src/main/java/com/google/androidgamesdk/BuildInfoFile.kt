@@ -46,7 +46,7 @@ class BuildInfoFile {
         return proc.inputStream.bufferedReader().readText().trim()
     }
 
-    fun writeLibrariesBuildInfoFile(
+    fun writeLibrariesAggregateBuildInfoFile(
         nativeLibraries: Collection<NativeLibrary>,
         androidArchiveLibraries: Collection<AndroidArchiveLibrary>,
         distPath: String,
@@ -54,18 +54,7 @@ class BuildInfoFile {
     ) {
         val headCommitSha = getGitCommitShaAtHead()
 
-        val artifactsBuildInfo: List<ArtifactBuildInfo> = nativeLibraries.map {
-            nativeLibrary: NativeLibrary ->
-            ArtifactBuildInfo(
-                groupId = "androidx.games",
-                artifactId = nativeLibrary.aarLibraryName,
-                path = "/src/" + nativeLibrary.nativeLibraryName,
-                projectZipPath = packageName + '/' +
-                    nativeLibrary.aarLibraryName + "-maven-zip.zip",
-                sha = headCommitSha,
-                version = nativeLibrary.aarVersion
-            )
-        } + androidArchiveLibraries.map {
+        val artifactsBuildInfo: List<ArtifactBuildInfo> = androidArchiveLibraries.map {
             androidArchiveLibrary: AndroidArchiveLibrary ->
             ArtifactBuildInfo(
                 groupId = "androidx.games",
@@ -90,4 +79,40 @@ class BuildInfoFile {
         ).toFile()
         outputFile.writeText(serializedInfo)
     }
+
+    fun writeLibrariesIndividualBuildInfoFiles(
+        androidArchiveLibraries: Collection<AndroidArchiveLibrary>,
+        distPath: String,
+        packageName: String
+    ) {
+        val headCommitSha = getGitCommitShaAtHead()
+
+        val artifactsBuildInfo: List<ArtifactBuildInfo> = androidArchiveLibraries.map {
+            androidArchiveLibrary: AndroidArchiveLibrary ->
+            ArtifactBuildInfo(
+                groupId = "androidx.games",
+                artifactId = androidArchiveLibrary.aarLibraryName,
+                path = androidArchiveLibrary.projectName,
+                projectZipPath = packageName + '/' +
+                    androidArchiveLibrary.aarLibraryName + "-maven-zip.zip",
+                sha = headCommitSha,
+                version = androidArchiveLibrary.aarVersion
+            )
+        }
+
+        for (artifact in artifactsBuildInfo){
+            val gson = GsonBuilder().setPrettyPrinting().create()
+            val serializedInfo: String = gson.toJson(
+                artifact
+            )
+            val filename = artifact.groupId + "_" + artifact.artifactId + "_build_info.txt"
+
+            val outputFile = Paths.get(
+                distPath,
+                filename
+            ).toFile()
+            outputFile.writeText(serializedInfo)
+        }
+    }
+
 }
