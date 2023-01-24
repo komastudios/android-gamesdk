@@ -52,6 +52,12 @@ class TestBackend : public tf::IBackend {
         }
     }
 
+    TuningFork_ErrorCode PredictQualityLevels(
+        tf::HttpRequest& request, tf::ProtobufArray& fidelity_params,
+        uint32_t target_frame_time_ms) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
     TuningFork_ErrorCode UploadDebugInfo(tf::HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }

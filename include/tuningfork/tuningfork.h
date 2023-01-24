@@ -98,6 +98,18 @@ typedef struct TuningFork_CProtobufSerialization {
     void (*dealloc)(struct TuningFork_CProtobufSerialization*);
 } TuningFork_CProtobufSerialization;
 
+/**
+ * @brief A series of bytes representing an array of serialized protocol buffers.
+ * @see TuningFork_CProtobufArray_free for how to deallocate
+ * the memory once finished with the buffer.
+ */
+typedef struct TuningFork_CProtobufArray {
+    TuningFork_CProtobufSerialization* protobufs;  /// Array of protobufs.
+    uint32_t size;   /// Size of array.
+    /// Deallocation callback (may be NULL if not owned).
+    void (*dealloc)(struct TuningFork_CProtobufArray*);
+} TuningFork_CProtobufArray;
+
 /// The instrumentation key identifies a tick point within a frame or a trace
 /// segment
 typedef uint16_t TuningFork_InstrumentKey;
@@ -202,6 +214,12 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_RUNNING =
         39,  ///< Cannot resume frame time logging because it is already
              ///< running.
+    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR =
+        40,  ///< An error occurred parsing the response to
+             ///< predictQualityLevels
+    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR =
+        41,  ///< The response from predictQualityLevels was not a success
+             ///< code
 
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
@@ -380,7 +398,7 @@ typedef struct TuningFork_Settings {
 } TuningFork_Settings;
 
 /**
- * @brief Deallocate any memory owned by the procol buffer serialization.
+ * @brief Deallocate any memory owned by the protocol buffer serialization.
  * @param ser A protocol buffer serialization
  */
 inline void TuningFork_CProtobufSerialization_free(
@@ -388,6 +406,18 @@ inline void TuningFork_CProtobufSerialization_free(
     if (ser->dealloc) {
         ser->dealloc(ser);
         ser->dealloc = NULL;
+    }
+}
+
+/**
+ * @brief Deallocate any memory owned by the given protobuf array.
+ * @param array A protocol buffer array
+ */
+inline void TuningFork_CProtobufArray_free(
+    TuningFork_CProtobufArray* array) {
+    if (array->dealloc) {
+      array->dealloc(array);
+      array->dealloc = NULL;
     }
 }
 
@@ -440,6 +470,22 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
 TuningFork_ErrorCode TuningFork_getFidelityParameters(
     const TuningFork_CProtobufSerialization* defaultParams,
     TuningFork_CProtobufSerialization* params, uint32_t timeout_ms);
+
+/**
+ * @brief A blocking call to get quality level predictions from the server.
+ *
+ * @param[out] qualityLevels quality levels returned as an array for serialized protocol buffers.
+ * Can be empty if quality levels for the apk are not defined.
+ * @param target_frame_time_ms the desired time per frame, in milliseconds
+ * @param timeout_ms time to wait before returning from this call when no
+ * connection can be made. If zero, the value in Settings.initial_request_timeout_ms is used.
+ * @return TUNINGFORK_ERROR_OK on success.
+ * @return TUNINGFORK_ERROR_TIMEOUT if there was a timeout before predictions could be returned.
+ * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR if the call to the server failed.
+ * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR if the response couldn't be parsed.
+ */
+TuningFork_ErrorCode TuningFork_predictQualityLevels(
+    TuningFork_CProtobufArray* qualityLevels, uint32_t target_frame_time_ms, uint32_t timeout_ms);
 
 /**
  * @brief Set the current annotation.

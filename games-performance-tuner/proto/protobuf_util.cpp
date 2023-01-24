@@ -91,3 +91,12 @@ extern "C" void TuningFork_CProtobufSerialization_Dealloc(
         c->size = 0;
     }
 }
+
+extern "C" void TuningFork_CProtobufArray_Dealloc(
+    TuningFork_CProtobufArray *array) {
+    for (int i = 0; i < array->size; i++) {
+        TuningFork_CProtobufSerialization_free(&(array->protobufs[i]));
+    }
+    free(array->protobufs);
+    array->size = 0;
+}
