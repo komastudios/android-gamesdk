@@ -54,6 +54,13 @@ class DebugBackend : public IBackend {
         std::string& experiment_id) override {
         return TUNINGFORK_ERROR_OK;
     }
+
+    TuningFork_ErrorCode PredictQualityLevels(
+        HttpRequest& request, ProtobufArray& fidelity_params,
+        uint32_t target_frame_time_ms) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }

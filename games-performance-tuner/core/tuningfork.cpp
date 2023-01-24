@@ -110,6 +110,17 @@ TuningFork_ErrorCode GetFidelityParameters(
     }
 }
 
+TuningFork_ErrorCode PredictQualityLevels(ProtobufArray &qualityLevels,
+                                          uint32_t target_frame_time_ms,
+                                          uint32_t timeout_ms) {
+    if (!s_impl) {
+        return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;
+    } else {
+        return s_impl->PredictQualityLevels(qualityLevels, target_frame_time_ms,
+                                            timeout_ms);
+    }
+}
+
 TuningFork_ErrorCode FrameTick(InstrumentationKey id) {
     if (!s_impl) {
         return TUNINGFORK_ERROR_TUNINGFORK_NOT_INITIALIZED;

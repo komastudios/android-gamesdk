@@ -146,7 +146,7 @@ Json::object JsonSerializer::TelemetryContextJson(
 #define SET_METADATA_FIELD(OBJ, KEY) \
     if (md.KEY != 0) OBJ[#KEY] = md.KEY;
 
-static std::string DurationJsonFromNanos(int64_t ns) {
+std::string JsonSerializer::DurationJsonFromNanos(int64_t ns) {
     // For JSON, we should return a string with the number of seconds.
     // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/duration.proto
     double dns = ns;
