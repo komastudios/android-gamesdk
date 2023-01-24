@@ -39,6 +39,9 @@
 extern "C" void TuningFork_CProtobufSerialization_Dealloc(
     TuningFork_CProtobufSerialization* c);
 
+extern "C" void TuningFork_CProtobufArray_Dealloc(
+    TuningFork_CProtobufArray* array);
+
 /** @endcond */
 
 namespace tuningfork {
@@ -47,6 +50,11 @@ namespace tuningfork {
  * @brief A protocol buffer serialization stored as a STL vector of bytes
  */
 typedef std::vector<uint8_t> ProtobufSerialization;
+
+/**
+ * @brief A list of protocol buffers stored as an STL vector of vector of bytes
+ */
+typedef std::vector<ProtobufSerialization> ProtobufArray;
 
 /**
  * @brief Convert from a C to a C++ serialization.
@@ -65,6 +73,23 @@ inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
     memcpy(cpbs.bytes, pbs.data(), pbs.size());
     cpbs.size = pbs.size();
     cpbs.dealloc = TuningFork_CProtobufSerialization_Dealloc;
+}
+
+/**
+ * @brief Convert from a C++ to a C protobuf array.
+ */
+inline void ToCProtobufArray(const ProtobufArray& protobuf_array,
+                             TuningFork_CProtobufArray& c_protobuf_array) {
+    c_protobuf_array.size = protobuf_array.size();
+    c_protobuf_array.protobufs = (TuningFork_CProtobufSerialization*)malloc(
+        protobuf_array.size() * sizeof(TuningFork_CProtobufSerialization*));
+
+    for (int i = 0; i < protobuf_array.size(); i++) {
+        ToCProtobufSerialization(protobuf_array[i],
+                                 c_protobuf_array.protobufs[i]);
+    }
+
+    c_protobuf_array.dealloc = TuningFork_CProtobufArray_Dealloc;
 }
 
 /**
