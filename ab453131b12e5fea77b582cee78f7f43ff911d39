@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "701fe7d7_c79984f2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "Generally it looks great. We should consider the case of 0 quality levels reported.",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83700ab7_1bc37cd1",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "wouldn\u0027t it be good to just declare a new \"DurationJsonFromMillis\" ?",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "726c3431_eda43b4e",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "Should this really be an error? It should be a valid response to have 0 quality levels, I think - we just need to make it clear in the API that this can happen.",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f07b650_4fa3da14",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "should this be \"TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR\" and the one below \"TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR\"?",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e189b5e_343c236e",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "param is named array",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5358b7f2_35643731",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 480,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "This timeout is unsigned - cannot be negative really.",
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e91ed392_31534c06",
+        "filename": "include/tuningfork/tuningfork.h",
+        "patchSetId": 3
+      },
+      "lineNbr": 484,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T10:58:32Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Check Contents: Lines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.\n\nAnalyzer Description: Validates that changes do not have prohibited expressions in them.\nOwner: ayeaye-team@google.com\n\nLines longer than 100 characters should be wrapped to improve readability; see https://source.android.com/setup/contribute/code-style#limit-line-length for more details.",
+      "range": {
+        "startLine": 484,
+        "startChar": 0,
+        "endLine": 484,
+        "endChar": 105
+      },
+      "revId": "ab453131b12e5fea77b582cee78f7f43ff911d39",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
