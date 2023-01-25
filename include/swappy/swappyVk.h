@@ -266,6 +266,10 @@ void SwappyVk_injectTracer(const SwappyTracer* tracer);
  * @brief Remove callbacks that were previously added using
  * SwappyVk_injectTracer.
  *
+ * Only removes callbacks that were previously added using
+ * SwappyVK_injectTracer. If SwappyVK_injectTracker was not called with the
+ * tracer, then there is no effect.
+ *
  * @param[in]  tracer - Collection of callback functions
  */
 void SwappyVk_uninjectTracer(const SwappyTracer* tracer);
