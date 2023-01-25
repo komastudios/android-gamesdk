@@ -358,6 +358,11 @@ bool SwappyVk_isEnabled(VkSwapchainKHR swapchain, bool* isEnabled);
  * related work. Stats will be logged to logcat with a 'FrameStatistics' tag. An
  * app can get the stats by calling ::SwappyVk_getStats.
  *
+ * SwappyVk_initAndGetRefreshCycleDuration must have been called successfully
+ * before for this swapchain, otherwise there is no effect in this call. Frame
+ * stats are only available if the platform supports VK_GOOGLE_display_timing
+ * extension.
+ *
  * @param[in]  swapchain - The swapchain for which frame stat collection is
  *                           configured.
  * @param      enabled   - Whether to enable/disable frame stat collection.
@@ -370,7 +375,8 @@ void SwappyVk_enableStats(VkSwapchainKHR swapchain, bool enabled);
  * When stats collection is enabled with SwappyVk_enableStats, the app is
  * expected to call this function for each frame before starting to do any CPU
  * related work. It is assumed that this function will be called after a
- * successful call to vkAcquireNextImageKHR.
+ * successful call to vkAcquireNextImageKHR. See ::SwappyVk_enableStats for more
+ * conditions.
  *
  * @param[in]  queue     - The VkQueue associated with the device and swapchain
  * @param[in]  swapchain - The swapchain where the frame is presented to.
@@ -383,9 +389,15 @@ void SwappyVk_recordFrameStart(VkQueue queue, VkSwapchainKHR swapchain, uint32_t
 /**
  * @brief Returns the stats collected, if statistics collection was toggled on.
  *
+ * Given that this API uses VkSwapchainKHR and the potential for this call to be
+ * done on different threads, all calls to ::SwappyVk_getStats
+ * must be externally synchronized with other SwappyVk calls. Unsynchronized
+ * calls may lead to undefined behavior. See ::SwappyVk_enableStats for more
+ * conditions.
+ *
  * @param[in]  swapchain   - The swapchain for which stats are being queried.
  * @param      swappyStats - Pointer to a SwappyStats that will be populated with
- *                             the collected stats.
+ *                             the collected stats. Cannot be NULL.
  * @see SwappyStats
  */
 void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
@@ -394,7 +406,8 @@ void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
  * @brief Clears the frame statistics collected so far.
  *
  * All the frame statistics collected are reset to 0, frame statistics are
- * collected normally after this call.
+ * collected normally after this call. See ::SwappyVk_enableStats for more
+ * conditions.
  *
  * @param[in]  swapchain   - The swapchain for which stats are being cleared.
  */
