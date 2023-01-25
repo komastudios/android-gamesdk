@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b70ee39b_9e204bc8",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T12:53:41Z",
+      "side": 1,
+      "message": "Check explicitly for \u003d\u003d 0",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "634e505f_12ffbbf8",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T12:53:41Z",
+      "side": 1,
+      "message": "why ALOGE? this is not an error condition.",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a5d3c20_49b4c006",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T12:53:41Z",
+      "side": 1,
+      "message": "should this be TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR ? Also what would end up with this condition? that Json request is successful but the response is empty.",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53f62f74_957b8dda",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T12:53:41Z",
+      "side": 1,
+      "message": "What kind of errors can we expect here - do we have to document them in TuningFork_predictQualityLevels? Otherwise it maybe just easy to return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS in this case as well.",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eef90fdc_1ac1c36b",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-01-25T12:53:41Z",
+      "side": 1,
+      "message": "Personal opinion: I think it would be consistent to check for error condition first and then just do return DecodeResponse(body, fidelity_params); at the end.\n\nif (response_code is error) return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS;\n\nreturn DecodeResponse(body, fidelity_params);",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
