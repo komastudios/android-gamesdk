@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c3e52c3_308b8076",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-01-25T16:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b70ee39b_9e204bc8",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "634e505f_12ffbbf8",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-01-25T12:53:41Z",
       "side": 1,
       "message": "why ALOGE? this is not an error condition.",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70740343_d3274a1b",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-01-25T16:14:39Z",
+      "side": 1,
+      "message": "Just realized we don\u0027t need to log this here, there\u0027s logging below forit.",
+      "parentUuid": "634e505f_12ffbbf8",
       "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa5b2bad_7bc2ec8a",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-01-25T16:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a5d3c20_49b4c006",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53f62f74_957b8dda",
@@ -69,6 +123,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c18b16bf_574a4f55",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-01-25T16:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53f62f74_957b8dda",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eef90fdc_1ac1c36b",
@@ -82,6 +154,24 @@
       "writtenOn": "2023-01-25T12:53:41Z",
       "side": 1,
       "message": "Personal opinion: I think it would be consistent to check for error condition first and then just do return DecodeResponse(body, fidelity_params); at the end.\n\nif (response_code is error) return TUNINGFORK_ERROR_GENERATE_TUNING_PARAMETERS_RESPONSE_NOT_SUCCESS;\n\nreturn DecodeResponse(body, fidelity_params);",
+      "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e8fba04_1f12e29c",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-01-25T16:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eef90fdc_1ac1c36b",
       "revId": "3b611624f9ca33b5dfce353020190414489ac25d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
