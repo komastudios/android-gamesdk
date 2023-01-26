@@ -175,12 +175,14 @@ void ChoreographerFilter::onSettingsChanged() {
     mUseAffinity = useAffinity;
     mRefreshPeriod = displayTimings.refreshPeriod;
     mAppToSfDelay = displayTimings.sfOffset - displayTimings.appOffset;
+#if SWAPPY_VERBOSE_LOGGING
     ALOGV(
         "onSettingsChanged(): refreshPeriod=%lld, appOffset=%lld, "
         "sfOffset=%lld",
         (long long)displayTimings.refreshPeriod.count(),
         (long long)displayTimings.appOffset.count(),
         (long long)displayTimings.sfOffset.count());
+#endif
     launchThreadsLocked();
 }
 

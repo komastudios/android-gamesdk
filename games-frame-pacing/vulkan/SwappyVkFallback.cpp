@@ -29,7 +29,9 @@ SwappyVkFallback::SwappyVkFallback(JNIEnv* env, jobject jactivity,
 bool SwappyVkFallback::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
                                                  uint64_t* pRefreshDuration) {
     if (!isEnabled()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Swappy is disabled.");
+#endif
         return false;
     }
 
@@ -38,9 +40,12 @@ bool SwappyVkFallback::doGetRefreshCycleDuration(VkSwapchainKHR swapchain,
 
     *pRefreshDuration = mCommonBase.getRefreshPeriod().count();
 
+#if SWAPPY_VERBOSE_LOGGING
     double refreshRate = 1000000000.0 / *pRefreshDuration;
+
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
           *pRefreshDuration, refreshRate);
+#endif
 
     return true;
 }
@@ -49,7 +54,9 @@ VkResult SwappyVkFallback::doQueuePresent(
     VkQueue queue, uint32_t queueFamilyIndex,
     const VkPresentInfoKHR* pPresentInfo) {
     if (!isEnabled()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Swappy is disabled.");
+#endif
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
@@ -70,7 +77,9 @@ VkResult SwappyVkFallback::doQueuePresent(
     VkSemaphore semaphore;
     result = injectFence(queue, pPresentInfo, &semaphore);
     if (result) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to vkQueueSubmit %d", result);
+#endif
         return result;
     }
 
@@ -100,19 +109,27 @@ VkResult SwappyVkFallback::doQueuePresent(
 }
 
 void SwappyVkFallback::enableStats(bool enabled) {
+#if SWAPPY_VERBOSE_LOGGING
     ALOGE("Frame Statistics Unsupported - API ignored");
+#endif
 }
 
 void SwappyVkFallback::getStats(SwappyStats* swappyStats) {
+#if SWAPPY_VERBOSE_LOGGING
     ALOGE("Frame Statistics Unsupported - API ignored");
+#endif
 }
 
 void SwappyVkFallback::recordFrameStart(VkQueue queue, uint32_t image) {
+#if SWAPPY_VERBOSE_LOGGING
     ALOGE("Frame Statistics Unsupported - API ignored");
+#endif
 }
 
 void SwappyVkFallback::clearStats() {
+#if SWAPPY_VERBOSE_LOGGING
     ALOGE("Frame Statistics Unsupported - API ignored");
+#endif
 }
 
 }  // namespace swappy

@@ -53,8 +53,10 @@ class FrameStatistics {
     int32_t lastLatencyRecorded() { return mLastLatency; }
 
    private:
+#if SWAPPY_VERBOSE_LOGGING
     static constexpr std::chrono::nanoseconds LOG_EVERY_N_NS = 1s;
     void logFrames() REQUIRES(mMutex);
+#endif
 
     int32_t getFrameDelta(int64_t deltaTimeNS, uint64_t refreshPeriod);
 

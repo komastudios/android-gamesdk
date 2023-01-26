@@ -19,6 +19,7 @@
 #include "SwappyVkGoogleDisplayTiming.h"
 
 #define LOG_TAG "SwappyVkGoogleDisplayTiming"
+#include "Log.h"
 
 using std::chrono::nanoseconds;
 
@@ -32,7 +33,9 @@ SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
     VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
     if (!isEnabled()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Swappy is disabled.");
+#endif
         return false;
     }
 
@@ -46,9 +49,12 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
 
     *pRefreshDuration = mCommonBase.getRefreshPeriod().count();
 
+#if SWAPPY_VERBOSE_LOGGING
     double refreshRate = 1000000000.0 / *pRefreshDuration;
+
     ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
           *pRefreshDuration, refreshRate);
+#endif
 
     mSwapchain = swapchain;
     return true;
@@ -58,7 +64,9 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     VkQueue queue, uint32_t queueFamilyIndex,
     const VkPresentInfoKHR* pPresentInfo) {
     if (!isEnabled()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Swappy is disabled.");
+#endif
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
@@ -77,7 +85,9 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     VkSemaphore semaphore;
     res = injectFence(queue, pPresentInfo, &semaphore);
     if (res) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to vkQueueSubmit %d", res);
+#endif
         return res;
     }
 
@@ -165,13 +175,18 @@ void SwappyVkGoogleDisplayTiming::recordFrameStart(VkQueue queue,
         mDevice, mSwapchain, &pastTimingsCount, &mPastTimes[0]);
 
     if (result == VK_INCOMPLETE) {
+        // Do nothing except print a log message
+#if SWAPPY_VERBOSE_LOGGING
         ALOGI(
             "More past presentation times available. Consider increasing "
             "MAX_FRAME_LAG");
+#endif
     }
     if (result != VK_SUCCESS && result != VK_INCOMPLETE) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Error collecting past presentation times with result %d",
               result);
+#endif
         return;
     }
 

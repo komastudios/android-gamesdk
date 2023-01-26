@@ -23,8 +23,10 @@
 
 namespace swappy {
 
+#if SWAPPY_VERBOSE_LOGGING
 // NB This is only needed for C++14
 constexpr std::chrono::nanoseconds FrameStatistics::LOG_EVERY_N_NS;
+#endif
 
 int32_t FrameStatistics::getFrameDelta(int64_t deltaTimeNS,
                                        uint64_t refreshPeriod) {
@@ -76,12 +78,16 @@ void FrameStatistics::updateFrameStats(FrameTimings current,
             mStats.offsetFromPreviousFrame[offset]++;
         }
 
+#if SWAPPY_VERBOSE_LOGGING
         logFrames();
+#endif
     }
 
     mLastLatency = latency;
     mLast = current;
 }
+
+#if SWAPPY_VERBOSE_LOGGING
 void FrameStatistics::logFrames() {
     static auto previousLogTime = std::chrono::steady_clock::now();
 
@@ -123,6 +129,7 @@ void FrameStatistics::logFrames() {
 
     previousLogTime = std::chrono::steady_clock::now();
 }
+#endif
 
 void FrameStatistics::enableStats(bool enabled) { mFullStatsEnabled = enabled; }
 

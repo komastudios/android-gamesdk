@@ -19,6 +19,7 @@
 #include "system_utils.h"
 
 #define LOG_TAG "SwappyVkBase"
+#include "Log.h"
 
 namespace swappy {
 
@@ -90,7 +91,9 @@ SwappyVkBase::SwappyVkBase(JNIEnv* env, jobject jactivity,
       mInitialized(false),
       mEnabled(false) {
     if (!mCommonBase.isValid()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("SwappyCommon could not initialize correctly.");
+#endif
         return;
     }
 
@@ -146,7 +149,9 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
     VkResult res = vkCreateCommandPool(mDevice, &cmd_pool_info, NULL,
                                        &mCommandPool[queue]);
     if (res) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("vkCreateCommandPool failed %d", res);
+#endif
         return res;
     }
     const VkCommandBufferAllocateInfo present_cmd_info = {
@@ -164,7 +169,9 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
             .flags = VK_FENCE_CREATE_SIGNALED_BIT};
         res = vkCreateFence(mDevice, &fence_ci, NULL, &sync.fence);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("failed to create fence: %d", res);
+#endif
             return res;
         }
 
@@ -174,14 +181,18 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
             .flags = 0};
         res = vkCreateSemaphore(mDevice, &semaphore_ci, NULL, &sync.semaphore);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("failed to create semaphore: %d", res);
+#endif
             return res;
         }
 
         res =
             vkAllocateCommandBuffers(mDevice, &present_cmd_info, &sync.command);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("vkAllocateCommandBuffers failed %d", res);
+#endif
             return res;
         }
 
@@ -193,7 +204,9 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
         };
         res = vkBeginCommandBuffer(sync.command, &cmd_buf_info);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("vkAllocateCommandBuffers failed %d", res);
+#endif
             return res;
         }
 
@@ -204,7 +217,9 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
         };
         res = vkCreateEvent(mDevice, &event_info, NULL, &sync.event);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("vkCreateEvent failed %d", res);
+#endif
             return res;
         }
 
@@ -213,7 +228,9 @@ VkResult SwappyVkBase::initializeVkSyncObjects(VkQueue queue,
 
         res = vkEndCommandBuffer(sync.command);
         if (res) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("vkCreateEvent failed %d", res);
+#endif
             return res;
         }
 

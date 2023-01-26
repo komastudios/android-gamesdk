@@ -65,6 +65,8 @@
                           SWAPPY_MINOR_VERSION, SWAPPY_BUGFIX_VERSION, \
                           AGDK_GIT_COMMIT)
 
+/** Set this to 1 to see logging from Swappy. */
+#define SWAPPY_VERBOSE_LOGGING 0
 /** @endcond */
 
 /** @brief Id of a thread returned by an external thread manager. */

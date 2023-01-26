@@ -52,8 +52,6 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
         }
 
         public void run() {
-            Log.i(LOG_TAG, "Starting looper thread");
-
             mLock.lock();
             Looper.prepare();
             mHandler = new Handler();
@@ -61,8 +59,6 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
             mLock.unlock();
 
             Looper.loop();
-
-            Log.i(LOG_TAG, "Terminating looper thread");
         }
     }
 

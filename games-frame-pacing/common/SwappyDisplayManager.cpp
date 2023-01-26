@@ -148,7 +148,9 @@ void SwappyDisplayManagerJNI::onRefreshPeriodChanged(jlong /*cookie*/,
                                                      long refreshPeriod,
                                                      long appOffset,
                                                      long sfOffset) {
+#if SWAPPY_VERBOSE_LOGGING
     ALOGV("onRefreshPeriodChanged: refresh rate: %.0fHz", 1e9f / refreshPeriod);
+#endif
     using std::chrono::nanoseconds;
     Settings::DisplayTimings displayTimings;
     displayTimings.refreshPeriod = nanoseconds(refreshPeriod);

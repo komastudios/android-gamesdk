@@ -17,6 +17,7 @@
 #include "SwappyVk.h"
 
 #define LOG_TAG "SwappyVk"
+#include "Log.h"
 
 namespace swappy {
 
@@ -147,11 +148,13 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
         }
 
         if (!pImplementation) {  // should never happen
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE(
                 "SwappyVk could not find or create correct implementation for "
                 "the current environment: "
                 "%p, %p",
                 physicalDevice, device);
+#endif
             return false;
         }
     }
@@ -191,8 +194,10 @@ void SwappyVk::SetSwapDuration(VkDevice device, VkSwapchainKHR swapchain,
 VkResult SwappyVk::QueuePresent(VkQueue queue,
                                 const VkPresentInfoKHR* pPresentInfo) {
     if (perQueueFamilyIndex.find(queue) == perQueueFamilyIndex.end()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Unknown queue %p. Did you call SwappyVkSetQueueFamilyIndex ?",
               queue);
+#endif
         return VK_INCOMPLETE;
     }
 

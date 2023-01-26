@@ -92,7 +92,9 @@ bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
 bool SwappyGL::lastFrameIsComplete(EGLDisplay display) {
     if (!getEgl()->lastFrameIsComplete(display)) {
         gamesdk::ScopedTrace trace("lastFrameIncomplete");
+#if SWAPPY_VERBOSE_LOGGING
         ALOGV("lastFrameIncomplete");
+#endif
         return false;
     }
     return true;
@@ -285,7 +287,9 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
     mEnableSwappy =
         !gamesdk::GetSystemPropAsBool(SWAPPY_SYSTEM_PROP_KEY_DISABLE, false);
     if (!enabled()) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGI("Swappy is disabled");
+#endif
         return;
     }
 
@@ -294,10 +298,13 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
             std::make_unique<FrameStatisticsGL>(*mEgl, mCommonBase);
         mCommonBase.setLastLatencyRecordedCallback(
             [this]() { return this->mFrameStatistics->lastLatencyRecorded(); });
-    } else {
+    }
+#if SWAPPY_VERBOSE_LOGGING
+    else {
         ALOGI("stats are not suppored on this platform");
     }
     ALOGI("SwappyGL initialized successfully");
+#endif
 }
 
 void SwappyGL::resetSyncFence(EGLDisplay display) {

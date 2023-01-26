@@ -32,20 +32,26 @@ namespace swappy {
 std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
     auto eglLib = dlopen("libEGL.so", RTLD_LAZY | RTLD_LOCAL);
     if (eglLib == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Can't load libEGL");
+#endif
         return nullptr;
     }
     auto eglGetProcAddress = reinterpret_cast<eglGetProcAddress_type>(
         dlsym(eglLib, "eglGetProcAddress"));
     if (eglGetProcAddress == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglGetProcAddress");
+#endif
         return nullptr;
     }
 
     auto eglSwapBuffers =
         reinterpret_cast<eglSwapBuffers_type>(dlsym(eglLib, "eglSwapBuffers"));
     if (eglSwapBuffers == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglSwapBuffers");
+#endif
         return nullptr;
     }
 
@@ -53,42 +59,54 @@ std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
         reinterpret_cast<eglPresentationTimeANDROID_type>(
             eglGetProcAddress("eglPresentationTimeANDROID"));
     if (eglPresentationTimeANDROID == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglPresentationTimeANDROID");
+#endif
         return nullptr;
     }
 
     auto eglCreateSyncKHR = reinterpret_cast<eglCreateSyncKHR_type>(
         eglGetProcAddress("eglCreateSyncKHR"));
     if (eglCreateSyncKHR == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglCreateSyncKHR");
+#endif
         return nullptr;
     }
 
     auto eglDestroySyncKHR = reinterpret_cast<eglDestroySyncKHR_type>(
         eglGetProcAddress("eglDestroySyncKHR"));
     if (eglDestroySyncKHR == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglDestroySyncKHR");
+#endif
         return nullptr;
     }
 
     auto eglGetSyncAttribKHR = reinterpret_cast<eglGetSyncAttribKHR_type>(
         eglGetProcAddress("eglGetSyncAttribKHR"));
     if (eglGetSyncAttribKHR == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglGetSyncAttribKHR");
+#endif
         return nullptr;
     }
 
     auto eglGetError =
         reinterpret_cast<eglGetError_type>(eglGetProcAddress("eglGetError"));
     if (eglGetError == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglGetError");
+#endif
         return nullptr;
     }
 
     auto eglSurfaceAttrib = reinterpret_cast<eglSurfaceAttrib_type>(
         eglGetProcAddress("eglSurfaceAttrib"));
     if (eglSurfaceAttrib == nullptr) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to load eglSurfaceAttrib");
+#endif
         return nullptr;
     }
 
@@ -96,16 +114,22 @@ std::unique_ptr<EGL> EGL::create(std::chrono::nanoseconds fenceTimeout) {
     auto eglGetNextFrameIdANDROID =
         reinterpret_cast<eglGetNextFrameIdANDROID_type>(
             eglGetProcAddress("eglGetNextFrameIdANDROID"));
+
+#if SWAPPY_VERBOSE_LOGGING
     if (eglGetNextFrameIdANDROID == nullptr) {
         ALOGI("Failed to load eglGetNextFrameIdANDROID");
     }
+#endif
 
     auto eglGetFrameTimestampsANDROID =
         reinterpret_cast<eglGetFrameTimestampsANDROID_type>(
             eglGetProcAddress("eglGetFrameTimestampsANDROID"));
+
+#if SWAPPY_VERBOSE_LOGGING
     if (eglGetFrameTimestampsANDROID == nullptr) {
         ALOGI("Failed to load eglGetFrameTimestampsANDROID");
     }
+#endif
 
     auto egl = std::make_unique<EGL>(fenceTimeout, eglGetProcAddress,
                                      ConstructorTag{});
@@ -134,7 +158,9 @@ void EGL::resetSyncFence(EGLDisplay display) {
     if (mFenceWaiter.waitForIdle() && mSyncFence != EGL_NO_SYNC_KHR) {
         EGLBoolean result = eglDestroySyncKHR(display, mSyncFence);
         if (result == EGL_FALSE) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("Failed to destroy sync fence");
+#endif
         }
     }
 
@@ -143,9 +169,12 @@ void EGL::resetSyncFence(EGLDisplay display) {
     if (mSyncFence != EGL_NO_SYNC_KHR) {
         // kick of the thread work to wait for the fence and measure its time
         mFenceWaiter.onFenceCreation(display, mSyncFence);
-    } else {
+    }
+#if SWAPPY_VERBOSE_LOGGING
+    else {
         ALOGE("Failed to create sync fence");
     }
+#endif
 }
 
 bool EGL::lastFrameIsComplete(EGLDisplay display) {
@@ -160,7 +189,9 @@ bool EGL::lastFrameIsComplete(EGLDisplay display) {
     EGLBoolean result =
         eglGetSyncAttribKHR(display, mSyncFence, EGL_SYNC_STATUS_KHR, &status);
     if (result == EGL_FALSE) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to get sync status");
+#endif
         return true;
     }
 
@@ -169,7 +200,9 @@ bool EGL::lastFrameIsComplete(EGLDisplay display) {
     } else if (status == EGL_UNSIGNALED_KHR) {
         return false;
     } else {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Unexpected sync status: %d", status);
+#endif
         return true;
     }
 }
@@ -189,14 +222,16 @@ bool EGL::statsSupported() {
 std::pair<bool, EGLuint64KHR> EGL::getNextFrameId(EGLDisplay dpy,
                                                   EGLSurface surface) const {
     if (eglGetNextFrameIdANDROID == nullptr) {
-        ALOGE("stats are not supported on this platform");
+        ALOGE_ONCE("stats are not supported on this platform");
         return {false, 0};
     }
 
     EGLuint64KHR frameId;
     EGLBoolean result = eglGetNextFrameIdANDROID(dpy, surface, &frameId);
     if (result == EGL_FALSE) {
+#if SWAPPY_VERBOSE_LOGGING
         ALOGE("Failed to get next frame ID");
+#endif
         return {false, 0};
     }
 
@@ -207,7 +242,7 @@ std::unique_ptr<EGL::FrameTimestamps> EGL::getFrameTimestamps(
     EGLDisplay dpy, EGLSurface surface, EGLuint64KHR frameId) const {
 #if (not defined ANDROID_NDK_VERSION) || ANDROID_NDK_VERSION >= 15
     if (eglGetFrameTimestampsANDROID == nullptr) {
-        ALOGE("stats are not supported on this platform");
+        ALOGE_ONCE("stats are not supported on this platform");
         return nullptr;
     }
     const std::vector<EGLint> timestamps = {
@@ -258,11 +293,16 @@ EGL::FenceWaiter::FenceWaiter(std::chrono::nanoseconds fenceTimeout,
 
     eglClientWaitSyncKHR = reinterpret_cast<eglClientWaitSyncKHR_type>(
         getProcAddress("eglClientWaitSyncKHR"));
+#if SWAPPY_VERBOSE_LOGGING
     if (eglClientWaitSyncKHR == nullptr)
         ALOGE("Failed to load eglClientWaitSyncKHR");
+#endif
+
     eglDestroySyncKHR = reinterpret_cast<eglDestroySyncKHR_type>(
         getProcAddress("eglDestroySyncKHR"));
+#if SWAPPY_VERBOSE_LOGGING
     if (eglDestroySyncKHR == nullptr) ALOGE("Failed to load eglDestroySyncKHR");
+#endif
 
     mFenceWaiter = Thread([this]() { threadMain(); });
 }
@@ -310,6 +350,7 @@ void EGL::FenceWaiter::threadMain() {
         const auto startTime = std::chrono::steady_clock::now();
         EGLBoolean result = eglClientWaitSyncKHR(mDisplay, mSyncFence, 0,
                                                  mFenceTimeout.count());
+#if SWAPPY_VERBOSE_LOGGING
         switch (result) {
             case EGL_FALSE:
                 ALOGE("Failed to wait sync");
@@ -318,11 +359,14 @@ void EGL::FenceWaiter::threadMain() {
                 ALOGE("Timeout waiting for fence");
                 break;
         }
+#endif
         if (result != EGL_CONDITION_SATISFIED_KHR) {
             result = eglDestroySyncKHR(mDisplay, mSyncFence);
+#if SWAPPY_VERBOSE_LOGGING
             if (result == EGL_FALSE) {
                 ALOGE("Failed to destroy sync fence");
             }
+#endif
             mSyncFence = EGL_NO_SYNC_KHR;
         }
 

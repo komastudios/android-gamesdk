@@ -90,7 +90,9 @@ struct ExtThreadImpl : public ThreadImpl {
    public:
     ExtThreadImpl(std::function<void()>&& fn) : fn_(std::move(fn)) {
         if (s_ext_thread_manager->start(&id_, startThread, this) != 0) {
+#if SWAPPY_VERBOSE_LOGGING
             ALOGE("Couldn't create thread");
+#endif
         }
     }
     void join() { s_ext_thread_manager->join(id_); }
