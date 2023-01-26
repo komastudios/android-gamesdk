@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1188ffce_88b204d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2023-01-26T12:03:30Z",
+      "side": 1,
+      "message": "Since the severity is indicated in the name of the logging method, e.g. ALOGI for \u0027informative\u0027, use of a preprocessor flag like this is redundant? It adds a lot of code clutter.",
+      "revId": "c3de55856bd96ac4c7f4b218b40c112c7bbc7840",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
