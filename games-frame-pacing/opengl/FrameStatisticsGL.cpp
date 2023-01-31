@@ -32,7 +32,9 @@ namespace swappy {
 
 FrameStatisticsGL::FrameStatisticsGL(const EGL& egl,
                                      const SwappyCommon& swappyCommon)
-    : mEgl(egl), mSwappyCommon(swappyCommon) {}
+    : mEgl(egl), mSwappyCommon(swappyCommon) {
+    mPendingFrames.reserve(MAX_FRAME_LAG + 1);
+}
 
 FrameStatisticsGL::ThisFrame FrameStatisticsGL::getThisFrame(
     EGLDisplay dpy, EGLSurface surface) {

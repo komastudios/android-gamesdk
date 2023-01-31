@@ -27,7 +27,9 @@ namespace swappy {
 SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(
     JNIEnv* env, jobject jactivity, VkPhysicalDevice physicalDevice,
     VkDevice device, const SwappyVkFunctionProvider* provider)
-    : SwappyVkBase(env, jactivity, physicalDevice, device, provider) {}
+    : SwappyVkBase(env, jactivity, physicalDevice, device, provider) {
+    mPendingFrames.reserve(MAX_FRAME_LAG + 1);
+}
 
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
     VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
