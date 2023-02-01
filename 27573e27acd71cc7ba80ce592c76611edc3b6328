@@ -16,6 +16,24 @@
       "message": "I\u0027d like to mention that ideally this should be std::deque, because std::vector is highly inefficient with FIFO access pattern. However, as long as container has \u003c\u003d 10 elements, I think it\u0027s safe to keep std::vector.",
       "revId": "27573e27acd71cc7ba80ce592c76611edc3b6328",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6f66158_bfb95092",
+        "filename": "games-frame-pacing/vulkan/SwappyVkGoogleDisplayTiming.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-02-01T08:30:05Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7b9fd1a1_d8d60959",
+      "revId": "27573e27acd71cc7ba80ce592c76611edc3b6328",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
