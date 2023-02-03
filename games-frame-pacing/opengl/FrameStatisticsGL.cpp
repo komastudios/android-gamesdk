@@ -16,15 +16,12 @@
 
 #include "FrameStatisticsGL.h"
 
-#define LOG_TAG "FrameStatisticsGL"
-
 #include <inttypes.h>
 
 #include <cmath>
 #include <string>
 
 #include "EGL.h"
-#include "Log.h"
 #include "SwappyCommon.h"
 #include "Trace.h"
 

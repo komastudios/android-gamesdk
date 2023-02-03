@@ -19,6 +19,7 @@
 #include "SwappyVkGoogleDisplayTiming.h"
 
 #define LOG_TAG "SwappyVkGoogleDisplayTiming"
+#include "SwappyLog.h"
 
 using std::chrono::nanoseconds;
 
@@ -34,7 +35,7 @@ SwappyVkGoogleDisplayTiming::SwappyVkGoogleDisplayTiming(
 bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
     VkSwapchainKHR swapchain, uint64_t* pRefreshDuration) {
     if (!isEnabled()) {
-        ALOGE("Swappy is disabled.");
+        SWAPPY_LOGE("Swappy is disabled.");
         return false;
     }
 
@@ -42,15 +43,16 @@ bool SwappyVkGoogleDisplayTiming::doGetRefreshCycleDuration(
     VkResult res = mpfnGetRefreshCycleDurationGOOGLE(mDevice, swapchain,
                                                      &refreshCycleDuration);
     if (res != VK_SUCCESS) {
-        ALOGE("mpfnGetRefreshCycleDurationGOOGLE failed %d", res);
+        SWAPPY_LOGE("mpfnGetRefreshCycleDurationGOOGLE failed %d", res);
         return false;
     }
 
     *pRefreshDuration = mCommonBase.getRefreshPeriod().count();
 
-    double refreshRate = 1000000000.0 / *pRefreshDuration;
-    ALOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
-          *pRefreshDuration, refreshRate);
+    // refreshRate is only used for logging, which maybe disabled.
+    [[maybe_unused]] double refreshRate = 1000000000.0 / *pRefreshDuration;
+    SWAPPY_LOGI("Returning refresh duration of %" PRIu64 " nsec (approx %f Hz)",
+                *pRefreshDuration, refreshRate);
 
     mSwapchain = swapchain;
     return true;
@@ -60,7 +62,7 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     VkQueue queue, uint32_t queueFamilyIndex,
     const VkPresentInfoKHR* pPresentInfo) {
     if (!isEnabled()) {
-        ALOGE("Swappy is disabled.");
+        SWAPPY_LOGE("Swappy is disabled.");
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
@@ -79,7 +81,7 @@ VkResult SwappyVkGoogleDisplayTiming::doQueuePresent(
     VkSemaphore semaphore;
     res = injectFence(queue, pPresentInfo, &semaphore);
     if (res) {
-        ALOGE("Failed to vkQueueSubmit %d", res);
+        SWAPPY_LOGE("Failed to vkQueueSubmit %d", res);
         return res;
     }
 
@@ -167,13 +169,13 @@ void SwappyVkGoogleDisplayTiming::recordFrameStart(VkQueue queue,
         mDevice, mSwapchain, &pastTimingsCount, &mPastTimes[0]);
 
     if (result == VK_INCOMPLETE) {
-        ALOGI(
+        SWAPPY_LOGI(
             "More past presentation times available. Consider increasing "
             "MAX_FRAME_LAG");
     }
     if (result != VK_SUCCESS && result != VK_INCOMPLETE) {
-        ALOGE("Error collecting past presentation times with result %d",
-              result);
+        SWAPPY_LOGE("Error collecting past presentation times with result %d",
+                    result);
         return;
     }
 

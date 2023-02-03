@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 The Android Open Source Project
+ * Copyright 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,35 +20,50 @@
 
 #include <string>
 
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define ALOGW_ONCE_IF(cond, ...)     \
-    do {                             \
-        if (cond) {                  \
-            ALOGW_ONCE(__VA_ARGS__); \
-        }                            \
+#if ENABLE_SWAPPY_LOGGING
+#define SWAPPY_LOGE(...) \
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define SWAPPY_LOGW(...) \
+    __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+#define SWAPPY_LOGI(...) \
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define SWAPPY_LOGW_ONCE_IF(cond, ...)     \
+    do {                                   \
+        if (cond) {                        \
+            SWAPPY_LOGW_ONCE(__VA_ARGS__); \
+        }                                  \
     } while (0)
-#define ALOGW_ONCE(...)                                        \
+#define SWAPPY_LOGW_ONCE(...)                                  \
     do {                                                       \
         static bool alogw_once##__FILE__##__LINE__##__ = true; \
         if (alogw_once##__FILE__##__LINE__##__) {              \
             alogw_once##__FILE__##__LINE__##__ = false;        \
-            ALOGW(__VA_ARGS__);                                \
+            SWAPPY_LOGW(__VA_ARGS__);                          \
         }                                                      \
     } while (0)
-#define ALOGE_ONCE(...)                                        \
+#define SWAPPY_LOGE_ONCE(...)                                  \
     do {                                                       \
         static bool aloge_once##__FILE__##__LINE__##__ = true; \
         if (aloge_once##__FILE__##__LINE__##__) {              \
             aloge_once##__FILE__##__LINE__##__ = false;        \
-            ALOGE(__VA_ARGS__);                                \
+            SWAPPY_LOGE(__VA_ARGS__);                          \
         }                                                      \
     } while (0)
 
-#ifndef NDEBUG
-#define ALOGV(...) \
+#define SWAPPY_LOGV(...) \
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 #else
-#define ALOGV(...)
+#define SWAPPY_LOGE(...)
+#define SWAPPY_LOGW(...)
+#define SWAPPY_LOGI(...)
+#define SWAPPY_LOGV(...)
+#define SWAPPY_LOGW_ONCE_IF(...)
+#define SWAPPY_LOGW_ONCE(...)
+#define SWAPPY_LOGE_ONCE(...)
 #endif
+
+namespace swappy {
+
+std::string to_string(int value);
+
+}
