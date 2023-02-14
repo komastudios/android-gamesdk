@@ -20,12 +20,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "Log.h"
 #include "Settings.h"
 #include "Thread.h"
 #include "Trace.h"
 
 #define LOG_TAG "SwappyCommon"
+#include "SwappyLog.h"
 
 namespace swappy {
 
@@ -67,7 +67,8 @@ bool SwappyCommonSettings::getFromApp(JNIEnv* env, jobject jactivity,
                                       SwappyCommonSettings* out) {
     if (out == nullptr) return false;
 
-    ALOGI("Swappy version %d.%d", SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION);
+    SWAPPY_LOGI("Swappy version %d.%d", SWAPPY_MAJOR_VERSION,
+                SWAPPY_MINOR_VERSION);
 
     out->sdkVersion = getSDKVersion(env);
 
@@ -95,7 +96,7 @@ bool SwappyCommonSettings::getFromApp(JNIEnv* env, jobject jactivity,
     // getAppVsyncOffsetNanos was only added in API 21.
     // Return gracefully if this device doesn't support it.
     if (getAppVsyncOffsetNanos == 0 || env->ExceptionOccurred()) {
-        ALOGE("Error while getting method: getAppVsyncOffsetNanos");
+        SWAPPY_LOGE("Error while getting method: getAppVsyncOffsetNanos");
         env->ExceptionClear();
         return false;
     }
@@ -106,7 +107,7 @@ bool SwappyCommonSettings::getFromApp(JNIEnv* env, jobject jactivity,
         env->GetMethodID(displayClass, "getPresentationDeadlineNanos", "()J");
 
     if (getPresentationDeadlineNanos == 0 || env->ExceptionOccurred()) {
-        ALOGE("Error while getting method: getPresentationDeadlineNanos");
+        SWAPPY_LOGE("Error while getting method: getPresentationDeadlineNanos");
         return false;
     }
 
@@ -136,7 +137,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
       mValid(false) {
     mLibAndroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
     if (mLibAndroid == nullptr) {
-        ALOGE("FATAL: cannot open libandroid.so: %s", strerror(errno));
+        SWAPPY_LOGE("FATAL: cannot open libandroid.so: %s", strerror(errno));
         return;
     }
 
@@ -150,7 +151,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
     env->GetJavaVM(&mJVM);
 
     if (isDeviceUnsupported()) {
-        ALOGE("Device is unsupported");
+        SWAPPY_LOGE("Device is unsupported");
         return;
     }
 
@@ -164,7 +165,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
         [this] { mChoreographerFilter->onChoreographer(); },
         [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     if (!mChoreographerThread->isInitialized()) {
-        ALOGE("failed to initialize ChoreographerThread");
+        SWAPPY_LOGE("failed to initialize ChoreographerThread");
         return;
     }
     if (USE_DISPLAY_MANAGER &&
@@ -174,7 +175,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
 
         if (!mDisplayManager->isInitialized()) {
             mDisplayManager = nullptr;
-            ALOGE("failed to initialize DisplayManager");
+            SWAPPY_LOGE("failed to initialize DisplayManager");
             return;
         }
     }
@@ -184,7 +185,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
                                                 mCommonSettings.appVsyncOffset,
                                                 mCommonSettings.sfVsyncOffset});
 
-    ALOGI(
+    SWAPPY_LOGI(
         "Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, "
         "sfOffset=%lld",
         (long long)mCommonSettings.refreshPeriod.count(),
@@ -215,7 +216,7 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
                                                 mCommonSettings.appVsyncOffset,
                                                 mCommonSettings.sfVsyncOffset});
 
-    ALOGI(
+    SWAPPY_LOGI(
         "Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, "
         "sfOffset=%lld",
         (long long)mCommonSettings.refreshPeriod.count(),
@@ -242,19 +243,19 @@ void SwappyCommon::onRefreshRateChanged() {
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, nullptr);
 
-    ALOGV("onRefreshRateChanged");
+    SWAPPY_LOGV("onRefreshRateChanged");
 
     SwappyCommonSettings settings;
     if (!SwappyCommonSettings::getFromApp(env, mJactivity, &settings)) {
-        ALOGE("failed to query display timings");
+        SWAPPY_LOGE("failed to query display timings");
         return;
     }
 
     Settings::getInstance()->setDisplayTimings({settings.refreshPeriod,
                                                 settings.appVsyncOffset,
                                                 settings.sfVsyncOffset});
-    ALOGV("onRefreshRateChanged: refresh rate: %.0fHz",
-          1e9f / settings.refreshPeriod.count());
+    SWAPPY_LOGV("onRefreshRateChanged: refresh rate: %.0fHz",
+                1e9f / settings.refreshPeriod.count());
 }
 
 nanoseconds SwappyCommon::wakeClient() {
@@ -339,9 +340,9 @@ void SwappyCommon::updateDisplayTimings() {
     }
 
     std::lock_guard<std::mutex> lock(mMutex);
-    ALOGW_ONCE_IF(!mWindow,
-                  "ANativeWindow not configured, frame rate will not be "
-                  "reported to Android platform");
+    SWAPPY_LOGW_ONCE_IF(!mWindow,
+                        "ANativeWindow not configured, frame rate will not be "
+                        "reported to Android platform");
 
     if (!mTimingSettingsNeedUpdate && !mWindowChanged) {
         return;
@@ -497,9 +498,9 @@ void SwappyCommon::FrameDurations::clear() {
 }
 
 void SwappyCommon::addFrameDuration(FrameDuration duration) {
-    ALOGV("cpuTime = %.2f", duration.getCpuTime().count() / 1e6f);
-    ALOGV("gpuTime = %.2f", duration.getGpuTime().count() / 1e6f);
-    ALOGV("frame %s", duration.frameMiss() ? "MISS" : "on time");
+    SWAPPY_LOGV("cpuTime = %.2f", duration.getCpuTime().count() / 1e6f);
+    SWAPPY_LOGV("gpuTime = %.2f", duration.getGpuTime().count() / 1e6f);
+    SWAPPY_LOGV("frame %s", duration.frameMiss() ? "MISS" : "on time");
 
     std::lock_guard<std::mutex> lock(mMutex);
     mFrameDurations.add(duration);
@@ -509,7 +510,7 @@ bool SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
                               const nanoseconds& upperBound,
                               int newSwapInterval) {
     bool swappedSlower = false;
-    ALOGV("Rendering takes too much time for the given config");
+    SWAPPY_LOGV("Rendering takes too much time for the given config");
 
     const auto frameFitsUpperBound =
         averageFrameTime.getTime(PipelineMode::On) <= upperBound;
@@ -527,14 +528,14 @@ bool SwappyCommon::swapSlower(const FrameDuration& averageFrameTime,
             mAutoSwapInterval++;
         }
         if (mAutoSwapInterval != originalAutoSwapInterval) {
-            ALOGV("Changing Swap interval to %d from %d", mAutoSwapInterval,
-                  originalAutoSwapInterval);
+            SWAPPY_LOGV("Changing Swap interval to %d from %d",
+                        mAutoSwapInterval, originalAutoSwapInterval);
             swappedSlower = true;
         }
     }
 
     if (mPipelineMode == PipelineMode::Off) {
-        ALOGV("turning on pipelining");
+        SWAPPY_LOGV("turning on pipelining");
         mPipelineMode = PipelineMode::On;
     }
 
@@ -549,12 +550,12 @@ bool SwappyCommon::swapFaster(int newSwapInterval) {
     }
 
     if (mAutoSwapInterval != originalAutoSwapInterval) {
-        ALOGV("Rendering is much shorter for the given config");
-        ALOGV("Changing Swap interval to %d from %d", mAutoSwapInterval,
-              originalAutoSwapInterval);
+        SWAPPY_LOGV("Rendering is much shorter for the given config");
+        SWAPPY_LOGV("Changing Swap interval to %d from %d", mAutoSwapInterval,
+                    originalAutoSwapInterval);
         // since we changed the swap interval, we may need to turn on pipeline
         // mode
-        ALOGV("Turning on pipelining");
+        SWAPPY_LOGV("Turning on pipelining");
         mPipelineMode = PipelineMode::On;
         swappedFaster = true;
     }
@@ -587,17 +588,17 @@ bool SwappyCommon::updateSwapInterval() {
 
     const int missedFramesPercent = mFrameDurations.getMissedFramePercent();
 
-    ALOGV("mPipelineMode = %d", static_cast<int>(mPipelineMode));
-    ALOGV("Average cpu frame time = %.2f",
-          (averageFrameTime.getCpuTime().count()) / 1e6f);
-    ALOGV("Average gpu frame time = %.2f",
-          (averageFrameTime.getGpuTime().count()) / 1e6f);
-    ALOGV("upperBound = %.2f", upperBoundForThisRefresh.count() / 1e6f);
-    ALOGV("lowerBound = %.2f", lowerBoundForThisRefresh.count() / 1e6f);
-    ALOGV("frame missed = %d%%", missedFramesPercent);
+    SWAPPY_LOGV("mPipelineMode = %d", static_cast<int>(mPipelineMode));
+    SWAPPY_LOGV("Average cpu frame time = %.2f",
+                (averageFrameTime.getCpuTime().count()) / 1e6f);
+    SWAPPY_LOGV("Average gpu frame time = %.2f",
+                (averageFrameTime.getGpuTime().count()) / 1e6f);
+    SWAPPY_LOGV("upperBound = %.2f", upperBoundForThisRefresh.count() / 1e6f);
+    SWAPPY_LOGV("lowerBound = %.2f", lowerBoundForThisRefresh.count() / 1e6f);
+    SWAPPY_LOGV("frame missed = %d%%", missedFramesPercent);
 
     bool configChanged = false;
-    ALOGV("pipelineFrameTime = %.2f", pipelineFrameTime.count() / 1e6f);
+    SWAPPY_LOGV("pipelineFrameTime = %.2f", pipelineFrameTime.count() / 1e6f);
     const auto nonPipelinePercent = (100.f + NON_PIPELINE_PERCENT) / 100.f;
 
     // Make sure the frame time fits in the current config to avoid missing
@@ -623,7 +624,7 @@ bool SwappyCommon::updateSwapInterval() {
     else if (mPipelineModeAutoMode && mPipelineMode == PipelineMode::On &&
              nonPipelineFrameTime * nonPipelinePercent <
                  upperBoundForThisRefresh) {
-        ALOGV(
+        SWAPPY_LOGV(
             "Rendering time fits the current swap interval without pipelining");
         mPipelineMode = PipelineMode::Off;
         configChanged = true;
@@ -742,7 +743,7 @@ void SwappyCommon::setPreferredDisplayModeId(int modeId) {
 
     mNextModeId = modeId;
     mDisplayManager->setPreferredDisplayModeId(modeId);
-    ALOGV("setPreferredDisplayModeId set to %d", modeId);
+    SWAPPY_LOGV("setPreferredDisplayModeId set to %d", modeId);
 }
 
 int SwappyCommon::calculateSwapInterval(nanoseconds frameTime,
@@ -767,7 +768,7 @@ void SwappyCommon::setPreferredRefreshPeriod(nanoseconds frameTime) {
         if (std::abs(mLatestFrameRateVote - frameRate) >
             FRAME_RATE_VOTE_MARGIN) {
             mLatestFrameRateVote = frameRate;
-            ALOGV("ANativeWindow_setFrameRate(%.2f)", frameRate);
+            SWAPPY_LOGV("ANativeWindow_setFrameRate(%.2f)", frameRate);
             mANativeWindow_setFrameRate(
                 mWindow, frameRate,
                 ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_DEFAULT);
@@ -904,21 +905,21 @@ SdkVersion SwappyCommonSettings::getSDKVersion(JNIEnv* env) {
     const jclass buildClass = env->FindClass("android/os/Build$VERSION");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get Build.VERSION class");
+        SWAPPY_LOGE("Failed to get Build.VERSION class");
         return SdkVersion{0, 0};
     }
 
     const jfieldID sdkInt = env->GetStaticFieldID(buildClass, "SDK_INT", "I");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get Build.VERSION.SDK_INT field");
+        SWAPPY_LOGE("Failed to get Build.VERSION.SDK_INT field");
         return SdkVersion{0, 0};
     }
 
     const jint sdk = env->GetStaticIntField(buildClass, sdkInt);
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get SDK version");
+        SWAPPY_LOGE("Failed to get SDK version");
         return SdkVersion{0, 0};
     }
 
@@ -928,17 +929,17 @@ SdkVersion SwappyCommonSettings::getSDKVersion(JNIEnv* env) {
             env->GetStaticFieldID(buildClass, "PREVIEW_SDK_INT", "I");
         if (env->ExceptionCheck()) {
             env->ExceptionClear();
-            ALOGE("Failed to get Build.VERSION.PREVIEW_SDK_INT field");
+            SWAPPY_LOGE("Failed to get Build.VERSION.PREVIEW_SDK_INT field");
         }
 
         sdkPreview = env->GetStaticIntField(buildClass, previewSdkInt);
         if (env->ExceptionCheck()) {
             env->ExceptionClear();
-            ALOGE("Failed to get preview SDK version");
+            SWAPPY_LOGE("Failed to get preview SDK version");
         }
     }
 
-    ALOGI("SDK version = %d preview = %d", sdk, sdkPreview);
+    SWAPPY_LOGI("SDK version = %d preview = %d", sdk, sdkPreview);
     return SdkVersion{sdk, sdkPreview};
 }
 
@@ -968,14 +969,14 @@ static std::string GetStaticStringField(JNIEnv* env, jclass clz,
         env->GetStaticFieldID(clz, name, "Ljava/lang/String;");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get string field %s", name);
+        SWAPPY_LOGE("Failed to get string field %s", name);
         return "";
     }
 
     const jstring jstr = (jstring)env->GetStaticObjectField(clz, fieldId);
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get string %s", name);
+        SWAPPY_LOGE("Failed to get string %s", name);
         return "";
     }
     auto cstr = env->GetStringUTFChars(jstr, nullptr);
@@ -1019,7 +1020,7 @@ bool SwappyCommon::isDeviceUnsupported() {
     const jclass buildClass = env->FindClass("android/os/Build");
     if (env->ExceptionCheck()) {
         env->ExceptionClear();
-        ALOGE("Failed to get Build class");
+        SWAPPY_LOGE("Failed to get Build class");
         return false;
     }
 
