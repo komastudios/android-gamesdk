@@ -84,6 +84,8 @@ public class InputConnection
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
     ViewCompat.setOnApplyWindowInsetsListener(targetView, this);
+
+    targetView.setOnKeyListener(this);
   }
 
   /**
