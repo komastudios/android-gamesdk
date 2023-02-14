@@ -46,6 +46,8 @@ class JsonSerializer {
     // notation to 9 decimal point precision.
     static std::string FixedAndTruncated(double d);
 
+    static std::string DurationJsonFromMillis(int64_t ms);
+
    private:
     json11::Json::object TelemetryContextJson(const AnnotationId& annotation,
                                               const RequestInfo& request_info,
