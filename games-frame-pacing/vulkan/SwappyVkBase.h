@@ -57,7 +57,6 @@
 #include <mutex>
 
 #include "ChoreographerShim.h"
-#include "Log.h"
 #include "Settings.h"
 #include "SwappyCommon.h"
 #include "Trace.h"
