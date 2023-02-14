@@ -65,6 +65,11 @@
                           SWAPPY_MINOR_VERSION, SWAPPY_BUGFIX_VERSION, \
                           AGDK_GIT_COMMIT)
 
+// Define this to 1 to enable all logging from Swappy, by default it is
+// disabled in a release build and enabled in a debug build.
+#ifndef ENABLE_SWAPPY_LOGGING
+#define ENABLE_SWAPPY_LOGGING 0
+#endif
 /** @endcond */
 
 /** @brief Id of a thread returned by an external thread manager. */
