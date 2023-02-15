@@ -111,6 +111,12 @@ function(protobuf_generate_nano_c)
     "/nano" ${ARGN})
 endfunction()
 
+function(protobuf_generate_nano2_c)
+  protobuf_generate_base("c" "--nanopb_out"
+          "--plugin=protoc-gen-nanopb=${ABS_PROTOBUF_NANO_SRC_DIR}/generator/protoc-gen-nanopb${PLUGIN_EXTENSION}"
+          "" ${ARGN})
+endfunction()
+
 function(protobuf_generate_full_cpp)
   protobuf_generate_base("cc" "--cpp_out" "" "/full" ${ARGN})
 endfunction()

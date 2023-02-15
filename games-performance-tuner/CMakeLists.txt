@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(tuningfork C CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
@@ -8,6 +8,7 @@ option(TUNINGFORK_TEST_OPTION "Set TUNINGFORK_TEST C++ flag")
 include("./protobuf/protobuf.cmake")
 set( MODPB64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external/modp_b64")
 set( THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
+set( LIBKLL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libkll/")
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
@@ -30,7 +31,13 @@ protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto)
 
 protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
-  proto/descriptor.proto)
+        proto/descriptor.proto)
+
+protobuf_generate_nano2_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+        proto/aggregator.proto)
+
+protobuf_generate_nano2_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+        proto/kll-quantiles.proto)
 
 include_directories( . )
 include_directories(${PROTOBUF_NANO_SRC_DIR})
@@ -40,6 +47,9 @@ include_directories( ../src/common )
 include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
 include_directories( ${THIRDPARTY_DIR}/date/include )
+include_directories( ${LIBKLL_DIR}/include )
+include_directories( ${LIBKLL_DIR} )
+include_directories( ${LIBKLL_DIR}/encoding )
 
 include_directories(${PROTO_GENS_DIR})
 
@@ -90,16 +100,32 @@ set( TUNINGFORK_SRCS
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
   ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
-  ${PROTO_GENS_DIR}/nano/descriptor.pb.c)
+        ${PROTO_GENS_DIR}/nano/descriptor.pb.c
+        ${PROTO_GENS_DIR}/aggregator.pb.c
+        ${PROTO_GENS_DIR}/kll-quantiles.pb.c)
+
+set( LIBKLL_SRCS
+        ${LIBKLL_DIR}/compactor_stack.cpp
+        ${LIBKLL_DIR}/kll.cpp
+        ${LIBKLL_DIR}/sampler.cpp
+        #${LIBKLL_DIR}/encoding/bits_util_test.cpp
+        ${LIBKLL_DIR}/encoding/encoder.cpp
+        #${LIBKLL_DIR}/encoding/encoder_test.cpp
+        ${LIBKLL_DIR}/encoding/varint.cpp
+        #${LIBKLL_DIR}/encoding/varint_test.cpp
+        #${LIBKLL_DIR}/tests/compactor_stack_test.cpp
+        #${LIBKLL_DIR}/tests/kll_test.cpp
+        #${LIBKLL_DIR}/tests/sampler_test.cpp
+        )
 
 add_library( tuningfork_static
-  STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
+  STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS} ${LIBKLL_SRCS})
 set_target_properties( tuningfork_static PROPERTIES
   COMPILE_OPTIONS "-DPROTOBUF_NANO" )
 
 function(build_shared libname version)
   add_library( ${libname}
-    SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
+    SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS} ${LIBKLL_SRCS})
   set_target_properties( ${libname}  PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_NANO" )
   target_link_libraries( ${libname}
     android
