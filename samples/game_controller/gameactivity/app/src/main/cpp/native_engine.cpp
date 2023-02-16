@@ -167,7 +167,7 @@ static bool _cook_game_activity_motion_event(GameActivityMotionEvent *motionEven
             }
 
             ev.motionPointerId = motionEvent->pointers[ptrIndex].id;
-            ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
+            ev.motionIsOnScreen = (motionEvent->source & AINPUT_SOURCE_TOUCHSCREEN) != 0;
             ev.motionX = GameActivityPointerAxes_getX(&motionEvent->pointers[ptrIndex]);
             ev.motionY = GameActivityPointerAxes_getY(&motionEvent->pointers[ptrIndex]);
 

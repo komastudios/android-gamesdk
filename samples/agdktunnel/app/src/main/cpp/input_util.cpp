@@ -159,7 +159,7 @@ CookGameActivityMotionEvent(GameActivityMotionEvent *motionEvent, CookedEventCal
         uint32_t pointerIndex = GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT;
         struct CookedEvent ev;
         memset(&ev, 0, sizeof(ev));
-        ev.motionIsOnScreen = motionEvent->source == AINPUT_SOURCE_TOUCHSCREEN;
+        ev.motionIsOnScreen = (motionEvent->source & AINPUT_SOURCE_TOUCHSCREEN) != 0;
         if (ev.motionIsOnScreen) {
             // use screen size as the motion range
             ev.motionMinX = 0.0f;
