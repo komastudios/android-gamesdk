@@ -234,8 +234,22 @@ public class GameActivity
    * and call `getWindow().takeSurface(this);` instead if you want to render on the whole activity
    * window.
    */
+  protected InputEnabledSurfaceView CreateSurfaceView() {
+    return new InputEnabledSurfaceView(this);
+  }
+
+  /**
+   * You can override this function if you want to customize its behaviour,
+   * but if you only want to substitute the default surface view with your derived class,
+   * override CreateSurfaceView() instead.
+   */
   protected void onCreateSurfaceView() {
-    mSurfaceView = new InputEnabledSurfaceView(this);
+    mSurfaceView = CreateSurfaceView();
+
+    if (mSurfaceView == null) {
+      return;
+    }
+
     FrameLayout frameLayout = new FrameLayout(this);
     contentViewId = ViewCompat.generateViewId();
     frameLayout.setId(contentViewId);
