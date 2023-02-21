@@ -86,22 +86,33 @@ public class GameActivity
    */
   protected InputEnabledSurfaceView mSurfaceView;
 
+  protected boolean processMotionEvent(MotionEvent event) {
+      int action = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? event.getActionButton() : 0;
+      int cls = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? event.getClassification() : 0;
+
+      return onTouchEventNative(mNativeHandle, event, event.getPointerCount(),
+          event.getHistorySize(), event.getDeviceId(), event.getSource(), event.getAction(),
+          event.getEventTime(), event.getDownTime(), event.getFlags(), event.getMetaState(), action,
+          event.getButtonState(), cls, event.getEdgeFlags(), event.getXPrecision(),
+          event.getYPrecision());
+  }
+
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    if (onTouchEventNative(mNativeHandle, event)) {
-      return true;
-    } else {
-      return super.onTouchEvent(event);
-    }
+      if (processMotionEvent(event)) {
+          return true;
+      } else {
+          return super.onTouchEvent(event);
+      }
   }
 
   @Override
   public boolean onGenericMotionEvent(MotionEvent event) {
-    if (onTouchEventNative(mNativeHandle, event)) {
-      return true;
-    } else {
-      return super.onGenericMotionEvent(event);
-    }
+      if (processMotionEvent(event)) {
+          return true;
+      } else {
+          return super.onGenericMotionEvent(event);
+      }
   }
 
   @Override
@@ -204,7 +215,10 @@ public class GameActivity
 
   protected native void onSurfaceDestroyedNative(long handle);
 
-  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent);
+  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent,
+      int pointerCount, int historySize, int deviceId, int source, int action, long eventTime,
+      long downTime, int flags, int metaState, int actionButton, int buttonState,
+      int classification, int edgeFlags, float precisionX, float precisionY);
 
   protected native boolean onKeyDownNative(long handle, KeyEvent keyEvent);
 

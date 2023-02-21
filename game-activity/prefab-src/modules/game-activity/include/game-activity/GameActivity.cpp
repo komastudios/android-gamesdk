@@ -845,13 +845,22 @@ extern "C" int GameActivity_getUIMode(GameActivity *) {
 }
 
 static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
-                                jlong handle, jobject motionEvent) {
+                                jlong handle, jobject motionEvent,
+                                int pointerCount, int historySize, int deviceId,
+                                int source, int action, int64_t eventTime,
+                                int64_t downTime, int flags, int metaState,
+                                int actionButton, int buttonState,
+                                int classification, int edgeFlags,
+                                float precisionX, float precisionY) {
     if (handle == 0) return false;
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
-    GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
+    GameActivityMotionEvent_fromJava(
+        env, motionEvent, &c_event, pointerCount, historySize, deviceId, source,
+        action, eventTime, downTime, flags, metaState, actionButton,
+        buttonState, classification, edgeFlags, precisionX, precisionY);
     auto result = code->callbacks.onTouchEvent(code, &c_event);
     GameActivityMotionEvent_destroy(&c_event);
     return result;
@@ -972,7 +981,7 @@ static const JNINativeMethod g_methods[] = {
     {"onSurfaceRedrawNeededNative", "(JLandroid/view/Surface;)V",
      (void *)onSurfaceRedrawNeeded_native},
     {"onSurfaceDestroyedNative", "(J)V", (void *)onSurfaceDestroyed_native},
-    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)Z",
+    {"onTouchEventNative", "(JLandroid/view/MotionEvent;IIIIIJJIIIIIIFF)Z",
      (void *)onTouchEvent_native},
     {"onKeyDownNative", "(JLandroid/view/KeyEvent;)Z",
      (void *)onKeyDown_native},
@@ -1127,6 +1136,9 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                              windowInsetsCompatType_class, methodNames[i],
                              "()I");
     }
+
+    GameActivityEventsInit(env);
+
     return jniRegisterNativeMethods(env, kGameActivityPathName, g_methods,
                                     NELEM(g_methods));
 }
