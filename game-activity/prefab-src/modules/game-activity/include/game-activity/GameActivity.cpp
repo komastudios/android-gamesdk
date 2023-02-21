@@ -39,6 +39,7 @@
 #include <string>
 
 #include "GameActivityLog.h"
+#include "system_utils.h"
 
 namespace {
 
@@ -218,6 +219,8 @@ struct NativeCode : public GameActivity {
         nativeWindow = NULL;
         mainWorkRead = mainWorkWrite = -1;
         gameTextInput = NULL;
+        sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
+        ALOGD("SDK version: %d", sdkVersion);
     }
 
     ~NativeCode() {
