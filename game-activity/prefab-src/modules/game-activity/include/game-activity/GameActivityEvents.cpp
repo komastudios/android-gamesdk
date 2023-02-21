@@ -21,36 +21,7 @@
 #include <string>
 
 #include "GameActivityLog.h"
-
-// TODO(b/187147166): these functions were extracted from the Game SDK
-// (gamesdk/src/common/system_utils.h). system_utils.h/cpp should be used
-// instead.
-namespace {
-
-std::string getSystemPropViaGet(const char *key,
-                                const char *default_value = "") {
-    char buffer[PROP_VALUE_MAX + 1] = "";  // +1 for terminator
-    int bufferLen = __system_property_get(key, buffer);
-    if (bufferLen > 0)
-        return buffer;
-    else
-        return "";
-}
-
-std::string GetSystemProp(const char *key, const char *default_value = "") {
-    return getSystemPropViaGet(key, default_value);
-}
-
-int GetSystemPropAsInt(const char *key, int default_value = 0) {
-    std::string prop = GetSystemProp(key);
-    return prop == "" ? default_value : strtoll(prop.c_str(), nullptr, 10);
-}
-
-}  // anonymous namespace
-
-#ifndef NELEM
-#define NELEM(x) ((int)(sizeof(x) / sizeof((x)[0])))
-#endif
+#include "system_utils.h"
 
 static bool enabledAxes[GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT] = {
     /* AMOTION_EVENT_AXIS_X */ true,
@@ -145,7 +116,7 @@ extern "C" void GameActivityMotionEvent_destroy(
 }
 
 static void initMotionEvents(JNIEnv *env) {
-    int sdkVersion = GetSystemPropAsInt("ro.build.version.sdk");
+    int sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
     gMotionEventClassInfo = {0};
     jclass motionEventClass = env->FindClass("android/view/MotionEvent");
     gMotionEventClassInfo.getDeviceId =
@@ -315,7 +286,7 @@ static struct {
 } gKeyEventClassInfo;
 
 static void initKeyEvents(JNIEnv *env) {
-    int sdkVersion = GetSystemPropAsInt("ro.build.version.sdk");
+    int sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
     gKeyEventClassInfo = {0};
     jclass keyEventClass = env->FindClass("android/view/KeyEvent");
     gKeyEventClassInfo.getDeviceId =
