@@ -33,6 +33,24 @@
       "message": "Do we have time measuring for this block before/after?",
       "revId": "bda4f777cb7df564f4ed2a39706635837f7fb851",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "192e3da4_e4da5e59",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-02-22T14:26:30Z",
+      "side": 1,
+      "message": "Yep! Here I measure number of events during last second and stats on them. onTouchEvent2 here is the new implementation, onTouchEvent is the old one.\n\nonTouchEvent mean\u003d148.415667 us std\u003d74.087308 us max\u003d358.357000 us count\u003d54 history\u003d2\nonTouchEvent2 mean\u003d103.703963 us std\u003d54.863400 us max\u003d352.579000 us count\u003d54 history\u003d2\nonTouchEvent mean\u003d126.543357 us std\u003d74.191449 us max\u003d242.717000 us count\u003d14 history\u003d0\nonTouchEvent2 mean\u003d78.831286 us std\u003d43.055899 us max\u003d144.857000 us count\u003d14 history\u003d0",
+      "parentUuid": "7f607e1b_c659adbe",
+      "revId": "bda4f777cb7df564f4ed2a39706635837f7fb851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
