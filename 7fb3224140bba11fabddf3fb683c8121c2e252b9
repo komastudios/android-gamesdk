@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddfeb13d_01081b35",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-02-22T14:28:02Z",
+      "side": 1,
+      "message": "Checking status",
+      "revId": "7fb3224140bba11fabddf3fb683c8121c2e252b9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "331f565f_c13fd86f",
+        "filename": "games-frame-pacing/opengl/EGL.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-02-22T14:28:02Z",
+      "side": 1,
+      "message": "Is it WIP?",
+      "revId": "7fb3224140bba11fabddf3fb683c8121c2e252b9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
