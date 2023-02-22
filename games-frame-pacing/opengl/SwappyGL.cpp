@@ -113,7 +113,7 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
         }
     }
 
-    resetSyncFence(display);
+    getEgl()->insertSyncFence(display);
 
     bool swapBuffersResult =
         (getEgl()->swapBuffers(display, surface) == EGL_TRUE);
@@ -297,10 +297,6 @@ SwappyGL::SwappyGL(JNIEnv *env, jobject jactivity, ConstructorTag)
         SWAPPY_LOGI("stats are not suppored on this platform");
     }
     SWAPPY_LOGI("SwappyGL initialized successfully");
-}
-
-void SwappyGL::resetSyncFence(EGLDisplay display) {
-    getEgl()->resetSyncFence(display);
 }
 
 bool SwappyGL::setPresentationTime(EGLDisplay display, EGLSurface surface) {
