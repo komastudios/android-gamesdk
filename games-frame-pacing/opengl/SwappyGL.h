@@ -91,10 +91,6 @@ class SwappyGL {
 
     bool lastFrameIsComplete(EGLDisplay display);
 
-    // Destroys the previous sync fence (if any) and creates a new one for this
-    // frame
-    void resetSyncFence(EGLDisplay display);
-
     // Computes the desired presentation time based on the swap interval and
     // sets it using eglPresentationTimeANDROID
     bool setPresentationTime(EGLDisplay display, EGLSurface surface);
