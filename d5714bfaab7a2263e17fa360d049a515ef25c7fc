@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd712cbf_96094858",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-02-24T07:17:13Z",
+      "side": 1,
+      "message": "This is interesting - looks like this was never set before your change. I wonder if it is used at all anywhere?",
+      "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
