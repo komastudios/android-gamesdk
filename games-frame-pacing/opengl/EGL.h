@@ -54,7 +54,7 @@ class EGL {
     static std::unique_ptr<EGL> create(std::chrono::nanoseconds fenceTimeout);
 
     void insertSyncFence(EGLDisplay display);
-    bool lastFrameIsComplete(EGLDisplay display);
+    bool lastFrameIsComplete(EGLDisplay display, bool pipelineMode);
     bool setPresentationTime(EGLDisplay display, EGLSurface surface,
                              std::chrono::steady_clock::time_point time);
     std::chrono::nanoseconds getFencePendingTime() const {
