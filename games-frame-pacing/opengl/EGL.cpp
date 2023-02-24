@@ -254,13 +254,14 @@ void EGL::insertSyncFence(EGLDisplay display) {
     }
 }
 
-bool EGL::lastFrameIsComplete(EGLDisplay display) {
+bool EGL::lastFrameIsComplete(EGLDisplay display, bool pipelineMode) {
     std::lock_guard<std::mutex> lock(mWaiterThreadContext.lock);
-    // In EGL backend, we insert the fence after the preSwap functions are
-    // called. SwappyCommon calls this method in preSwap when in pipeline mode,
-    // but in postSwap in non-pipeline mode.
-    // So it does not matter whether we are in pipeline mode or not,
-    // this call should only check that there are no pending syncs when called.
+    if (pipelineMode) {
+        // We are in pipeline mode so we need to check the fence of frame N-1
+        return mWaitPendingSyncs.size() < 2;
+    }
+    // We are not in pipeline mode so we need to check the fence of the current
+    // frame. i.e. there are not unsignaled frames
     return mWaitPendingSyncs.empty();
 }
 

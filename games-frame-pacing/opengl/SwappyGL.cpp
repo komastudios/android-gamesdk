@@ -89,7 +89,9 @@ bool SwappyGL::swap(EGLDisplay display, EGLSurface surface) {
 }
 
 bool SwappyGL::lastFrameIsComplete(EGLDisplay display) {
-    if (!getEgl()->lastFrameIsComplete(display)) {
+    bool pipelineMode = (mCommonBase.getCurrentPipelineMode() ==
+                         SwappyCommon::PipelineMode::On);
+    if (!getEgl()->lastFrameIsComplete(display, pipelineMode)) {
         gamesdk::ScopedTrace trace("lastFrameIncomplete");
         SWAPPY_LOGV("lastFrameIncomplete");
         return false;
@@ -104,6 +106,8 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
             [&]() { return getEgl()->getFencePendingTime(); },
     };
 
+    getEgl()->insertSyncFence(display);
+
     mCommonBase.onPreSwap(handlers);
 
     if (mCommonBase.needToSetPresentationTime()) {
@@ -112,8 +116,6 @@ bool SwappyGL::swapInternal(EGLDisplay display, EGLSurface surface) {
             return setPresentationTimeResult;
         }
     }
-
-    getEgl()->insertSyncFence(display);
 
     bool swapBuffersResult =
         (getEgl()->swapBuffers(display, surface) == EGL_TRUE);
