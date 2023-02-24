@@ -16,6 +16,24 @@
       "message": "This is interesting - looks like this was never set before your change. I wonder if it is used at all anywhere?",
       "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36f8e3a1_58733aad",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-02-24T11:35:28Z",
+      "side": 1,
+      "message": "It\u0027s not used by our code, but it\u0027s a part of a user-exposed structure.",
+      "parentUuid": "dd712cbf_96094858",
+      "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
