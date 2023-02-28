@@ -6,7 +6,7 @@
 # Nickname      JetPackName             ProjectName             Version  JetPackSubscript
 #
 AGDK            NA                      NA                      2022.1.1 alpha01
-swappy          games-frame-pacing      games-frame-pacing      2.0.0    rc01
+swappy          games-frame-pacing      games-frame-pacing      2.0.0
 tuningfork      games-performance-tuner games-performance-tuner 2.0.0    alpha03
 oboe            oboe                    None                    1.0.1    alpha01
 game_activity   games-activity          game-activity           2.0.0    rc01
