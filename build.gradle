@@ -483,14 +483,21 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
  * Also patch the AAR with a prefab folder if necessary.
  */
 def copyAndroidArchiveLibrary(AndroidArchiveLibrary library, String outFolder) {
-    def aarPath = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
+    def aarPathRel = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-release.aar");
+    def aarPathDeb = joinPath(getLibraryOutPath(library), "outputs", "aar", "${library.projectName}-debug.aar");
     def packageFolder = joinPath(getPackagePath(), outFolder)
 
-    assert file(aarPath).exists()
+    assert file(aarPathRel).exists()
+    assert file(aarPathDeb).exists()
     copy {
-        from aarPath
+        from aarPathRel
         into packageFolder
     }
+    copy {
+        from aarPathDeb
+        into packageFolder
+    }
+
 }
 
 def buildNativeLibrariesForUnity(libraries, buildType = "Release") {
@@ -725,6 +732,7 @@ tasks.withType(BuildTask) {
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleDebug"
     }
 
     def packageName = getPackageName()
@@ -893,6 +901,7 @@ task buildAarStructure {
     def androidArchiveLibraries = filterAndroidArchiveLibraries(allLibraries)
     androidArchiveLibraries.each { androidLibrary ->
         dependsOn ":${androidLibrary.projectName}:assembleRelease"
+        dependsOn ":${androidLibrary.projectName}:assembleDebug"
     }
 
     doFirst {
@@ -957,18 +966,20 @@ task prepareMavenZipContent {
         filterAndroidArchiveLibraries(allLibraries).forEach { androidLibrary ->
             def libraryName = androidLibrary.aarLibraryName
             def aarVersion = androidLibrary.aarVersion
-            def path = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
-            assert file(path).exists()
+            def pathRel = joinPath(packageFolder, androidLibrary.projectName + "-release.aar")
+            def pathDeb = joinPath(packageFolder, androidLibrary.projectName + "-debug.aar")
+            assert file(pathRel).exists()
+            assert file(pathDeb).exists()
             copy {
-                from file(path)
+                from file(pathRel)
                 into file(joinPath(mavenZipContentFolder))
                 rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
             }
 
             copy {
-                from file(path)
+                from file(pathDeb)
                 into file(joinPath(mavenZipContentFolder))
-                rename androidLibrary.projectName + "-release.aar", libraryName + "-" + aarVersion + ".aar"
+                rename androidLibrary.projectName + "-debug.aar", libraryName + "-" + aarVersion + "-debug.aar"
             }
 
             copy {
