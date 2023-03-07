@@ -3,7 +3,7 @@ project(swappy C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wthread-safety" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror -Wthread-safety" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS -O3 -fPIC" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti" )
@@ -22,6 +22,7 @@ set ( SOURCE_LOCATION .)
 set ( SOURCE_LOCATION_COMMON "${SOURCE_LOCATION}/common" )
 set ( SOURCE_LOCATION_OPENGL "${SOURCE_LOCATION}/opengl" )
 set ( SOURCE_LOCATION_VULKAN "${SOURCE_LOCATION}/vulkan" )
+set ( SOURCE_LOCATION_TEST "${SOURCE_LOCATION}/src/androidTest/cpp" )
 
 include_directories( ../include )
 include_directories( ../src/common )
@@ -115,3 +116,19 @@ target_link_libraries( swappy
                         GLESv2
                         log
 			atomic)
+
+
+find_package(googletest REQUIRED CONFIG)
+find_package(junit-gtest REQUIRED CONFIG)
+
+add_library(swappy_test SHARED ${SOURCE_LOCATION_TEST}/swappy_test.cpp)
+target_link_libraries(swappy_test
+  PRIVATE
+    swappy
+    android
+    atomic
+    log
+    googletest::gtest
+    googletest::gmock
+    junit-gtest::junit-gtest
+)
