@@ -32,6 +32,9 @@ void FrameTimeMetricData::Record(Duration dt) {
             double(std::chrono::duration_cast<std::chrono::nanoseconds>(dt)
                        .count()) /
             1000000);
+        // The values are stored in the kll aggregator as microseconds
+        aggregator_->Add(int64_t(
+            std::chrono::duration_cast<std::chrono::microseconds>(dt).count()));
         duration_ += dt;
     }
 }
@@ -40,6 +43,7 @@ void FrameTimeMetricData::Clear() {
     last_time_ = TimePoint::min();
     histogram_.Clear();
     duration_ = Duration::zero();
+    aggregator_->Reset();
 }
 
 }  // namespace tuningfork

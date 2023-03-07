@@ -17,10 +17,14 @@
 #pragma once
 
 #include "histogram.h"
+#include "kll.h"
 #include "metricdata.h"
 #include "settings.h"
 
 namespace tuningfork {
+
+using namespace zetasketch::android;
+using namespace dist_proc::aggregation;
 
 struct FrameTimeMetric {
     FrameTimeMetric(uint32_t ikey_index = 0,
@@ -36,11 +40,17 @@ struct FrameTimeMetricData : public MetricData {
           metric_id_(metric_id),
           histogram_(settings, false /*isLoading*/),
           last_time_(TimePoint::min()),
-          duration_(Duration::zero()) {}
+          duration_(Duration::zero()) {
+        KllQuantileOptions options;
+        options.set_inv_eps(100);
+        options.set_inv_delta(100000);
+        aggregator_ = KllQuantile::Create(options);
+    }
     MetricId metric_id_;
     Histogram<double> histogram_;
     TimePoint last_time_;
     Duration duration_;
+    std::unique_ptr<KllQuantile> aggregator_;
     void Tick(TimePoint t, bool record = true);
     void Record(Duration dt);
     virtual void Clear() override;
