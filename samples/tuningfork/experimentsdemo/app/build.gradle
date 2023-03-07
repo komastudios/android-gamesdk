@@ -3,12 +3,12 @@ import org.gradle.internal.os.OperatingSystem;
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
     ndkVersion "20.0.5594570"
     defaultConfig {
         applicationId "com.tuningfork.experimentsdemo"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 17
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     // Uncomment the line below (implementation fileTree...)
     // and comment out "implementation project("...")"
     // to use a locally built .aar
