@@ -185,6 +185,7 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
                                                 mCommonSettings.appVsyncOffset,
                                                 mCommonSettings.sfVsyncOffset});
 
+    mInitialRefreshPeriod = mCommonSettings.refreshPeriod;
     SWAPPY_LOGI(
         "Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, "
         "sfOffset=%lld",
@@ -216,6 +217,7 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
                                                 mCommonSettings.appVsyncOffset,
                                                 mCommonSettings.sfVsyncOffset});
 
+    mInitialRefreshPeriod = mCommonSettings.refreshPeriod;
     SWAPPY_LOGI(
         "Initialized Swappy with vsyncPeriod=%lld, appOffset=%lld, "
         "sfOffset=%lld",
@@ -343,6 +345,13 @@ void SwappyCommon::updateDisplayTimings() {
     SWAPPY_LOGW_ONCE_IF(!mWindow,
                         "ANativeWindow not configured, frame rate will not be "
                         "reported to Android platform");
+
+    if (mFramePacingResetRequested) {
+        // In case of reset, just issue the update for setting refresh period.
+        setPreferredRefreshPeriod(mInitialRefreshPeriod);
+        mFramePacingResetRequested = false;
+        return;
+    }
 
     if (!mTimingSettingsNeedUpdate && !mWindowChanged) {
         return;
@@ -565,6 +574,16 @@ bool SwappyCommon::swapFaster(int newSwapInterval) {
 
 bool SwappyCommon::updateSwapInterval() {
     std::lock_guard<std::mutex> lock(mMutex);
+
+    // A request to reset the frame-pacing is made, so reset the internal swap
+    // state to the initial state and clear the frame durations collected.
+    if (mFramePacingResetRequested) {
+        mAutoSwapInterval = 1;
+        mMeasuredSwapDuration = nanoseconds(0);
+        mCommonSettings.refreshPeriod = mInitialRefreshPeriod;
+        mFrameDurations.clear();
+        return true;
+    }
     if (!mAutoSwapIntervalEnabled) return false;
 
     if (!mFrameDurations.hasEnoughSamples()) return false;
@@ -1052,6 +1071,13 @@ int SwappyCommon::getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
     }
 
     return (*mSupportedRefreshPeriods).size();
+}
+
+void SwappyCommon::resetFramePacing() {
+    std::lock_guard<std::mutex> lock(mMutex);
+
+    // Just set the flag here, we actually reset at the end of the frame.
+    mFramePacingResetRequested = true;
 }
 
 }  // namespace swappy

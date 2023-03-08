@@ -413,6 +413,19 @@ void SwappyVk_getStats(VkSwapchainKHR swapchain, SwappyStats *swappyStats);
  */
 void SwappyVk_clearStats(VkSwapchainKHR swapchain);
 
+/**
+ * @brief Reset the swappy pacing mechanism
+ *
+ * In cases where the frame timing history is irrelevant, calling this would
+ * remove all the history for frame pacing. Calling this entry point
+ * would reset the frame rate to the initial state at the end of the current frame.
+ * Then swappy would just pace as normal with fresh state from next frame. There
+ * are no error conditions associated with this call.
+ *
+ * @param[in]  swapchain   - The swapchain for which frame pacing is reset.
+ */
+void SwappyVk_resetFramePacing(VkSwapchainKHR swapchain);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

@@ -80,6 +80,8 @@ class SwappyGL {
     static int getSupportedRefreshPeriodsNS(uint64_t *out_refreshrates,
                                             int allocated_entries);
 
+    static void resetFramePacing();
+
    private:
     static SwappyGL *getInstance();
 

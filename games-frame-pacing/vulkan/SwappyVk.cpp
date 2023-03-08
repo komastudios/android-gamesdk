@@ -340,4 +340,9 @@ void SwappyVk::clearStats(VkSwapchainKHR swapchain) {
     if (it != perSwapchainImplementation.end()) it->second->clearStats();
 }
 
+void SwappyVk::resetFramePacing(VkSwapchainKHR swapchain) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end()) it->second->resetFramePacing();
+}
+
 }  // namespace swappy
