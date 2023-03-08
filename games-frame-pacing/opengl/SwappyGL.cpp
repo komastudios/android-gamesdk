@@ -336,4 +336,13 @@ int SwappyGL::getSupportedRefreshPeriodsNS(uint64_t *out_refreshrates,
                                                             allocated_entries);
 }
 
+void SwappyGL::resetFramePacing() {
+    TRACE_CALL();
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    swappy->mCommonBase.resetFramePacing();
+}
+
 }  // namespace swappy

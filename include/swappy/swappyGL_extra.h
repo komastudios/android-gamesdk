@@ -121,6 +121,17 @@ void SwappyGL_clearStats();
  * SwappyGL_injectTracer. */
 void SwappyGL_uninjectTracer(const SwappyTracer *t);
 
+/**
+ * @brief Reset the swappy pacing mechanism
+ *
+ * In cases where the frame timing history is irrelevant, calling this would
+ * remove all the history for frame pacing. Calling this entry point
+ * would reset the frame rate to the intial state at the end of the current frame.
+ * Then swappy would just pace as normal with fresh state from next frame. There
+ * are no error conditions associated with this call.
+ */
+void SwappyGL_resetFramePacing();
+
 #ifdef __cplusplus
 };
 #endif
