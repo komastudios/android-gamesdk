@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95e067d5_4a51f5f2",
+        "filename": "games-frame-pacing/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-08T09:46:20Z",
+      "side": 1,
+      "message": "Created b/272208013 for tracking more C++17 work.",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84c92f32_0e4d6d69",
+        "filename": "games-frame-pacing/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-08T09:46:20Z",
+      "side": 1,
+      "message": "Perhaps we can try to see if a static library works instead of a shared one - this will avoid some hassle in the build.gradle file.",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c337829_cbc4ed35",
+        "filename": "games-frame-pacing/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-08T09:46:20Z",
+      "side": 1,
+      "message": "What is this \"viewBinding\" used for in the tests?",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c218c54_71a2bcbd",
+        "filename": "games-frame-pacing/src/test/cpp/swappy_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-08T09:46:20Z",
+      "side": 1,
+      "message": "Should this file be inside src/test/AndroidTest/cpp , since the java files are present there? In addition, should the original files at gamesdk/test/swappy be removed as well?",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
