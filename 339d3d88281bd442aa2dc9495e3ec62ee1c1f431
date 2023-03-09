@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32216918_3b8516ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-03-09T13:53:55Z",
+      "side": 1,
+      "message": "I suggest that we add include_directories(../src/common/) into corresponding CMake files instead of creating more symlinks.",
+      "revId": "339d3d88281bd442aa2dc9495e3ec62ee1c1f431",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
