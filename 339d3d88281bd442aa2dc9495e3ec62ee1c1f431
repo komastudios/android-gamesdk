@@ -16,6 +16,24 @@
       "message": "I suggest that we add include_directories(../src/common/) into corresponding CMake files instead of creating more symlinks.",
       "revId": "339d3d88281bd442aa2dc9495e3ec62ee1c1f431",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "343e82ad_3eef7058",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-09T13:57:47Z",
+      "side": 1,
+      "message": "It is already included https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/master/games-memory-advice/CMakeLists.txt#44 - the prefab does not fetch sources for some reason. If there is a cleaner way to do this, I am happy to do it that way as well.",
+      "parentUuid": "32216918_3b8516ec",
+      "revId": "339d3d88281bd442aa2dc9495e3ec62ee1c1f431",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
