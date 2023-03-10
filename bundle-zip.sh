@@ -134,4 +134,7 @@ zip -ur $ZIP_NAME libs
 
 # Add the jar-classes directory
 zip -ur $ZIP_NAME jar-classes
+
+# Add the SHA for the zip
+sha256sum $ZIP_NAME > $ZIP_NAME.sha256
 popd
