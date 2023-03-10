@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7104eae1_85e3a9d6",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-10T11:10:43Z",
+      "side": 0,
+      "message": "This script doesn\u0027t just build the zip. It also makes sure the build files are laid out correctly so that the jetpad scripts can fetch our aars from https://android-build.googleplex.com/builds/branches/aosp-android-games-sdk-release/grid?\n\nSo I don\u0027t think all this code should be moved to a script called ./bundle-zip.sh",
+      "revId": "b1ca82f17b812cbf5bc4a2247d9cc1048504cccb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
