@@ -5,11 +5,11 @@
 #
 # Nickname      JetPackName             ProjectName             Version  JetPackSubscript
 #
-AGDK            NA                      NA                      2022.1.1 alpha01
-swappy          games-frame-pacing      games-frame-pacing      1.10.2   alpha01
-tuningfork      games-performance-tuner games-performance-tuner 1.6.1    alpha01
-oboe            oboe                    None                    1.0.1    alpha01
-game_activity   games-activity          game-activity           1.2.2
-game_text_input games-text-input        game-text-input         1.1.2    alpha01
-paddleboat      games-controller        games-controller        1.1.1    alpha01
-memory_advice   games-memory-advice     games-memory-advice     1.0.0    beta03
+AGDK            NA                      NA                      2023.1.0.0
+swappy          games-frame-pacing      games-frame-pacing      2.0.0
+tuningfork      games-performance-tuner games-performance-tuner 2.0.0    alpha03
+oboe            oboe                    None                    1.7.0
+game_activity   games-activity          game-activity           2.0.0
+game_text_input games-text-input        game-text-input         2.0.0
+paddleboat      games-controller        games-controller        2.0.0
+memory_advice   games-memory-advice     games-memory-advice     2.0.0    beta01
