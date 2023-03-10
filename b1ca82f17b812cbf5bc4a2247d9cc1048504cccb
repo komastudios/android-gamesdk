@@ -34,6 +34,24 @@
       "parentUuid": "7104eae1_85e3a9d6",
       "revId": "b1ca82f17b812cbf5bc4a2247d9cc1048504cccb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1963b9d1_1ea0177c",
+        "filename": "build.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-10T11:17:36Z",
+      "side": 0,
+      "message": "Ok. As long as this change doesn\u0027t break any Jetpads scripts I\u0027m happy with it",
+      "parentUuid": "7b15ef39_064792ae",
+      "revId": "b1ca82f17b812cbf5bc4a2247d9cc1048504cccb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
