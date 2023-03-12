@@ -13,7 +13,7 @@ else()
 endif()
 set( PROTOBUF_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/install/${HOST_PLATFORM}")
 
-set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/src")
+set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/protobuf/src")
 if( NOT DEFINED PROTOBUF_NANO_SRC_DIR)
   set( PROTOBUF_NANO_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/nanopb-c")
 endif()
@@ -122,21 +122,30 @@ endfunction()
 set(GP_SRC_DIR ${PROTOBUF_SRC_DIR}/google/protobuf)
 
 set(PROTOBUF_LITE_SRCS
+    ${GP_SRC_DIR}/any_lite.cc
     ${GP_SRC_DIR}/arena.cc
     ${GP_SRC_DIR}/arenastring.cc
+    ${GP_SRC_DIR}/arenaz_sampler.cc
     ${GP_SRC_DIR}/extension_set.cc
+    ${GP_SRC_DIR}/generated_enum_util.cc
+    ${GP_SRC_DIR}/generated_message_tctable_lite.cc
     ${GP_SRC_DIR}/generated_message_util.cc
+    ${GP_SRC_DIR}/implicit_weak_message.cc
+    ${GP_SRC_DIR}/inlined_string_field.cc
     ${GP_SRC_DIR}/io/coded_stream.cc
+    ${GP_SRC_DIR}/io/io_win32.cc
+    ${GP_SRC_DIR}/io/strtod.cc
     ${GP_SRC_DIR}/io/zero_copy_stream.cc
+    ${GP_SRC_DIR}/io/zero_copy_stream_impl.cc
     ${GP_SRC_DIR}/io/zero_copy_stream_impl_lite.cc
+    ${GP_SRC_DIR}/map.cc
     ${GP_SRC_DIR}/message_lite.cc
+    ${GP_SRC_DIR}/parse_context.cc
     ${GP_SRC_DIR}/repeated_field.cc
-    ${GP_SRC_DIR}/stubs/atomicops_internals_x86_gcc.cc
-    ${GP_SRC_DIR}/stubs/atomicops_internals_x86_msvc.cc
+    ${GP_SRC_DIR}/repeated_ptr_field.cc
     ${GP_SRC_DIR}/stubs/bytestream.cc
     ${GP_SRC_DIR}/stubs/common.cc
     ${GP_SRC_DIR}/stubs/int128.cc
-    ${GP_SRC_DIR}/stubs/once.cc
     ${GP_SRC_DIR}/stubs/status.cc
     ${GP_SRC_DIR}/stubs/statusor.cc
     ${GP_SRC_DIR}/stubs/stringpiece.cc
@@ -160,24 +169,24 @@ set(PROTOBUF_SRCS
     ${GP_SRC_DIR}/empty.pb.cc
     ${GP_SRC_DIR}/extension_set_heavy.cc
     ${GP_SRC_DIR}/field_mask.pb.cc
+    ${GP_SRC_DIR}/generated_message_bases.cc
     ${GP_SRC_DIR}/generated_message_reflection.cc
+    ${GP_SRC_DIR}/generated_message_tctable_full.cc
     ${GP_SRC_DIR}/io/gzip_stream.cc
     ${GP_SRC_DIR}/io/printer.cc
-    ${GP_SRC_DIR}/io/strtod.cc
     ${GP_SRC_DIR}/io/tokenizer.cc
-    ${GP_SRC_DIR}/io/zero_copy_stream_impl.cc
     ${GP_SRC_DIR}/map_field.cc
     ${GP_SRC_DIR}/message.cc
     ${GP_SRC_DIR}/reflection_ops.cc
     ${GP_SRC_DIR}/service.cc
     ${GP_SRC_DIR}/source_context.pb.cc
     ${GP_SRC_DIR}/struct.pb.cc
-    ${GP_SRC_DIR}/stubs/mathlimits.cc
     ${GP_SRC_DIR}/stubs/substitute.cc
     ${GP_SRC_DIR}/text_format.cc
     ${GP_SRC_DIR}/timestamp.pb.cc
     ${GP_SRC_DIR}/type.pb.cc
     ${GP_SRC_DIR}/unknown_field_set.cc
+    ${GP_SRC_DIR}/util/delimited_message_util.cc
     ${GP_SRC_DIR}/util/field_comparator.cc
     ${GP_SRC_DIR}/util/field_mask_util.cc
     ${GP_SRC_DIR}/util/internal/datapiece.cc
@@ -192,7 +201,6 @@ set(PROTOBUF_SRCS
     ${GP_SRC_DIR}/util/internal/protostream_objectsource.cc
     ${GP_SRC_DIR}/util/internal/protostream_objectwriter.cc
     ${GP_SRC_DIR}/util/internal/type_info.cc
-    ${GP_SRC_DIR}/util/internal/type_info_test_helper.cc
     ${GP_SRC_DIR}/util/internal/utility.cc
     ${GP_SRC_DIR}/util/json_util.cc
     ${GP_SRC_DIR}/util/message_differencer.cc
