@@ -24,7 +24,7 @@ protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/
 protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/tuningfork.proto)
 include_directories(${PROTO_GENS_DIR})
 include_directories(${PROTOBUF_SRC_DIR})
-include_directories(${PROTOBUF_NANO_SRC_DIR})
+include_directories(${PROTOBUF_SRC_DIR}/../config/)
 include_directories(../../common)
 include_directories(../../../common/include)
 include_directories(../../../../include)
@@ -35,7 +35,7 @@ add_library( protobuf-static
              ${PROTOBUF_LITE_SRCS}
              ${PROTOBUF_SRCS}
 )
-target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
+target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
 
 add_library( ${CMAKE_PROJECT_NAME}
              SHARED

@@ -14,7 +14,7 @@ To run validation:
 > sample *insightsdemo* with the Linux Proto Compiler:
 > `java -jar build/libs/TuningforkApkValidationTool.jar \
 >   --tuningforkPath ../../../../samples/tuningfork/insightsdemo/app/src/main/assets/tuningfork \
->  --protoCompiler ../../../../third_party/protobuf-3.0.0/install/linux-x86/bin/protoc`
+>  --protoCompiler ../../../../third_party/protoc-3.21.7/linux-x86/bin/protoc`
 
 ## tuningfork_settings
 
