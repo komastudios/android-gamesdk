@@ -55,6 +55,7 @@ include_directories(
   ${PGENS_DIR}
   ${PROTOBUF_SRC_DIR}
   ${PROTOBUF_SRC_DIR}/..
+  ${PROTOBUF_SRC_DIR}/../config/
 )
 
 set(TEST_SRCS
@@ -98,7 +99,8 @@ add_library( protobuf-static
   STATIC ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS}
 )
 target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare"
-                                              "-Wno-enum-compare-switch")
+                                              "-Wno-enum-compare-switch"
+                                              "-Wno-invalid-noreturn")
 
 target_link_libraries(tuningfork_test
   android
