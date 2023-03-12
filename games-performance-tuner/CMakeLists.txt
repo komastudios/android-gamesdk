@@ -37,6 +37,7 @@ include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
 include_directories( ${THIRDPARTY_DIR}/date/include )
 include_directories(${PROTOBUF_SRC_DIR})
+include_directories(${PROTOBUF_SRC_DIR}/../config/)
 
 include_directories(${PROTO_GENS_DIR})
 
@@ -91,12 +92,12 @@ set( TUNINGFORK_SRCS
 add_library( tuningfork_static
   STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
 
-target_compile_options(tuningfork_static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
+target_compile_options(tuningfork_static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
 
 function(build_shared libname version)
   add_library( ${libname}
     SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
-  target_compile_options(${libname} PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
+  target_compile_options(${libname} PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
   target_link_libraries( ${libname}
     android
     log)
