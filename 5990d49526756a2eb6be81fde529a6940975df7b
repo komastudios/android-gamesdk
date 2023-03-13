@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e4ad6c6_fb45d731",
+        "filename": "third_party/protobuf-3.0.0/install/linux-x86/bin/protoc",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-13T08:53:46Z",
+      "side": 1,
+      "message": "I think the naming of this is now a bit confusing, since the protobuf is not 3.0.0. Perhaps just rename the third_party folder to just protobuf? Also, I see that you modified the source to external/protobuf in the cmake files, where are these binaries coming from? Maybe we should have a script to fetch them instead unless we are building them locally.",
+      "revId": "5990d49526756a2eb6be81fde529a6940975df7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
