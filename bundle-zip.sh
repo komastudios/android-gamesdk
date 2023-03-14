@@ -83,6 +83,8 @@ wget "https://dl.google.com/android/maven2/androidx/games/games-memory-advice/$G
 
 wget "https://dl.google.com/android/maven2/androidx/games/games-performance-tuner/$GAMES_PERFORMANCE_TUNER_VERSION/games-performance-tuner-$GAMES_PERFORMANCE_TUNER_VERSION.aar"
 
+wget "https://dl.google.com/android/maven2/androidx/games/games-performance-tuner/1.6.0/games-performance-tuner-1.6.0.aar"
+
 wget "https://dl.google.com/android/maven2/androidx/games/games-text-input/$GAME_TEXT_INPUT_VERSION/games-text-input-$GAME_TEXT_INPUT_VERSION.aar"
 
 wget "https://github.com/google/oboe/releases/download/$OBOE_VERSION/oboe-$OBOE_VERSION.aar"
