@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdbe35fa_24a2aa91",
+        "filename": "games-frame-pacing/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-03-15T15:05:36Z",
+      "side": 1,
+      "message": "Make sense, let\u0027s keep it 17 for now",
+      "parentUuid": "95e067d5_4a51f5f2",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "84c92f32_0e4d6d69",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-03-08T09:46:20Z",
       "side": 1,
       "message": "Perhaps we can try to see if a static library works instead of a shared one - this will avoid some hassle in the build.gradle file.",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ffa878e_f3ed7e7d",
+        "filename": "games-frame-pacing/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-03-15T15:05:36Z",
+      "side": 1,
+      "message": "Didn\u0027t work, looks like it relies on System.loadLibrary",
+      "parentUuid": "84c92f32_0e4d6d69",
       "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -52,6 +88,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecb85dab_57cca70f",
+        "filename": "games-frame-pacing/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-03-15T15:05:36Z",
+      "side": 1,
+      "message": "No necessary for testing, removing",
+      "parentUuid": "4c337829_cbc4ed35",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2c218c54_71a2bcbd",
@@ -65,6 +119,24 @@
       "writtenOn": "2023-03-08T09:46:20Z",
       "side": 1,
       "message": "Should this file be inside src/test/AndroidTest/cpp , since the java files are present there? In addition, should the original files at gamesdk/test/swappy be removed as well?",
+      "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ce38898_4ed7093b",
+        "filename": "games-frame-pacing/src/test/cpp/swappy_test.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-03-15T15:05:36Z",
+      "side": 1,
+      "message": "Makes sense",
+      "parentUuid": "2c218c54_71a2bcbd",
       "revId": "a05053401901e7c753102db3a60e9c61c02c1d6b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
