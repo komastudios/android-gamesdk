@@ -82,6 +82,9 @@ class SwappyGL {
 
     static void resetFramePacing();
 
+    static void enableFramePacing(bool enable);
+    static void enableBlockingWait(bool enable);
+
    private:
     static SwappyGL *getInstance();
 

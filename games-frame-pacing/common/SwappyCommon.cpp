@@ -293,9 +293,14 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
     bool presentationTimeIsNeeded;
 
     // We do not want to hold the mutex while waiting, so make a local copy of
-    // the flag.
+    // the flags.
     mMutex.lock();
     bool localAutoSwapIntervalEnabled = mAutoSwapIntervalEnabled;
+    bool localFramePacingEnabled = mFramePacingEnabled;
+
+    // We do the blocking wait when pacing or request by the app when not
+    // pacing.
+    bool localBlockingWaitEnabled = mBlockingWaitEnabled || mFramePacingEnabled;
     mMutex.unlock();
 
     const nanoseconds cpuTime =
@@ -312,22 +317,29 @@ bool SwappyCommon::waitForNextFrame(const SwapHandlers& h) {
     if (mCommonSettings.refreshPeriod * mAutoSwapInterval <=
             mAutoSwapIntervalThreshold.load() ||
         !localAutoSwapIntervalEnabled) {
-        waitUntilTargetFrame();
+        if (localFramePacingEnabled) waitUntilTargetFrame();
 
-        // wait for the previous frame to be rendered
-        while (!h.lastFrameIsComplete()) {
-            lateFrames++;
-            waitOneFrame();
+        if (localBlockingWaitEnabled) {
+            // wait for the previous frame to be rendered
+            while (!h.lastFrameIsComplete()) {
+                lateFrames++;
+                waitOneFrame();
+            }
         }
 
         mPresentationTime += lateFrames * mCommonSettings.refreshPeriod;
-        presentationTimeIsNeeded = true;
+        presentationTimeIsNeeded = localFramePacingEnabled;
     } else {
         presentationTimeIsNeeded = false;
     }
 
-    const nanoseconds gpuTime = h.getPrevFrameGpuTime();
-    addFrameDuration({cpuTime, gpuTime, mCurrentFrame > mTargetFrame});
+    // If last frame is not finished, return -1 for GPU time.
+    const nanoseconds gpuTime =
+        (h.lastFrameIsComplete()) ? h.getPrevFrameGpuTime() : -1ns;
+
+    // Keep track of durations only if frame pacing is enabled.
+    if (localFramePacingEnabled)
+        addFrameDuration({cpuTime, gpuTime, mCurrentFrame > mTargetFrame});
 
     postWaitCallbacks(cpuTime, gpuTime);
 
@@ -346,10 +358,19 @@ void SwappyCommon::updateDisplayTimings() {
                         "ANativeWindow not configured, frame rate will not be "
                         "reported to Android platform");
 
+    if (mFramePacingToggleRequested) {
+        // In case frame pacing is toggled, set the update here.
+        mFramePacingEnabled = !mFramePacingEnabled;
+        mFramePacingToggleRequested = false;
+    }
     if (mFramePacingResetRequested) {
         // In case of reset, just issue the update for setting refresh period.
         setPreferredRefreshPeriod(mInitialRefreshPeriod);
         mFramePacingResetRequested = false;
+        return;
+    }
+
+    if (!mFramePacingEnabled) {
         return;
     }
 
@@ -579,7 +600,8 @@ bool SwappyCommon::updateSwapInterval() {
     // state to the initial state and clear the frame durations collected.
     if (mFramePacingResetRequested) {
         mAutoSwapInterval = 1;
-        mMeasuredSwapDuration = nanoseconds(0);
+        mMeasuredSwapDuration = 0ns;
+        mSwapDuration = 0ns;
         mCommonSettings.refreshPeriod = mInitialRefreshPeriod;
         mFrameDurations.clear();
         return true;
@@ -1078,6 +1100,22 @@ void SwappyCommon::resetFramePacing() {
 
     // Just set the flag here, we actually reset at the end of the frame.
     mFramePacingResetRequested = true;
+}
+
+void SwappyCommon::enableFramePacing(bool enable) {
+    std::lock_guard<std::mutex> lock(mMutex);
+
+    // Set flags that are applied at the end of the frame.
+    if (mFramePacingEnabled != enable) {
+        mFramePacingToggleRequested = true;
+        mFramePacingResetRequested = true;
+    }
+}
+
+void SwappyCommon::enableBlockingWait(bool enable) {
+    std::lock_guard<std::mutex> lock(mMutex);
+
+    mBlockingWaitEnabled = enable;
 }
 
 }  // namespace swappy
