@@ -345,4 +345,16 @@ void SwappyVk::resetFramePacing(VkSwapchainKHR swapchain) {
     if (it != perSwapchainImplementation.end()) it->second->resetFramePacing();
 }
 
+void SwappyVk::enableFramePacing(VkSwapchainKHR swapchain, bool enable) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->enableFramePacing(enable);
+}
+
+void SwappyVk::enableBlockingWait(VkSwapchainKHR swapchain, bool enable) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->enableBlockingWait(enable);
+}
+
 }  // namespace swappy

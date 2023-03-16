@@ -345,4 +345,22 @@ void SwappyGL::resetFramePacing() {
     swappy->mCommonBase.resetFramePacing();
 }
 
+void SwappyGL::enableFramePacing(bool enable) {
+    TRACE_INT("enableFramePacing", (int)enable);
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    swappy->mCommonBase.enableFramePacing(enable);
+}
+
+void SwappyGL::enableBlockingWait(bool enable) {
+    TRACE_INT("enableBlockingWait", (int)enable);
+    SwappyGL *swappy = getInstance();
+    if (!swappy) {
+        return;
+    }
+    swappy->mCommonBase.enableBlockingWait(enable);
+}
+
 }  // namespace swappy

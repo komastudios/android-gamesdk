@@ -150,6 +150,8 @@ class SwappyVkBase {
     virtual void clearStats() = 0;
 
     void resetFramePacing();
+    void enableFramePacing(bool enable);
+    void enableBlockingWait(bool enable);
 
    protected:
     struct VkSync {
