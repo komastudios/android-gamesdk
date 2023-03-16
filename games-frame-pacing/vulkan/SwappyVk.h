@@ -99,6 +99,8 @@ class SwappyVk {
     void clearStats(VkSwapchainKHR swapchain);
 
     void resetFramePacing(VkSwapchainKHR swapchain);
+    void enableFramePacing(VkSwapchainKHR swapchain, bool enable);
+    void enableBlockingWait(VkSwapchainKHR swapchain, bool enable);
 
    private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;

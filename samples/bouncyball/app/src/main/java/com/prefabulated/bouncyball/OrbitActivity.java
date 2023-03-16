@@ -391,6 +391,12 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
             } else if (key.equals("buffer_stuffing_fix")) {
                 nSetBufferStuffingFixWait(sharedPreferences.getInt(key, 0));
                 continue;
+            } else if (key.equals("frame_pacing_enabled")) {
+                nSetEnableFramePacing(sharedPreferences.getBoolean(key, true));
+                continue;
+            } else if (key.equals("blocking_wait_enabled")) {
+                nSetEnableBlockingWait(sharedPreferences.getBoolean(key, true));
+                continue;
             }
             nSetPreference(key, sharedPreferences.getString(key, null));
         }
@@ -560,6 +566,8 @@ public class OrbitActivity extends AppCompatActivity implements Choreographer.Fr
     public native float nGetPipelineFrameTimeStdDevNS();
     public native int nGetSwappyStats(int stat, int bin);
     public native long nGetSwappyVersion();
+    public native void nSetEnableFramePacing(boolean enabled);
+    public native void nSetEnableBlockingWait(boolean enabled);
 
     private MenuItem mInfoOverlayButton;
 
