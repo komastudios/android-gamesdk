@@ -98,6 +98,8 @@ class SwappyVk {
                           uint32_t image);
     void clearStats(VkSwapchainKHR swapchain);
 
+    void resetFramePacing(VkSwapchainKHR swapchain);
+
    private:
     std::map<VkPhysicalDevice, bool> doesPhysicalDeviceHaveGoogleDisplayTiming;
     std::map<VkSwapchainKHR, std::shared_ptr<SwappyVkBase>>

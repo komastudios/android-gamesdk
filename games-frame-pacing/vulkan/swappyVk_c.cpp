@@ -182,4 +182,10 @@ void SwappyVk_clearStats(VkSwapchainKHR swapchain) {
     swappy.clearStats(swapchain);
 }
 
+void SwappyVk_resetFramePacing(VkSwapchainKHR swapchain) {
+    TRACE_CALL();
+    swappy::SwappyVk& swappy = swappy::SwappyVk::getInstance();
+    swappy.resetFramePacing(swapchain);
+}
+
 }  // extern "C"
