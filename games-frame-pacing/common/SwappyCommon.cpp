@@ -141,10 +141,6 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
         return;
     }
 
-    mANativeWindow_setFrameRate =
-        reinterpret_cast<PFN_ANativeWindow_setFrameRate>(
-            dlsym(mLibAndroid, "ANativeWindow_setFrameRate"));
-
     if (!SwappyCommonSettings::getFromApp(env, mJactivity, &mCommonSettings))
         return;
 
@@ -153,6 +149,13 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
     if (isDeviceUnsupported()) {
         SWAPPY_LOGE("Device is unsupported");
         return;
+    }
+
+    if (!SwappyDisplayManager::useSwappyDisplayManager(
+            mCommonSettings.sdkVersion)) {
+        mANativeWindow_setFrameRate =
+            reinterpret_cast<PFN_ANativeWindow_setFrameRate>(
+                dlsym(mLibAndroid, "ANativeWindow_setFrameRate"));
     }
 
     mChoreographerFilter = std::make_unique<ChoreographerFilter>(
