@@ -27,11 +27,9 @@
 #include "Log.h"
 #include "annotation_util.h"
 #include "file_cache.h"
-#include "nano/tuningfork.pb.h"
-#include "pb_decode.h"
-#include "proto/protobuf_nano_util.h"
+#include "lite/tuningfork.pb.h"
+#include "proto/protobuf_util.h"
 #include "protobuf_util_internal.h"
-using PBSettings = com_google_tuningfork_Settings;
 
 namespace tuningfork {
 
@@ -109,72 +107,52 @@ uint64_t Settings::NumAnnotationCombinations() {
     return n;
 }
 
-static bool decodeAnnotationEnumSizes(pb_istream_t* stream,
-                                      const pb_field_t* field, void** arg) {
-    Settings* settings = static_cast<Settings*>(*arg);
-    uint64_t a;
-    if (pb_decode_varint(stream, &a)) {
-        settings->aggregation_strategy.annotation_enum_size.push_back(
-            (uint32_t)a);
-        return true;
-    } else {
-        return false;
-    }
-}
-static bool decodeHistograms(pb_istream_t* stream, const pb_field_t* field,
-                             void** arg) {
-    Settings* settings = static_cast<Settings*>(*arg);
-    com_google_tuningfork_Settings_Histogram hist;
-    if (pb_decode(stream, com_google_tuningfork_Settings_Histogram_fields,
-                  &hist)) {
-        settings->histograms.push_back({hist.instrument_key, hist.bucket_min,
-                                        hist.bucket_max, hist.n_buckets});
-        return true;
-    } else {
-        return false;
-    }
-}
-
 /*static*/ TuningFork_ErrorCode Settings::DeserializeSettings(
     const ProtobufSerialization& settings_ser, Settings* settings) {
-    PBSettings pbsettings = com_google_tuningfork_Settings_init_zero;
-    pbsettings.aggregation_strategy.annotation_enum_size.funcs.decode =
-        decodeAnnotationEnumSizes;
-    pbsettings.aggregation_strategy.annotation_enum_size.arg = settings;
-    pbsettings.histograms.funcs.decode = decodeHistograms;
-    pbsettings.histograms.arg = settings;
-    pbsettings.base_uri.funcs.decode = pb_nano::DecodeString;
-    pbsettings.base_uri.arg = (void*)&settings->base_uri;
-    pbsettings.api_key.funcs.decode = pb_nano::DecodeString;
-    pbsettings.api_key.arg = (void*)&settings->api_key;
-    pbsettings.default_fidelity_parameters_filename.funcs.decode =
-        pb_nano::DecodeString;
-    pbsettings.default_fidelity_parameters_filename.arg =
-        (void*)&settings->default_fidelity_parameters_filename;
-    ByteStream str{const_cast<uint8_t*>(settings_ser.data()),
-                   settings_ser.size(), 0};
-    pb_istream_t stream = {ByteStream::Read, &str, settings_ser.size()};
-    if (!pb_decode(&stream, com_google_tuningfork_Settings_fields, &pbsettings))
+    com::google::tuningfork::Settings pbsettings;
+    if (!Deserialize(settings_ser, pbsettings)) {
         return TUNINGFORK_ERROR_BAD_SETTINGS;
-    if (pbsettings.aggregation_strategy.method ==
-        com_google_tuningfork_Settings_AggregationStrategy_Submission_TICK_BASED)
+    }
+    if (pbsettings.aggregation_strategy().method() ==
+        com::google::tuningfork::
+            Settings_AggregationStrategy_Submission_TICK_BASED)
         settings->aggregation_strategy.method =
             Settings::AggregationStrategy::Submission::TICK_BASED;
     else
         settings->aggregation_strategy.method =
             Settings::AggregationStrategy::Submission::TIME_BASED;
     settings->aggregation_strategy.intervalms_or_count =
-        pbsettings.aggregation_strategy.intervalms_or_count;
+        pbsettings.aggregation_strategy().intervalms_or_count();
     settings->aggregation_strategy.max_instrumentation_keys =
-        pbsettings.aggregation_strategy.max_instrumentation_keys;
+        pbsettings.aggregation_strategy().max_instrumentation_keys();
     settings->initial_request_timeout_ms =
-        pbsettings.initial_request_timeout_ms;
+        pbsettings.initial_request_timeout_ms();
     settings->ultimate_request_timeout_ms =
-        pbsettings.ultimate_request_timeout_ms;
+        pbsettings.ultimate_request_timeout_ms();
+    settings->base_uri = pbsettings.base_uri();
+    settings->api_key = pbsettings.api_key();
+    settings->default_fidelity_parameters_filename =
+        pbsettings.default_fidelity_parameters_filename();
+
     // Convert from 1-based to 0 based indices (-1 = not present)
     settings->loading_annotation_index =
-        pbsettings.loading_annotation_index - 1;
-    settings->level_annotation_index = pbsettings.level_annotation_index - 1;
+        pbsettings.loading_annotation_index() - 1;
+    settings->level_annotation_index = pbsettings.level_annotation_index() - 1;
+
+    for (int i = 0; i < pbsettings.histograms_size(); i++) {
+        settings->histograms.push_back(
+            {pbsettings.histograms(i).instrument_key(),
+             pbsettings.histograms(i).bucket_min(),
+             pbsettings.histograms(i).bucket_max(),
+             pbsettings.histograms(i).n_buckets()});
+    }
+    for (int i = 0;
+         i < pbsettings.aggregation_strategy().annotation_enum_size_size();
+         i++) {
+        settings->aggregation_strategy.annotation_enum_size.push_back(
+            pbsettings.aggregation_strategy().annotation_enum_size(i));
+    }
+
     // Override API key if passed from c_settings.
     if (settings->c_settings.api_key != nullptr)
         settings->api_key = settings->c_settings.api_key;

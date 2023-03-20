@@ -24,114 +24,47 @@
 #include <map>
 #include <mutex>
 
-#include "nano/descriptor.pb.h"
-#include "pb_decode.h"
-#include "proto/protobuf_nano_util.h"
+#include "google/protobuf/descriptor.pb.h"
+#include "proto/protobuf_util.h"
 #include "tuningfork_utils.h"
 
 namespace tuningfork {
 
-namespace pb_nano {
-
-using namespace file_descriptor;
-
-static bool DecodeField(pb_istream_t* stream, const pb_field_t* field,
-                        void** arg) {
-    MessageType* message = static_cast<MessageType*>(*arg);
-    google_protobuf_FieldDescriptorProto f =
-        google_protobuf_FieldDescriptorProto_init_default;
-    EnumField ef;
-    f.name.funcs.decode = DecodeString;
-    f.name.arg = &ef.name;
-    f.type_name.funcs.decode = DecodeString;
-    f.type_name.arg = &ef.type_name;
-    if (!pb_decode(stream, google_protobuf_FieldDescriptorProto_fields, &f))
-        return false;
-    if (f.type == google_protobuf_FieldDescriptorProto_Type_TYPE_ENUM) {
-        ef.number = f.number;
-        message->fields.push_back(ef);
-    }
-    return true;
-}
-
-static bool DecodeMessageType(pb_istream_t* stream, const pb_field_t* field,
-                              void** arg) {
-    File* d = static_cast<File*>(*arg);
-    google_protobuf_DescriptorProto desc =
-        google_protobuf_DescriptorProto_init_default;
-    MessageType t;
-    desc.name.funcs.decode = DecodeString;
-    desc.name.arg = &t.name;
-    desc.field.funcs.decode = DecodeField;
-    desc.field.arg = &t;
-    if (!pb_decode(stream, google_protobuf_DescriptorProto_fields, &desc))
-        return false;
-    d->message_type.push_back(t);
-    return true;
-}
-
-static bool DecodeValue(pb_istream_t* stream, const pb_field_t* field,
-                        void** arg) {
-    EnumType* e = static_cast<EnumType*>(*arg);
-    google_protobuf_EnumValueDescriptorProto desc =
-        google_protobuf_EnumValueDescriptorProto_init_default;
-    std::string name;
-    desc.name.funcs.decode = DecodeString;
-    desc.name.arg = &name;
-    if (!pb_decode(stream, google_protobuf_EnumValueDescriptorProto_fields,
-                   &desc))
-        return false;
-    if (desc.has_number) e->value.push_back({name, desc.number});
-    return true;
-}
-
-static bool DecodeEnumType(pb_istream_t* stream, const pb_field_t* field,
-                           void** arg) {
-    File* d = static_cast<File*>(*arg);
-    google_protobuf_EnumDescriptorProto desc =
-        google_protobuf_EnumDescriptorProto_init_default;
-    EnumType e;
-    desc.name.funcs.decode = DecodeString;
-    desc.name.arg = &e.name;
-    desc.value.funcs.decode = DecodeValue;
-    desc.value.arg = &e;
-    if (!pb_decode(stream, google_protobuf_EnumDescriptorProto_fields, &desc))
-        return false;
-    d->enum_type.push_back(e);
-    return true;
-}
-
-static bool DecodeFile(pb_istream_t* stream, const pb_field_t* field,
-                       void** arg) {
-    File* d = static_cast<File*>(*arg);
-    google_protobuf_FileDescriptorProto fdesc =
-        google_protobuf_FileDescriptorProto_init_default;
-    fdesc.message_type.funcs.decode = DecodeMessageType;
-    fdesc.message_type.arg = d;
-    fdesc.enum_type.funcs.decode = DecodeEnumType;
-    fdesc.enum_type.arg = d;
-    fdesc.package.funcs.decode = DecodeString;
-    fdesc.package.arg = &d->package;
-    return pb_decode(stream, google_protobuf_FileDescriptorProto_fields,
-                     &fdesc);
-}
-
-bool DecodeString(pb_istream_t* stream, const pb_field_t* field, void** arg) {
-    std::string* out_str = static_cast<std::string*>(*arg);
-    out_str->resize(stream->bytes_left);
-    char* d = const_cast<char*>(
-        out_str->data());  // C++17 would remove the need for cast
-    while (stream->bytes_left) {
-        uint64_t x;
-        if (!pb_decode_varint(stream, &x)) return false;
-        *d++ = (char)x;
-    }
-    return true;
-}
-
-}  // namespace pb_nano
-
 namespace file_descriptor {
+
+static EnumField DeserializeFieldDescriptorProto(
+    google::protobuf::FieldDescriptorProto field_descriptor_proto) {
+    EnumField enum_field;
+    enum_field.number = field_descriptor_proto.number();
+    enum_field.name = field_descriptor_proto.name();
+    enum_field.type_name = field_descriptor_proto.type_name();
+    return enum_field;
+}
+
+static MessageType DeserializeDescriptorProto(
+    google::protobuf::DescriptorProto descriptor_proto) {
+    MessageType message_type;
+    message_type.name = descriptor_proto.name();
+    for (int i = 0; i < descriptor_proto.field_size(); i++) {
+        if (descriptor_proto.field(i).type() ==
+            google::protobuf::FieldDescriptorProto_Type_TYPE_ENUM) {
+            message_type.fields.push_back(
+                DeserializeFieldDescriptorProto(descriptor_proto.field(i)));
+        }
+    }
+    return message_type;
+}
+
+static EnumType DeserializeEnumDescriptorProto(
+    google::protobuf::EnumDescriptorProto enum_descriptor_proto) {
+    EnumType enum_type;
+    enum_type.name = enum_descriptor_proto.name();
+    for (int i = 0; i < enum_descriptor_proto.value_size(); i++) {
+        enum_type.value.push_back({enum_descriptor_proto.value(i).name(),
+                                   enum_descriptor_proto.value(i).number()});
+    }
+    return enum_type;
+}
 
 ProtobufSerialization* GetTuningForkFileDescriptorSerialization() {
     // Avoid race conditions with multiple threads calling the function
@@ -160,20 +93,20 @@ File* GetTuningForkFileDescriptor() {
     if (read_status == ReadStatus::UNREAD) {
         ProtobufSerialization* descriptor_ser =
             GetTuningForkFileDescriptorSerialization();
-        if (descriptor_ser == nullptr) return nullptr;
-        ByteStream str{const_cast<uint8_t*>(descriptor_ser->data()),
-                       descriptor_ser->size(), 0};
-        pb_istream_t stream = {ByteStream::Read, &str, descriptor_ser->size()};
-        google_protobuf_FileDescriptorSet descriptor =
-            google_protobuf_FileDescriptorSet_init_default;
-        descriptor.file.funcs.decode = pb_nano::DecodeFile;
-        descriptor.file.arg = &cached_file;
-        bool result = pb_decode(
-            &stream, google_protobuf_FileDescriptorSet_fields, &descriptor);
-        if (result) {
-            read_status = ReadStatus::READ_OK;
-        } else {
+        google::protobuf::FileDescriptorSet descriptor;
+        if (!Deserialize(*descriptor_ser, descriptor) ||
+            descriptor.file_size() == 0) {
             read_status = ReadStatus::READ_WITH_ERROR;
+            return nullptr;
+        }
+        cached_file.package = descriptor.file(0).package();
+        for (int i = 0; i < descriptor.file(0).message_type_size(); i++) {
+            cached_file.message_type.push_back(
+                DeserializeDescriptorProto(descriptor.file(0).message_type(i)));
+        }
+        for (int i = 0; i < descriptor.file(0).enum_type_size(); i++) {
+            cached_file.enum_type.push_back(DeserializeEnumDescriptorProto(
+                descriptor.file(0).enum_type(i)));
         }
     }
     if (read_status == ReadStatus::READ_OK)
