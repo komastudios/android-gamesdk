@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16926012_2d766b00",
+        "filename": "games-frame-pacing/common/SwappyCommon.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-20T10:43:10Z",
+      "side": 1,
+      "message": "The API here seems a bit awkward to me. I don\u0027t like that I can call SwappyVk_enableBlockingWait(false) and it won\u0027t do anything unless I have already disabled frame pacing.\n\nI don\u0027t have a better API in mind but do we need mBlockingWaitEnabled? It adds even more complexity and another execution path. If it\u0027s very rarely going to be useful I would consider removing it.",
+      "revId": "24e916a702087a93e40521e06cdb28d86b229f79",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
