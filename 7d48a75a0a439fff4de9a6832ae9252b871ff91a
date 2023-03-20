@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7eff1ad_4bcf9221",
+        "filename": "games-frame-pacing/opengl/EGL.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-20T16:14:35Z",
+      "side": 1,
+      "message": "I was a little worried about locking in a destructor so I googled it:\n\nhttps://stackoverflow.com/questions/74008646/is-it-a-bad-idea-to-acquire-a-lock-in-a-destructor\n\n\"However, keep in mind: locking a mutex can throw an exception, and you should (almost) always absorb exceptions in destructors with try/catch.\"\n\n^is that relevant here?",
+      "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
