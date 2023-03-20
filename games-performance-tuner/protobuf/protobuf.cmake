@@ -14,9 +14,6 @@ endif()
 set( PROTOBUF_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/install/${HOST_PLATFORM}")
 
 set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/src")
-if( NOT DEFINED PROTOBUF_NANO_SRC_DIR)
-  set( PROTOBUF_NANO_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/nanopb-c")
-endif()
 set(PROTOC_EXE ${PROTOBUF_INSTALL_DIR}/bin/protoc${EXE_EXTENSION})
 set( PROTOBUF_INCLUDE_DIR ${PROTOBUF_SRC_DIR} )
 
@@ -36,21 +33,15 @@ function(extra_pb_link_options libname)
   set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_version.script")
 endfunction()
 
-function(extra_pb_nano_link_options libname)
-  set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_nano_version.script")
-endfunction()
-
 set(PROTO_GENS_DIR ${CMAKE_BINARY_DIR}/gens)
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
   set(PROTO_GENS_DIR ${_PROTO_GENS_DIR} PARENT_SCOPE)
   set(PROTOC_EXE ${PROTOC_EXE} PARENT_SCOPE)
   set(PROTOBUF_SRC_DIR ${PROTOBUF_SRC_DIR} PARENT_SCOPE)
-  set(PROTOBUF_NANO_SRC_DIR ${PROTOBUF_NANO_SRC_DIR} PARENT_SCOPE)
 endif()
 file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/full)
 file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/lite)
-file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/nano)
 
 function(protobuf_generate_base)
   if(NOT ARGN)
@@ -103,13 +94,6 @@ function(protobuf_generate_base)
   endforeach()
 endfunction()
 
-get_filename_component(ABS_PROTOBUF_NANO_SRC_DIR ${PROTOBUF_NANO_SRC_DIR} ABSOLUTE)
-
-function(protobuf_generate_nano_c)
-  protobuf_generate_base("c" "--nanopb_out"
-    "--plugin=protoc-gen-nanopb=${ABS_PROTOBUF_NANO_SRC_DIR}/generator/protoc-gen-nanopb${PLUGIN_EXTENSION}"
-    "/nano" ${ARGN})
-endfunction()
 
 function(protobuf_generate_full_cpp)
   protobuf_generate_base("cc" "--cpp_out" "" "/full" ${ARGN})

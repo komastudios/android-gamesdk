@@ -18,12 +18,11 @@
 #include <android/configuration.h>
 #include <android/log.h>
 #include <dlfcn.h>
-#include "pb_common.h"
-#include "pb_encode.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
 #include "tuningfork/tuningfork.h"
 #include "tuningfork/tuningfork_extra.h"
+#include "protobuf_util.h"
 
 #include "game_consts.hpp"
 #include "tuning_manager.hpp"
@@ -61,26 +60,6 @@ namespace {
     void choreographer_callback64(int64_t /*frameTimeNanos*/, void *data) {
         TuningManager *tuningManager = reinterpret_cast<TuningManager *>(data);
         tuningManager->HandleChoreographerFrame();
-    }
-
-    bool serialize_annotation(TuningFork_CProtobufSerialization &cser,
-                              const _com_google_tuningfork_Annotation *annotation) {
-        bool success = false;
-        cser.bytes = NULL;
-        cser.size = 0;
-
-        size_t encodedSize = 0;
-        if (pb_get_encoded_size(&encodedSize, com_google_tuningfork_Annotation_fields,
-                                annotation)) {
-            cser.bytes = (uint8_t *) ::malloc(encodedSize);
-            cser.size = encodedSize;
-            cser.dealloc = TuningFork_CProtobufSerialization_Dealloc;
-
-            pb_ostream_t pbStream = pb_ostream_from_buffer(cser.bytes, encodedSize);
-            pb_encode(&pbStream, com_google_tuningfork_Annotation_fields, annotation);
-            success = true;
-        }
-        return success;
     }
 }
 #endif
@@ -205,39 +184,33 @@ void TuningManager::PostFrameTick(const TuningFork_InstrumentKey frameKey) {
 }
 
 #if defined(USE_APT)
-void TuningManager::SetCurrentAnnotation(const _com_google_tuningfork_Annotation *annotation) {
-    TuningFork_CProtobufSerialization cser;
-    if (serialize_annotation(cser, annotation)) {
-        if (TuningFork_setCurrentAnnotation(&cser) != TUNINGFORK_ERROR_OK) {
-            ALOGW("Bad annotation passed to TuningFork_setCurrentAnnotation");
-        }
-        TuningFork_CProtobufSerialization_free(&cser);
-    } else {
-        ALOGE("Failed to calculate annotation encode size");
-    }
+void TuningManager::SetCurrentAnnotation(const com::google::tuningfork::Annotation *annotation) {
+  TuningFork_CProtobufSerialization cser = tuningfork::TuningFork_CProtobufSerialization_Alloc(*annotation);
+      if (TuningFork_setCurrentAnnotation(&cser) != TUNINGFORK_ERROR_OK) {
+          ALOGW("Bad annotation passed to TuningFork_setCurrentAnnotation");
+      }
+      TuningFork_CProtobufSerialization_free(&cser);
 }
 #endif
 
 void TuningManager::StartLoading() {
 #if defined(USE_APT)
     // Initial annotation of our state
-    _com_google_tuningfork_Annotation annotation;
-    annotation.loading = com_google_tuningfork_LoadingState_LOADING;
-    annotation.level = com_google_tuningfork_Level_STARTUP;
+    com::google::tuningfork::Annotation annotation;
+    annotation.set_loading(com::google::tuningfork::LOADING);
+    annotation.set_level(com::google::tuningfork::STARTUP);
     SetCurrentAnnotation(&annotation);
 
     // Setup loading start
-    TuningFork_CProtobufSerialization cser;
-    if (serialize_annotation(cser, &annotation)) {
-        startupLoadingMetadata.state =
-                TuningFork_LoadingTimeMetadata::LoadingState::COLD_START;
-        startupLoadingMetadata.network_latency_ns = 1234567;
-        TuningFork_startRecordingLoadingTime(&startupLoadingMetadata,
-                                             sizeof(TuningFork_LoadingTimeMetadata),
-                                             &cser,
-                                             &startupLoadingHandle);
-        TuningFork_CProtobufSerialization_free(&cser);
-    }
+    TuningFork_CProtobufSerialization cser = tuningfork::TuningFork_CProtobufSerialization_Alloc(annotation);
+    startupLoadingMetadata.state =
+            TuningFork_LoadingTimeMetadata::LoadingState::COLD_START;
+    startupLoadingMetadata.network_latency_ns = 1234567;
+    TuningFork_startRecordingLoadingTime(&startupLoadingMetadata,
+                                         sizeof(TuningFork_LoadingTimeMetadata),
+                                         &cser,
+                                         &startupLoadingHandle);
+    TuningFork_CProtobufSerialization_free(&cser);
 #endif
 }
 
@@ -245,9 +218,9 @@ void TuningManager::FinishLoading() {
 #if defined(USE_APT)
     TuningFork_stopRecordingLoadingTime(startupLoadingHandle);
 
-    _com_google_tuningfork_Annotation annotation;
-    annotation.loading = com_google_tuningfork_LoadingState_NOT_LOADING;
-    annotation.level = com_google_tuningfork_Level_LEVEL_1;
+    com::google::tuningfork::Annotation annotation;
+    annotation.set_loading(com::google::tuningfork::NOT_LOADING);
+    annotation.set_level(com::google::tuningfork::LEVEL_1);
     SetCurrentAnnotation(&annotation);
 #endif
 }
