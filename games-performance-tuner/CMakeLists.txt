@@ -26,20 +26,17 @@ endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--hash-style=both" )
 
-protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto)
 
-protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
-  proto/descriptor.proto)
-
 include_directories( . )
-include_directories(${PROTOBUF_NANO_SRC_DIR})
 include_directories( ../include )
 include_directories( ../games-frame-pacing )
 include_directories( ../src/common )
 include_directories( ${MODPB64_DIR}/modp_b64)
 include_directories( ${THIRDPARTY_DIR} )
 include_directories( ${THIRDPARTY_DIR}/date/include )
+include_directories(${PROTOBUF_SRC_DIR})
 
 include_directories(${PROTO_GENS_DIR})
 
@@ -89,18 +86,17 @@ set( TUNINGFORK_SRCS
   unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
-  ${PROTO_GENS_DIR}/nano/tuningfork.pb.c
-  ${PROTO_GENS_DIR}/nano/descriptor.pb.c)
+  ${PROTO_GENS_DIR}/lite/tuningfork.pb.cc)
 
 add_library( tuningfork_static
-  STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
-set_target_properties( tuningfork_static PROPERTIES
-  COMPILE_OPTIONS "-DPROTOBUF_NANO" )
+  STATIC ${TUNINGFORK_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
+
+target_compile_options(tuningfork_static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
 
 function(build_shared libname version)
   add_library( ${libname}
-    SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_NANO_SRCS})
-  set_target_properties( ${libname}  PROPERTIES COMPILE_OPTIONS "-DPROTOBUF_NANO" )
+    SHARED ${TUNINGFORK_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
+  target_compile_options(${libname} PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch")
   target_link_libraries( ${libname}
     android
     log)

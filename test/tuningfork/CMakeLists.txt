@@ -41,9 +41,6 @@ protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto
   proto/dev_tuningfork.proto
 )
-protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
-  proto/dev_tuningfork.proto
-)
 
 option(TUNINGFORK_TEST_OPTION "" ON)
 
@@ -81,7 +78,6 @@ set(TEST_SRCS
   serialization_test.cpp
   settings_test.cpp
   ../common/test_utils.cpp
-  ${PGENS_DIR}/nano/dev_tuningfork.pb.c
   ${PGENS_DIR}/full/dev_tuningfork.pb.cc
   ${PGENS_DIR}/full/tuningfork.pb.cc
 )

@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "pb_decode.h"
 #include "proto/protobuf_util.h"
 
 namespace tuningfork {
@@ -84,11 +83,5 @@ File* GetTuningForkFileDescriptor();
 ProtobufSerialization* GetTuningForkFileDescriptorSerialization();
 
 }  // namespace file_descriptor
-
-namespace pb_nano {
-
-bool DecodeString(pb_istream_t* stream, const pb_field_t* field, void** arg);
-
-}  // namespace pb_nano
 
 }  // namespace tuningfork
