@@ -16,6 +16,24 @@
       "message": "Is this needed?",
       "revId": "d0f55a6e74308503b2395a37d22a08f193813af3",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d79a9651_f6af97d2",
+        "filename": "games-frame-pacing/opengl/SwappyGL.h",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-20T11:22:30Z",
+      "side": 1,
+      "message": "Yeah, this is for controlling whether swappy should do a block wait for previous frame or not.",
+      "parentUuid": "606b92bd_788a356d",
+      "revId": "d0f55a6e74308503b2395a37d22a08f193813af3",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
