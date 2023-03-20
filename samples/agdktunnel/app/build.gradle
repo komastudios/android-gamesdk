@@ -169,8 +169,6 @@ task buildTuningForkBinFiles(type: JavaExec) {
 }
 
 if (APTEnabled.toBoolean()) {
-    apply from: GameSDKPath + '/prepproto.gradle'
-    preBuild.dependsOn prepare_proto
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
 }
 
