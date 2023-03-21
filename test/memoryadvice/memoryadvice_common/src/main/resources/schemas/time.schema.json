@@ -1,9 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "title": "Time",
-  "description": "A point in time.",
-  "type": "integer",
-  "format": "uint64",
-  "minimum": 1500000000000,
-  "maximum": 5000000000000
-}
