@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36e3db6d_9cf77a33",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-21T15:24:42Z",
+      "side": 1,
+      "message": "I think samples/memory_advice/hogger is where it\u0027s supposed to be and shouldn\u0027t be moved. It\u0027s a sample for games-memory-advice and like every other library in our repo, it has a corresponding sample in samples/. And I\u0027m not sure if I like the idea of having memoryadvice_exampleclient live under samples/memory_advice as it is the sample app for the java version of memory advice library, which we aren\u0027t supporting development on any longer. Though it could live under samples as long as we\u0027ve clarified that it is for the java version of the library.",
+      "revId": "61cd2e2a376c444a74c64a087ae66619db21aed0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
