@@ -34,6 +34,24 @@
       "parentUuid": "f7eff1ad_4bcf9221",
       "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b192394_b306e2e0",
+        "filename": "games-frame-pacing/opengl/EGL.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-03-21T11:22:31Z",
+      "side": 1,
+      "message": "What\u0027s our policy regarding exceptions? In gamedev they typically don\u0027t use exceptions in C++.",
+      "parentUuid": "4e0ac3f5_d5cf3678",
+      "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
