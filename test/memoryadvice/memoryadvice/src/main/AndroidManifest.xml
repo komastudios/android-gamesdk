@@ -1,8 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.android.apps.internal.games.memoryadvice">
-    <uses-permission android:name="android.permission.INTERNET" />
-    <application>
-        <service android:name="com.google.android.apps.internal.games.memoryadvice.CanaryService"
-            android:process=":com.google.android.apps.internal.games.memoryadvice.CanaryProcess" />
-    </application>
-</manifest>

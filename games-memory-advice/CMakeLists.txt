@@ -5,8 +5,7 @@ set(IgnoreOldToolchainWarning "${ANDROID_UNIFIED_HEADERS}")
 
 include("../samples/gamesdk.cmake")
 
-set( MEMORYADVICE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/assets/memoryadvice")
-set( MEMORYADVICE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../test/memoryadvice/memoryadvice/src/main/resources")
+set( RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set( THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
 set( TENSORFLOW_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external/tensorflow")
 set( EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../external")
@@ -33,7 +32,7 @@ set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,-
 endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--hash-style=both" )
 
-file(READ "${MEMORYADVICE_ASSETS_DIR}/default.json" PARAMS_FILE)
+file(READ "${RESOURCES_DIR}/default.json" PARAMS_FILE)
 set(PARAMS_STRING "namespace memory_advice {\nconst char* parameters_string = R\"PARAMS(\n")
 string(APPEND PARAMS_STRING "${PARAMS_FILE}")
 string(APPEND PARAMS_STRING "\n )PARAMS\";\n}\n")
@@ -71,8 +70,8 @@ set(MEMORY_ADVICE_SRCS
   ../src/common/system_utils.cpp
   ${THIRD_PARTY_DIR}/json11/json11.cpp
   advisor_parameters.cpp
-  ${MEMORYADVICE_RESOURCES_DIR}/realtime.tflite
-  ${MEMORYADVICE_RESOURCES_DIR}/oom_features.json
+  ${RESOURCES_DIR}/realtime.tflite
+  ${RESOURCES_DIR}/oom_features.json
 )
 
 add_library( tflite SHARED IMPORTED )
