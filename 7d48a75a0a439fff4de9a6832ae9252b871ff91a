@@ -16,6 +16,24 @@
       "message": "I was a little worried about locking in a destructor so I googled it:\n\nhttps://stackoverflow.com/questions/74008646/is-it-a-bad-idea-to-acquire-a-lock-in-a-destructor\n\n\"However, keep in mind: locking a mutex can throw an exception, and you should (almost) always absorb exceptions in destructors with try/catch.\"\n\n^is that relevant here?",
       "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e0ac3f5_d5cf3678",
+        "filename": "games-frame-pacing/opengl/EGL.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-21T08:47:19Z",
+      "side": 1,
+      "message": "\"Locking a mutex can throw an exception\" - if this happens, the system is in a pretty bad shape already. So my understanding was that in our library we do not catch those (example usages : `ChoreographerFilter::~ChoreographerFilter`, `NDKChoreographerThread::~NDKChoreographerThread`)",
+      "parentUuid": "f7eff1ad_4bcf9221",
+      "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
