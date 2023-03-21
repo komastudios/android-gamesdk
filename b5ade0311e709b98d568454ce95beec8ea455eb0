@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8833de07_39434662",
+        "filename": "games-performance-tuner/core/protobuf_util_internal.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-21T12:10:17Z",
+      "side": 1,
+      "message": "Why remove the descriptor_ser nullptr check? It looks like it can be nullptr here and dereferencing directly sounds dangerous.",
+      "revId": "b5ade0311e709b98d568454ce95beec8ea455eb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be3ae0c8_09125861",
+        "filename": "games-performance-tuner/core/protobuf_util_internal.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-21T12:10:17Z",
+      "side": 1,
+      "message": "this can also be removed.",
+      "revId": "b5ade0311e709b98d568454ce95beec8ea455eb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
