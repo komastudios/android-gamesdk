@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6179a0c4_77ec539d",
+        "filename": "games-performance-tuner/core/protobuf_util_internal.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-21T14:17:59Z",
+      "side": 1,
+      "message": "Good catch, I\u0027m adding it back.",
+      "parentUuid": "8833de07_39434662",
+      "revId": "b5ade0311e709b98d568454ce95beec8ea455eb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "be3ae0c8_09125861",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-03-21T12:10:17Z",
       "side": 1,
       "message": "this can also be removed.",
+      "revId": "b5ade0311e709b98d568454ce95beec8ea455eb0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "340e28c9_17d0caaa",
+        "filename": "games-performance-tuner/core/protobuf_util_internal.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-21T14:17:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be3ae0c8_09125861",
       "revId": "b5ade0311e709b98d568454ce95beec8ea455eb0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
