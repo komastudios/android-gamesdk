@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "376decf5_d31f4959",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-22T15:07:26Z",
+      "side": 1,
+      "message": "From the little documentation - it looks like this returns int64 - should we change the type to int64_t instead to be consistent.",
+      "revId": "6a87ca8565cbcb2ca2efa4015beb3759bacbd851",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
