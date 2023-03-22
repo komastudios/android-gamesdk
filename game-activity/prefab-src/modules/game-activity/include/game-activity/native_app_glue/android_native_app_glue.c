@@ -171,6 +171,12 @@ void app_dummy() {}
 
 static void android_app_destroy(struct android_app* android_app) {
     LOGV("android_app_destroy!");
+    for (int input_buf_idx = 0;
+         input_buf_idx < NATIVE_APP_GLUE_MAX_INPUT_BUFFERS; input_buf_idx++) {
+        android_app_clear_motion_events(
+            &android_app->inputBuffers[input_buf_idx]);
+    }
+
     free_saved_state(android_app);
     pthread_mutex_lock(&android_app->mutex);
 
@@ -532,7 +538,12 @@ struct android_input_buffer* android_app_swap_input_buffers(
 }
 
 void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
-    inputBuffer->motionEventsCount = 0;
+    while (inputBuffer->motionEventsCount > 0) {
+        GameActivityMotionEvent_destroy(
+            &inputBuffer->motionEvents[inputBuffer->motionEventsCount - 1]);
+
+        inputBuffer->motionEventsCount--;
+    }
 }
 
 void android_app_set_key_event_filter(struct android_app* app,

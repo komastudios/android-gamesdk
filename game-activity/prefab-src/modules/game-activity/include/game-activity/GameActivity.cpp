@@ -865,7 +865,6 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
         action, eventTime, downTime, flags, metaState, actionButton,
         buttonState, classification, edgeFlags, precisionX, precisionY);
     auto result = code->callbacks.onTouchEvent(code, &c_event);
-    GameActivityMotionEvent_destroy(&c_event);
     return result;
 }
 
