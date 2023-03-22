@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aff86ade_1cbba04f",
+        "filename": "games-performance-tuner/protobuf/protobuf.cmake",
+        "patchSetId": 5
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-22T09:17:32Z",
+      "side": 1,
+      "message": "this looks left out",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9867020a_384abfd9",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-22T09:17:32Z",
+      "side": 1,
+      "message": "please update the comment as well",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfbd77cc_fca59e49",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-22T09:17:32Z",
+      "side": 1,
+      "message": "please create a bug to update agdktunnel to use lite protobuf.",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
