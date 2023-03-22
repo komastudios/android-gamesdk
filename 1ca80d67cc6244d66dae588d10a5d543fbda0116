@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e4063bd_c01215ff",
+        "filename": "games-performance-tuner/protobuf/protobuf.cmake",
+        "patchSetId": 5
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-22T14:00:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aff86ade_1cbba04f",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9867020a_384abfd9",
@@ -35,6 +53,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d22aa44_1c2aba2e",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-22T14:00:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9867020a_384abfd9",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dfbd77cc_fca59e49",
@@ -48,6 +84,24 @@
       "writtenOn": "2023-03-22T09:17:32Z",
       "side": 1,
       "message": "please create a bug to update agdktunnel to use lite protobuf.",
+      "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "161a6018_f9759102",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-22T14:00:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfbd77cc_fca59e49",
       "revId": "1ca80d67cc6244d66dae588d10a5d543fbda0116",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
