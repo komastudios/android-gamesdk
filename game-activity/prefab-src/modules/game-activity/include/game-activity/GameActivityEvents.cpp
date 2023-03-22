@@ -218,8 +218,8 @@ extern "C" void GameActivityMotionEvent_fromJava(
     out_event->historicalAxisValues =
         new float[historySize * pointerCount *
                   GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT];
-    out_event->historicalEventTimesMillis = new long[historySize];
-    out_event->historicalEventTimesNanos = new long[historySize];
+    out_event->historicalEventTimesMillis = new uint64_t[historySize];
+    out_event->historicalEventTimesNanos = new uint64_t[historySize];
 
     for (int historyIndex = 0; historyIndex < historySize; historyIndex++) {
         out_event->historicalEventTimesMillis[historyIndex] =
