@@ -851,10 +851,18 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
     if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
+<<<<<<< HEAD   (1aa629 Merge cherrypicks of ['android-review.googlesource.com/24584)
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
     auto result = code->callbacks.onTouchEvent(code, &c_event);
     GameActivityMotionEvent_destroy(&c_event);
     return result;
+=======
+    GameActivityMotionEvent_fromJava(
+        env, motionEvent, &c_event, pointerCount, historySize, deviceId, source,
+        action, eventTime, downTime, flags, metaState, actionButton,
+        buttonState, classification, edgeFlags, precisionX, precisionY);
+    return code->callbacks.onTouchEvent(code, &c_event);
+>>>>>>> CHANGE (55f7ab Correctly destroy GameActivityMotionEvent)
 }
 
 static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
