@@ -69,6 +69,41 @@
       "parentUuid": "e7ca6f0b_b8ce7be6",
       "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75f49e0e_7ee7f6ad",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-03-22T18:15:10Z",
+      "side": 1,
+      "message": "Sorry, where is the code which does it in different thread?",
+      "parentUuid": "33955754_412b5aa2",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fcc8aedf_9180b2c8",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 546,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-03-22T18:15:10Z",
+      "side": 1,
+      "message": "Maybe do inputBuffer-\u003emotionEventsCount \u003d 0; for sanity?",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
