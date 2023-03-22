@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f388d57_a741c7bc",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 867,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-22T15:59:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "605ab1de_fdfd09d6",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7ca6f0b_b8ce7be6",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-03-22T14:53:58Z",
       "side": 1,
       "message": "Is this okay to destroy without holding the android_app-\u003emutex? Other operations (except creation for some reason) seem to be done with the mutex held.",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33955754_412b5aa2",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-22T15:59:55Z",
+      "side": 1,
+      "message": "It turns out I was doing this on the wrong thread in the wrong area. I\u0027ve updated the code",
+      "parentUuid": "e7ca6f0b_b8ce7be6",
       "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
