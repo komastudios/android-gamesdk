@@ -203,8 +203,8 @@ typedef struct GameActivityMotionEvent {
         pointers[GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT];
 
     int historySize;
-    long* historicalEventTimesMillis;
-    long* historicalEventTimesNanos;
+    uint64_t* historicalEventTimesMillis;
+    uint64_t* historicalEventTimesNanos;
     float* historicalAxisValues;
 
     float precisionX;
