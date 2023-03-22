@@ -21,8 +21,8 @@
 
 #if defined(USE_APT)
 // Generated protobuf headers
-#include "nano/dev_tuningfork.pb.h"
-#include "nano/tuningfork.pb.h"
+#include "full/dev_tuningfork.pb.h"
+#include "full/tuningfork.pb.h"
 #endif
 
 struct AConfiguration;
@@ -43,7 +43,7 @@ public:
     void PostFrameTick(const uint16_t frameKey);
 
 #if defined(USE_APT)
-    void SetCurrentAnnotation(const _com_google_tuningfork_Annotation *annotation);
+    void SetCurrentAnnotation(const com::google::tuningfork::Annotation *annotation);
 #endif
 
     void StartLoading();

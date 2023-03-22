@@ -438,12 +438,6 @@ def copySampleSources(outFolder, Collection<NativeLibrary> libraries) {
         into file(joinPath(buildFolder, 'samples'))
     }
 
-    // Needed for samples that depend on proto preparation (agdktunnel).
-    copy {
-        from file('prepproto.gradle')
-        into file(buildFolder)
-    }
-
     // All sample common files
     copy {
         from file(joinPath('samples', "common"))
