@@ -852,9 +852,7 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
 
     static GameActivityMotionEvent c_event;
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
-    auto result = code->callbacks.onTouchEvent(code, &c_event);
-    GameActivityMotionEvent_destroy(&c_event);
-    return result;
+    return code->callbacks.onTouchEvent(code, &c_event);
 }
 
 static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
