@@ -16,6 +16,24 @@
       "message": "Please create a bug with description and use it here.",
       "revId": "56e0a16596f25c074afe9fff46e031f21039b124",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00d4d753_751772a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-22T16:01:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6be69adb_edb8d914",
+      "revId": "56e0a16596f25c074afe9fff46e031f21039b124",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
