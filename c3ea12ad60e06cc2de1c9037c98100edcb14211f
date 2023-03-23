@@ -104,6 +104,24 @@
       "message": "Maybe do inputBuffer-\u003emotionEventsCount \u003d 0; for sanity?",
       "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f209b259_0ef5fe42",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 546,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-23T08:28:29Z",
+      "side": 1,
+      "message": "normally for such situations - you can assert here. After the logic, explicitly setting it to 0 seems weird to me.",
+      "parentUuid": "fcc8aedf_9180b2c8",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
