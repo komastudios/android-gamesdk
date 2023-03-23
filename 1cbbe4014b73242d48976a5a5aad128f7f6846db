@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2a6e399_0dac169c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-23T08:31:18Z",
+      "side": 1,
+      "message": "nit: currenly -\u003e currently",
+      "revId": "1cbbe4014b73242d48976a5a5aad128f7f6846db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
