@@ -16,6 +16,24 @@
       "message": "I think the naming of this is now a bit confusing, since the protobuf is not 3.0.0. Perhaps just rename the third_party folder to just protobuf? Also, I see that you modified the source to external/protobuf in the cmake files, where are these binaries coming from? Maybe we should have a script to fetch them instead unless we are building them locally.",
       "revId": "5990d49526756a2eb6be81fde529a6940975df7b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "091fec13_38f6ccfc",
+        "filename": "third_party/protobuf-3.0.0/install/linux-x86/bin/protoc",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-23T13:45:14Z",
+      "side": 1,
+      "message": "I removed the protobuf-3.0.0 file, and moved the protoc binaries to third_party/protoc-3.21.7. I have plans to remove these binaries completely in the future and have them configured with gradle, but I\u0027ll say let\u0027s keep them for now and I\u0027ll create a bug to remove this dependency in the near future.",
+      "parentUuid": "4e4ad6c6_fb45d731",
+      "revId": "5990d49526756a2eb6be81fde529a6940975df7b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
