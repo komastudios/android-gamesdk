@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0b7bc98_bcc1c3dd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-23T12:49:30Z",
+      "side": 1,
+      "message": "The commit text needs to be updated to int64_t too.",
+      "revId": "666d8ec8cf0c2eec65b05d7d7bb2f74a73b66d9e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
