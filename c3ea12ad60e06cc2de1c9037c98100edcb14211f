@@ -122,6 +122,24 @@
       "parentUuid": "fcc8aedf_9180b2c8",
       "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a79e2d66_6648b969",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/native_app_glue/android_native_app_glue.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 546,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-23T10:47:25Z",
+      "side": 1,
+      "message": "Ah, an assert is a good idea. Setting it to 0 also feels weird to me. If i was reading the code it would make me think it was for some reason necessary to set it to 0 and would confuse me",
+      "parentUuid": "f209b259_0ef5fe42",
+      "revId": "c3ea12ad60e06cc2de1c9037c98100edcb14211f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
