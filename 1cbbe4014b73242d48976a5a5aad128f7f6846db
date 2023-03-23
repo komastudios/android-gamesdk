@@ -16,6 +16,24 @@
       "message": "nit: currenly -\u003e currently",
       "revId": "1cbbe4014b73242d48976a5a5aad128f7f6846db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f6542d4_7d3bfb42",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-23T10:47:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2a6e399_0dac169c",
+      "revId": "1cbbe4014b73242d48976a5a5aad128f7f6846db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
