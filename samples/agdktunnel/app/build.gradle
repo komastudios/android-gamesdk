@@ -155,7 +155,7 @@ def getProtocPath() {
     if (OperatingSystem.current().isLinux()) platformName = "linux-x86/bin/protoc"
     if (OperatingSystem.current().isMacOsX()) platformName = "mac/bin/protoc"
     if (OperatingSystem.current().isWindows()) platformName = "win/bin/protoc"
-    return GameSDKPath + "/third_party/protobuf-3.0.0/install/"  + platformName
+    return GameSDKPath + "/third_party/protoc-3.21.7/"  + platformName
 }
 
 task buildTuningForkBinFiles(type: JavaExec) {
