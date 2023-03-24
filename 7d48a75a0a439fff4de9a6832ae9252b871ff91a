@@ -52,6 +52,24 @@
       "parentUuid": "4e0ac3f5_d5cf3678",
       "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45fd2827_9aaaebe3",
+        "filename": "games-frame-pacing/opengl/EGL.cpp",
+        "patchSetId": 4
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-03-24T07:43:09Z",
+      "side": 1,
+      "message": "From the codebase, I dont think we are doing exceptions in our library - also there is not much of a point as our interfaces are all C API.",
+      "parentUuid": "4b192394_b306e2e0",
+      "revId": "7d48a75a0a439fff4de9a6832ae9252b871ff91a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
