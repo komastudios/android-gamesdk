@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa0f99ed_fb644910",
+        "filename": "games-performance-tuner/core/frametime_metric.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-24T15:36:10Z",
+      "side": 1,
+      "message": "can we extract this \"100\" value into a const? It would be nice to have a name associated with it",
+      "revId": "a9dd63197e2248738da9379dfaddd51f99f47b11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22e65118_0cd38e5c",
+        "filename": "games-performance-tuner/core/frametime_metric.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-03-24T15:36:10Z",
+      "side": 1,
+      "message": "same for this one",
+      "revId": "a9dd63197e2248738da9379dfaddd51f99f47b11",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
