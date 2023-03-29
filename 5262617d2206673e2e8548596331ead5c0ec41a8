@@ -16,6 +16,24 @@
       "message": "why so quickly to update to 2.0.4?",
       "revId": "5262617d2206673e2e8548596331ead5c0ec41a8",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d4aa272_07ce2fcb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-03-29T14:58:48Z",
+      "side": 1,
+      "message": "it\u0027s going from alpha03 to alpha04; I thought that was fine.",
+      "parentUuid": "38ac4543_9f3f7a40",
+      "revId": "5262617d2206673e2e8548596331ead5c0ec41a8",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
