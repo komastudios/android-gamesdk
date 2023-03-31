@@ -18,16 +18,21 @@ cmake_minimum_required(VERSION 3.18.1)
 project(paddleboat C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/paddleboat/include)
+
+set ( SOURCE_LOCATION .)
+set ( SOURCE_LOCATION_COMMON "${SOURCE_LOCATION}/src/main/cpp" )
+set ( SOURCE_LOCATION_TEST "${SOURCE_LOCATION}/src/androidTest/cpp" )
+
+include_directories(${SOURCE_LOCATION_COMMON}/paddleboat/include)
 
 set( PADDLEBOAT_SRCS
-  InternalControllerTable.cpp
-  GameController.cpp
-  GameControllerDeviceInfo.cpp
-  GameControllerLog.cpp
-  GameControllerManager.cpp
-  GameControllerMappingUtils.cpp
-  paddleboat_c.cpp)
+  ${SOURCE_LOCATION_COMMON}/InternalControllerTable.cpp
+  ${SOURCE_LOCATION_COMMON}/GameController.cpp
+  ${SOURCE_LOCATION_COMMON}/GameControllerDeviceInfo.cpp
+  ${SOURCE_LOCATION_COMMON}/GameControllerLog.cpp
+  ${SOURCE_LOCATION_COMMON}/GameControllerManager.cpp
+  ${SOURCE_LOCATION_COMMON}/GameControllerMappingUtils.cpp
+  ${SOURCE_LOCATION_COMMON}/paddleboat_c.cpp)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Os")
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
@@ -38,10 +43,30 @@ add_library(paddleboat_static STATIC ${PADDLEBOAT_SRCS})
 set_target_properties( paddleboat_static PROPERTIES
      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build )
 
-add_library(paddleboat SHARED paddleboat_c.cpp)
+add_library(paddleboat SHARED ${SOURCE_LOCATION_COMMON}/paddleboat_c.cpp)
 
 target_link_libraries(paddleboat
   paddleboat_static
   android
   atomic
   log)
+
+option(BUILD_TEST "Build native tests" OFF)
+if(BUILD_TEST)
+
+     find_package(googletest REQUIRED CONFIG)
+     find_package(junit-gtest REQUIRED CONFIG)
+
+     add_library(paddleboat_test SHARED ${SOURCE_LOCATION_TEST}/paddleboat_tests.cpp)
+     target_link_libraries(paddleboat_test
+       PRIVATE
+         paddleboat_static
+         android
+         atomic
+         log
+         googletest::gtest
+         googletest::gmock
+         junit-gtest::junit-gtest
+     )
+endif()
+unset(BUILD_TEST CACHE)
