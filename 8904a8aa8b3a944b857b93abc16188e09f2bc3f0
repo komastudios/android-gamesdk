@@ -16,6 +16,24 @@
       "message": "NIT: It is not required to update the year here as this is a modified file. Maybe we should leave it at 2021.",
       "revId": "8904a8aa8b3a944b857b93abc16188e09f2bc3f0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc002b7b_26b334ea",
+        "filename": "games-controller/src/androidTest/java/com/google/android/games/paddleboat/ExampleInstrumentedTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-04-11T20:08:25Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "7d522bd2_6f3daad0",
+      "revId": "8904a8aa8b3a944b857b93abc16188e09f2bc3f0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
