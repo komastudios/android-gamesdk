@@ -34,6 +34,24 @@
       "parentUuid": "7d522bd2_6f3daad0",
       "revId": "8904a8aa8b3a944b857b93abc16188e09f2bc3f0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c27231d6_012bf117",
+        "filename": "games-controller/src/androidTest/java/com/google/android/games/paddleboat/ExampleInstrumentedTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-04-12T08:58:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc002b7b_26b334ea",
+      "revId": "8904a8aa8b3a944b857b93abc16188e09f2bc3f0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
