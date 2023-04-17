@@ -1,5 +1,14 @@
 RELEASE NOTES
 
+Version 2023.2.0.0
+===============
+- GameActivity
+    - Fixed early freeing of memory with historicalEventTimes.
+    - Fixed issue with historicalEventTimesNanos overflowing on 32bit systems.
+- Memory Advice Library
+    - Fixed a bug that prevented the static version of the library to be linked properly.
+    - Fixed a bug where the library couldn’t load the required tensorflow lite assets properly.
+
 Version 2023.1.0.0
 ================
 - All libraries
