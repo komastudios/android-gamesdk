@@ -10,12 +10,12 @@
 set -e
 
 # Header section - version selector
-ZIP_VERSION=2023.1.0.0
-GAME_ACTIVITY_VERSION=2.0.0
+ZIP_VERSION=2023.2.0.0
+GAME_ACTIVITY_VERSION=2.0.1
 GAME_CONTROLLER_VERSION=2.0.0
 GAME_TEXT_INPUT_VERSION=2.0.0
 GAMES_FRAME_PACING_VERSION=2.0.0
-GAMES_MEMORY_ADVICE_VERSION=2.0.0-beta01
+GAMES_MEMORY_ADVICE_VERSION=2.0.0-beta03
 GAMES_PERFORMANCE_TUNER_VERSION=2.0.0-alpha03
 OBOE_VERSION=1.7.0
 
@@ -60,6 +60,8 @@ cp LICENSE $WORKING_DIR
 pushd $WORKING_DIR
 
 mkdir -p include
+
+mkdir -p assets
 
 declare -a abi_array=("arm64-v8a"
                       "armeabi-v7a"
@@ -114,6 +116,11 @@ do
   # Copy class.jar to jar-class/$lib_name/
   mkdir -p jar-classes/$lib_name
   rsync -av --ignore-missing-args $lib_name/classes.jar jar-classes/$lib_name/
+  # Copy memory advice's assets to assets/$lib_name/
+  if [ "$lib_name" == "memory_advice" ]; then
+    mkdir -p assets/$lib_name
+    rsync -av --ignore-errors $lib_name/assets/ assets/$lib_name/
+  fi
   rm -rf $lib_name
 done
 
@@ -136,6 +143,9 @@ zip -ur $ZIP_NAME libs
 
 # Add the jar-classes directory
 zip -ur $ZIP_NAME jar-classes
+
+# Add the assets directory
+zip -ur $ZIP_NAME assets
 
 # Add the SHA for the zip
 sha256sum $ZIP_NAME > $ZIP_NAME.sha256
