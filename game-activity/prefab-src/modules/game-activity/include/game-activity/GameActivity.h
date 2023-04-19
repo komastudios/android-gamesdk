@@ -534,6 +534,13 @@ enum GameActivityShowSoftInputFlags {
 void GameActivity_showSoftInput(GameActivity* activity, uint32_t flags);
 
 /**
+ * Restarts the input method. Calls InputMethodManager.restartInput().
+ * Note that this method can be called from *any* thread; it will send a message
+ * to the main thread of the processwhere the Java finish call will take place.
+ */
+void GameActivity_restartInput(GameActivity* activity);
+
+/**
  * Set the text entry state (see documentation of the GameTextInputState struct
  * in the Game Text Input library reference).
  *
