@@ -145,6 +145,7 @@ void WelcomeScene::OnButtonClicked(int id) {
         mNameEdit->SetText(sNameEdit.c_str());
         GameActivity_setTextInputState(activity, &mTextInputState.inner);
         GameActivity_showSoftInput(NativeEngine::GetInstance()->GetAndroidApp()->activity, 0);
+        GameActivity_restartInput(NativeEngine::GetInstance()->GetAndroidApp()->activity);
     } else if (id == mTestButtonId) {
         auto activity = NativeEngine::GetInstance()->GetAndroidApp()->activity;
         GameActivity_setWindowFlags(activity,

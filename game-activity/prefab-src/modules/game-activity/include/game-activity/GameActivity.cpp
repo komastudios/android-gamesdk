@@ -135,7 +135,8 @@ enum {
     CMD_SHOW_SOFT_INPUT,
     CMD_HIDE_SOFT_INPUT,
     CMD_SET_SOFT_INPUT_STATE,
-    CMD_SET_IME_EDITOR_INFO
+    CMD_SET_IME_EDITOR_INFO,
+    CMD_RESTART_INPUT
 };
 
 /*
@@ -305,6 +306,11 @@ extern "C" void GameActivity_showSoftInput(GameActivity *activity,
     write_work(code->mainWorkWrite, CMD_SHOW_SOFT_INPUT, flags);
 }
 
+extern "C" void GameActivity_restartInput(GameActivity *activity) {
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    write_work(code->mainWorkWrite, CMD_RESTART_INPUT);
+}
+
 extern "C" void GameActivity_setTextInputState(
     GameActivity *activity, const GameTextInputState *state) {
     NativeCode *code = static_cast<NativeCode *>(activity);
@@ -396,6 +402,9 @@ static int mainWorkCallback(int fd, int events, void *data) {
                 gGameActivityClassInfo.setImeEditorInfoFields, work.arg1,
                 work.arg2, work.arg3);
             checkAndClearException(code->env, "setImeEditorInfo");
+        } break;
+        case CMD_RESTART_INPUT: {
+            GameTextInput_restartInput(code->gameTextInput);
         } break;
         default:
             ALOGW("Unknown work command: %d", work.cmd);
