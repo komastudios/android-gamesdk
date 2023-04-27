@@ -16,6 +16,24 @@
       "message": "qq: have you tested it on android device (not b*)?",
       "revId": "b6468ae3cf2dd6d6db250f5d2dd8833510573123",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7983033_0229a786",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2023-04-27T21:06:21Z",
+      "side": 1,
+      "message": "Yes, I have shared with you via drive the APK with the changes of this and subsequent CLs, you won\u0027t be able to notice the changes if you don\u0027t connect a physical keyboard though",
+      "parentUuid": "fea3d100_a7ddc1ca",
+      "revId": "b6468ae3cf2dd6d6db250f5d2dd8833510573123",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
