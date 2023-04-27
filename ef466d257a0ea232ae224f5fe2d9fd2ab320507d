@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7e519388_0a298c1d",
+        "filename": "games-frame-pacing/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-04-27T13:28:31Z",
+      "side": 1,
+      "message": "Yes, there is no explicit clean up required here as we just clean up everything on such failure - a timeout here basically implies that Swappy cannot be initialized successfully.",
+      "parentUuid": "8f111370_e9adc819",
+      "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e91439e_4438c5e5",
         "filename": "games-frame-pacing/common/ChoreographerThread.cpp",
         "patchSetId": 1
@@ -31,6 +49,24 @@
       "writtenOn": "2023-04-27T13:24:11Z",
       "side": 1,
       "message": "Is mChoreographer atomic? Imo it should be declared as std::atomic\u003c\u003e for us to be able to access it like this from another thread.",
+      "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71c1de9c_be479ab8",
+        "filename": "games-frame-pacing/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-04-27T13:28:31Z",
+      "side": 1,
+      "message": "No, but it is always protected by mWaitingMutex.",
+      "parentUuid": "0e91439e_4438c5e5",
       "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
