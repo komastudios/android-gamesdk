@@ -36,6 +36,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d61ce49e_3b3dc735",
+        "filename": "games-frame-pacing/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-04-27T13:47:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e519388_0a298c1d",
+      "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e91439e_4438c5e5",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "No, but it is always protected by mWaitingMutex.",
       "parentUuid": "0e91439e_4438c5e5",
+      "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7c02c50_bd5452f2",
+        "filename": "games-frame-pacing/common/ChoreographerThread.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-04-27T13:47:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71c1de9c_be479ab8",
       "revId": "ef466d257a0ea232ae224f5fe2d9fd2ab320507d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
