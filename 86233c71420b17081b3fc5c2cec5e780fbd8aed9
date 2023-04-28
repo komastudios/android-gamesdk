@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9269e2ba_cbba746d",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-04-28T13:28:01Z",
+      "side": 1,
+      "message": "This has been fixed by Tom on Monday here: https://android-review.git.corp.google.com/c/platform/frameworks/opt/gamesdk/+/2557330",
+      "revId": "86233c71420b17081b3fc5c2cec5e780fbd8aed9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
