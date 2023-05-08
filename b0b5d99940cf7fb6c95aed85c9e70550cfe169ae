@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2e895a0_beadc573",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKProvider.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2023-05-08T22:35:39Z",
+      "side": 1,
+      "message": "Do we need this to be public? And a few below this one? Thanks",
+      "range": {
+        "startLine": 258,
+        "startChar": 4,
+        "endLine": 258,
+        "endChar": 11
+      },
+      "revId": "b0b5d99940cf7fb6c95aed85c9e70550cfe169ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
