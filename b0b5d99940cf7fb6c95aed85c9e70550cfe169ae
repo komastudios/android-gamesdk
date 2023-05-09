@@ -22,6 +22,30 @@
       },
       "revId": "b0b5d99940cf7fb6c95aed85c9e70550cfe169ae",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c8e7b8b_0a880f08",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKProvider.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1935817
+      },
+      "writtenOn": "2023-05-09T00:24:53Z",
+      "side": 1,
+      "message": "We don\u0027t. Default works. Thanks for pointing this out.",
+      "parentUuid": "e2e895a0_beadc573",
+      "range": {
+        "startLine": 258,
+        "startChar": 4,
+        "endLine": 258,
+        "endChar": 11
+      },
+      "revId": "b0b5d99940cf7fb6c95aed85c9e70550cfe169ae",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
