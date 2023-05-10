@@ -189,6 +189,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "85f186e6_35ce1b91",
+        "filename": "samples/agdktunnel/app/src/main/java/com/google/sample/agdktunnel/InputSDKRemappingListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1580900
+      },
+      "writtenOn": "2023-05-10T19:48:08Z",
+      "side": 1,
+      "message": "Let\u0027s make it more clear: \n\n// TODO: game developer can make changes \n\nplease change it everywhere. Thx",
+      "parentUuid": "fb5d2b2b_744ba5b2",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 76
+      },
+      "revId": "eace75d3372974a9ed8283a4849c3b527ad78829",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d65651b8_a6591e7a",
