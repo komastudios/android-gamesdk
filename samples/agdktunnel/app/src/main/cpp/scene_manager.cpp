@@ -56,6 +56,8 @@ void SceneManager::InstallScene(Scene *newScene) {
     // install the new scene
     mCurScene = newScene;
     if (mCurScene) {
+        // Specify the controls to use to the Input SDK
+        mCurScene->SetInputSdkContext();
         mCurScene->OnInstall();
     }
 
