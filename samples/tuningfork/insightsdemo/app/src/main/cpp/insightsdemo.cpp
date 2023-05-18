@@ -17,8 +17,8 @@
 #include "protobuf_util.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
-#include "full/tuningfork.pb.h"
-#include "full/dev_tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
+#include "lite/dev_tuningfork.pb.h"
 #include <sstream>
 #include <condition_variable>
 #include <jni.h>

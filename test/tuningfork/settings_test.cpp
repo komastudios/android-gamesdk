@@ -18,7 +18,7 @@
 
 #include <gtest/gtest.h>
 
-#include "full/tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
 
 using namespace com::google::tuningfork;
 
