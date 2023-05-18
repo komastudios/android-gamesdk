@@ -53,7 +53,9 @@ function(protobuf_generate_base)
   set(_out_opt ${ARGV1})
   set(_extra_opts ${ARGV2})
   set(_gens_subdir ${ARGV3})
-  set(_working_dir ${ARGV4})
+  set(_opt_prefix ${ARGV4})
+  set(_working_dir ${ARGV5})
+  list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
@@ -77,7 +79,7 @@ function(protobuf_generate_base)
       OUTPUT "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.${_extension}"
              "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.h"
       COMMAND ${PROTOC_EXE}
-      ARGS ${_out_opt}=${_PROTO_GENS_DIR}
+      ARGS ${_out_opt}=${_opt_prefix}${_PROTO_GENS_DIR}
            ${_extra_opts}
            ${_protobuf_include_path}
            ${REL_FIL}
@@ -96,11 +98,11 @@ endfunction()
 
 
 function(protobuf_generate_full_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/full" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/full" "" ${ARGN})
 endfunction()
 
 function(protobuf_generate_lite_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/lite" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/lite" "lite:" ${ARGN})
 endfunction()
 
 set(GP_SRC_DIR ${PROTOBUF_SRC_DIR}/google/protobuf)

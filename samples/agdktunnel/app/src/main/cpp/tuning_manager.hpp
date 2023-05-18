@@ -21,8 +21,8 @@
 
 #if defined(USE_APT)
 // Generated protobuf headers
-#include "full/dev_tuningfork.pb.h"
-#include "full/tuningfork.pb.h"
+#include "lite/dev_tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
 #endif
 
 struct AConfiguration;

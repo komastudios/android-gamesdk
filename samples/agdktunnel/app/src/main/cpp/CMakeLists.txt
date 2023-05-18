@@ -34,8 +34,8 @@ include_directories(${PROTOBUF_SRC_DIR})
 include_directories("${GAMESDK_BASE_DIR}/samples/tuningfork/common")
 if("${USE_APT}" STREQUAL "true")
     # generate runtime files using protoc
-    protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/../proto ../proto/dev_tuningfork.proto)
-    protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/../proto ../proto/tuningfork.proto)
+    protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/../proto ../proto/dev_tuningfork.proto)
+    protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/../proto ../proto/tuningfork.proto)
     include_directories(${PROTO_GENS_DIR})
 endif()
 
@@ -65,8 +65,8 @@ add_subdirectory(${THIRD_PARTY_DIR}/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
 
 if("${USE_APT}" STREQUAL "true")
     set(PROTOGEN_SRCS
-            ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc
-            ${PROTO_GENS_DIR}/full/tuningfork.pb.cc)
+            ${PROTO_GENS_DIR}/lite/dev_tuningfork.pb.cc
+            ${PROTO_GENS_DIR}/lite/tuningfork.pb.cc)
 else()
     set(PROTOGEN_SRCS "")
 endif()

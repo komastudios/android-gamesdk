@@ -33,6 +33,8 @@ protobuf_generate_lite_cpp( ${KLL_DIR}/proto
   ${KLL_DIR}/proto/kll-quantiles.proto)
 protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto)
+protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+  proto/descriptor.proto)
 
 include_directories( . )
 include_directories( ../include )
@@ -97,7 +99,8 @@ set( TUNINGFORK_SRCS
   unity/unity_tuningfork.cpp
   ${THIRDPARTY_DIR}/json11/json11.cpp
   ${MODPB64_DIR}/modp_b64.cc
-  ${PROTO_GENS_DIR}/lite/tuningfork.pb.cc)
+  ${PROTO_GENS_DIR}/lite/tuningfork.pb.cc
+  ${PROTO_GENS_DIR}/lite/descriptor.pb.cc)
 
 set( KLL_SRCS
   ${KLL_DIR}/compactor_stack.cpp
@@ -109,13 +112,13 @@ set( KLL_SRCS
   ${PROTO_GENS_DIR}/lite/kll-quantiles.pb.cc)
 
 add_library( tuningfork_static
-  STATIC ${TUNINGFORK_SRCS} ${KLL_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
+  STATIC ${TUNINGFORK_SRCS} ${KLL_SRCS} ${PROTOBUF_LITE_SRCS})
 
 target_compile_options(tuningfork_static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
 
 function(build_shared libname version)
   add_library( ${libname}
-    SHARED ${TUNINGFORK_SRCS} ${KLL_SRCS} ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS})
+    SHARED ${TUNINGFORK_SRCS} ${KLL_SRCS} ${PROTOBUF_LITE_SRCS})
   target_compile_options(${libname} PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
   target_link_libraries( ${libname}
     android
