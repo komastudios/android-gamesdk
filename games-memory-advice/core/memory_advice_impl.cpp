@@ -30,11 +30,9 @@ using namespace json11;
 
 MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
                                    IMetricsProvider* metrics_provider,
-                                   IPredictor* realtime_predictor,
-                                   IPredictor* available_predictor)
+                                   IPredictor* realtime_predictor)
     : metrics_provider_(metrics_provider),
-      realtime_predictor_(realtime_predictor),
-      available_predictor_(available_predictor) {
+      realtime_predictor_(realtime_predictor) {
     if (metrics_provider_ == nullptr) {
         default_metrics_provider_ = std::make_unique<DefaultMetricsProvider>();
         metrics_provider_ = default_metrics_provider_.get();
@@ -43,18 +41,9 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
         default_realtime_predictor_ = std::make_unique<DefaultPredictor>();
         realtime_predictor_ = default_realtime_predictor_.get();
     }
-    if (available_predictor_ == nullptr) {
-        default_available_predictor_ = std::make_unique<DefaultPredictor>();
-        available_predictor_ = default_available_predictor_.get();
-    }
 
     initialization_error_code_ =
         realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
-    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
-        return;
-    }
-    initialization_error_code_ = available_predictor_->Init(
-        "available.tflite", "available_features.json");
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -146,11 +135,6 @@ Json::object MemoryAdviceImpl::GetAdvice() {
             Json(realtime_predictor_->Predict(data));
     }
 
-    if (variable_spec.find("availableRealtime") != variable_spec.end() &&
-        variable_spec.at("availableRealtime").bool_value()) {
-        variable_metrics["predictedAvailable"] =
-            Json(BYTES_IN_GB * available_predictor_->Predict(data));
-    }
     Json::array warnings;
     Json::object heuristics =
         advisor_parameters_.at("heuristics").object_items();

@@ -24,7 +24,7 @@
 #include <map>
 #include <mutex>
 
-#include "google/protobuf/descriptor.pb.h"
+#include "lite/descriptor.pb.h"
 #include "proto/protobuf_util.h"
 #include "tuningfork_utils.h"
 

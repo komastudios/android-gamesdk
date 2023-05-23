@@ -64,15 +64,27 @@ float GameActivityMotionEvent_getHistoricalAxisValue(
     const GameActivityMotionEvent *event, int axis, int pointerIndex,
     int historyPos) {
     if (axis < 0 || axis >= GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT) {
-        return 0;
+        ALOGE("Invalid axis %d", axis);
+        return -1;
     }
-
+    if (pointerIndex < 0 || pointerIndex >= event->pointerCount) {
+        ALOGE("Invalid pointer index %d", pointerIndex);
+        return -1;
+    }
+    if (historyPos < 0 || historyPos >= event->historySize) {
+        ALOGE("Invalid history index %d", historyPos);
+        return -1;
+    }
     if (!enabledAxes[axis]) {
         ALOGW("Axis %d must be enabled before it can be accessed.", axis);
         return 0;
     }
 
-    return event->historicalAxisValues[event->pointerCount * historyPos + axis];
+    int pointerOffset = pointerIndex * GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
+    int historyValuesOffset = historyPos * event->pointerCount *
+                              GAME_ACTIVITY_POINTER_INFO_AXIS_COUNT;
+    return event
+        ->historicalAxisValues[historyValuesOffset + pointerOffset + axis];
 }
 
 static struct {

@@ -526,7 +526,7 @@ void TuningForkImpl::InitHistogramSettings() {
         }
     }
     for (uint32_t i = 0; i < max_keys; ++i) {
-        if (i > settings_.histograms.size()) {
+        if (i >= settings_.histograms.size()) {
             ALOGW(
                 "Couldn't get histogram for key index %d. Using default "
                 "histogram",

@@ -24,6 +24,7 @@
 #include <sched.h>
 #include <unistd.h>
 
+#include <chrono>
 #include <cmath>
 #include <condition_variable>
 #include <cstdlib>
@@ -39,6 +40,8 @@
 #include "Trace.h"
 
 namespace swappy {
+
+using namespace std::chrono_literals;
 
 // AChoreographer is supported from API 24. To allow compilation for minSDK < 24
 // and still use AChoreographer for SDK >= 24 we need runtime support to call
@@ -140,11 +143,15 @@ NDKChoreographerThread::NDKChoreographerThread(Callback onChoreographer,
     // create a new ALooper thread to get Choreographer events
     mThreadRunning = true;
     mThread = Thread([this]() { looperThread(); });
-    mWaitingCondition.wait(lock, [&]() REQUIRES(mWaitingMutex) {
+
+    // Wait for the choreographer to be initialized with 1 second timeout.
+    mWaitingCondition.wait_for(lock, 1s, [&]() REQUIRES(mWaitingMutex) {
         return mChoreographer != nullptr;
     });
 
-    mInitialized = true;
+    if (mChoreographer != nullptr) {
+        mInitialized = true;
+    }
 }
 
 NDKChoreographerThread::~NDKChoreographerThread() {

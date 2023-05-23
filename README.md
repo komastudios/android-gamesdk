@@ -145,7 +145,7 @@ Samples are classic Android projects, using CMake to build the native code. They
 
 ```bash
 cd samples/bouncyball && ./gradlew assemble
-cd samples/cube && ./gradlew assemble
+cd third_party/cube && ./gradlew assemble
 cd samples/tuningfork/insightsdemo && ./gradlew assemble
 cd samples/tuningfork/experimentsdemo && ./gradlew assemble
 ```
@@ -157,7 +157,7 @@ The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be
 Open projects using Android Studio:
 
 * `samples/bouncyball`
-* `samples/cube`
+* `third_party/cube`
 * `samples/tuningfork/insightsdemo`
 * `samples/tuningfork/experimentsdemo`
 

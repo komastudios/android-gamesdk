@@ -73,6 +73,8 @@ public:
 
     DataLoaderStateMachine *GetDataStateMachine() { return mDataStateMachine; }
 
+    void SetInputSdkContext(int context);
+
 private:
     // variables to track Android lifecycle:
     bool mHasFocus, mIsVisible, mHasWindow;
