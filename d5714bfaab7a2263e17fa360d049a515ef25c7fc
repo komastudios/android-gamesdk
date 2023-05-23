@@ -87,6 +87,24 @@
       "message": "I don\u0027t see this header file in the game-activity AAR. \n\nI think it would break the `#include \u003cgame-activity/GameActivity.cpp\u003e` approach here:\n\nhttps://developer.android.com/games/agdk/game-activity/get-started#source-code\n\nCan you please check? (or remove that \"source code\" based integration?)",
       "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b0ac3ef_3a8aff28",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-05-23T10:43:08Z",
+      "side": 1,
+      "message": "What is the connection between AAR and source file integration? AAR is a binary library. Source files are meant to be taken from Gerrit repo. system_utils.h is a part of AGDK sources. \nThanks for pointing to that bit of documentation, I made a CL to clarify this. Including cpp files into user code is not a good practise.",
+      "parentUuid": "c98a6807_86a7e616",
+      "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
