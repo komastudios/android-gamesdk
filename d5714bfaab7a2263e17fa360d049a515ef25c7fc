@@ -70,6 +70,23 @@
       "parentUuid": "36f8e3a1_58733aad",
       "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c98a6807_86a7e616",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1347428
+      },
+      "writtenOn": "2023-05-23T02:54:13Z",
+      "side": 1,
+      "message": "I don\u0027t see this header file in the game-activity AAR. \n\nI think it would break the `#include \u003cgame-activity/GameActivity.cpp\u003e` approach here:\n\nhttps://developer.android.com/games/agdk/game-activity/get-started#source-code\n\nCan you please check? (or remove that \"source code\" based integration?)",
+      "revId": "d5714bfaab7a2263e17fa360d049a515ef25c7fc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
