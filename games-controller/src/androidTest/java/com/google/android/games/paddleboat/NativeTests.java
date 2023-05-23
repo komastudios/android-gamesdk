@@ -1,11 +1,11 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef agdktunnel_our_key_codes_hpp
-#define agdktunnel_our_key_codes_hpp
+package com.google.android.games.paddleboat;
 
-// Our keycodes:
-#define OURKEY_UNKNOWN -1
-#define OURKEY_UP 0
-#define OURKEY_RIGHT 1
-#define OURKEY_DOWN 2
-#define OURKEY_LEFT 3
-#define OURKEY_ENTER 4
-#define OURKEY_ESCAPE 5
-#define OURKEY_COUNT 6 // how many keycodes there are
+import androidx.test.ext.junitgtest.GtestRunner;
+import androidx.test.ext.junitgtest.TargetLibrary;
+import org.junit.runner.RunWith;
 
-#endif
+@RunWith(GtestRunner.class)
+@TargetLibrary(libraryName = "paddleboat_test")
+class NativeTests {}

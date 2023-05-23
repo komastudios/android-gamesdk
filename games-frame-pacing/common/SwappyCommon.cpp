@@ -1086,6 +1086,11 @@ bool SwappyCommon::isDeviceUnsupported() {
 
 int SwappyCommon::getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                                int allocated_entries) {
+    if (mDisplayManager) {
+        mSupportedRefreshPeriods =
+            mDisplayManager->getSupportedRefreshPeriods();
+    }
+
     if (!mSupportedRefreshPeriods) return 0;
     if (!out_refreshrates) return (*mSupportedRefreshPeriods).size();
 

@@ -53,7 +53,9 @@ function(protobuf_generate_base)
   set(_out_opt ${ARGV1})
   set(_extra_opts ${ARGV2})
   set(_gens_subdir ${ARGV3})
-  set(_working_dir ${ARGV4})
+  set(_opt_prefix ${ARGV4})
+  set(_working_dir ${ARGV5})
+  list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
@@ -77,7 +79,7 @@ function(protobuf_generate_base)
       OUTPUT "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.${_extension}"
              "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.h"
       COMMAND ${PROTOC_EXE}
-      ARGS ${_out_opt}=${_PROTO_GENS_DIR}
+      ARGS ${_out_opt}=${_opt_prefix}${_PROTO_GENS_DIR}
            ${_extra_opts}
            ${_protobuf_include_path}
            ${REL_FIL}
@@ -96,11 +98,11 @@ endfunction()
 
 
 function(protobuf_generate_full_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/full" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/full" "" ${ARGN})
 endfunction()
 
 function(protobuf_generate_lite_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/lite" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/lite" "lite:" ${ARGN})
 endfunction()
 
 set(GP_SRC_DIR ${PROTOBUF_SRC_DIR}/google/protobuf)
@@ -138,57 +140,3 @@ set(PROTOBUF_LITE_SRCS
     ${GP_SRC_DIR}/stubs/strutil.cc
     ${GP_SRC_DIR}/stubs/time.cc
     ${GP_SRC_DIR}/wire_format_lite.cc)
-
-set(PROTOBUF_SRCS
-    ${GP_SRC_DIR}/any.cc
-    ${GP_SRC_DIR}/any.pb.cc
-    ${GP_SRC_DIR}/api.pb.cc
-    ${GP_SRC_DIR}/compiler/importer.cc
-    ${GP_SRC_DIR}/compiler/parser.cc
-    ${GP_SRC_DIR}/descriptor.cc
-    ${GP_SRC_DIR}/descriptor.pb.cc
-    ${GP_SRC_DIR}/descriptor_database.cc
-    ${GP_SRC_DIR}/duration.pb.cc
-    ${GP_SRC_DIR}/dynamic_message.cc
-    ${GP_SRC_DIR}/empty.pb.cc
-    ${GP_SRC_DIR}/extension_set_heavy.cc
-    ${GP_SRC_DIR}/field_mask.pb.cc
-    ${GP_SRC_DIR}/generated_message_bases.cc
-    ${GP_SRC_DIR}/generated_message_reflection.cc
-    ${GP_SRC_DIR}/generated_message_tctable_full.cc
-    ${GP_SRC_DIR}/io/gzip_stream.cc
-    ${GP_SRC_DIR}/io/printer.cc
-    ${GP_SRC_DIR}/io/tokenizer.cc
-    ${GP_SRC_DIR}/map_field.cc
-    ${GP_SRC_DIR}/message.cc
-    ${GP_SRC_DIR}/reflection_ops.cc
-    ${GP_SRC_DIR}/service.cc
-    ${GP_SRC_DIR}/source_context.pb.cc
-    ${GP_SRC_DIR}/struct.pb.cc
-    ${GP_SRC_DIR}/stubs/substitute.cc
-    ${GP_SRC_DIR}/text_format.cc
-    ${GP_SRC_DIR}/timestamp.pb.cc
-    ${GP_SRC_DIR}/type.pb.cc
-    ${GP_SRC_DIR}/unknown_field_set.cc
-    ${GP_SRC_DIR}/util/delimited_message_util.cc
-    ${GP_SRC_DIR}/util/field_comparator.cc
-    ${GP_SRC_DIR}/util/field_mask_util.cc
-    ${GP_SRC_DIR}/util/internal/datapiece.cc
-    ${GP_SRC_DIR}/util/internal/default_value_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/error_listener.cc
-    ${GP_SRC_DIR}/util/internal/field_mask_utility.cc
-    ${GP_SRC_DIR}/util/internal/json_escaping.cc
-    ${GP_SRC_DIR}/util/internal/json_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/json_stream_parser.cc
-    ${GP_SRC_DIR}/util/internal/object_writer.cc
-    ${GP_SRC_DIR}/util/internal/proto_writer.cc
-    ${GP_SRC_DIR}/util/internal/protostream_objectsource.cc
-    ${GP_SRC_DIR}/util/internal/protostream_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/type_info.cc
-    ${GP_SRC_DIR}/util/internal/utility.cc
-    ${GP_SRC_DIR}/util/json_util.cc
-    ${GP_SRC_DIR}/util/message_differencer.cc
-    ${GP_SRC_DIR}/util/time_util.cc
-    ${GP_SRC_DIR}/util/type_resolver_util.cc
-    ${GP_SRC_DIR}/wire_format.cc
-    ${GP_SRC_DIR}/wrappers.pb.cc)

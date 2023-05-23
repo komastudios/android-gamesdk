@@ -133,7 +133,7 @@ dependencies {
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
-    implementation 'com.google.android.libraries.play.games:inputmapping:1.0.0-beta'
+    implementation 'com.google.android.libraries.play.games:inputmapping:1.1.0-beta'
     // Use the Play Core AAR included with the SDK.
     if(PADEnabled.toBoolean()) {
         implementation files("$playcoreDir/playcore.aar")

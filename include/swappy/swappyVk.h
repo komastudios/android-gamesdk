@@ -416,7 +416,8 @@ void SwappyVk_clearStats(VkSwapchainKHR swapchain);
 /**
  * @brief Reset the swappy pacing mechanism
  *
- * In cases where the frame timing history is irrelevant, calling this would
+ * In cases where the frame timing history is irrelevant (for example during
+ * scene/level transitions or after loading screens), calling this would
  * remove all the history for frame pacing. Calling this entry point
  * would reset the frame rate to the initial state at the end of the current frame.
  * Then swappy would just pace as normal with fresh state from next frame. There
@@ -444,7 +445,7 @@ void SwappyVk_resetFramePacing(VkSwapchainKHR swapchain);
 void SwappyVk_enableFramePacing(VkSwapchainKHR swapchain, bool enable);
 
 /**
- * @brief Reset the swappy pacing mechanism
+ * @brief Enable/Disable blocking wait when frame-pacing is disabled
  *
  * By default ::SwappyVk_queuePresent will do a blocking wait until previous frame's GPU
  * work is completed. However when frame pacing is disabled, calling

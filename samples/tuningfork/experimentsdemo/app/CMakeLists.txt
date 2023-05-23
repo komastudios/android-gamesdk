@@ -19,8 +19,8 @@ set( GAMESDK_BUILD_TUNINGFORK ON)
 
 include("../../../../games-performance-tuner/protobuf/protobuf.cmake")
 
-protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/dev_tuningfork.proto)
-protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/tuningfork.proto)
+protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/dev_tuningfork.proto)
+protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/src/main/proto src/main/proto/tuningfork.proto)
 include_directories(${PROTO_GENS_DIR})
 include_directories(${PROTOBUF_SRC_DIR})
 include_directories(${PROTOBUF_SRC_DIR}/../config/)
@@ -32,7 +32,6 @@ include_directories(../../../../include)
 add_library( protobuf-static
              STATIC
              ${PROTOBUF_LITE_SRCS}
-             ${PROTOBUF_SRCS}
 )
 target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare" "-Wno-enum-compare-switch" "-Wno-invalid-noreturn")
 
@@ -41,8 +40,8 @@ add_library( ${CMAKE_PROJECT_NAME}
              src/main/cpp/experimentsdemo.cpp
              ../../common/Renderer.cpp
              ../../common/Scene.cpp
-             ${PROTO_GENS_DIR}/full/dev_tuningfork.pb.cc
-             ${PROTO_GENS_DIR}/full/tuningfork.pb.cc
+             ${PROTO_GENS_DIR}/lite/dev_tuningfork.pb.cc
+             ${PROTO_GENS_DIR}/lite/tuningfork.pb.cc
 )
 
 target_link_libraries( ${CMAKE_PROJECT_NAME}

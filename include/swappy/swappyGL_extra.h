@@ -115,7 +115,7 @@ void SwappyGL_getStats(SwappyStats *swappyStats);
  * All the frame statistics collected are reset to 0, frame statistics are
  * collected normally after this call.
  */
-void SwappyGL_clearStats();
+void SwappyGL_clearStats(void);
 
 /** @brief Remove callbacks that were previously added using
  * SwappyGL_injectTracer. */
@@ -124,13 +124,14 @@ void SwappyGL_uninjectTracer(const SwappyTracer *t);
 /**
  * @brief Reset the swappy pacing mechanism
  *
- * In cases where the frame timing history is irrelevant, calling this would
+ * In cases where the frame timing history is irrelevant (for example during
+ * scene/level transitions or after loading screens), calling this would
  * remove all the history for frame pacing. Calling this entry point
  * would reset the frame rate to the initial state at the end of the current frame.
  * Then swappy would just pace as normal with fresh state from next frame. There
  * are no error conditions associated with this call.
  */
-void SwappyGL_resetFramePacing();
+void SwappyGL_resetFramePacing(void);
 
 /**
  * @brief Enable/Disable the swappy pacing mechanism
@@ -149,7 +150,7 @@ void SwappyGL_resetFramePacing();
 void SwappyGL_enableFramePacing(bool enable);
 
 /**
- * @brief Reset the swappy pacing mechanism
+ * @brief Enable/Disable blocking wait when frame-pacing is disabled
  *
  * By default ::SwappyGL_swap will do a blocking wait until previous frame's GPU
  * work is completed. However when frame pacing is disabled, calling

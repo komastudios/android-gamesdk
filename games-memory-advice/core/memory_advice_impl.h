@@ -33,17 +33,13 @@ class MemoryAdviceImpl {
     /** @brief A predictor that tries to predict the current memory consumption
      * as a percentage of total memory. */
     IPredictor* realtime_predictor_;
-    /** @brief A predictor that attempts to predict the remanining memory that
-     * can be safely allocated. */
-    IPredictor* available_predictor_;
     Json::object advisor_parameters_;
     Json::object baseline_;
     Json::object build_;
     std::mutex advice_mutex_;
 
     std::unique_ptr<IMetricsProvider> default_metrics_provider_;
-    std::unique_ptr<IPredictor> default_realtime_predictor_,
-        default_available_predictor_;
+    std::unique_ptr<IPredictor> default_realtime_predictor_;
 
     typedef std::vector<std::unique_ptr<StateWatcher>> WatcherContainer;
     WatcherContainer active_watchers_;
@@ -83,8 +79,7 @@ class MemoryAdviceImpl {
 
    public:
     MemoryAdviceImpl(const char* params, IMetricsProvider* metrics_provider,
-                     IPredictor* realtime_predictor,
-                     IPredictor* available_predictor);
+                     IPredictor* realtime_predictor);
     /** @brief Creates an advice object by reading variable metrics and
      * feeding them into the provided machine learning model.
      */
