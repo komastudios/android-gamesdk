@@ -174,8 +174,8 @@ TuningFork_ErrorCode StartFidelityParamDownloadThread(
 // Load fidelity params from assets/tuningfork/<filename>
 // Ownership of serializations is passed to the caller: call
 //  TuningFork_CProtobufSerialization_free to deallocate any memory.
-TuningFork_ErrorCode FindFidelityParamsInApk(const std::string& filename,
-                                             ProtobufSerialization& fp) {
+__attribute__((noinline)) TuningFork_ErrorCode FindFidelityParamsInApk(
+    const std::string& filename, ProtobufSerialization& fp) {
     std::stringstream full_filename;
     full_filename << "tuningfork/" << filename;
     if (!apk_utils::GetAssetAsSerialization(full_filename.str().c_str(), fp)) {
