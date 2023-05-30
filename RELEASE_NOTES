@@ -1,5 +1,15 @@
 RELEASE NOTES
 
+Version 2023.3.0.0
+===============
+- GameActivity
+    - Stability fixes in GameActivityEvents.
+- Memory Advice Library
+    - Updated the machine learning model powering the library which’ll allow improved results for newer phones
+- Android Performance Tuner (Tuning Fork)
+    - Updated the telemetry collection features in the library, allowing for more granular reporting of frame rendering times.
+    - Fixed a bug where the library crashes if max instrumentation keys are more than histogram count.
+
 Version 2023.2.0.0
 ===============
 - GameActivity
