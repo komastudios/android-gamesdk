@@ -22,17 +22,24 @@
 #include "memory_advice_utils.h"
 #include "system_utils.h"
 
-constexpr double BYTES_IN_GB = 1024 * 1024 * 1024;
-
 namespace memory_advice {
 
 using namespace json11;
 
+
+namespace {
+    template <typename T> T Clamp(T val, T min, T max) {
+        return (val < min ? min : (val > max ? max : val));
+    }
+}
+
 MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
                                    IMetricsProvider* metrics_provider,
-                                   IPredictor* realtime_predictor)
+                                   IPredictor* realtime_predictor,
+                                   IPredictor* available_predictor)
     : metrics_provider_(metrics_provider),
-      realtime_predictor_(realtime_predictor) {
+      realtime_predictor_(realtime_predictor),
+      available_predictor_(available_predictor) {
     if (metrics_provider_ == nullptr) {
         default_metrics_provider_ = std::make_unique<DefaultMetricsProvider>();
         metrics_provider_ = default_metrics_provider_.get();
@@ -41,9 +48,18 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
         default_realtime_predictor_ = std::make_unique<DefaultPredictor>();
         realtime_predictor_ = default_realtime_predictor_.get();
     }
+    if (available_predictor_ == nullptr) {
+        default_available_predictor_ = std::make_unique<DefaultPredictor>();
+        available_predictor_ = default_available_predictor_.get();
+    }
 
     initialization_error_code_ =
         realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
+    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
+        return;
+    }
+    initialization_error_code_ = available_predictor_->Init(
+        "available.tflite", "available_features.json");
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
         return;
     }
@@ -82,25 +98,19 @@ MemoryAdvice_MemoryState MemoryAdviceImpl::GetMemoryState() {
 }
 
 int64_t MemoryAdviceImpl::GetAvailableMemory() {
-    // TODO(b/219040574): this is not a reliable/available number currently
-    Json::object advice = GetAdvice();
-    if (advice.find("metrics") != advice.end()) {
-        Json::object metrics = advice["metrics"].object_items();
-        if (metrics.find("predictedAvailable") != metrics.end()) {
-            return static_cast<int64_t>(
-                metrics["predictedAvailable"].number_value());
-        }
-    }
-    return 0L;
+    return static_cast<int64_t>(GetPercentageAvailableMemory() / 100.0f * GetTotalMemory());
 }
 
 float MemoryAdviceImpl::GetPercentageAvailableMemory() {
     Json::object advice = GetAdvice();
-    if (advice.find("metrics") == advice.end()) return 0.0f;
-    Json::object metrics = advice["metrics"].object_items();
-    if (metrics.find("predictedUsage") == metrics.end()) return 0.0f;
-    return 100.0f * (1.0f - static_cast<float>(
-                                metrics["predictedUsage"].number_value()));
+    if (advice.find("metrics") != advice.end()) {
+        Json::object metrics = advice["metrics"].object_items();
+        if (metrics.find("predictedAvailable") != metrics.end()) {
+            return static_cast<float>(
+                metrics["predictedAvailable"].number_value()) * 100.0f;
+        }
+    }
+    return 0.0f;
 }
 
 int64_t MemoryAdviceImpl::GetTotalMemory() {
@@ -132,9 +142,14 @@ Json::object MemoryAdviceImpl::GetAdvice() {
     if (variable_spec.find("predictRealtime") != variable_spec.end() &&
         variable_spec.at("predictRealtime").bool_value()) {
         variable_metrics["predictedUsage"] =
-            Json(realtime_predictor_->Predict(data));
+            Json(Clamp(realtime_predictor_->Predict(data), 0.0f, 1.0f));
     }
 
+    if (variable_spec.find("availableRealtime") != variable_spec.end() &&
+        variable_spec.at("availableRealtime").bool_value()) {
+        variable_metrics["predictedAvailable"] =
+            Json(Clamp(available_predictor_->Predict(data), 0.0f, 1.0f));
+    }
     Json::array warnings;
     Json::object heuristics =
         advisor_parameters_.at("heuristics").object_items();
