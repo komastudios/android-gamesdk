@@ -56,8 +56,7 @@ class DebugBackend : public IBackend {
     }
 
     TuningFork_ErrorCode PredictQualityLevels(
-        HttpRequest& request, ProtobufArray& fidelity_params,
-        uint32_t target_frame_time_ms) override {
+        HttpRequest& request, QLTimePredictions& predictions) override {
         return TUNINGFORK_ERROR_OK;
     }
 

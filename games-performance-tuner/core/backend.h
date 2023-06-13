@@ -41,8 +41,7 @@ class IBackend {
 
     // Perform a blocking call to get quality level predictions from the server.
     virtual TuningFork_ErrorCode PredictQualityLevels(
-        HttpRequest& request, ProtobufArray& fidelity_params,
-        uint32_t target_frame_time_ms) = 0;
+        HttpRequest& request, QLTimePredictions& predictions) = 0;
 
     // Perform a blocking call to upload telemetry info to a server.
     virtual TuningFork_ErrorCode UploadTelemetry(

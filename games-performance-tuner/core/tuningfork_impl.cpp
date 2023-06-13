@@ -305,8 +305,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
 }
 
 TuningFork_ErrorCode TuningForkImpl::PredictQualityLevels(
-    ProtobufArray &qualityLevels, uint32_t target_frame_time_ms,
-    uint32_t timeout_ms) {
+    QLTimePredictions &predictions, uint32_t timeout_ms) {
     if (settings_.EndpointUri().empty()) {
         ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
         return TUNINGFORK_ERROR_BAD_PARAMETER;
@@ -321,8 +320,7 @@ TuningFork_ErrorCode TuningForkImpl::PredictQualityLevels(
             : std::chrono::milliseconds(timeout_ms);
     HttpRequest web_request(settings_.EndpointUri(), settings_.api_key,
                             timeout);
-    auto result = backend_->PredictQualityLevels(web_request, qualityLevels,
-                                                 target_frame_time_ms);
+    auto result = backend_->PredictQualityLevels(web_request, predictions);
     if (Debugging() && gamesdk::jni::IsValid()) {
         backend_->UploadDebugInfo(web_request);
     }

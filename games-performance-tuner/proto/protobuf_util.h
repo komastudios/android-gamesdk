@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "tuningfork/tuningfork.h"
@@ -39,9 +40,6 @@
 extern "C" void TuningFork_CProtobufSerialization_Dealloc(
     TuningFork_CProtobufSerialization* c);
 
-extern "C" void TuningFork_CProtobufArray_Dealloc(
-    TuningFork_CProtobufArray* array);
-
 /** @endcond */
 
 namespace tuningfork {
@@ -52,9 +50,10 @@ namespace tuningfork {
 typedef std::vector<uint8_t> ProtobufSerialization;
 
 /**
- * @brief A list of protocol buffers stored as an STL vector of vector of bytes
+ * @brief A vector of (fidelity_params, frame_time) pairs.
  */
-typedef std::vector<ProtobufSerialization> ProtobufArray;
+typedef std::vector<std::pair<ProtobufSerialization, uint32_t>>
+    QLTimePredictions;
 
 /**
  * @brief Convert from a C to a C++ serialization.
@@ -76,21 +75,10 @@ inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
 }
 
 /**
- * @brief Convert from a C++ to a C protobuf array.
+ * @brief Convert from a C++ to a C Quality Predictions structure.
  */
-inline void ToCProtobufArray(const ProtobufArray& protobuf_array,
-                             TuningFork_CProtobufArray& c_protobuf_array) {
-    c_protobuf_array.size = protobuf_array.size();
-    c_protobuf_array.protobufs = (TuningFork_CProtobufSerialization*)malloc(
-        protobuf_array.size() * sizeof(TuningFork_CProtobufSerialization*));
-
-    for (int i = 0; i < protobuf_array.size(); i++) {
-        ToCProtobufSerialization(protobuf_array[i],
-                                 c_protobuf_array.protobufs[i]);
-    }
-
-    c_protobuf_array.dealloc = TuningFork_CProtobufArray_Dealloc;
-}
+void ToCQualityLevelPredictions(const QLTimePredictions& pred,
+                                TuningFork_QualityLevelPredictions& c_pred);
 
 /**
  * @brief Convert from an STL string to a C serialization.
