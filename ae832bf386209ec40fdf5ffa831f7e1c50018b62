@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72e3feba_e7e6a4b3",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-06-13T18:18:17Z",
+      "side": 1,
+      "message": "The expected_frame_time string will be in format \"3.00001s\", does atof here strip the s?",
+      "range": {
+        "startLine": 94,
+        "startChar": 7,
+        "endLine": 94,
+        "endChar": 51
+      },
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
