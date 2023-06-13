@@ -99,16 +99,19 @@ typedef struct TuningFork_CProtobufSerialization {
 } TuningFork_CProtobufSerialization;
 
 /**
- * @brief A series of bytes representing an array of serialized protocol buffers.
- * @see TuningFork_CProtobufArray_free for how to deallocate
- * the memory once finished with the buffer.
+ * @brief A structure holding the predicted frame times for quality levels.
+ *
+ * This struct holds an array of serialized protocol buffers representing
+ * fidelity parameters and another array of predicted frame times in microseconds.
+ * The arrays are 1:1 mapped per index, so fidelity_params[i] corresponds to
+ * predicted_time_us[i]. There are no guarantees on how the returned data is
+ * arranged in the arrays. The size member is the length of both the arrays.
  */
-typedef struct TuningFork_CProtobufArray {
-    TuningFork_CProtobufSerialization* protobufs;  /// Array of protobufs.
+typedef struct TuningFork_QualityLevelPredictions {
+    TuningFork_CProtobufSerialization* fidelity_params;  /// Array of protobufs.
+    uint32_t *predicted_time_us; /// Array of predicted time in us.
     uint32_t size;   /// Size of array.
-    /// Deallocation callback (may be NULL if not owned).
-    void (*dealloc)(struct TuningFork_CProtobufArray*);
-} TuningFork_CProtobufArray;
+} TuningFork_QualityLevelPredictions;
 
 /// The instrumentation key identifies a tick point within a frame or a trace
 /// segment
@@ -409,17 +412,6 @@ inline void TuningFork_CProtobufSerialization_free(
     }
 }
 
-/**
- * @brief Deallocate any memory owned by the given protobuf array.
- * @param array A protocol buffer array
- */
-inline void TuningFork_CProtobufArray_free(
-    TuningFork_CProtobufArray* array) {
-    if (array->dealloc) {
-      array->dealloc(array);
-      array->dealloc = NULL;
-    }
-}
 
 /**
  * @brief Initialize Tuning Fork. This must be called before any other
@@ -474,18 +466,29 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
 /**
  * @brief A blocking call to get quality level predictions from the server.
  *
- * @param[out] qualityLevels quality levels returned as an array for serialized protocol buffers.
- * Can be empty if quality levels for the apk are not defined.
- * @param target_frame_time_ms the desired time per frame, in milliseconds
- * @param timeout_ms time to wait before returning from this call when no
- * connection can be made. If zero, the value in Settings.initial_request_timeout_ms is used.
+ * The call when successful fills the \p qlp struct with output data, the call
+ * also allocates memory on the heap to fill the members of the \p qlp struct.
+ * Therefore TuningFork_QualityLevelPredictions_free must be called before freeing it.
+ *
+ * @see TuningFork_QualityLevelPredictions for how the data in the struct is arranged.
+ *
+ * @param[out] qlp          Pointer to a Quality levels prediction struct. Cannot be null.
+ * @param      timeout_ms   time to wait before returning from this call when no
+ *                          connection can be made. If zero, the value in
+ *                          Settings.initial_request_timeout_ms is used.
  * @return TUNINGFORK_ERROR_OK on success.
  * @return TUNINGFORK_ERROR_TIMEOUT if there was a timeout before predictions could be returned.
  * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR if the call to the server failed.
  * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR if the response couldn't be parsed.
  */
 TuningFork_ErrorCode TuningFork_predictQualityLevels(
-    TuningFork_CProtobufArray* qualityLevels, uint32_t target_frame_time_ms, uint32_t timeout_ms);
+    TuningFork_QualityLevelPredictions* qlp, uint32_t timeout_ms);
+
+/**
+ * @brief Deallocate any memory owned by the Quality level prediction struct.
+ * @param qlp Quality Level Prediction struct
+ */
+void TuningFork_QualityLevelPredictions_free(TuningFork_QualityLevelPredictions* qlp);
 
 /**
  * @brief Set the current annotation.
