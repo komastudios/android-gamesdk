@@ -25,11 +25,19 @@ extern "C" void TuningFork_CProtobufSerialization_Dealloc(
     }
 }
 
-extern "C" void TuningFork_CProtobufArray_Dealloc(
-    TuningFork_CProtobufArray *array) {
-    for (int i = 0; i < array->size; i++) {
-        TuningFork_CProtobufSerialization_free(&(array->protobufs[i]));
+namespace tuningfork {
+
+void ToCQualityLevelPredictions(const QLTimePredictions& pred,
+                                TuningFork_QualityLevelPredictions& c_pred) {
+    c_pred.fidelity_params = new TuningFork_CProtobufSerialization[pred.size()];
+    c_pred.predicted_time_us = new uint32_t[pred.size()];
+
+    for (int i = 0; i < pred.size(); i++) {
+        ToCProtobufSerialization(pred[i].first, c_pred.fidelity_params[i]);
+        c_pred.predicted_time_us[i] = pred[i].second;
     }
-    free(array->protobufs);
-    array->size = 0;
+
+    c_pred.size = pred.size();
 }
+
+}  // namespace tuningfork
