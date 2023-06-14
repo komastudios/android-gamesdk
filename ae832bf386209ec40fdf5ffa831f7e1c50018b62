@@ -67,6 +67,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f421f0cc_0db1815c",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-06-14T11:03:18Z",
+      "side": 1,
+      "message": "Yeah, this is more like in case-of ridiculous output from the RPC and 1s or negative time seemed like a safe future proof limits.",
+      "parentUuid": "53445744_c4b9f70c",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8a7d377f_d88f9488",
         "filename": "games-performance-tuner/proto/protobuf_util.cpp",
         "patchSetId": 3
@@ -101,6 +119,42 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ae59836e_1c87a0b7",
+        "filename": "games-performance-tuner/proto/protobuf_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-06-14T11:03:18Z",
+      "side": 1,
+      "message": "Actually that is a fair point, let me modify that. No point in sticking to C stuff here, it also avoids silly errors like the ones you found.",
+      "parentUuid": "e1e30018_d7892aa1",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c3b9445_aeb7c86f",
+        "filename": "games-performance-tuner/proto/protobuf_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-06-14T11:03:18Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "8a7d377f_d88f9488",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ebe9b7c2_19a98d51",
         "filename": "games-performance-tuner/proto/protobuf_util.cpp",
         "patchSetId": 3
@@ -112,6 +166,24 @@
       "writtenOn": "2023-06-14T10:27:07Z",
       "side": 1,
       "message": "should be sizeof(uint32_t) not sizeof(uint32_t*)",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14214a90_c07c46ad",
+        "filename": "games-performance-tuner/proto/protobuf_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-06-14T11:03:18Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ebe9b7c2_19a98d51",
       "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
