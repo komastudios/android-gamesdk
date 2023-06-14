@@ -46,6 +46,23 @@
       },
       "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebe9b7c2_19a98d51",
+        "filename": "games-performance-tuner/proto/protobuf_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-06-14T10:27:07Z",
+      "side": 1,
+      "message": "should be sizeof(uint32_t) not sizeof(uint32_t*)",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
