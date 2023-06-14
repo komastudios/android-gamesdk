@@ -22,6 +22,30 @@
       },
       "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c63a2049_51a3728c",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-06-14T09:42:34Z",
+      "side": 1,
+      "message": "Yeah. The spec for \"atof\" mentions it: \"Then it takes as many characters as possible to form a valid floating-point representation and converts them to a floating-point value\" from https://en.cppreference.com/w/c/string/byte/atof",
+      "parentUuid": "72e3feba_e7e6a4b3",
+      "range": {
+        "startLine": 94,
+        "startChar": 7,
+        "endLine": 94,
+        "endChar": 51
+      },
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
