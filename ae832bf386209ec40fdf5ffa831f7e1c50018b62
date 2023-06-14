@@ -50,6 +50,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "53445744_c4b9f70c",
+        "filename": "games-performance-tuner/http_backend/predict_quality_levels.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-06-14T10:49:56Z",
+      "side": 1,
+      "message": "1.0f is arbitrary but chosen because it would be ridiculous for a frame to take more than 1 second, right? so this is just a check to make sure the value is sane?",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8a7d377f_d88f9488",
         "filename": "games-performance-tuner/proto/protobuf_util.cpp",
         "patchSetId": 3
