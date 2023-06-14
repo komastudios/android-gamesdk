@@ -67,6 +67,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e1e30018_d7892aa1",
+        "filename": "games-performance-tuner/proto/protobuf_util.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-06-14T10:42:55Z",
+      "side": 1,
+      "message": "The allocation and free of this is all handled internally in .cpp files so you could use new/delete if you wanted to, right? \nIn that case consider using new/delete.\n\nAlso malloc can return null. I don\u0027t care if you handle that case or not as it\u0027s very rare and it\u0027s not clear how we would handle it if it did happen.",
+      "revId": "ae832bf386209ec40fdf5ffa831f7e1c50018b62",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ebe9b7c2_19a98d51",
         "filename": "games-performance-tuner/proto/protobuf_util.cpp",
         "patchSetId": 3
