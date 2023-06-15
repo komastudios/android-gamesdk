@@ -207,13 +207,8 @@ public class InputConnection
   // From BaseInputConnection
   @Override
   public boolean setComposingText(CharSequence text, int newCursorPosition) {
-    Log.d(TAG,
-        (new StringBuilder())
-            .append("setComposingText: '")
-            .append(text)
-            .append("', newCursorPosition=")
-            .append(newCursorPosition)
-            .toString());
+    Log.d(TAG, String.format("setComposingText='%s' newCursorPosition=%d",
+            text, newCursorPosition));
     if (text == null) {
       return false;
     } else {
@@ -378,17 +373,21 @@ public class InputConnection
   }
 
   private final void setComposingRegionInternal(int start_in, int end_in) {
-    if (start_in == -1) {
+    // start_in might be greater than end_in
+    int start = Math.min(start_in, end_in);
+    int end = Math.max(start_in, end_in);
+
+    if (start == -1) {
       GameTextInput.removeComposingRegion(this.mEditable);
     } else {
-      int start = Math.min(this.mEditable.length(), Math.max(0, start_in));
-      int end = Math.min(this.mEditable.length(), Math.max(0, end_in));
+      start = Math.min(this.mEditable.length(), Math.max(0, start));
+      end = Math.min(this.mEditable.length(), Math.max(0, end));
       GameTextInput.setComposingRegion(this.mEditable, start, end);
     }
   }
 
   private boolean processKeyEvent(KeyEvent event) {
-    Log.d(TAG, "sendKeyEvent");
+    Log.d(TAG, "processKeyEvent");
     Pair selection = this.getSelection();
     if (event == null) {
       return false;
@@ -417,8 +416,22 @@ public class InputConnection
       if (!dontInsertChars.get(code)) {
         this.mEditable.insert(
             selection.first, (CharSequence) Character.toString((char) event.getUnicodeChar()));
-        int new_cursor = selection.first + 1;
-        GameTextInput.setSelection(this.mEditable, new_cursor, new_cursor);
+        int length = this.mEditable.length();
+
+        Pair composingRegion = this.getComposingRegion();
+        if (composingRegion.first == -1) {
+          composingRegion = this.getSelection();
+          if (composingRegion.first == -1) {
+            composingRegion = new Pair(0, 0);
+          }
+        }
+
+        composingRegion.second = composingRegion.first + length;
+        this.setComposingRegion(composingRegion.first, composingRegion.second);
+        int new_cursor = composingRegion.second;
+        setSelectionInternal(new_cursor, new_cursor);
+        this.informIMM();
+        this.restartInput();
       }
 
       this.stateUpdated(false);
