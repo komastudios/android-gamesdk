@@ -69,6 +69,24 @@
       "parentUuid": "4e8ebf58_4900a66d",
       "revId": "b73a622dcf96fcb9c390543055f999dbe4ef1721",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73de6740_20b2ad70",
+        "filename": "game-text-input/src/main/java/com/google/androidgamesdk/gametextinput/InputConnection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2023-06-16T11:19:52Z",
+      "side": 1,
+      "message": "OK but I was asking for a comment in the code.",
+      "parentUuid": "7d2ba894_290a7198",
+      "revId": "b73a622dcf96fcb9c390543055f999dbe4ef1721",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
