@@ -59,8 +59,7 @@ class TestDownloadBackend : public tf::IBackend {
     }
 
     TuningFork_ErrorCode PredictQualityLevels(
-        tf::HttpRequest& request, tf::ProtobufArray& fidelity_params,
-        uint32_t target_frame_time_ms) override {
+        tf::HttpRequest& request, tf::QLTimePredictions& predictions) override {
         return TUNINGFORK_ERROR_OK;
     }
 

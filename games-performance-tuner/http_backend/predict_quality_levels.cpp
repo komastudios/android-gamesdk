@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <stdlib.h>
+
 #include "../../third_party/json11/json11.hpp"
 #include "Log.h"
 #include "core/tuningfork_internal.h"
@@ -32,13 +34,10 @@ const char kRpcName[] = ":predictQualityLevels";
 const int kSuccessCodeMin = 200;
 const int kSuccessCodeMax = 299;
 
-static std::string RequestJson(const RequestInfo& request_info,
-                               uint32_t target_frame_time_ms) {
-    Json::object request_obj = Json::object{
-        {"name", json_utils::GetResourceName(request_info)},
-        {"device_spec", json_utils::DeviceSpecJson(request_info)},
-        {"target_frame_time",
-         JsonSerializer::DurationJsonFromMillis(target_frame_time_ms)}};
+static std::string RequestJson(const RequestInfo& request_info) {
+    Json::object request_obj =
+        Json::object{{"name", json_utils::GetResourceName(request_info)},
+                     {"device_spec", json_utils::DeviceSpecJson(request_info)}};
 
     Json request = request_obj;
     auto result = request.dump();
@@ -47,7 +46,7 @@ static std::string RequestJson(const RequestInfo& request_info,
 }
 
 static TuningFork_ErrorCode DecodeResponse(const std::string& response,
-                                           ProtobufArray& fidelity_params) {
+                                           QLTimePredictions& predictions) {
     using namespace json11;
     if (response.empty()) {
         ALOGW("Empty response to predictQualityLevels");
@@ -71,11 +70,8 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
 
     Json::array quality_levels = jresponse["quality_levels"].array_items();
     for (auto& quality_level : quality_levels) {
-        quality_level.object_items()
-            .at("serialized_fidelity_parameters")
-            .string_value();
+        // Fetch the fidelity parameters first for this level
         ProtobufSerialization fps;
-
         std::string sfps = quality_level.object_items()
                                .at("serialized_fidelity_parameters")
                                .string_value();
@@ -89,25 +85,37 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
             // Delete extra trailing zero bytes at the end
             fps.erase(fps.begin() + sz, fps.end());
         }
-        fidelity_params.push_back(fps);
+
+        // Fetch the predicted frame time for this level
+        std::string s_time = quality_level.object_items()
+                                 .at("expected_frame_time")
+                                 .string_value();
+
+        double parsed_dur_s = atof(s_time.c_str());
+        if (parsed_dur_s > 1.0f || parsed_dur_s < 0.0f) {
+            ALOGE("Invalid prediction times received");
+            return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR;
+        }
+        // Convert to micro seconds.
+        uint32_t pred_frame_time_us = (parsed_dur_s * 1000000.0);
+
+        predictions.emplace_back(fps, pred_frame_time_us);
     }
     return TUNINGFORK_ERROR_OK;
 }
 
 TuningFork_ErrorCode HttpBackend::PredictQualityLevels(
-    HttpRequest& request, ProtobufArray& fidelity_params,
-    uint32_t target_frame_time_ms) {
+    HttpRequest& request, QLTimePredictions& predictions) {
     int response_code = 200;
     std::string body;
     TuningFork_ErrorCode ret = request.Send(
-        kRpcName, RequestJson(RequestInfo::CachedValue(), target_frame_time_ms),
-        response_code, body);
+        kRpcName, RequestJson(RequestInfo::CachedValue()), response_code, body);
 
     if (ret != TUNINGFORK_ERROR_OK) return ret;
     if (response_code < kSuccessCodeMin || response_code > kSuccessCodeMax)
         return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR;
 
-    return DecodeResponse(body, fidelity_params);
+    return DecodeResponse(body, predictions);
 }
 
 }  // namespace tuningfork
