@@ -46,6 +46,30 @@
       },
       "revId": "3129c194352e74dd812c2098e49fbf99d6ef7d0b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "67cf9b13_32f5a45c",
+        "filename": "games-memory-advice/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-06-21T15:02:20Z",
+      "side": 1,
+      "message": "this says it\u0027s deprecated https://developer.android.com/reference/tools/gradle-api/7.4/com/android/build/api/dsl/PackagingOptions#exclude(kotlin.String)",
+      "parentUuid": "8f5821ce_0aa1110b",
+      "range": {
+        "startLine": 90,
+        "startChar": 2,
+        "endLine": 90,
+        "endChar": 24
+      },
+      "revId": "3129c194352e74dd812c2098e49fbf99d6ef7d0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
