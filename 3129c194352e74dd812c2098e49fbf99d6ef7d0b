@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd4fdde3_4aae9279",
+        "filename": "games-memory-advice/build.gradle",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-06-21T14:58:56Z",
+      "side": 1,
+      "message": "Is it a right syntax or a typo? What do two stars mean?",
+      "range": {
+        "startLine": 90,
+        "startChar": 2,
+        "endLine": 90,
+        "endChar": 24
+      },
+      "revId": "3129c194352e74dd812c2098e49fbf99d6ef7d0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
