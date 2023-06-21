@@ -25,7 +25,7 @@ If the Android SDK is already installed locally, then download only the AGDK sou
 
 ```bash
 repo sync -c -j8 gamesdk
-repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf external/StatsD tools/repohooks
 repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
 ```
 
