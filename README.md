@@ -18,11 +18,6 @@ mkdir android-games-sdk
 cd android-games-sdk
 repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
 ```
-Ninja binary must be in your PATH like below. Please replace PLATFORM_NAME with either linux-x86 for Linux or darwin-86 for MacOS or windows-x86 for Windows, and run the following command:
-
-```bash
-export PATH="$PATH:`pwd`/../prebuilts/ninja/PLATFORM_NAME"
-```
 
 ### Build with locally installed SDK/NDK
 
@@ -45,6 +40,8 @@ cd gamesdk
 ./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
+Note that it may be necessary to use Android SDK Manager to download particular versions of Android SDK, NDK and cmake as expected by the build. The error message should provide guidance in that case.
+
 ### Build with specific prebuilt SDKs
 
 Download the project along with specific versions of prebuilt Android SDK and NDK (~4GB).
@@ -54,6 +51,13 @@ First, download the core project and tools:
 repo sync -c -j8 gamesdk
 repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
 repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
+```
+
+Cmake and Ninja binaries must be in your PATH like below. Please replace PLATFORM_NAME with either linux-x86 for Linux or darwin-86 for MacOS or windows-x86 for Windows, and run the following command:
+
+```bash
+export PATH="$PATH:`pwd`/prebuilts/cmake/PLATFORM_NAME/bin"
+export PATH="$PATH:`pwd`/prebuilts/ninja/PLATFORM_NAME"
 ```
 
 Next, use the download script to get prebuilt SDKs and/or NDKs.
