@@ -73,7 +73,7 @@ target_link_libraries(memory_advice
   PUBLIC
   android
   log
-  tflite
+  tflite_static
 )
 
 target_link_libraries(memory_advice_static_pre
