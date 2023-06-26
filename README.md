@@ -11,7 +11,7 @@ AGDK requires Python executable named "python". A supported version of Python is
 ## Build AGDK
 
 In order to build AGDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/).
-On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, to avoid issues with symlinks.
+On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, and setting `git config --global core.symlinks true` to avoid issues with symlinks.
 
 ```bash
 mkdir android-games-sdk
