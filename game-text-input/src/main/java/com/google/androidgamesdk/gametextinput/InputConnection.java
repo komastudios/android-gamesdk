@@ -18,6 +18,7 @@ package com.google.androidgamesdk.gametextinput;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -120,8 +121,6 @@ public class InputConnection
     } else {
       this.imm.hideSoftInputFromWindow(this.targetView.getWindowToken(), flags);
     }
-
-    this.mSoftKeyboardActive = active;
   }
 
   /**
@@ -477,4 +476,13 @@ public class InputConnection
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
+  public void observeKeyboardVisible(boolean visible) {
+    if (visible == this.mSoftKeyboardActive) {
+      return;
+    }
+    this.mSoftKeyboardActive = visible;
+    if (!visible && VERSION.SDK_INT >= VERSION_CODES.O) {
+      this.targetView.clearFocus();
+    }
+  }
 }
