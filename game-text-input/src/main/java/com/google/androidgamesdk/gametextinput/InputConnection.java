@@ -120,8 +120,6 @@ public class InputConnection
     } else {
       this.imm.hideSoftInputFromWindow(this.targetView.getWindowToken(), flags);
     }
-
-    this.mSoftKeyboardActive = active;
   }
 
   /**
@@ -477,4 +475,13 @@ public class InputConnection
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
+  public void observeKeyboardVisible(boolean visible) {
+    if (visible == this.mSoftKeyboardActive) {
+      return;
+    }
+    this.mSoftKeyboardActive = visible;
+    if (!visible && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      this.targetView.clearFocus();
+    }
+  }
 }
