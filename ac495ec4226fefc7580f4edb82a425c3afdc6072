@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "821db2de_223dba03",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2023-06-30T12:17:41Z",
+      "side": 1,
+      "message": "As discussed, rather than reverting this you should make all the changes to the interface in a new CL.",
+      "revId": "ac495ec4226fefc7580f4edb82a425c3afdc6072",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
