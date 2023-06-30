@@ -480,8 +480,6 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    boolean softKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-    mSurfaceView.mInputConnection.observeKeyboardVisible(softKeyboardVisible);
     onWindowInsetsChangedNative(mNativeHandle);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
       // Pass through to the view - we don't want to handle the insets, just observe them.
