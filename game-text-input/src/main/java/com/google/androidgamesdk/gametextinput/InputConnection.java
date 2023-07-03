@@ -29,7 +29,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Keep;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -39,7 +38,7 @@ import java.util.BitSet;
 @Keep
 public class InputConnection
     extends BaseInputConnection
-    implements View.OnKeyListener, OnApplyWindowInsetsListener {
+    implements View.OnKeyListener {
   private static final String TAG = "gti.InputConnection";
   // TODO: (b/183179971) We should react to most of these events rather than ignoring them? Plus
   // there are others that should be ignored.
@@ -84,8 +83,6 @@ public class InputConnection
     }
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
-    ViewCompat.setOnApplyWindowInsetsListener(targetView, this);
-
     targetView.setOnKeyListener(this);
   }
 
@@ -458,11 +455,34 @@ public class InputConnection
     }
   }
 
-  // From OnApplyWindowInsetsListener
-  @Override
+  /**
+   * This function is called whenever software keyboard (IME) changes its visible dimensions.
+   *
+   * @param v main application View
+   * @param insets insets of the software keyboard (IME)
+   * @return this function should return original insets object unless it wants to modify insets.
+   */
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    if (listener != null)
+    Log.d(TAG, "onApplyWindowInsets" + this.isSoftwareKeyboardVisible());
+
+    if (listener != null) {
       listener.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
+    }
+
+    boolean visible = this.isSoftwareKeyboardVisible();
+    if (visible == this.mSoftKeyboardActive) {
+      return insets;
+    }
+
+    this.mSoftKeyboardActive = visible;
+    if (!visible && VERSION.SDK_INT >= VERSION_CODES.O) {
+      this.targetView.clearFocus();
+    }
+
+    if (listener != null) {
+      listener.onSoftwareKbVisibilityChanged(visible);
+    }
+
     return insets;
   }
 
@@ -476,13 +496,14 @@ public class InputConnection
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
-  public void observeKeyboardVisible(boolean visible) {
-    if (visible == this.mSoftKeyboardActive) {
-      return;
-    }
-    this.mSoftKeyboardActive = visible;
-    if (!visible && VERSION.SDK_INT >= VERSION_CODES.O) {
-      this.targetView.clearFocus();
-    }
+  /**
+   * Returns true if software keyboard is visible, false otherwise.
+   *
+   * @return whether software IME is visible or not.
+   */
+  public boolean isSoftwareKeyboardVisible() {
+    WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+    return insets.isVisible(WindowInsetsCompat.Type.ime());
   }
+
 }

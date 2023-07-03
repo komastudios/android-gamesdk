@@ -220,6 +220,7 @@ struct NativeCode : public GameActivity {
         nativeWindow = NULL;
         mainWorkRead = mainWorkWrite = -1;
         gameTextInput = NULL;
+        softwareKbVisible = false;
         sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
         ALOGD("SDK version: %d", sdkVersion);
     }
@@ -285,6 +286,7 @@ struct NativeCode : public GameActivity {
     std::mutex gameTextInputStateMutex;
 
     ARect insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
+    bool softwareKbVisible;
 };
 
 static void readConfigurationValues(NativeCode *code, jobject javaConfig);
@@ -338,6 +340,11 @@ extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
     if (type < 0 || type >= GAMECOMMON_INSETS_TYPE_COUNT) return;
     NativeCode *code = static_cast<NativeCode *>(activity);
     *insets = code->insetsState[type];
+}
+
+extern "C" bool GameActivity_isSoftwareKbVisible(GameActivity *activity) {
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    return code->softwareKbVisible;
 }
 
 extern "C" GameTextInput *GameActivity_getTextInput(
@@ -966,6 +973,18 @@ static void onContentRectChangedNative_native(JNIEnv *env, jobject activity,
     }
 }
 
+static void onSoftwareKbVisibilityChangedNative_native(JNIEnv *env, jobject activity,
+                                                       jlong handle, bool visible) {
+    if (handle != 0) {
+        NativeCode *code = (NativeCode *)handle;
+        code->softwareKbVisible = visible;
+
+        if (code->callbacks.onSoftwareKbVisibilityChanged != nullptr) {
+            code->callbacks.onSoftwareKbVisibilityChanged(code, visible);
+        }
+    }
+}
+
 static const JNINativeMethod g_methods[] = {
     {"initializeNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;"
@@ -1006,6 +1025,8 @@ static const JNINativeMethod g_methods[] = {
      (void *)setInputConnection_native},
     {"onContentRectChangedNative", "(JIIII)V",
      (void *)onContentRectChangedNative_native},
+    {"onSoftwareKbVisibilityChangedNative", "(JZ)V",
+     (void *)onSoftwareKbVisibilityChangedNative_native},
 };
 
 static const char *const kGameActivityPathName =
