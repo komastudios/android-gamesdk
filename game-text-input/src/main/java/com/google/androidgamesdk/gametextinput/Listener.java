@@ -27,7 +27,7 @@ public interface Listener {
    * Called when the IME text, selection or composing region has changed.
    *
    * @param newState The updated state
-   * @param dismmissed Whether the IME has been dismissed by the user
+   * @param dismmissed Deprecated, don't use
    */
   void stateChanged(State newState, boolean dismissed);
 
@@ -38,5 +38,12 @@ public interface Listener {
    * relative to the window
    */
   void onImeInsetsChanged(Insets insets);
+
+  /*
+   * Called when the IME window is shown or hidden.
+   *
+   * @param insets True is IME is visible, false otherwise.
+   */
+  void onSoftwareKbVisibilityChanged(boolean visible);
 
 }
