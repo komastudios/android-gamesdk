@@ -616,6 +616,18 @@ static void onContentRectChanged(GameActivity* activity, const ARect *rect) {
     pthread_mutex_unlock(&android_app->mutex);
 }
 
+static void onSoftwareKbVisibilityChanged(GameActivity *activity, bool visible) {
+    LOGV("SoftwareKbVisibilityChanged: %p -- %d", activity, (int) visible);
+
+    struct android_app* android_app = ToApp(activity);
+
+    pthread_mutex_lock(&android_app->mutex);
+    android_app->softwareKbVisible = visible;
+
+    android_app_write_cmd(android_app, APP_CMD_SOFTWARE_KB_VIS_CHANGED);
+    pthread_mutex_unlock(&android_app->mutex);
+}
+
 
 JNIEXPORT
 void GameActivity_onCreate(GameActivity* activity, void* savedState,
@@ -641,6 +653,7 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
     activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
     activity->callbacks->onContentRectChanged = onContentRectChanged;
+    activity->callbacks->onSoftwareKbVisibilityChanged = onSoftwareKbVisibilityChanged;
     LOGV("Callbacks set: %p", activity->callbacks);
 
     activity->instance =
