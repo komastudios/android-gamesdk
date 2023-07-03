@@ -531,6 +531,11 @@ void NativeEngine::HandleCommand(int32_t cmd) {
                       sInsetsTypeName[type], insets.left, insets.right, insets.top, insets.bottom);
             }
             break;
+        case APP_CMD_SOFTWARE_KB_VIS_CHANGED:
+            VLOGD("NativeEngine: APP_CMD_SOFTWARE_KB_VIS_CHANGED");
+            VLOGD("software keyboard visible: %s",
+                  (GameActivity_isSoftwareKeyboardVisible(mApp->activity) ? "yes" : "no"));
+            break;
         default:
             VLOGD("NativeEngine: (unknown command).");
             break;

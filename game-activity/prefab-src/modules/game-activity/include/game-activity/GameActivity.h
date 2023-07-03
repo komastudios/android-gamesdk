@@ -277,6 +277,11 @@ typedef struct GameActivityCallbacks {
      * should be placed has changed.
      */
     void (*onContentRectChanged)(GameActivity *activity, const ARect *rect);
+
+    /**
+     * Callback called when the software keyboard is shown or hidden.
+     */
+    void (*onSoftwareKeyboardVisibilityChanged)(GameActivity *activity, bool visible);
 } GameActivityCallbacks;
 
 /**
@@ -596,6 +601,11 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
  */
 void GameActivity_getWindowInsets(GameActivity* activity,
                                   GameCommonInsetsType type, ARect* insets);
+
+/**
+ * Tells whether the software keyboard is visible or not.
+ */
+bool GameActivity_isSoftwareKeyboardVisible(GameActivity* activity);
 
 /**
  * Set options on how the IME behaves when it is requested for text input.

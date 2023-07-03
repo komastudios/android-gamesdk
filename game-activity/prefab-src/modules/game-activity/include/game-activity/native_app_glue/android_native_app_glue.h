@@ -211,6 +211,11 @@ struct android_app {
     ARect contentRect;
 
     /**
+     * Whether the software keyboard is visible or not.
+     */
+    bool softwareKeyboardVisible;
+
+    /**
      * Current state of the app's activity.  May be either APP_CMD_START,
      * APP_CMD_RESUME, APP_CMD_PAUSE, or APP_CMD_STOP.
      */
@@ -336,6 +341,11 @@ enum NativeAppGlueAppCmd {
      * find the new content rect in android_app::contentRect.
      */
     APP_CMD_CONTENT_RECT_CHANGED,
+
+    /**
+     * Command from main thread: the software keyboard was shown or hidden.
+     */
+    APP_CMD_SOFTWARE_KB_VIS_CHANGED,
 
     /**
      * Command from main thread: the app's activity window has gained

@@ -232,6 +232,8 @@ public class GameActivity
 
   protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
+  protected native void onSoftwareKeyboardVisibilityChangedNative(long handle, boolean visible);
+
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
    * @return the pointer to the C `GameActivity` struct associated to this activity.
@@ -480,8 +482,7 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    boolean softKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-    mSurfaceView.mInputConnection.observeKeyboardVisible(softKeyboardVisible);
+    this.mSurfaceView.mInputConnection.onApplyWindowInsets(v, insets);
     onWindowInsetsChangedNative(mNativeHandle);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
       // Pass through to the view - we don't want to handle the insets, just observe them.
@@ -515,6 +516,12 @@ public class GameActivity
   @Override
   public void onImeInsetsChanged(Insets insets) {
     Log.v(LOG_TAG, "onImeInsetsChanged from Text Listener");
+  }
+
+  // From the text input Listener.
+  @Override
+  public void onSoftwareKeyboardVisibilityChanged(boolean visible) {
+    onSoftwareKeyboardVisibilityChangedNative(mNativeHandle, visible);
   }
 
   /**

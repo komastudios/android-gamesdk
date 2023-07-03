@@ -78,5 +78,10 @@ public class InputEnabledTextView extends View implements Listener {
         System.out.println("insetsChanged: " + insets);
     }
 
+    @Override
+    public void onSoftwareKeyboardVisibilityChanged(boolean visible) {
+        System.out.println("onSoftwareKeyboardVisibilityChanged: " + visible);
+    }
+
     private native void onTextInputEventNative(State softKeyboardEvent);
 }
