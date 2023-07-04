@@ -16,6 +16,24 @@
       "message": "I think Kb should be changed to Keyboard. Abbreviations are a slippery slope, because they can be ambiguous (Kb can also mean kilobytes) and in this case aren\u0027t consistent.",
       "revId": "fb0bdc54b26db8b689e7acb8ee85a80640359cad",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5792c8cd_bbaaaefb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-07-04T10:18:42Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "b550fea0_700af1ab",
+      "revId": "fb0bdc54b26db8b689e7acb8ee85a80640359cad",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
