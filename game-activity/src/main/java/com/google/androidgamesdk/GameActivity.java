@@ -15,10 +15,8 @@
  */
 package com.google.androidgamesdk;
 
-import static android.view.inputmethod.EditorInfo.IME_ACTION_GO;
-import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
-import static android.view.inputmethod.EditorInfo.IME_MASK_ACTION;
-import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -533,9 +531,10 @@ public class GameActivity
   public EditorInfo getImeEditorInfo() {
     if (imeEditorInfo==null) {
       imeEditorInfo = new EditorInfo();
-      imeEditorInfo.inputType = InputType.TYPE_NULL;
-      imeEditorInfo.actionId = IME_ACTION_NONE;
-      imeEditorInfo.imeOptions = IME_FLAG_NO_ENTER_ACTION;
+      // Provide safe defaults here.
+      imeEditorInfo.inputType = InputType.TYPE_CLASS_TEXT;
+      imeEditorInfo.actionId = IME_ACTION_DONE;
+      imeEditorInfo.imeOptions = IME_ACTION_DONE | IME_FLAG_NO_FULLSCREEN;
     }
     return imeEditorInfo;
   }
