@@ -16,7 +16,14 @@
 
 #include "ascii_to_geom.hpp"
 
+#define ENABLE_GEOM_LOGGING 0
+
+#if ENABLE_GEOM_LOGGING
 #define GEOM_DEBUG ALOGI
+#else
+static void placeholder(const char *, ...) {}
+#define GEOM_DEBUG placeholder
+#endif
 
 SimpleGeom *AsciiArtToGeom(const char *art, float scale) {
     // figure out width and height
