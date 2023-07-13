@@ -134,13 +134,13 @@ NativeEngine::NativeEngine(struct android_app *app) {
     // behaviour of NativeActivity.
     android_app_set_motion_event_filter(app, nullptr);
 
-    // Flags to control how the IME behaves.
-    constexpr int InputType_dot_TYPE_CLASS_TEXT = 1;
-    constexpr int IME_ACTION_NONE = 1;
-    constexpr int IME_FLAG_NO_FULLSCREEN = 33554432;
-
-    GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
-                                  IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
+    /*
+     * You can customize IME behavior by uncommenting this function call
+     * and modifying its arguments as you wish. For example, the code below
+     * will only allow user to input numbers. Don't forget IME_FLAG_NO_FULLSCREEN flag,
+     * otherwise the software keyboard will occupy the whole screen. */
+    /* GameActivity_setImeEditorInfo(mApp->activity, TYPE_CLASS_NUMBER,
+                                  IME_ACTION_NONE, IME_ACTION_DONE | IME_FLAG_NO_FULLSCREEN); */
 
     // Set fields retrieved through JNI
     // Find the Java class
