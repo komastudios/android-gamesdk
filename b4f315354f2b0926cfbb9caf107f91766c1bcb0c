@@ -16,6 +16,24 @@
       "message": "Please explain what this logic does in a comment",
       "revId": "b4f315354f2b0926cfbb9caf107f91766c1bcb0c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2fa0dce_8d73f3a3",
+        "filename": "game-text-input/src/main/java/com/google/androidgamesdk/gametextinput/InputConnection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-07-13T11:48:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12b915b4_dfdbaa3e",
+      "revId": "b4f315354f2b0926cfbb9caf107f91766c1bcb0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
