@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12b915b4_dfdbaa3e",
+        "filename": "game-text-input/src/main/java/com/google/androidgamesdk/gametextinput/InputConnection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-07-13T11:34:47Z",
+      "side": 1,
+      "message": "Please explain what this logic does in a comment",
+      "revId": "b4f315354f2b0926cfbb9caf107f91766c1bcb0c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
