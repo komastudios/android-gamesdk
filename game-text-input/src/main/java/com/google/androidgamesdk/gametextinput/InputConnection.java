@@ -20,7 +20,11 @@ import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -57,6 +61,39 @@ public class InputConnection
   private Listener listener;
   private boolean mSoftKeyboardActive;
 
+  private class SingeLineFilter implements InputFilter {
+     public CharSequence filter(CharSequence source, int start, int end,
+                                Spanned dest, int dstart, int dend) {
+
+       boolean keepOriginal = true;
+       StringBuilder builder = new StringBuilder(end - start);
+
+       for (int i = start; i < end; i++) {
+         char c = source.charAt(i);
+
+         if (c == '\n') {
+           keepOriginal = false;
+         } else {
+           builder.append(c);
+         }
+       }
+
+       if (keepOriginal) {
+         return null;
+       }
+
+       if (source instanceof Spanned) {
+         SpannableString s = new SpannableString(builder);
+         TextUtils.copySpansFrom((Spanned) source, start, builder.length(), null, s, 0);
+         return s;
+       } else {
+         return builder;
+       }
+     }
+  }
+
+  private static final int MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT = 5000;
+
   /**
    * Constructor
    *
@@ -84,6 +121,13 @@ public class InputConnection
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
     targetView.setOnKeyListener(this);
+
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0) {
+      mEditable.setFilters(new InputFilter[]{
+              new InputFilter.LengthFilter(MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT),
+              new SingeLineFilter()
+      });
+    }
   }
 
   /**
