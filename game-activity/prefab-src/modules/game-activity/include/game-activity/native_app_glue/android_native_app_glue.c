@@ -629,6 +629,19 @@ static void onSoftwareKeyboardVisibilityChanged(GameActivity *activity,
     pthread_mutex_unlock(&android_app->mutex);
 }
 
+static bool onEditorAction(GameActivity *activity, int action) {
+    LOGV("EditorAction: %p -- %d", activity, action);
+
+    struct android_app* android_app = ToApp(activity);
+
+    pthread_mutex_lock(&android_app->mutex);
+    android_app->editorAction = action;
+
+    android_app_write_cmd(android_app, APP_CMD_EDITOR_ACTION);
+    pthread_mutex_unlock(&android_app->mutex);
+    return true;
+}
+
 
 JNIEXPORT
 void GameActivity_onCreate(GameActivity* activity, void* savedState,
@@ -656,6 +669,7 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onContentRectChanged = onContentRectChanged;
     activity->callbacks->onSoftwareKeyboardVisibilityChanged =
         onSoftwareKeyboardVisibilityChanged;
+    activity->callbacks->onEditorAction = onEditorAction;
     LOGV("Callbacks set: %p", activity->callbacks);
 
     activity->instance =

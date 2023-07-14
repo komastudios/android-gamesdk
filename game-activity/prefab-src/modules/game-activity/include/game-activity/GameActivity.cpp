@@ -987,6 +987,21 @@ static void onSoftwareKeyboardVisibilityChangedNative_native(JNIEnv *env,
     }
 }
 
+static bool onEditorActionNative_native(JNIEnv *env,
+                                        jobject activity,
+                                        jlong handle,
+                                        int action) {
+    if (handle != 0) {
+        NativeCode *code = (NativeCode *)handle;
+
+        if (code->callbacks.onEditorAction != nullptr) {
+            return code->callbacks.onEditorAction(code, action);
+        }
+    }
+
+    return true;
+}
+
 static const JNINativeMethod g_methods[] = {
     {"initializeNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;"
@@ -1028,7 +1043,9 @@ static const JNINativeMethod g_methods[] = {
     {"onContentRectChangedNative", "(JIIII)V",
      (void *)onContentRectChangedNative_native},
     {"onSoftwareKeyboardVisibilityChangedNative", "(JZ)V",
-     (void *)onSoftwareKeyboardVisibilityChangedNative_native},
+            (void *)onSoftwareKeyboardVisibilityChangedNative_native},
+    {"onEditorActionNative", "(JI)Z",
+     (void *)onEditorActionNative_native},
 };
 
 static const char *const kGameActivityPathName =
