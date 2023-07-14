@@ -35,6 +35,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2527ce35_ad6da56d",
+        "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-07-14T10:45:06Z",
+      "side": 1,
+      "message": "In fact, the bitfield picture above doesn\u0027t present in Android documentation, only in Android sources.",
+      "parentUuid": "d456257e_a130ab42",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "901ae4a6_9e187170",
