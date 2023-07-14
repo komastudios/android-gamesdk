@@ -16,6 +16,24 @@
       "message": "Surely any use of qlp after it\u0027s freed is a bug and so we shouldn\u0027t need this?\n\nIt\u0027s not usual to explicitly set pointers to null like this, right? so why is it necessary here?",
       "revId": "a1ed10a6602ca3c82b78ab1602e20bbe39ff1377",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "723f770d_2ed53635",
+        "filename": "games-performance-tuner/core/tuningfork_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-07-14T11:54:02Z",
+      "side": 1,
+      "message": "Yeah, it is a good practice to set these to null in the interface when freeing as we set these pointers in the first place. I forgot when I made the implementation in the first place and this is just fixing it.",
+      "parentUuid": "b9ef0650_574b48b9",
+      "revId": "a1ed10a6602ca3c82b78ab1602e20bbe39ff1377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
