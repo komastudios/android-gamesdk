@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecd205cf_3c46db16",
+        "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-07-14T07:59:46Z",
+      "side": 1,
+      "message": "Could these be enums? defining a macro of name \"TYPE_NULL\" seems pretty heavy handed in a header.",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
