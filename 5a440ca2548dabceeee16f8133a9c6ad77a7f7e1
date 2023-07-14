@@ -16,6 +16,23 @@
       "message": "Could these be enums? defining a macro of name \"TYPE_NULL\" seems pretty heavy handed in a header.",
       "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d456257e_a130ab42",
+        "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-07-14T08:01:55Z",
+      "side": 1,
+      "message": "The description for all the text here seems like just copied from Java InputType, why not just reference to https://developer.android.com/reference/android/text/InputType instead to keep it simple.",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
