@@ -50,6 +50,24 @@
       "message": "NIT: Please use multi-line comment /* */",
       "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f550536_2cea4b44",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-07-14T10:43:47Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "901ae4a6_9e187170",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
