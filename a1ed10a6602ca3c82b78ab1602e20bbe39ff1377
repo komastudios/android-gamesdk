@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9ef0650_574b48b9",
+        "filename": "games-performance-tuner/core/tuningfork_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-07-14T10:01:54Z",
+      "side": 1,
+      "message": "Surely any use of qlp after it\u0027s freed is a bug and so we shouldn\u0027t need this?\n\nIt\u0027s not usual to explicitly set pointers to null like this, right? so why is it necessary here?",
+      "revId": "a1ed10a6602ca3c82b78ab1602e20bbe39ff1377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
