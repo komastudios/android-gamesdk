@@ -34,6 +34,24 @@
       "parentUuid": "b9ef0650_574b48b9",
       "revId": "a1ed10a6602ca3c82b78ab1602e20bbe39ff1377",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21a15ea6_0f728deb",
+        "filename": "games-performance-tuner/core/tuningfork_c.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-07-14T11:57:10Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "723f770d_2ed53635",
+      "revId": "a1ed10a6602ca3c82b78ab1602e20bbe39ff1377",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
