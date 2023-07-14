@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b31294e3_81846787",
+        "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-07-14T10:57:28Z",
+      "side": 1,
+      "message": "It\u0027s preferred for consistency - we use enums in GameActivty for constants.\nFrom the code guidance \n\"Use anonymous enums for flags and public integer-like constants (instead of #defines or static const int).\"\nhttps://docs.google.com/document/d/1qiYnbPYFk69yoDDPvU-__l60EfTv6Zo8X3n8ph6Pz4Q/edit",
+      "parentUuid": "f333d093_5b8e6646",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d456257e_a130ab42",
         "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
         "patchSetId": 2
