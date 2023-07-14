@@ -95,6 +95,8 @@ void TuningFork_QualityLevelPredictions_free(
     delete[] qlp->fidelity_params;
     delete[] qlp->predicted_time_us;
 
+    qlp->fidelity_params = nullptr;
+    qlp->predicted_time_us = nullptr;
     qlp->size = 0;
 }
 
