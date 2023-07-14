@@ -33,6 +33,23 @@
       "message": "The description for all the text here seems like just copied from Java InputType, why not just reference to https://developer.android.com/reference/android/text/InputType instead to keep it simple.",
       "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "901ae4a6_9e187170",
+        "filename": "samples/agdktunnel/app/src/main/cpp/native_engine.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-07-14T08:09:00Z",
+      "side": 1,
+      "message": "NIT: Please use multi-line comment /* */",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
