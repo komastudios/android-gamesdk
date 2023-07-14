@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f333d093_5b8e6646",
+        "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-07-14T10:45:32Z",
+      "side": 1,
+      "message": "Would enums be significantly better?",
+      "parentUuid": "ecd205cf_3c46db16",
+      "revId": "5a440ca2548dabceeee16f8133a9c6ad77a7f7e1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d456257e_a130ab42",
         "filename": "game-text-input/prefab-src/modules/game-text-input/include/game-text-input/gametextinput.h",
         "patchSetId": 2
