@@ -282,6 +282,11 @@ typedef struct GameActivityCallbacks {
      * Callback called when the software keyboard is shown or hidden.
      */
     void (*onSoftwareKeyboardVisibilityChanged)(GameActivity *activity, bool visible);
+
+    /**
+     * Callback called when the software keyboard is shown or hidden.
+     */
+    bool (*onEditorAction)(GameActivity *activity, int action);
 } GameActivityCallbacks;
 
 /**

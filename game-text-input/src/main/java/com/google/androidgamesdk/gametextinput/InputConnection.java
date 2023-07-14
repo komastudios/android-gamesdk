@@ -438,6 +438,7 @@ public class InputConnection
     if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0 &&
         (event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
         event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.hasNoModifiers()) {
+      this.performEditorAction(settings.mEditorInfo.actionId);
       return true;
     }
 
@@ -563,4 +564,19 @@ public class InputConnection
     return insets.isVisible(WindowInsetsCompat.Type.ime());
   }
 
+  /**
+   * This is an event handler from InputConnection interface.
+   * It's called when action button is triggered (typically this means Enter was pressed).
+   *
+   * @param action Action code, either one from EditorInfo.imeOptions or a custom one.
+   * @return Returns true on success, false if the input connection is no longer valid.
+   */
+  @Override
+  public boolean performEditorAction(int action) {
+    if (listener != null) {
+      return listener.onEditorAction(action);
+    } else {
+      return true;
+    }
+  }
 }

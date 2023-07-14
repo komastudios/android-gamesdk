@@ -216,6 +216,11 @@ struct android_app {
     bool softwareKeyboardVisible;
 
     /**
+     * Last editor action. Valid within APP_CMD_SOFTWARE_KB_VIS_CHANGED handler.
+     */
+    int editorAction;
+
+    /**
      * Current state of the app's activity.  May be either APP_CMD_START,
      * APP_CMD_RESUME, APP_CMD_PAUSE, or APP_CMD_STOP.
      */
@@ -409,6 +414,11 @@ enum NativeAppGlueAppCmd {
      * Command from main thread: the app's insets have changed.
      */
     APP_CMD_WINDOW_INSETS_CHANGED,
+
+    /**
+     * Command from main thread: the editor action has been triggered.
+     */
+    APP_CMD_EDITOR_ACTION,
 
 };
 
