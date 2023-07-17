@@ -74,6 +74,12 @@ public class InputEnabledTextView extends View implements Listener {
     }
 
     @Override
+    public boolean onEditorAction(int action) {
+        System.out.println("onEditorAction: " + action);
+        return true;
+    }
+
+    @Override
     public void onImeInsetsChanged(Insets insets) {
         System.out.println("insetsChanged: " + insets);
     }

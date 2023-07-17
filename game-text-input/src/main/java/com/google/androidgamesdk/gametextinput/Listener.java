@@ -46,4 +46,12 @@ public interface Listener {
    */
   void onSoftwareKeyboardVisibilityChanged(boolean visible);
 
+  /*
+   * Called when any editor action is performed. Typically this means that
+   * the Enter button has been pressed.
+   *
+   * @param action Code of the action. A default action is IME_ACTION_DONE.
+   */
+  boolean onEditorAction(int action);
+
 }
