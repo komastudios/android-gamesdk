@@ -785,12 +785,14 @@ void GameControllerManager::update(JNIEnv *env) {
         // Tell the GCM class we are ready to receive information about
         // controllers
         gcm->mGCMClassInitialized = true;
-        jmethodID setNativeReady = env->GetMethodID(
-            gcm->mGameControllerClass, GCM_SETNATIVEREADY_METHOD_NAME,
-            VOID_METHOD_SIGNATURE);
-        if (setNativeReady != NULL) {
-            env->CallVoidMethod(gcm->mGameControllerObject, setNativeReady);
-        }
+        // Early return because the first time through ::update is from Paddleboat_init
+        // and the user hasn't had a chance to register callbacks yet
+        return;
+    }
+    if (gcm->mSetNativeReadyMethodId != NULL) {
+        env->CallVoidMethod(gcm->mGameControllerObject,
+                            gcm->mSetNativeReadyMethodId);
+        gcm->mSetNativeReadyMethodId = NULL;
     }
 
     if (gcm->mMotionDataCallback != nullptr &&
