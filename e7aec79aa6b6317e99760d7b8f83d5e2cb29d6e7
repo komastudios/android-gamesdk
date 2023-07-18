@@ -16,6 +16,24 @@
       "message": "Code looks good but does this CL contain fixes for separate issues which could be split into different CLs? For example if one of the fixes has side effects we would have to revert all the fixes which wouldn\u0027t be ideal.",
       "revId": "e7aec79aa6b6317e99760d7b8f83d5e2cb29d6e7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ce6377a_1ad4bdc6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2023-07-18T15:29:36Z",
+      "side": 1,
+      "message": "Good point, I split the .cpp change to a separate CL. I don\u0027t want to decouple the Java side changes, which are related.",
+      "parentUuid": "87bb3477_c827c76b",
+      "revId": "e7aec79aa6b6317e99760d7b8f83d5e2cb29d6e7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
