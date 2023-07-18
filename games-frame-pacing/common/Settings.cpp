@@ -16,10 +16,6 @@
 
 #include "Settings.h"
 
-#define LOG_TAG "Settings"
-
-#include "Log.h"
-
 namespace swappy {
 
 std::unique_ptr<Settings> Settings::instance;

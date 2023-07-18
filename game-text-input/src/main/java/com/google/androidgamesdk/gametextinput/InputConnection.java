@@ -18,8 +18,13 @@ package com.google.androidgamesdk.gametextinput;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,7 +33,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Keep;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -38,7 +42,7 @@ import java.util.BitSet;
 @Keep
 public class InputConnection
     extends BaseInputConnection
-    implements View.OnKeyListener, OnApplyWindowInsetsListener {
+    implements View.OnKeyListener {
   private static final String TAG = "gti.InputConnection";
   // TODO: (b/183179971) We should react to most of these events rather than ignoring them? Plus
   // there are others that should be ignored.
@@ -56,6 +60,44 @@ public class InputConnection
   private final BitSet dontInsertChars;
   private Listener listener;
   private boolean mSoftKeyboardActive;
+
+  /*
+   * This class filters EOL characters from the input. For details of how InputFilter.filter
+   * function works, refer to its documentation. If the suggested change is accepted without
+   * modifications, filter() should return null.
+   */
+  private class SingeLineFilter implements InputFilter {
+     public CharSequence filter(CharSequence source, int start, int end,
+                                Spanned dest, int dstart, int dend) {
+
+       boolean keepOriginal = true;
+       StringBuilder builder = new StringBuilder(end - start);
+
+       for (int i = start; i < end; i++) {
+         char c = source.charAt(i);
+
+         if (c == '\n') {
+           keepOriginal = false;
+         } else {
+           builder.append(c);
+         }
+       }
+
+       if (keepOriginal) {
+         return null;
+       }
+
+       if (source instanceof Spanned) {
+         SpannableString s = new SpannableString(builder);
+         TextUtils.copySpansFrom((Spanned) source, start, builder.length(), null, s, 0);
+         return s;
+       } else {
+         return builder;
+       }
+     }
+  }
+
+  private static final int MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT = 5000;
 
   /**
    * Constructor
@@ -83,7 +125,14 @@ public class InputConnection
     }
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
-    ViewCompat.setOnApplyWindowInsetsListener(targetView, this);
+    targetView.setOnKeyListener(this);
+
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0) {
+      mEditable.setFilters(new InputFilter[]{
+              new InputFilter.LengthFilter(MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT),
+              new SingeLineFilter()
+      });
+    }
   }
 
   /**
@@ -118,8 +167,6 @@ public class InputConnection
     } else {
       this.imm.hideSoftInputFromWindow(this.targetView.getWindowToken(), flags);
     }
-
-    this.mSoftKeyboardActive = active;
   }
 
   /**
@@ -205,13 +252,8 @@ public class InputConnection
   // From BaseInputConnection
   @Override
   public boolean setComposingText(CharSequence text, int newCursorPosition) {
-    Log.d(TAG,
-        (new StringBuilder())
-            .append("setComposingText: '")
-            .append(text)
-            .append("', newCursorPosition=")
-            .append(newCursorPosition)
-            .toString());
+    Log.d(TAG, String.format("setComposingText='%s' newCursorPosition=%d",
+            text, newCursorPosition));
     if (text == null) {
       return false;
     } else {
@@ -376,17 +418,30 @@ public class InputConnection
   }
 
   private final void setComposingRegionInternal(int start_in, int end_in) {
-    if (start_in == -1) {
+    // start_in might be greater than end_in
+    int start = Math.min(start_in, end_in);
+    int end = Math.max(start_in, end_in);
+
+    if (start == -1) {
       GameTextInput.removeComposingRegion(this.mEditable);
     } else {
-      int start = Math.min(this.mEditable.length(), Math.max(0, start_in));
-      int end = Math.min(this.mEditable.length(), Math.max(0, end_in));
+      start = Math.min(this.mEditable.length(), Math.max(0, start));
+      end = Math.min(this.mEditable.length(), Math.max(0, end));
       GameTextInput.setComposingRegion(this.mEditable, start, end);
     }
   }
 
   private boolean processKeyEvent(KeyEvent event) {
-    Log.d(TAG, "sendKeyEvent");
+    Log.d(TAG, "processKeyEvent");
+
+    // Filter out Enter keys if multi-line mode is disabled.
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0 &&
+        (event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
+        event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.hasNoModifiers()) {
+      this.performEditorAction(settings.mEditorInfo.actionId);
+      return true;
+    }
+
     Pair selection = this.getSelection();
     if (event == null) {
       return false;
@@ -415,8 +470,26 @@ public class InputConnection
       if (!dontInsertChars.get(code)) {
         this.mEditable.insert(
             selection.first, (CharSequence) Character.toString((char) event.getUnicodeChar()));
-        int new_cursor = selection.first + 1;
-        GameTextInput.setSelection(this.mEditable, new_cursor, new_cursor);
+        int length = this.mEditable.length();
+
+        // Same logic as in setComposingText(): we must update composing region,
+        // so make sure it points to a valid range.
+        Pair composingRegion = this.getComposingRegion();
+        if (composingRegion.first == -1) {
+          composingRegion = this.getSelection();
+          if (composingRegion.first == -1) {
+            composingRegion = new Pair(0, 0);
+          }
+        }
+
+        // IMM seems to cache set content of Editable, so we update it with restartInput
+        // Also it caches selection and composing region, so let's notify it about updates.
+        composingRegion.second = composingRegion.first + length;
+        this.setComposingRegion(composingRegion.first, composingRegion.second);
+        int new_cursor = composingRegion.second;
+        setSelectionInternal(new_cursor, new_cursor);
+        this.informIMM();
+        this.restartInput();
       }
 
       this.stateUpdated(false);
@@ -440,11 +513,34 @@ public class InputConnection
     }
   }
 
-  // From OnApplyWindowInsetsListener
-  @Override
+  /**
+   * This function is called whenever software keyboard (IME) changes its visible dimensions.
+   *
+   * @param v main application View
+   * @param insets insets of the software keyboard (IME)
+   * @return this function should return original insets object unless it wants to modify insets.
+   */
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    if (listener != null)
+    Log.d(TAG, "onApplyWindowInsets" + this.isSoftwareKeyboardVisible());
+
+    if (listener != null) {
       listener.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
+    }
+
+    boolean visible = this.isSoftwareKeyboardVisible();
+    if (visible == this.mSoftKeyboardActive) {
+      return insets;
+    }
+
+    this.mSoftKeyboardActive = visible;
+    if (!visible && VERSION.SDK_INT >= VERSION_CODES.O) {
+      this.targetView.clearFocus();
+    }
+
+    if (listener != null) {
+      listener.onSoftwareKeyboardVisibilityChanged(visible);
+    }
+
     return insets;
   }
 
@@ -458,4 +554,29 @@ public class InputConnection
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
+  /**
+   * Returns true if software keyboard is visible, false otherwise.
+   *
+   * @return whether software IME is visible or not.
+   */
+  public boolean isSoftwareKeyboardVisible() {
+    WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+    return insets.isVisible(WindowInsetsCompat.Type.ime());
+  }
+
+  /**
+   * This is an event handler from InputConnection interface.
+   * It's called when action button is triggered (typically this means Enter was pressed).
+   *
+   * @param action Action code, either one from EditorInfo.imeOptions or a custom one.
+   * @return Returns true on success, false if the input connection is no longer valid.
+   */
+  @Override
+  public boolean performEditorAction(int action) {
+    if (listener != null) {
+      return listener.onEditorAction(action);
+    } else {
+      return true;
+    }
+  }
 }

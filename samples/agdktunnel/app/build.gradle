@@ -133,7 +133,7 @@ dependencies {
 
     // Google Play Games dependencies
     implementation "com.google.android.gms:play-services-games-v2:17.0.0"
-    implementation 'com.google.android.libraries.play.games:inputmapping:1.0.0-beta'
+    implementation 'com.google.android.libraries.play.games:inputmapping:1.1.0-beta'
     // Use the Play Core AAR included with the SDK.
     if(PADEnabled.toBoolean()) {
         implementation files("$playcoreDir/playcore.aar")
@@ -155,7 +155,7 @@ def getProtocPath() {
     if (OperatingSystem.current().isLinux()) platformName = "linux-x86/bin/protoc"
     if (OperatingSystem.current().isMacOsX()) platformName = "mac/bin/protoc"
     if (OperatingSystem.current().isWindows()) platformName = "win/bin/protoc"
-    return GameSDKPath + "/third_party/protobuf-3.0.0/install/"  + platformName
+    return GameSDKPath + "/third_party/protoc-3.21.7/"  + platformName
 }
 
 task buildTuningForkBinFiles(type: JavaExec) {
@@ -169,8 +169,6 @@ task buildTuningForkBinFiles(type: JavaExec) {
 }
 
 if (APTEnabled.toBoolean()) {
-    apply from: GameSDKPath + '/prepproto.gradle'
-    preBuild.dependsOn prepare_proto
     tasks.preBuild.dependsOn("buildTuningForkBinFiles")
 }
 

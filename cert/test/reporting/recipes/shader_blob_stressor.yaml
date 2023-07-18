@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/shader_blob_stressor.json

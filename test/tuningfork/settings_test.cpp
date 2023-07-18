@@ -18,7 +18,7 @@
 
 #include <gtest/gtest.h>
 
-#include "full/tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
 
 using namespace com::google::tuningfork;
 
@@ -77,7 +77,7 @@ TEST(SettingsTest, Deserialize) {
     h->set_instrument_key(64000);
     settings_proto.set_base_uri(base_uri);
     settings_proto.set_api_key(api_key);
-    settings_ser.resize(settings_proto.ByteSize());
+    settings_ser.resize(settings_proto.ByteSizeLong());
     settings_proto.SerializeWithCachedSizesToArray(settings_ser.data());
     tf::Settings settings{};
     auto result = tf::Settings::DeserializeSettings(settings_ser, &settings);

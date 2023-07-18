@@ -15,10 +15,8 @@
  */
 package com.google.androidgamesdk;
 
-import static android.view.inputmethod.EditorInfo.IME_ACTION_GO;
-import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
-import static android.view.inputmethod.EditorInfo.IME_MASK_ACTION;
-import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+import static android.view.inputmethod.EditorInfo.IME_ACTION_DONE;
+import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -86,22 +84,33 @@ public class GameActivity
    */
   protected InputEnabledSurfaceView mSurfaceView;
 
+  protected boolean processMotionEvent(MotionEvent event) {
+      int action = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? event.getActionButton() : 0;
+      int cls = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? event.getClassification() : 0;
+
+      return onTouchEventNative(mNativeHandle, event, event.getPointerCount(),
+          event.getHistorySize(), event.getDeviceId(), event.getSource(), event.getAction(),
+          event.getEventTime(), event.getDownTime(), event.getFlags(), event.getMetaState(), action,
+          event.getButtonState(), cls, event.getEdgeFlags(), event.getXPrecision(),
+          event.getYPrecision());
+  }
+
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    if (onTouchEventNative(mNativeHandle, event)) {
-      return true;
-    } else {
-      return super.onTouchEvent(event);
-    }
+      if (processMotionEvent(event)) {
+          return true;
+      } else {
+          return super.onTouchEvent(event);
+      }
   }
 
   @Override
   public boolean onGenericMotionEvent(MotionEvent event) {
-    if (onTouchEventNative(mNativeHandle, event)) {
-      return true;
-    } else {
-      return super.onGenericMotionEvent(event);
-    }
+      if (processMotionEvent(event)) {
+          return true;
+      } else {
+          return super.onGenericMotionEvent(event);
+      }
   }
 
   @Override
@@ -204,7 +213,10 @@ public class GameActivity
 
   protected native void onSurfaceDestroyedNative(long handle);
 
-  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent);
+  protected native boolean onTouchEventNative(long handle, MotionEvent motionEvent,
+      int pointerCount, int historySize, int deviceId, int source, int action, long eventTime,
+      long downTime, int flags, int metaState, int actionButton, int buttonState,
+      int classification, int edgeFlags, float precisionX, float precisionY);
 
   protected native boolean onKeyDownNative(long handle, KeyEvent keyEvent);
 
@@ -217,6 +229,10 @@ public class GameActivity
   protected native void onWindowInsetsChangedNative(long handle);
 
   protected native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
+
+  protected native void onSoftwareKeyboardVisibilityChangedNative(long handle, boolean visible);
+
+  protected native boolean onEditorActionNative(long handle, int action);
 
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
@@ -234,8 +250,22 @@ public class GameActivity
    * and call `getWindow().takeSurface(this);` instead if you want to render on the whole activity
    * window.
    */
+  protected InputEnabledSurfaceView createSurfaceView() {
+    return new InputEnabledSurfaceView(this);
+  }
+
+  /**
+   * You can override this function if you want to customize its behaviour,
+   * but if you only want to substitute the default surface view with your derived class,
+   * override createSurfaceView() instead.
+   */
   protected void onCreateSurfaceView() {
-    mSurfaceView = new InputEnabledSurfaceView(this);
+    mSurfaceView = createSurfaceView();
+
+    if (mSurfaceView == null) {
+      return;
+    }
+
     FrameLayout frameLayout = new FrameLayout(this);
     contentViewId = ViewCompat.generateViewId();
     frameLayout.setId(contentViewId);
@@ -452,6 +482,7 @@ public class GameActivity
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+    this.mSurfaceView.mInputConnection.onApplyWindowInsets(v, insets);
     onWindowInsetsChangedNative(mNativeHandle);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
       // Pass through to the view - we don't want to handle the insets, just observe them.
@@ -487,6 +518,19 @@ public class GameActivity
     Log.v(LOG_TAG, "onImeInsetsChanged from Text Listener");
   }
 
+  // From the text input Listener.
+  @Override
+  public void onSoftwareKeyboardVisibilityChanged(boolean visible) {
+    onSoftwareKeyboardVisibilityChangedNative(mNativeHandle, visible);
+  }
+
+  // From the text input Listener.
+  // Called when editor action is performed.
+  @Override
+  public boolean onEditorAction(int action) {
+    return onEditorActionNative(mNativeHandle, action);
+  }
+
   /**
    * Get the EditorInfo structure used to initialize the IME when it is requested.
    * The default is to forward key requests to the app (InputType.TYPE_NULL) and to
@@ -496,9 +540,10 @@ public class GameActivity
   public EditorInfo getImeEditorInfo() {
     if (imeEditorInfo==null) {
       imeEditorInfo = new EditorInfo();
-      imeEditorInfo.inputType = InputType.TYPE_NULL;
-      imeEditorInfo.actionId = IME_ACTION_NONE;
-      imeEditorInfo.imeOptions = IME_FLAG_NO_ENTER_ACTION;
+      // Provide safe defaults here.
+      imeEditorInfo.inputType = InputType.TYPE_CLASS_TEXT;
+      imeEditorInfo.actionId = IME_ACTION_DONE;
+      imeEditorInfo.imeOptions = IME_ACTION_DONE | IME_FLAG_NO_FULLSCREEN;
     }
     return imeEditorInfo;
   }

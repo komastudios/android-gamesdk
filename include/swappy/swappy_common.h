@@ -48,7 +48,7 @@
 
 // Internal macros to track Swappy version, do not use directly.
 #define SWAPPY_MAJOR_VERSION 2
-#define SWAPPY_MINOR_VERSION 0
+#define SWAPPY_MINOR_VERSION 1
 #define SWAPPY_BUGFIX_VERSION 0
 #define SWAPPY_PACKED_VERSION                                                  \
     ANDROID_GAMESDK_PACKED_VERSION(SWAPPY_MAJOR_VERSION, SWAPPY_MINOR_VERSION, \
@@ -65,6 +65,11 @@
                           SWAPPY_MINOR_VERSION, SWAPPY_BUGFIX_VERSION, \
                           AGDK_GIT_COMMIT)
 
+// Define this to 1 to enable all logging from Swappy, by default it is
+// disabled in a release build and enabled in a debug build.
+#ifndef ENABLE_SWAPPY_LOGGING
+#define ENABLE_SWAPPY_LOGGING 0
+#endif
 /** @endcond */
 
 /** @brief Id of a thread returned by an external thread manager. */

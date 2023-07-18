@@ -15,6 +15,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
@@ -40,15 +41,6 @@ android {
         prefab true
     }
 }
-
-task copyAssets() {
-    copy {
-        from "../../../../test/memoryadvice/memoryadvice/src/main/resources"
-        into "src/main/assets"
-    }
-}
-
-tasks.preBuild.dependsOn('copyAssets')
 
 dependencies {
 
