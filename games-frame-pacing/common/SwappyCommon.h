@@ -128,6 +128,11 @@ class SwappyCommon {
         mLastLatencyRecorded = callback;
     }
 
+    void resetFramePacing();
+
+    void enableFramePacing(bool enable);
+    void enableBlockingWait(bool enable);
+
    protected:
     // Used for testing
     SwappyCommon(const SwappyCommonSettings& settings);
@@ -366,6 +371,14 @@ class SwappyCommon {
     // Counts the number of consecutive missed frames (as judged by expected
     // latency).
     int mMissedFrameCounter = 0;
+
+    bool mFramePacingResetRequested GUARDED_BY(mMutex) = false;
+
+    std::chrono::nanoseconds mInitialRefreshPeriod;
+
+    bool mFramePacingToggleRequested GUARDED_BY(mMutex) = false;
+    bool mFramePacingEnabled GUARDED_BY(mMutex) = true;
+    bool mBlockingWaitEnabled GUARDED_BY(mMutex) = true;
 };
 
 }  // namespace swappy

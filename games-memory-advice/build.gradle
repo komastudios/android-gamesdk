@@ -21,7 +21,6 @@ plugins {
 buildDir="../../out_memory_advice"
 
 android {
-
     defaultConfig {
         minSdkVersion 20
         compileSdkVersion 31
@@ -30,6 +29,15 @@ android {
         versionName "1.1"
 
         consumerProguardFiles "consumer-rules.pro"
+        externalNativeBuild {
+            cmake {
+                if (project.hasProperty("stl")) {
+                    arguments '-DANDROID_STL='+ project.stl
+                } else {
+                    arguments '-DANDROID_STL=c++_shared'
+                }
+            }
+        }
     }
 
     buildTypes {
@@ -72,6 +80,15 @@ android {
         }
     }
 
+    // If we don't include this line the created .aar contains the c++ std lib
+    // at <.aar_file>/jni/<abi>/libc++_shared.so. When we have multiple
+    // libraries containing libc++_shared.so the linker complains because it
+    // can't choose between them. Because we use prefab we don't need to
+    // contents of the <.aar_file>/jni/* folder so we can just exclude it here
+    // to prevent the jni folder from being created.
+    packagingOptions {
+        exclude("**.so")
+    }
 }
 
 repositories {

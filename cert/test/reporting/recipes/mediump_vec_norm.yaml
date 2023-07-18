@@ -1,8 +1,0 @@
-build:
-  configuration: recipes/configurations/mediump_vec_norm.json
-
-deployment:
-  ftl:
-    devices:
-      # - { codename: "sawfish", version: 26 }
-      # - { codename: "mlv1", version: 23 }

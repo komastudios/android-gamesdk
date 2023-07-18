@@ -15,8 +15,8 @@
 #include "tuningfork/tuningfork.h"
 #include "swappy/swappyGL.h"
 #include "swappy/swappyGL_extra.h"
-#include "full/tuningfork.pb.h"
-#include "full/dev_tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
+#include "lite/dev_tuningfork.pb.h"
 #include "protobuf_util.h"
 #include <sstream>
 #include <condition_variable>
@@ -97,8 +97,6 @@ extern "C" void FidelityParamsCallback(const TuningFork_CProtobufSerialization* 
     p.set_tesselation_percent(50);
     std::vector<uint8_t> params_ser(params->bytes, params->bytes + params->size);
     tf::Deserialize(params_ser, p);
-    std::string s = p.DebugString();
-    ALOGI("Using FidelityParams: %s", ReplaceReturns(s).c_str());
     int nSpheres = p.num_spheres();
     int tesselation = p.tesselation_percent();
     Renderer::getInstance()->setQuality(nSpheres, tesselation);

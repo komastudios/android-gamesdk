@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/get_gl_extensions.json

@@ -52,9 +52,3 @@
 #else
 #define ALOGV(...)
 #endif
-
-namespace swappy {
-
-std::string to_string(int value);
-
-}

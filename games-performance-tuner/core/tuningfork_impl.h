@@ -117,6 +117,9 @@ class TuningForkImpl : public IdProvider {
         const ProtobufSerialization &defaultParams,
         ProtobufSerialization &fidelityParams, uint32_t timeout_ms);
 
+    TuningFork_ErrorCode PredictQualityLevels(QLTimePredictions &predictions,
+                                              uint32_t timeout_ms);
+
     // Returns the set annotation id or -1 if it could not be set
     MetricId SetCurrentAnnotation(const ProtobufSerialization &annotation);
 

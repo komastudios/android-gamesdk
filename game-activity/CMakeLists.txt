@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-activity/include/)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src/common/)
 
 set(GAMEACTIVITY_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/prefab-src/modules/game-activity/include/")
 
@@ -35,7 +36,10 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0")
 # See the build.gradle file
 add_library(game-activity STATIC ${CMAKE_CURRENT_SOURCE_DIR}/null.cpp)
 
-add_library(game-activity_static STATIC ${GAMEACTIVITY_SRCS})
+add_library(game-activity_static STATIC
+            ${GAMEACTIVITY_SRCS}
+            ${CMAKE_CURRENT_SOURCE_DIR}/../src/common/system_utils.cpp
+            )
 
 set_target_properties(game-activity PROPERTIES
      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build )
