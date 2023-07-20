@@ -63,18 +63,22 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR;
     }
 
-    if (jresponse.find("quality_levels") == jresponse.end()) {
+    if (jresponse.find("qualityLevels") == jresponse.end()) {
         ALOGE("Quality levels not found in response");
         return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR;
     }
 
-    Json::array quality_levels = jresponse["quality_levels"].array_items();
+    Json::array quality_levels = jresponse["qualityLevels"].array_items();
     for (auto& quality_level : quality_levels) {
         // Fetch the fidelity parameters first for this level
         ProtobufSerialization fps;
-        std::string sfps = quality_level.object_items()
-                               .at("serialized_fidelity_parameters")
-                               .string_value();
+        std::string sfps;
+        Json::object ql_response = quality_level.object_items();
+
+        if (ql_response.find("serializedFidelityParameters") !=
+            ql_response.end()) {
+            sfps = ql_response["serializedFidelityParameters"].string_value();
+        }
         fps.resize(modp_b64_decode_len(sfps.length()));
         int sz =
             modp_b64_decode((char*)fps.data(), sfps.c_str(), sfps.length());
@@ -87,9 +91,11 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
         }
 
         // Fetch the predicted frame time for this level
-        std::string s_time = quality_level.object_items()
-                                 .at("expected_frame_time")
-                                 .string_value();
+        std::string s_time;
+
+        if (ql_response.find("expectedFrameTime") != ql_response.end()) {
+            s_time = ql_response["expectedFrameTime"].string_value();
+        }
 
         double parsed_dur_s = atof(s_time.c_str());
         if (parsed_dur_s > 1.0f || parsed_dur_s < 0.0f) {
