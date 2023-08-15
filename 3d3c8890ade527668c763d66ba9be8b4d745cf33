@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7aefbe66_02666350",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2023-08-15T14:40:41Z",
+      "side": 1,
+      "message": "Pinging this, still need a +2 on the revised CL to submit",
+      "revId": "3d3c8890ade527668c763d66ba9be8b4d745cf33",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
