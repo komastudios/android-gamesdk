@@ -206,18 +206,20 @@ public class GameControllerManager {
                                             boolean needsMotionRanges) {
         boolean isSource = false;
         InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        int inputDeviceSources = inputDevice.getSources();
-        int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
+        if (inputDevice != null) {
+            int inputDeviceSources = inputDevice.getSources();
+            int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
 
-        if (inputDevice.isVirtual() == false) {
-            if ((inputDeviceSources & sourceMask) != 0) {
-                List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
-                if (needsMotionRanges) {
-                    if (motionRanges.size() > 0) {
+            if (inputDevice.isVirtual() == false) {
+                if ((inputDeviceSources & sourceMask) != 0) {
+                    List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
+                    if (needsMotionRanges) {
+                        if (motionRanges.size() > 0) {
+                            isSource = true;
+                        }
+                    } else {
                         isSource = true;
                     }
-                } else {
-                    isSource = true;
                 }
             }
         }
