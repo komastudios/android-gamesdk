@@ -388,7 +388,8 @@ static int mainWorkCallback(int fd, int events, void *data) {
         case CMD_SET_WINDOW_FLAGS: {
             code->env->CallVoidMethod(code->javaGameActivity,
                                       gGameActivityClassInfo.setWindowFlags,
-                                      work.arg1, work.arg2);
+                                      static_cast<jint>(work.arg1),
+                                      static_cast<jint>(work.arg2));
             checkAndClearException(code->env, "setWindowFlags");
         } break;
         case CMD_SHOW_SOFT_INPUT: {
@@ -406,8 +407,10 @@ static int mainWorkCallback(int fd, int events, void *data) {
         case CMD_SET_IME_EDITOR_INFO: {
             code->env->CallVoidMethod(
                 code->javaGameActivity,
-                gGameActivityClassInfo.setImeEditorInfoFields, work.arg1,
-                work.arg2, work.arg3);
+                gGameActivityClassInfo.setImeEditorInfoFields,
+                static_cast<jint>(work.arg1),
+                static_cast<jint>(work.arg2),
+                static_cast<jint>(work.arg3));
             checkAndClearException(code->env, "setImeEditorInfo");
         } break;
         case CMD_RESTART_INPUT: {
