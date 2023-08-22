@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51f3c262_940d9050",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2023-08-22T21:15:38Z",
+      "side": 1,
+      "message": "CL with fix for the developer reported bug in GameActivity.",
+      "revId": "524a1f057687ad9ef29056094ae707c6dcda633f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
