@@ -16,6 +16,23 @@
       "message": "CL with fix for the developer reported bug in GameActivity.",
       "revId": "524a1f057687ad9ef29056094ae707c6dcda633f",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbfe2bb7_c10a5ed2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-08-23T10:22:23Z",
+      "side": 1,
+      "message": "Thanks for these fixes. I assume you have checked all JNI calls in AGDK for a similar error pattern? I do realize it might be a big amount of work, we might need to create a separate issue for that.",
+      "revId": "524a1f057687ad9ef29056094ae707c6dcda633f",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
