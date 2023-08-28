@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19ff77bd_9f837373",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-08-28T07:17:53Z",
+      "side": 1,
+      "message": "typo here: \"completely async\" -\u003e \"completely disable async\"",
+      "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a42ef4a_87e74c2a",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-08-28T07:17:53Z",
+      "side": 1,
+      "message": "Interesting stuff - does this async telemetry actually work? I am wondering if this should be disabled by default and only be enabled by choice.",
+      "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
