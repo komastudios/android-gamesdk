@@ -45,7 +45,11 @@ extern "C" {
 
 #define PADDLEBOAT_MAJOR_VERSION 2
 #define PADDLEBOAT_MINOR_VERSION 0
+<<<<<<< HEAD   (3fc90e Fix rare null reference in onInputDeviceChanged)
 #define PADDLEBOAT_BUGFIX_VERSION 0
+=======
+#define PADDLEBOAT_BUGFIX_VERSION 1
+>>>>>>> CHANGE (ce9894 Update GameController version to 2.0.1)
 #define PADDLEBOAT_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(PADDLEBOAT_MAJOR_VERSION, \
                                    PADDLEBOAT_MINOR_VERSION, \
