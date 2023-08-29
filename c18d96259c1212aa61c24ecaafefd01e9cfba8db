@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a272ffda_42d6df1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-08-29T10:18:35Z",
+      "side": 1,
+      "message": "Could you update game-activity and game-text-input to alpha02 as well?",
+      "revId": "c18d96259c1212aa61c24ecaafefd01e9cfba8db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
