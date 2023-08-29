@@ -16,6 +16,24 @@
       "message": "Could you update game-activity and game-text-input to alpha02 as well?",
       "revId": "c18d96259c1212aa61c24ecaafefd01e9cfba8db",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8925f5d5_be8ac061",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-08-29T10:22:26Z",
+      "side": 1,
+      "message": "This is the games-memory advice release branch. the game-activity \u0026 game-text-input here do not matter.",
+      "parentUuid": "a272ffda_42d6df1e",
+      "revId": "c18d96259c1212aa61c24ecaafefd01e9cfba8db",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
