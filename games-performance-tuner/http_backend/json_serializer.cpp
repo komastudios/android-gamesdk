@@ -26,6 +26,7 @@
 #include "core/tuningfork_impl.h"
 #include "core/tuningfork_utils.h"
 #include "modp_b64.h"
+#include "proto/protobuf_util.h"
 
 // TODO(b/140155101): Move the date library into aosp/external
 #include "date/date.h"
@@ -146,7 +147,7 @@ Json::object JsonSerializer::TelemetryContextJson(
 #define SET_METADATA_FIELD(OBJ, KEY) \
     if (md.KEY != 0) OBJ[#KEY] = md.KEY;
 
-std::string DurationJsonFromNanos(int64_t ns) {
+static std::string DurationJsonFromNanos(int64_t ns) {
     // For JSON, we should return a string with the number of seconds.
     // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/duration.proto
     double dns = ns;
@@ -154,10 +155,6 @@ std::string DurationJsonFromNanos(int64_t ns) {
     std::stringstream str;
     str << JsonSerializer::FixedAndTruncated(dns) << "s";
     return str.str();
-}
-
-std::string JsonSerializer::DurationJsonFromMillis(int64_t ms) {
-    return DurationJsonFromNanos(1000000 * ms);
 }
 
 Json::object JsonSerializer::LoadingTimeMetadataJson(
@@ -213,6 +210,8 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             counts.push_back(static_cast<int32_t>(c));
         Json::object o{{"counts", counts}};
         o["instrument_id"] = session_.GetInstrumentationKey(ft.frame_time.ikey);
+        o["kll_quantiles_sketch"] =
+            B64Encode(Serialize(th->aggregator_->SerializeToProto()));
         render_histograms.push_back(o);
         duration = std::max(th->duration_, duration);
     }

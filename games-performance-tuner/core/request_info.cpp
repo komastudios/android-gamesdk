@@ -116,25 +116,34 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     }
 
     if (gamesdk::jni::IsValid()) {
+        using namespace gamesdk::jni;
+
         info.apk_version_code = apk_utils::GetVersionCode(
             &info.apk_package_name, &info.gl_es_version);
-        info.model = gamesdk::jni::android::os::Build::MODEL().C();
-        info.brand = gamesdk::jni::android::os::Build::BRAND().C();
-        info.product = gamesdk::jni::android::os::Build::PRODUCT().C();
-        info.device = gamesdk::jni::android::os::Build::DEVICE().C();
+        info.model = android::os::Build::MODEL().C();
+        info.brand = android::os::Build::BRAND().C();
+        info.product = android::os::Build::PRODUCT().C();
+        info.device = android::os::Build::DEVICE().C();
         if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 31) {
-            info.soc_model = gamesdk::jni::android::os::Build::SOC_MODEL().C();
-            info.soc_manufacturer =
-                gamesdk::jni::android::os::Build::SOC_MANUFACTURER().C();
+            info.soc_model = android::os::Build::SOC_MODEL().C();
+            info.soc_manufacturer = android::os::Build::SOC_MANUFACTURER().C();
         }
 
-        gamesdk::jni::android::util::DisplayMetrics display_metrics;
-        gamesdk::jni::AppContext()
-            .getWindowManager()
-            .getDefaultDisplay()
-            .getMetrics(display_metrics);
-        info.height_pixels = display_metrics.heightPixels();
-        info.width_pixels = display_metrics.widthPixels();
+        android::util::DisplayMetrics display_metrics;
+
+        java::Object win_obj = AppContext().getSystemService(
+            android::content::Context::WINDOW_SERVICE);
+
+        if (win_obj.valid()) {
+            android::view::WindowManager window_manager(std::move(win_obj));
+            window_manager.getDefaultDisplay().getMetrics(display_metrics);
+            info.height_pixels = display_metrics.heightPixels();
+            info.width_pixels = display_metrics.widthPixels();
+        } else {
+            ALOGE(
+                "Unable to get WindowManager service, width and height will be "
+                "set to 0");
+        }
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
     info.swappy_version = settings.c_settings.swappy_version;

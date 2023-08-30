@@ -287,7 +287,7 @@ void GameTextInput::processEvent(jobject textInputEvent) {
 void GameTextInput::showIme(uint32_t flags) {
     if (inputConnection_ == nullptr) return;
     env_->CallVoidMethod(inputConnection_, setSoftKeyboardActiveMethod_, true,
-                         flags);
+                         static_cast<jint>(flags));
 }
 
 void GameTextInput::setEventCallback(GameTextInputEventCallback callback,
@@ -312,12 +312,12 @@ void GameTextInput::processImeInsets(const ARect *insets) {
 void GameTextInput::hideIme(uint32_t flags) {
     if (inputConnection_ == nullptr) return;
     env_->CallVoidMethod(inputConnection_, setSoftKeyboardActiveMethod_, false,
-                         flags);
+                         static_cast<jint>(flags));
 }
 
 void GameTextInput::restartInput() {
     if (inputConnection_ == nullptr) return;
-    env_->CallVoidMethod(inputConnection_, restartInputMethod_, false);
+    env_->CallVoidMethod(inputConnection_, restartInputMethod_);
 }
 
 jobject GameTextInput::stateToJava(const GameTextInputState &state) const {

@@ -44,4 +44,10 @@
     <string name="buffer_stuffing_fix_title">Buffer stuffing fix wait (0 to disable)</string>
     <string name="buffer_stuffing_fix_summary">Number of bad frames to wait before applying the buffer stuffing fix</string>
 
+    <string name="frame_pacing_enabled_title">Enable Frame pacing</string>
+    <string name="frame_pacing_enabled_summary">Toggle to disable/enable frame pacing inside swappy</string>
+
+    <string name="blocking_wait_enabled_title">Blocking Wait</string>
+    <string name="blocking_wait_enabled_summary">Toggle to disable/enable blocking wait for previous frame</string>
+
 </resources>

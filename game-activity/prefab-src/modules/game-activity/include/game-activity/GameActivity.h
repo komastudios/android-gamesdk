@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
 #define GAMEACTIVITY_MAJOR_VERSION 2
-#define GAMEACTIVITY_MINOR_VERSION 0
+#define GAMEACTIVITY_MINOR_VERSION 1
 #define GAMEACTIVITY_BUGFIX_VERSION 0
 #define GAMEACTIVITY_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(GAMEACTIVITY_MAJOR_VERSION, \
@@ -277,6 +277,16 @@ typedef struct GameActivityCallbacks {
      * should be placed has changed.
      */
     void (*onContentRectChanged)(GameActivity *activity, const ARect *rect);
+
+    /**
+     * Callback called when the software keyboard is shown or hidden.
+     */
+    void (*onSoftwareKeyboardVisibilityChanged)(GameActivity *activity, bool visible);
+
+    /**
+     * Callback called when the software keyboard is shown or hidden.
+     */
+    bool (*onEditorAction)(GameActivity *activity, int action);
 } GameActivityCallbacks;
 
 /**
@@ -534,6 +544,13 @@ enum GameActivityShowSoftInputFlags {
 void GameActivity_showSoftInput(GameActivity* activity, uint32_t flags);
 
 /**
+ * Restarts the input method. Calls InputMethodManager.restartInput().
+ * Note that this method can be called from *any* thread; it will send a message
+ * to the main thread of the process where the Java call will take place.
+ */
+void GameActivity_restartInput(GameActivity* activity);
+
+/**
  * Set the text entry state (see documentation of the GameTextInputState struct
  * in the Game Text Input library reference).
  *
@@ -589,6 +606,11 @@ void GameActivity_hideSoftInput(GameActivity* activity, uint32_t flags);
  */
 void GameActivity_getWindowInsets(GameActivity* activity,
                                   GameCommonInsetsType type, ARect* insets);
+
+/**
+ * Tells whether the software keyboard is visible or not.
+ */
+bool GameActivity_isSoftwareKeyboardVisible(GameActivity* activity);
 
 /**
  * Set options on how the IME behaves when it is requested for text input.

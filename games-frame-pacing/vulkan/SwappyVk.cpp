@@ -340,4 +340,21 @@ void SwappyVk::clearStats(VkSwapchainKHR swapchain) {
     if (it != perSwapchainImplementation.end()) it->second->clearStats();
 }
 
+void SwappyVk::resetFramePacing(VkSwapchainKHR swapchain) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end()) it->second->resetFramePacing();
+}
+
+void SwappyVk::enableFramePacing(VkSwapchainKHR swapchain, bool enable) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->enableFramePacing(enable);
+}
+
+void SwappyVk::enableBlockingWait(VkSwapchainKHR swapchain, bool enable) {
+    auto it = perSwapchainImplementation.find(swapchain);
+    if (it != perSwapchainImplementation.end())
+        it->second->enableBlockingWait(enable);
+}
+
 }  // namespace swappy

@@ -17,6 +17,7 @@
 #include "android_native_app_glue.h"
 
 #include <android/log.h>
+#include <assert.h>
 #include <errno.h>
 #include <jni.h>
 #include <stdlib.h>
@@ -263,7 +264,7 @@ static bool default_key_filter(const GameActivityKeyEvent* event) {
 
 static bool default_motion_filter(const GameActivityMotionEvent* event) {
     // Ignore any non-touch events.
-    return event->source == SOURCE_TOUCHSCREEN;
+    return (event->source & SOURCE_TOUCHSCREEN) != 0;
 }
 
 // --------------------------------------------------------------------
@@ -361,6 +362,7 @@ static void android_app_free(struct android_app* android_app) {
     for (input_buf_idx = 0; input_buf_idx < NATIVE_APP_GLUE_MAX_INPUT_BUFFERS; input_buf_idx++) {
         struct android_input_buffer *buf = &android_app->inputBuffers[input_buf_idx];
 
+        android_app_clear_motion_events(buf);
         free(buf->motionEvents);
         free(buf->keyEvents);
     }
@@ -532,7 +534,15 @@ struct android_input_buffer* android_app_swap_input_buffers(
 }
 
 void android_app_clear_motion_events(struct android_input_buffer* inputBuffer) {
-    inputBuffer->motionEventsCount = 0;
+    // We do not need to lock here if the inputBuffer has already been swapped
+    // as is handled by the game loop thread
+    while (inputBuffer->motionEventsCount > 0) {
+        GameActivityMotionEvent_destroy(
+            &inputBuffer->motionEvents[inputBuffer->motionEventsCount - 1]);
+
+        inputBuffer->motionEventsCount--;
+    }
+    assert(inputBuffer->motionEventsCount == 0);
 }
 
 void android_app_set_key_event_filter(struct android_app* app,
@@ -606,6 +616,32 @@ static void onContentRectChanged(GameActivity* activity, const ARect *rect) {
     pthread_mutex_unlock(&android_app->mutex);
 }
 
+static void onSoftwareKeyboardVisibilityChanged(GameActivity *activity,
+                                                bool visible) {
+    LOGV("SoftwareKeyboardVisibilityChanged: %p -- %d", activity, (int) visible);
+
+    struct android_app* android_app = ToApp(activity);
+
+    pthread_mutex_lock(&android_app->mutex);
+    android_app->softwareKeyboardVisible = visible;
+
+    android_app_write_cmd(android_app, APP_CMD_SOFTWARE_KB_VIS_CHANGED);
+    pthread_mutex_unlock(&android_app->mutex);
+}
+
+static bool onEditorAction(GameActivity *activity, int action) {
+    LOGV("EditorAction: %p -- %d", activity, action);
+
+    struct android_app* android_app = ToApp(activity);
+
+    pthread_mutex_lock(&android_app->mutex);
+    android_app->editorAction = action;
+
+    android_app_write_cmd(android_app, APP_CMD_EDITOR_ACTION);
+    pthread_mutex_unlock(&android_app->mutex);
+    return true;
+}
+
 
 JNIEXPORT
 void GameActivity_onCreate(GameActivity* activity, void* savedState,
@@ -631,6 +667,9 @@ void GameActivity_onCreate(GameActivity* activity, void* savedState,
     activity->callbacks->onNativeWindowResized = onNativeWindowResized;
     activity->callbacks->onWindowInsetsChanged = onWindowInsetsChanged;
     activity->callbacks->onContentRectChanged = onContentRectChanged;
+    activity->callbacks->onSoftwareKeyboardVisibilityChanged =
+        onSoftwareKeyboardVisibilityChanged;
+    activity->callbacks->onEditorAction = onEditorAction;
     LOGV("Callbacks set: %p", activity->callbacks);
 
     activity->instance =

@@ -37,11 +37,8 @@ include("../../games-performance-tuner/protobuf/protobuf.cmake")
 # Save the generation dir as it gets overwritten when we add_subdirectory tuningfork
 set(PGENS_DIR "${PROTO_GENS_DIR}")
 
-protobuf_generate_full_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
+protobuf_generate_lite_cpp( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/tuningfork.proto
-  proto/dev_tuningfork.proto
-)
-protobuf_generate_nano_c( ${CMAKE_CURRENT_SOURCE_DIR}/proto
   proto/dev_tuningfork.proto
 )
 
@@ -58,6 +55,7 @@ include_directories(
   ${PGENS_DIR}
   ${PROTOBUF_SRC_DIR}
   ${PROTOBUF_SRC_DIR}/..
+  ${PROTOBUF_SRC_DIR}/../config/
 )
 
 set(TEST_SRCS
@@ -81,9 +79,8 @@ set(TEST_SRCS
   serialization_test.cpp
   settings_test.cpp
   ../common/test_utils.cpp
-  ${PGENS_DIR}/nano/dev_tuningfork.pb.c
-  ${PGENS_DIR}/full/dev_tuningfork.pb.cc
-  ${PGENS_DIR}/full/tuningfork.pb.cc
+  ${PGENS_DIR}/lite/dev_tuningfork.pb.cc
+  ${PGENS_DIR}/lite/tuningfork.pb.cc
 )
 
 add_executable(tuningfork_test
@@ -99,10 +96,11 @@ add_library(tuningfork_test_lib
 )
 
 add_library( protobuf-static
-  STATIC ${PROTOBUF_LITE_SRCS} ${PROTOBUF_SRCS}
+  STATIC ${PROTOBUF_LITE_SRCS}
 )
 target_compile_options(protobuf-static PUBLIC "-Wno-tautological-constant-compare"
-                                              "-Wno-enum-compare-switch")
+                                              "-Wno-enum-compare-switch"
+                                              "-Wno-invalid-noreturn")
 
 target_link_libraries(tuningfork_test
   android

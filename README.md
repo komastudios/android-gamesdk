@@ -4,24 +4,15 @@
 
 Unless you need to compile AGDK from sources, it's recommended that you use the package with the pre-compiled library. You can download it on https://developer.android.com/games/agdk.
 
-## Requirements
-
-AGDK requires Python executable named "python". A supported version of Python is supplied at `prebuilts/python/PLATFORM_NAME/bin/python`. The easiest way is to create a symlink to that executable and put it into any directory that is in your PATH.
-
 ## Build AGDK
 
 In order to build AGDK, this project must be initialized using the [*repo* tool](https://gerrit.googlesource.com/git-repo/).
-On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, to avoid issues with symlinks.
+On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), we recommend running all commands involving *repo* with Git Bash, and setting `git config --global core.symlinks true` to avoid issues with symlinks.
 
 ```bash
 mkdir android-games-sdk
 cd android-games-sdk
 repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
-```
-Ninja binary must be in your PATH like below. Please replace PLATFORM_NAME with either linux-x86 for Linux or darwin-86 for MacOS or windows-x86 for Windows, and run the following command:
-
-```bash
-export PATH="$PATH:`pwd`/../prebuilts/ninja/PLATFORM_NAME"
 ```
 
 ### Build with locally installed SDK/NDK
@@ -30,7 +21,7 @@ If the Android SDK is already installed locally, then download only the AGDK sou
 
 ```bash
 repo sync -c -j8 gamesdk
-repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
+repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf external/StatsD tools/repohooks
 repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
 ```
 
@@ -45,6 +36,8 @@ cd gamesdk
 ./gradlew packageLocalZip -Plibraries=swappy,tuningfork -PpackageName=localtf
 ```
 
+Note that it may be necessary to use Android SDK Manager to download particular versions of Android SDK, NDK and cmake as expected by the build. The error message should provide guidance in that case.
+
 ### Build with specific prebuilt SDKs
 
 Download the project along with specific versions of prebuilt Android SDK and NDK (~4GB).
@@ -54,6 +47,13 @@ First, download the core project and tools:
 repo sync -c -j8 gamesdk
 repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
 repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
+```
+
+Cmake and Ninja binaries must be in your PATH like below. Please replace PLATFORM_NAME with either linux-x86 for Linux or darwin-86 for MacOS or windows-x86 for Windows, and run the following command:
+
+```bash
+export PATH="$PATH:`pwd`/prebuilts/cmake/PLATFORM_NAME/bin"
+export PATH="$PATH:`pwd`/prebuilts/ninja/PLATFORM_NAME"
 ```
 
 Next, use the download script to get prebuilt SDKs and/or NDKs.
@@ -145,7 +145,7 @@ Samples are classic Android projects, using CMake to build the native code. They
 
 ```bash
 cd samples/bouncyball && ./gradlew assemble
-cd samples/cube && ./gradlew assemble
+cd third_party/cube && ./gradlew assemble
 cd samples/tuningfork/insightsdemo && ./gradlew assemble
 cd samples/tuningfork/experimentsdemo && ./gradlew assemble
 ```
@@ -157,7 +157,7 @@ The Android SDK/NDK exposed using environment variables (`ANDROID_HOME`) will be
 Open projects using Android Studio:
 
 * `samples/bouncyball`
-* `samples/cube`
+* `third_party/cube`
 * `samples/tuningfork/insightsdemo`
 * `samples/tuningfork/experimentsdemo`
 
