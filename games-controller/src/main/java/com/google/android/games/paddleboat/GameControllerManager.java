@@ -206,18 +206,20 @@ public class GameControllerManager {
                                             boolean needsMotionRanges) {
         boolean isSource = false;
         InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        int inputDeviceSources = inputDevice.getSources();
-        int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
+        if (inputDevice != null) {
+            int inputDeviceSources = inputDevice.getSources();
+            int sourceMask = InputDevice.SOURCE_ANY & matchingSourceMask;
 
-        if (inputDevice.isVirtual() == false) {
-            if ((inputDeviceSources & sourceMask) != 0) {
-                List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
-                if (needsMotionRanges) {
-                    if (motionRanges.size() > 0) {
+            if (inputDevice.isVirtual() == false) {
+                if ((inputDeviceSources & sourceMask) != 0) {
+                    List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
+                    if (needsMotionRanges) {
+                        if (motionRanges.size() > 0) {
+                            isSource = true;
+                        }
+                    } else {
                         isSource = true;
                     }
-                } else {
-                    isSource = true;
                 }
             }
         }
@@ -394,9 +396,20 @@ public class GameControllerManager {
         if (isDeviceOfSource(deviceId, GAMECONTROLLER_SOURCE_MASK, true)) {
             InputDevice inputDevice = InputDevice.getDevice(deviceId);
             if (inputDevice != null) {
-                String deviceName = inputDevice.getName();
-                if (deviceName.equalsIgnoreCase(FINGERPRINT_DEVICE_NAME) == false) {
-                    isGameController = true;
+                List<InputDevice.MotionRange> motionRanges = inputDevice.getMotionRanges();
+                if (motionRanges != null) {
+                    // Some physical keyboards include DPAD and JOYSTICK sources, but
+                    // only report a single AXIS_GENERIC_1 motion range, screen them out
+                    // as they aren't really game controllers
+                    if (!(motionRanges.size() == 1 && motionRanges.get(0).getAxis() ==
+                            MotionEvent.AXIS_GENERIC_1)) {
+                        // Ignore the fingerprint reader, which can also identify
+                        // as a game controller for some reason
+                        String deviceName = inputDevice.getName();
+                        if (!deviceName.equalsIgnoreCase(FINGERPRINT_DEVICE_NAME)) {
+                            isGameController = true;
+                        }
+                    }
                 }
             }
         }
@@ -667,6 +680,12 @@ public class GameControllerManager {
         for (int deviceId : pendingMouseDeviceIds) {
             onMouseDeviceAdded(deviceId);
         }
+        pendingMouseDeviceIds.clear();
+
+        for (int deviceId : pendingKeyboardDeviceIds) {
+            onKeyboardDeviceAdded(deviceId);
+        }
+        pendingKeyboardDeviceIds.clear();
     }
 
     public void setReportMotionEvents() {
