@@ -438,4 +438,14 @@ int SwappyVkBase::getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                                     allocated_entries);
 }
 
+void SwappyVkBase::resetFramePacing() { mCommonBase.resetFramePacing(); }
+
+void SwappyVkBase::enableFramePacing(bool enable) {
+    mCommonBase.enableFramePacing(enable);
+}
+
+void SwappyVkBase::enableBlockingWait(bool enable) {
+    mCommonBase.enableBlockingWait(enable);
+}
+
 }  // namespace swappy

@@ -11,12 +11,9 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
 else()
   set( HOST_PLATFORM "linux-x86")
 endif()
-set( PROTOBUF_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/install/${HOST_PLATFORM}")
+set( PROTOBUF_INSTALL_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protoc-3.21.7/${HOST_PLATFORM}")
 
-set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../third_party/protobuf-3.0.0/src")
-if( NOT DEFINED PROTOBUF_NANO_SRC_DIR)
-  set( PROTOBUF_NANO_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/nanopb-c")
-endif()
+set( PROTOBUF_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../external/protobuf/src")
 set(PROTOC_EXE ${PROTOBUF_INSTALL_DIR}/bin/protoc${EXE_EXTENSION})
 set( PROTOBUF_INCLUDE_DIR ${PROTOBUF_SRC_DIR} )
 
@@ -36,21 +33,15 @@ function(extra_pb_link_options libname)
   set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_version.script")
 endfunction()
 
-function(extra_pb_nano_link_options libname)
-  set_link_options(${libname} "${CMAKE_CURRENT_LIST_DIR}/protobuf_nano_version.script")
-endfunction()
-
 set(PROTO_GENS_DIR ${CMAKE_BINARY_DIR}/gens)
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
   set(PROTO_GENS_DIR ${_PROTO_GENS_DIR} PARENT_SCOPE)
   set(PROTOC_EXE ${PROTOC_EXE} PARENT_SCOPE)
   set(PROTOBUF_SRC_DIR ${PROTOBUF_SRC_DIR} PARENT_SCOPE)
-  set(PROTOBUF_NANO_SRC_DIR ${PROTOBUF_NANO_SRC_DIR} PARENT_SCOPE)
 endif()
 file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/full)
 file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/lite)
-file(MAKE_DIRECTORY ${PROTO_GENS_DIR}/nano)
 
 function(protobuf_generate_base)
   if(NOT ARGN)
@@ -62,7 +53,9 @@ function(protobuf_generate_base)
   set(_out_opt ${ARGV1})
   set(_extra_opts ${ARGV2})
   set(_gens_subdir ${ARGV3})
-  set(_working_dir ${ARGV4})
+  set(_opt_prefix ${ARGV4})
+  set(_working_dir ${ARGV5})
+  list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
   list(REMOVE_AT ARGN 0)
@@ -86,7 +79,7 @@ function(protobuf_generate_base)
       OUTPUT "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.${_extension}"
              "${_PROTO_GENS_DIR}${RELFIL_WE}.pb.h"
       COMMAND ${PROTOC_EXE}
-      ARGS ${_out_opt}=${_PROTO_GENS_DIR}
+      ARGS ${_out_opt}=${_opt_prefix}${_PROTO_GENS_DIR}
            ${_extra_opts}
            ${_protobuf_include_path}
            ${REL_FIL}
@@ -103,40 +96,42 @@ function(protobuf_generate_base)
   endforeach()
 endfunction()
 
-get_filename_component(ABS_PROTOBUF_NANO_SRC_DIR ${PROTOBUF_NANO_SRC_DIR} ABSOLUTE)
-
-function(protobuf_generate_nano_c)
-  protobuf_generate_base("c" "--nanopb_out"
-    "--plugin=protoc-gen-nanopb=${ABS_PROTOBUF_NANO_SRC_DIR}/generator/protoc-gen-nanopb${PLUGIN_EXTENSION}"
-    "/nano" ${ARGN})
-endfunction()
 
 function(protobuf_generate_full_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/full" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/full" "" ${ARGN})
 endfunction()
 
 function(protobuf_generate_lite_cpp)
-  protobuf_generate_base("cc" "--cpp_out" "" "/lite" ${ARGN})
+  protobuf_generate_base("cc" "--cpp_out" "" "/lite" "lite:" ${ARGN})
 endfunction()
 
 set(GP_SRC_DIR ${PROTOBUF_SRC_DIR}/google/protobuf)
 
 set(PROTOBUF_LITE_SRCS
+    ${GP_SRC_DIR}/any_lite.cc
     ${GP_SRC_DIR}/arena.cc
     ${GP_SRC_DIR}/arenastring.cc
+    ${GP_SRC_DIR}/arenaz_sampler.cc
     ${GP_SRC_DIR}/extension_set.cc
+    ${GP_SRC_DIR}/generated_enum_util.cc
+    ${GP_SRC_DIR}/generated_message_tctable_lite.cc
     ${GP_SRC_DIR}/generated_message_util.cc
+    ${GP_SRC_DIR}/implicit_weak_message.cc
+    ${GP_SRC_DIR}/inlined_string_field.cc
     ${GP_SRC_DIR}/io/coded_stream.cc
+    ${GP_SRC_DIR}/io/io_win32.cc
+    ${GP_SRC_DIR}/io/strtod.cc
     ${GP_SRC_DIR}/io/zero_copy_stream.cc
+    ${GP_SRC_DIR}/io/zero_copy_stream_impl.cc
     ${GP_SRC_DIR}/io/zero_copy_stream_impl_lite.cc
+    ${GP_SRC_DIR}/map.cc
     ${GP_SRC_DIR}/message_lite.cc
+    ${GP_SRC_DIR}/parse_context.cc
     ${GP_SRC_DIR}/repeated_field.cc
-    ${GP_SRC_DIR}/stubs/atomicops_internals_x86_gcc.cc
-    ${GP_SRC_DIR}/stubs/atomicops_internals_x86_msvc.cc
+    ${GP_SRC_DIR}/repeated_ptr_field.cc
     ${GP_SRC_DIR}/stubs/bytestream.cc
     ${GP_SRC_DIR}/stubs/common.cc
     ${GP_SRC_DIR}/stubs/int128.cc
-    ${GP_SRC_DIR}/stubs/once.cc
     ${GP_SRC_DIR}/stubs/status.cc
     ${GP_SRC_DIR}/stubs/statusor.cc
     ${GP_SRC_DIR}/stubs/stringpiece.cc
@@ -145,63 +140,3 @@ set(PROTOBUF_LITE_SRCS
     ${GP_SRC_DIR}/stubs/strutil.cc
     ${GP_SRC_DIR}/stubs/time.cc
     ${GP_SRC_DIR}/wire_format_lite.cc)
-
-set(PROTOBUF_SRCS
-    ${GP_SRC_DIR}/any.cc
-    ${GP_SRC_DIR}/any.pb.cc
-    ${GP_SRC_DIR}/api.pb.cc
-    ${GP_SRC_DIR}/compiler/importer.cc
-    ${GP_SRC_DIR}/compiler/parser.cc
-    ${GP_SRC_DIR}/descriptor.cc
-    ${GP_SRC_DIR}/descriptor.pb.cc
-    ${GP_SRC_DIR}/descriptor_database.cc
-    ${GP_SRC_DIR}/duration.pb.cc
-    ${GP_SRC_DIR}/dynamic_message.cc
-    ${GP_SRC_DIR}/empty.pb.cc
-    ${GP_SRC_DIR}/extension_set_heavy.cc
-    ${GP_SRC_DIR}/field_mask.pb.cc
-    ${GP_SRC_DIR}/generated_message_reflection.cc
-    ${GP_SRC_DIR}/io/gzip_stream.cc
-    ${GP_SRC_DIR}/io/printer.cc
-    ${GP_SRC_DIR}/io/strtod.cc
-    ${GP_SRC_DIR}/io/tokenizer.cc
-    ${GP_SRC_DIR}/io/zero_copy_stream_impl.cc
-    ${GP_SRC_DIR}/map_field.cc
-    ${GP_SRC_DIR}/message.cc
-    ${GP_SRC_DIR}/reflection_ops.cc
-    ${GP_SRC_DIR}/service.cc
-    ${GP_SRC_DIR}/source_context.pb.cc
-    ${GP_SRC_DIR}/struct.pb.cc
-    ${GP_SRC_DIR}/stubs/mathlimits.cc
-    ${GP_SRC_DIR}/stubs/substitute.cc
-    ${GP_SRC_DIR}/text_format.cc
-    ${GP_SRC_DIR}/timestamp.pb.cc
-    ${GP_SRC_DIR}/type.pb.cc
-    ${GP_SRC_DIR}/unknown_field_set.cc
-    ${GP_SRC_DIR}/util/field_comparator.cc
-    ${GP_SRC_DIR}/util/field_mask_util.cc
-    ${GP_SRC_DIR}/util/internal/datapiece.cc
-    ${GP_SRC_DIR}/util/internal/default_value_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/error_listener.cc
-    ${GP_SRC_DIR}/util/internal/field_mask_utility.cc
-    ${GP_SRC_DIR}/util/internal/json_escaping.cc
-    ${GP_SRC_DIR}/util/internal/json_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/json_stream_parser.cc
-    ${GP_SRC_DIR}/util/internal/object_writer.cc
-    ${GP_SRC_DIR}/util/internal/proto_writer.cc
-    ${GP_SRC_DIR}/util/internal/protostream_objectsource.cc
-    ${GP_SRC_DIR}/util/internal/protostream_objectwriter.cc
-    ${GP_SRC_DIR}/util/internal/type_info.cc
-    ${GP_SRC_DIR}/util/internal/type_info_test_helper.cc
-    ${GP_SRC_DIR}/util/internal/utility.cc
-    ${GP_SRC_DIR}/util/json_util.cc
-    ${GP_SRC_DIR}/util/message_differencer.cc
-    ${GP_SRC_DIR}/util/time_util.cc
-    ${GP_SRC_DIR}/util/type_resolver_util.cc
-    ${GP_SRC_DIR}/wire_format.cc
-    ${GP_SRC_DIR}/wrappers.pb.cc)
-
-set(PROTOBUF_NANO_SRCS
-    ${PROTOBUF_NANO_SRC_DIR}/pb_encode.c
-    ${PROTOBUF_NANO_SRC_DIR}/pb_decode.c
-    ${PROTOBUF_NANO_SRC_DIR}/pb_common.c)

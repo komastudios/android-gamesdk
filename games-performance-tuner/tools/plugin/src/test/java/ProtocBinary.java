@@ -23,9 +23,8 @@ import java.io.File;
  */
 public class ProtocBinary {
     private static final OS CURRENT_OS = OsUtils.getOS();
-    private static final File PROTOC_BINARY =
-        new File("../../../../third_party/protobuf-3.0.0/install/" + CURRENT_OS.getOsName()
-            + "/bin/" + CURRENT_OS.getExecutableProtoFileName());
+    private static final File PROTOC_BINARY = new File("../../../../third_party/protoc-3.21.7/"
+        + CURRENT_OS.getOsName() + "/bin/" + CURRENT_OS.getExecutableProtoFileName());
 
     private ProtocBinary() {}
 

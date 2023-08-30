@@ -74,15 +74,30 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
 
 // Blocking call to get quality predictions from the server.
 TuningFork_ErrorCode TuningFork_predictQualityLevels(
-    TuningFork_CProtobufArray *qualityLevels, uint32_t target_frame_time_ms,
-    uint32_t timeout_ms) {
-    tf::ProtobufArray predictions;
+    TuningFork_QualityLevelPredictions *qlp, uint32_t timeout_ms) {
+    tf::QLTimePredictions predictions;
 
     TuningFork_ErrorCode result =
-        tf::PredictQualityLevels(predictions, target_frame_time_ms, timeout_ms);
-    if (result == TUNINGFORK_ERROR_OK && qualityLevels)
-        tf::ToCProtobufArray(predictions, *qualityLevels);
+        tf::PredictQualityLevels(predictions, timeout_ms);
+
+    if (result == TUNINGFORK_ERROR_OK && qlp)
+        tf::ToCQualityLevelPredictions(predictions, *qlp);
+
     return result;
+}
+
+void TuningFork_QualityLevelPredictions_free(
+    TuningFork_QualityLevelPredictions *qlp) {
+    for (int i = 0; i < qlp->size; i++) {
+        TuningFork_CProtobufSerialization_free(&(qlp->fidelity_params[i]));
+    }
+
+    delete[] qlp->fidelity_params;
+    delete[] qlp->predicted_time_us;
+
+    qlp->fidelity_params = nullptr;
+    qlp->predicted_time_us = nullptr;
+    qlp->size = 0;
 }
 
 // Protobuf serialization of the current annotation

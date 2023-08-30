@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/cpu_stress_cpp.json
