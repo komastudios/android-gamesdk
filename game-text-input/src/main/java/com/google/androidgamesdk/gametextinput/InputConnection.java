@@ -126,13 +126,8 @@ public class InputConnection
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
     targetView.setOnKeyListener(this);
-
-    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0) {
-      mEditable.setFilters(new InputFilter[]{
-              new InputFilter.LengthFilter(MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT),
-              new SingeLineFilter()
-      });
-    }
+    // Apply EditorInfo settings
+    this.setEditorInfo(settings.mEditorInfo);
   }
 
   /**
@@ -185,6 +180,18 @@ public class InputConnection
    */
   public final void setEditorInfo(EditorInfo editorInfo) {
     this.settings.mEditorInfo = editorInfo;
+
+    // Depending on the multiline state, we might need a differerent set of filters.
+    // Filters are being used to filter specific characters for harware keyboards
+    // (software input methods already support TYPE_TEXT_FLAG_MULTI_LINE).
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0) {
+      mEditable.setFilters(new InputFilter[]{
+              new InputFilter.LengthFilter(MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT),
+              new SingeLineFilter()
+      });
+    } else {
+      mEditable.setFilters(new InputFilter[]{ });
+    }
   }
 
   /**
