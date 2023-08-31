@@ -556,6 +556,7 @@ public class GameActivity
   @Keep
   public void setImeEditorInfo(EditorInfo info) {
     imeEditorInfo = info;
+    mSurfaceView.mInputConnection.setEditorInfo(info);
   }
 
   /**
@@ -570,6 +571,7 @@ public class GameActivity
     info.inputType = inputType;
     info.actionId = actionId;
     info.imeOptions = imeOptions;
+    mSurfaceView.mInputConnection.setEditorInfo(info);
   }
 
   protected class InputEnabledSurfaceView extends SurfaceView {
