@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8670825_d2d74560",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-09-05T13:00:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19ff77bd_9f837373",
+      "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9a42ef4a_87e74c2a",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-08-28T07:17:53Z",
       "side": 1,
       "message": "Interesting stuff - does this async telemetry actually work? I am wondering if this should be disabled by default and only be enabled by choice.",
+      "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71353577_00c9e677",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-09-05T13:00:34Z",
+      "side": 1,
+      "message": "I mean it does send all that telemetry to the server; we\u0027re just not making much use of it that often though. I think it can stay on by default and disabled if necessary by developers.",
+      "parentUuid": "9a42ef4a_87e74c2a",
       "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
