@@ -123,6 +123,10 @@ static std::pair<uint64_t, bool> getMemInfoValueFromData(
 }
 
 void DefaultMemInfoProvider::UpdateMemInfo() {
+    if (!memInfo.initialized) {
+        memInfo.initialized = true;
+        memInfo.pid = (uint32_t)android_process_.myPid();
+    }
     std::stringstream ss_path;
     memInfoMap data;
 
@@ -153,6 +157,10 @@ void DefaultMemInfoProvider::UpdateMemInfo() {
 }
 
 void DefaultMemInfoProvider::UpdateOomScore() {
+    if (!memInfo.initialized) {
+        memInfo.initialized = true;
+        memInfo.pid = (uint32_t)android_process_.myPid();
+    }
     std::stringstream ss_path;
     ss_path << "/proc/" << memInfo.pid << "/oom_score";
     std::ifstream oom_file(ss_path.str());
@@ -168,11 +176,6 @@ void DefaultMemInfoProvider::UpdateOomScore() {
 
 void DefaultMemInfoProvider::SetEnabled(bool enabled) {
     enabled_ = enabled;
-
-    if (enabled && !memInfo.initialized) {
-        memInfo.initialized = true;
-        memInfo.pid = (uint32_t)android_process_.myPid();
-    }
 }
 
 bool DefaultMemInfoProvider::GetEnabled() const { return enabled_; }
