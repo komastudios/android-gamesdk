@@ -398,6 +398,12 @@ typedef struct TuningFork_Settings {
      * Default is false.
      */
     bool verbose_logging_enabled;
+    /**
+     * If true; the library will disable async telemetry collection,
+     * which will help improve performance in lower end devices.
+     * Default is false.
+     */
+    bool disable_async_telemetry;
 } TuningFork_Settings;
 
 /**

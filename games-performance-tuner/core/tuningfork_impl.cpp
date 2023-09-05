@@ -148,7 +148,9 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     upload_thread_.InitialChecks(*current_session_, *this,
                                  settings_.c_settings.persistent_cache);
 
-    InitAsyncTelemetry();
+    if (!settings_.c_settings.disable_async_telemetry) {
+        InitAsyncTelemetry();
+    }
 
     // Record the time before we were initialized.
     if (RecordLoadingTime(
@@ -249,9 +251,15 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
             last_id_ = id;
         }
         current_annotation_id_ = MetricId::FrameTime(id, 0);
-        battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
-        thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
-        memory_reporting_task_->UpdateMetricId(MetricId::Memory(id));
+        if (battery_reporting_task_) {
+            battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
+        }
+        if (thermal_reporting_task_) {
+            thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
+        }
+        if (memory_reporting_task_) {
+            memory_reporting_task_->UpdateMetricId(MetricId::Memory(id));
+        }
         return current_annotation_id_;
     }
 }
@@ -575,7 +583,9 @@ void TuningForkImpl::SwapSessions() {
         sessions_[0]->ClearData();
         current_session_ = sessions_[0].get();
     }
-    async_telemetry_->SetSession(current_session_);
+    if (async_telemetry_) {
+        async_telemetry_->SetSession(current_session_);
+    }
 }
 TuningFork_ErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     ALOGV("Flush %d", upload);
