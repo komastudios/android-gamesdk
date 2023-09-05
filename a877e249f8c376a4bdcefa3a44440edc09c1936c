@@ -69,6 +69,24 @@
       "parentUuid": "9a42ef4a_87e74c2a",
       "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eebc970c_ba6a82b2",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-05T13:03:15Z",
+      "side": 1,
+      "message": "I guess, we can introduce an option to set this in the unity plugin and leave it up to devs on how to use it.",
+      "parentUuid": "71353577_00c9e677",
+      "revId": "a877e249f8c376a4bdcefa3a44440edc09c1936c",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
