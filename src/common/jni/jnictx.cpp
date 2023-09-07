@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <unistd.h>
 #include "jnictx.h"
 
 #include <memory>
@@ -60,13 +61,17 @@ Ctx::~Ctx() {
 }
 JNIEnv* Ctx::Env() const {
     if (theEnv == nullptr && jvm_ != nullptr) {
+        ALOGI("AttachCurrentThread for thread %d", static_cast<int>(gettid()));
         jvm_->AttachCurrentThread(&theEnv, NULL);
     }
     return theEnv;
 }
 
 void Ctx::DetachThread() const {
-    if (jvm_ != nullptr) jvm_->DetachCurrentThread();
+    if (jvm_ != nullptr) {
+        ALOGI("DetachCurrentThread for thread %d", static_cast<int>(gettid()));
+        jvm_->DetachCurrentThread();
+    }
     theEnv = nullptr;
 }
 
