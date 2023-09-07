@@ -16,6 +16,24 @@
       "message": "Are we sure that this is the right solution? To me it seems like lazy initialization in `SetEnabled` seems correct, instead I think we should check if it is initialized/enabled in the callers that do `UpdateOomScore` \u0026 `UpdateMemInfo`. Otherwise we would be doing unnecessary tracking when the default memoryinfo provider is never enabled.",
       "revId": "f5b06f03e3ea67fbc0fbe6d86e6d3c130fca92d0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "445c6182_4e76b00d",
+        "filename": "games-performance-tuner/core/memory_telemetry.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-09-07T10:30:03Z",
+      "side": 1,
+      "message": "Ah this is my fault. I asked Baris in person \"Why isn\u0027t this done in an init function or in the constructor?\" which caused the changes from the previous fix.\n\n\u003e instead I think we should check if it is initialized/enabled in the callers that do UpdateOomScore \u0026 UpdateMemInfo\n\nSo in this case this \"fix\" would be to return early from UpdateOomScore? As it doesn\u0027t make sense to call it before SetEnabled?\n\nSo the purpose of \"memInfo.initialized\" is to prevent unnecessary calls to \"android_process_.myPid()\" which is expensive because it calls into the JVM",
+      "parentUuid": "eaf95477_02203d9b",
+      "revId": "f5b06f03e3ea67fbc0fbe6d86e6d3c130fca92d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
