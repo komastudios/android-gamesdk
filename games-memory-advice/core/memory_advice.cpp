@@ -96,7 +96,7 @@ MemoryAdvice_ErrorCode UnregisterWatcher(
 }
 
 int32_t BaseTests() {
-    if (s_impl == nullptr) return MEMORYADVICE_ERROR_NOT_INITIALIZED;
+    if (s_impl == nullptr) return 1;
     return s_impl->BaseTests();
 }
 
