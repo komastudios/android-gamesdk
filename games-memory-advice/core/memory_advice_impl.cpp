@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "jni/jnictx.h"
 #include "memory_advice_impl.h"
 
 #include <algorithm>
@@ -126,6 +127,11 @@ Json::object MemoryAdviceImpl::GetAdvice() {
     CheckCancelledWatchers();
 
     std::lock_guard<std::mutex> lock(advice_mutex_);
+
+    // Make sure current thread is attached to the JVM.
+    // This is important because we perform many JNI calls here to get system metrics.
+    gamesdk::jni::Ctx::Instance()->Env();
+
     double start_time = MillisecondsSinceEpoch();
     Json::object advice;
     Json::object data;
