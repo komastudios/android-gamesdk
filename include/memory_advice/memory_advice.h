@@ -95,7 +95,9 @@ MemoryAdvice_ErrorCode MemoryAdvice_init(JNIEnv *env, jobject context);
  * other functions.
  *
  * This version of the init function will read the given params instead of
- * using the library provided default params.
+ * using the library provided default params. The format of params is a JSON
+ * string with a semantic like default.json in the root directory of this
+ * library.
  *
  * @param env a JNIEnv
  * @param context the app context
