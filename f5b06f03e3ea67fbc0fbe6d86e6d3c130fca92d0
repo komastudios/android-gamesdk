@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b163a9d_4b3c4f17",
+        "filename": "games-memory-advice/core/memory_advice.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-09-07T16:06:43Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "4fb95b41_4d8b581c",
+      "revId": "f5b06f03e3ea67fbc0fbe6d86e6d3c130fca92d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d950921f_89a34ae2",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-09-07T15:33:51Z",
       "side": 0,
       "message": "This CL does more than just \"attach MemoryAdvice thread to JVM\"\n\n\nwhy are all these other build changes being made?\nIf they\u0027re required to get the tests to run can they be split out into their own CL?",
+      "revId": "f5b06f03e3ea67fbc0fbe6d86e6d3c130fca92d0",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16577011_132f29ad",
+        "filename": "samples/agdktunnel/app/src/main/cpp/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-09-07T16:06:43Z",
+      "side": 0,
+      "message": "OK you\u0027re right",
+      "parentUuid": "d950921f_89a34ae2",
       "revId": "f5b06f03e3ea67fbc0fbe6d86e6d3c130fca92d0",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
