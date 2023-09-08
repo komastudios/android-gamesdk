@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9f77012_590c218f",
+        "filename": "games-memory-advice/core/memory_advice_impl.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1568678
+      },
+      "writtenOn": "2023-09-08T12:41:02Z",
+      "side": 1,
+      "message": "Maybe put this under the advice_mutex_ just in case?",
+      "revId": "9e038804f911bf905a7029dbc03c8faa3ece2dd5",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
