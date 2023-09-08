@@ -322,27 +322,18 @@ public class InputConnection
   @Override
   public boolean deleteSurroundingText(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingText: " + beforeLength + ":" + afterLength);
-    Pair selection = this.getSelection();
-    int shift = 0;
-    if (beforeLength > 0) {
-      this.mEditable.delete(Math.max(0, selection.first - beforeLength), selection.first);
-      shift = beforeLength;
-    }
-
-    if (afterLength > 0) {
-      this.mEditable.delete(Math.max(0, selection.second - shift),
-          Math.min(this.mEditable.length(), selection.second - shift + afterLength));
-    }
-
+    boolean res = super.deleteSurroundingText(beforeLength, afterLength);
     this.stateUpdated(false);
-    return true;
+    return res;
   }
 
   // From BaseInputConnection
   @Override
   public boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingTextInCodePoints: " + beforeLength + ":" + afterLength);
-    return super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
+    boolean res = super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
+    this.stateUpdated(false);
+    return res;
   }
 
   // From BaseInputConnection
@@ -358,37 +349,30 @@ public class InputConnection
   // From BaseInputConnection
   @Override
   public CharSequence getSelectedText(int flags) {
-    Pair selection = this.getSelection();
-    return selection.first == -1 ? (CharSequence) ""
-                                 : this.mEditable.subSequence(selection.first, selection.second);
+    Log.d(TAG, "getSelectedText: " + flags);
+    return super.getSelectedText(flags);
   }
 
   // From BaseInputConnection
   @Override
   public CharSequence getTextAfterCursor(int length, int flags) {
     Log.d(TAG, "getTextAfterCursor: " + length + ":" + flags);
-    Pair selection = this.getSelection();
-    if (selection.first == -1) {
-      return (CharSequence) "";
-    } else {
-      int n = Math.min(selection.second + length, this.mEditable.length());
-      CharSequence seq = this.mEditable.subSequence(selection.second, n);
-      return (CharSequence) seq.toString();
+    if (length < 0) {
+      Log.i(TAG, "getTextAfterCursor: returning null to due to an invalid length=" + length);
+      return null;
     }
+    return super.getTextAfterCursor(length, flags);
   }
 
   // From BaseInputConnection
   @Override
   public CharSequence getTextBeforeCursor(int length, int flags) {
     Log.d(TAG, "getTextBeforeCursor: " + length + ", flags=" + flags);
-    Pair selection = this.getSelection();
-    if (selection.first == -1) {
-      return (CharSequence) "";
-    } else {
-      int start = Math.max(selection.first - length, 0);
-      CharSequence seq = this.mEditable.subSequence(start, selection.first);
-      return (CharSequence) seq.toString();
+    if (length < 0) {
+      Log.i(TAG, "getTextBeforeCursor: returning null to due to an invalid length=" + length);
+      return null;
     }
+    return super.getTextBeforeCursor(length, flags);
   }
 
   // From BaseInputConnection
