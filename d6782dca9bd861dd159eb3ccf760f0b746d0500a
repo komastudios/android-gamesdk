@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77cc96f0_866f188b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003913
+      },
+      "writtenOn": "2023-09-11T10:27:15Z",
+      "side": 1,
+      "message": "I\u0027ll trust that you\u0027ve manually checked there\u0027s no loss of expected functionality.",
+      "revId": "d6782dca9bd861dd159eb3ccf760f0b746d0500a",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
