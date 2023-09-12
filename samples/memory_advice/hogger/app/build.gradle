@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.memory_advice.hogger"
-        minSdkVersion 20
+        minSdkVersion 19
         targetSdkVersion 31
         versionCode 17
         versionName "1.0"
