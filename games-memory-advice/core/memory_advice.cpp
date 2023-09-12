@@ -72,7 +72,7 @@ MemoryAdvice_MemoryState GetMemoryState() {
 
 int64_t GetAvailableMemory() {
     if (s_impl == nullptr)
-        return static_cast<float>(MEMORYADVICE_ERROR_NOT_INITIALIZED);
+        return static_cast<int64_t>(MEMORYADVICE_ERROR_NOT_INITIALIZED);
     return s_impl->GetAvailableMemory();
 }
 
