@@ -1,5 +1,40 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85302098_bcaecc47",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-12T12:58:51Z",
+      "side": 1,
+      "message": "Nit: typo \"ealier\" -\u003e \"earlier\"\nNit: When referencing other commits, it is better to include either the Change-Id or a bug id.",
+      "revId": "cb0cf2c186b9a70a15057bdf8d998eab38f74fa1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89aaf6a8_4178a12d",
+        "filename": "games-memory-advice/core/memory_advice.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-12T12:58:51Z",
+      "side": 1,
+      "message": "why is this being cast to float when the return type is int64_t ?",
+      "revId": "cb0cf2c186b9a70a15057bdf8d998eab38f74fa1",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
