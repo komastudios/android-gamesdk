@@ -618,6 +618,8 @@ bool GameActivity_isSoftwareKeyboardVisible(GameActivity* activity);
  * https://developer.android.com/reference/android/view/inputmethod/EditorInfo
  * for the meaning of inputType, actionId and imeOptions.
  *
+ * <b>Note:</b> currently only TYPE_NULL AND TYPE_CLASS_NUMBER are supported.
+ *
  * Note that this function will attach the current thread to the JVM if it is
  * not already attached, so the caller must detach the thread from the JVM
  * before the thread is destroyed using DetachCurrentThread.
