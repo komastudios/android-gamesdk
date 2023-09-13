@@ -51,7 +51,8 @@ public class InputConnection
       KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP,
       KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_DOWN_LEFT,
       KeyEvent.KEYCODE_DPAD_UP_LEFT, KeyEvent.KEYCODE_DPAD_UP_LEFT, KeyEvent.KEYCODE_DPAD_UP_RIGHT,
-      KeyEvent.KEYCODE_BACK};
+      KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN,
+      KeyEvent.KEYCODE_VOLUME_MUTE, KeyEvent.KEYCODE_VOLUME_MUTE};
   private final InputMethodManager imm;
   private final View targetView;
   private final Settings settings;
@@ -481,10 +482,11 @@ public class InputConnection
         setSelectionInternal(new_cursor, new_cursor);
         this.informIMM();
         this.restartInput();
+        this.stateUpdated(false);
+        return true;
+      } else {
+        return false;
       }
-
-      this.stateUpdated(false);
-      return true;
     }
   }
 
