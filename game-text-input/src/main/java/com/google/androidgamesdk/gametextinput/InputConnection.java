@@ -323,9 +323,25 @@ public class InputConnection
   @Override
   public boolean deleteSurroundingText(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingText: " + beforeLength + ":" + afterLength);
-    boolean res = super.deleteSurroundingText(beforeLength, afterLength);
+    Pair selection = this.getSelection();
+    int first = Math.min(selection.first, selection.second);
+    int second = Math.max(selection.first, selection.second);
+
+    if (first == -1) {
+      return false;
+    }
+
+    if (afterLength > 0) {
+      this.mEditable.delete(Math.max(0, second),
+              Math.min(this.mEditable.length(), second - afterLength));
+    }
+
+    if (beforeLength > 0) {
+      this.mEditable.delete(Math.max(0, first - beforeLength), first);
+    }
+
     this.stateUpdated(false);
-    return res;
+    return true;
   }
 
   // From BaseInputConnection
@@ -453,9 +469,13 @@ public class InputConnection
         this.mEditable.delete(selection.first, selection.second);
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && selection.first > 0) {
         this.mEditable.delete(selection.first - 1, selection.first);
+        this.stateUpdated(false);
+        return true;
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
           && selection.first < this.mEditable.length() - 1) {
         this.mEditable.delete(selection.first, selection.first + 1);
+        this.stateUpdated(false);
+        return true;
       }
 
       int code = event.getKeyCode();
