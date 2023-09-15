@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #define LOG_TAG "GameTextInput"
@@ -43,7 +44,10 @@ struct GameTextInput {
     GameTextInput(JNIEnv *env, uint32_t max_string_size);
     ~GameTextInput();
     void setState(const GameTextInputState &state);
-    const GameTextInputState &getState() const { return currentState_; }
+    GameTextInputState getState() const {
+        std::lock_guard<std::mutex> lock(currentStateMutex_);
+        return currentState_;
+    }
     void setInputConnection(jobject inputConnection);
     void processEvent(jobject textInputEvent);
     void showIme(uint32_t flags);
@@ -69,6 +73,8 @@ struct GameTextInput {
     jclass stateJavaClass_ = nullptr;
     // The latest text input update.
     GameTextInputState currentState_ = {};
+    // A mutex to protect currentState_.
+    mutable std::mutex currentStateMutex_;
     // An instance of gametextinput.InputConnection.
     jclass inputConnectionClass_ = nullptr;
     jobject inputConnection_ = nullptr;
@@ -142,7 +148,8 @@ void GameTextInput_setState(GameTextInput *input,
 void GameTextInput_getState(GameTextInput *input,
                             GameTextInputGetStateCallback callback,
                             void *context) {
-    callback(context, &input->getState());
+    GameTextInputState state = input->getState();
+    callback(context, &state);
 }
 
 void GameTextInput_setInputConnection(GameTextInput *input,
@@ -245,6 +252,8 @@ void GameTextInput::setState(const GameTextInputState &state) {
 }
 
 void GameTextInput::setStateInner(const GameTextInputState &state) {
+    std::lock_guard<std::mutex> lock(currentStateMutex_);
+
     // Check if we're setting using our own string (other parts may be
     // different)
     if (state.text_UTF8 == currentState_.text_UTF8) {
@@ -280,6 +289,7 @@ void GameTextInput::setInputConnection(jobject inputConnection) {
 void GameTextInput::processEvent(jobject textInputEvent) {
     stateFromJava(textInputEvent, processCallback, this);
     if (eventCallback_) {
+        std::lock_guard<std::mutex> lock(currentStateMutex_);
         eventCallback_(eventCallbackContext_, &currentState_);
     }
 }
