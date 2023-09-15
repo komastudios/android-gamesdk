@@ -323,9 +323,27 @@ public class InputConnection
   @Override
   public boolean deleteSurroundingText(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingText: " + beforeLength + ":" + afterLength);
-    boolean res = super.deleteSurroundingText(beforeLength, afterLength);
+    Pair selection = this.getSelection();
+    int first = Math.min(selection.first, selection.second);
+    int second = Math.max(selection.first, selection.second);
+    int shift = 0;
+
+    if (first == -1) {
+      return false;
+    }
+
+    if (beforeLength > 0) {
+      this.mEditable.delete(Math.max(0, first - beforeLength), first);
+      shift = beforeLength;
+    }
+
+    if (afterLength > 0) {
+      this.mEditable.delete(Math.max(0, second - shift),
+              Math.min(this.mEditable.length(), second - shift + afterLength));
+    }
+
     this.stateUpdated(false);
-    return res;
+    return true;
   }
 
   // From BaseInputConnection
