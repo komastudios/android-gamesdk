@@ -229,6 +229,9 @@ typedef void (*GameTextInputEventCallback)(
  * @param input A valid GameTextInput library handle.
  * @param callback Called by the library when the IME state changes.
  * @param context Context passed as first argument to the callback.
+ * <b>This function is deprecated. Don't perform any complex processing inside
+ * the callback other than copying the state variable. Using any synchronization
+ * primitives inside this callback may cause a deadlock.</b>
  */
 void GameTextInput_setEventCallback(GameTextInput *input,
                                     GameTextInputEventCallback callback,
