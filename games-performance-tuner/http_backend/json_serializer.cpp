@@ -140,7 +140,7 @@ Json::object JsonSerializer::TelemetryContextJson(
         {"tuning_parameters",
          Json::object{{"experiment_id", request_info.experiment_id},
                       {"serialized_fidelity_parameters",
-                       B64Encode(request_info.current_fidelity_parameters)}}},
+                       B64Encode(session_.GetFidelityParameters())}}},
         {"duration", DurationToSecondsString(duration)}};
 }
 

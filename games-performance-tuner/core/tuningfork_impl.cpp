@@ -300,10 +300,9 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
     auto result = backend_->GenerateTuningParameters(
         web_request, training_mode_params_.get(), params_ser, experiment_id);
     if (result == TUNINGFORK_ERROR_OK) {
-        RequestInfo::CachedValue().current_fidelity_parameters = params_ser;
+        current_session_->SetFidelityParameters(params_ser);
     } else if (training_mode_params_.get()) {
-        RequestInfo::CachedValue().current_fidelity_parameters =
-            *training_mode_params_;
+        current_session_->SetFidelityParameters(*training_mode_params_);
     }
     RequestInfo::CachedValue().experiment_id = experiment_id;
     if (Debugging() && gamesdk::jni::IsValid()) {
@@ -615,7 +614,7 @@ TuningFork_ErrorCode TuningForkImpl::SetFidelityParameters(
         ALOGW("Warning, previous data could not be flushed.");
         SwapSessions();
     }
-    RequestInfo::CachedValue().current_fidelity_parameters = params;
+    current_session_->SetFidelityParameters(params);
     // We clear the experiment id here.
     RequestInfo::CachedValue().experiment_id = "";
     return TUNINGFORK_ERROR_OK;

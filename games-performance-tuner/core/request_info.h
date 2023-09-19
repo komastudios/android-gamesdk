@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "meminfo_provider.h"
-#include "proto/protobuf_util.h"
 
 namespace tuningfork {
 
@@ -32,7 +31,6 @@ class Settings;
 // game package information and session information.
 struct RequestInfo {
     std::string experiment_id;
-    ProtobufSerialization current_fidelity_parameters;
     std::string session_id;
     std::string previous_session_id;
     uint64_t total_memory_bytes;
@@ -54,8 +52,7 @@ struct RequestInfo {
     int32_t height_pixels;
     int32_t width_pixels;
 
-    // Note that this will include an empty experiment_id and
-    // current_fidelity_parameters.
+    // Note that this will include an empty experiment_id
     static RequestInfo ForThisGameAndDevice(const Settings& settings);
 
     // We have a globally accessible cached value
