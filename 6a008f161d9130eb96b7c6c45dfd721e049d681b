@@ -16,6 +16,24 @@
       "message": "This seems like a good enough fix to me. It\u0027s small and fixes the issue. \n\nBut I would expect by design we wouldn\u0027t be able to change the FidelityParameters of a session. If the FidelityParameter changes then surely the entire session is invalidated (all the data collected in that session so far is invalidated). So by design the FidelityParameter should be a immutable value, right?",
       "revId": "6a008f161d9130eb96b7c6c45dfd721e049d681b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0a09d18_367a5d0f",
+        "filename": "games-performance-tuner/core/tuningfork_impl.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-19T13:11:34Z",
+      "side": 1,
+      "message": "Yeah agreed, but for the sake of this fix - we can keep it simple.",
+      "parentUuid": "0e30db32_6b1b9727",
+      "revId": "6a008f161d9130eb96b7c6c45dfd721e049d681b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
