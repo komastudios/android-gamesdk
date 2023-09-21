@@ -259,6 +259,23 @@
       "parentUuid": "e97a0af2_375ea458",
       "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbd34a3c_f1a14934",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-09-21T10:06:18Z",
+      "side": 1,
+      "message": "This copies shared_ptr by value, please change it to const auto \u0026i",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
