@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0474b872_9beaac00",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T09:20:47Z",
+      "side": 1,
+      "message": "it could be, but that counts as API change.",
+      "parentUuid": "bf30f6f1_0b749b98",
+      "range": {
+        "startLine": 24,
+        "startChar": 12,
+        "endLine": 24,
+        "endChar": 33
+      },
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cb1d5cf8_692c67a2",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 1
@@ -43,6 +67,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1563dd74_0014d98b",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T09:20:47Z",
+      "side": 1,
+      "message": "yeah that is good, I was a bit tunnel-visioned with the other parts of the change.",
+      "parentUuid": "cb1d5cf8_692c67a2",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "16bf1eab_97c85d25",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 1
@@ -54,6 +96,24 @@
       "writtenOn": "2023-09-21T09:13:37Z",
       "side": 1,
       "message": "What if we reach the end here?",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0d8797b_b5889572",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T09:20:47Z",
+      "side": 1,
+      "message": "that is okay, we are not doing anything with it in this scope once incremented.",
+      "parentUuid": "16bf1eab_97c85d25",
       "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
