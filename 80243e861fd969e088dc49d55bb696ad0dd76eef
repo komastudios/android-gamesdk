@@ -34,6 +34,24 @@
       "parentUuid": "746f9203_e8f68870",
       "revId": "80243e861fd969e088dc49d55bb696ad0dd76eef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc94b9b8_081fb494",
+        "filename": "games-frame-pacing/common/Settings.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T08:52:35Z",
+      "side": 1,
+      "message": "Clear for me sounds like we destroy each listener\nwhile remove sounds like unregistered them from being a listener\nI\u0027m leaving it \"remove\" to follow practice in similar cases",
+      "parentUuid": "746f9203_e8f68870",
+      "revId": "80243e861fd969e088dc49d55bb696ad0dd76eef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
