@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "02fc9712_a82f3561",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T09:43:47Z",
+      "side": 1,
+      "message": "Ok, let\u0027s have a P4  for this 😊",
+      "parentUuid": "0474b872_9beaac00",
+      "range": {
+        "startLine": 24,
+        "startChar": 12,
+        "endLine": 24,
+        "endChar": 33
+      },
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cb1d5cf8_692c67a2",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 1
@@ -114,6 +138,24 @@
       "side": 1,
       "message": "that is okay, we are not doing anything with it in this scope once incremented.",
       "parentUuid": "16bf1eab_97c85d25",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e97a0af2_375ea458",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T09:43:47Z",
+      "side": 1,
+      "message": "hmm, we are removing it, right? \nerasing smth from a list while iterating it is error prone, \n I think it should be  if(...) it \u003d tracer_list.erase(it); else ++it;\n\nA simpler alternative is to use remove_if\ntracer_list.remove_if(areTracerStructsEqual);",
+      "parentUuid": "e0d8797b_b5889572",
       "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
