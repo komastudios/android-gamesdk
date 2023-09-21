@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf30f6f1_0b749b98",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T09:13:37Z",
+      "side": 1,
+      "message": "Dumb question: can it be \u003d\u003d operator of the SwappyTracer ?",
+      "range": {
+        "startLine": 24,
+        "startChar": 12,
+        "endLine": 24,
+        "endChar": 33
+      },
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb1d5cf8_692c67a2",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T09:13:37Z",
+      "side": 1,
+      "message": "nit: why not have it simpler\n for (auto tracer : tracer_list) {\n    pImplementaion-\u003eaddTracer(\u0026tracer)\n }",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16bf1eab_97c85d25",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-21T09:13:37Z",
+      "side": 1,
+      "message": "What if we reach the end here?",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
