@@ -223,6 +223,10 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR =
         41,  ///< The response from predictQualityLevels was not a success
              ///< code
+    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_INSUFFICIENT_DATA =
+        42,  ///< There wasn't enough data to make a successful quality level
+             ///< prediction.
+
 
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;

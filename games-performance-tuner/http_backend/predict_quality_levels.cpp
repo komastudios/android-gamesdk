@@ -65,10 +65,14 @@ static TuningFork_ErrorCode DecodeResponse(const std::string& response,
 
     if (jresponse.find("qualityLevels") == jresponse.end()) {
         ALOGE("Quality levels not found in response");
-        return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR;
+        return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_INSUFFICIENT_DATA;
     }
 
     Json::array quality_levels = jresponse["qualityLevels"].array_items();
+    if (quality_levels.empty()) {
+        ALOGE("No quality levels reported");
+        return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_INSUFFICIENT_DATA;
+    }
     for (auto& quality_level : quality_levels) {
         // Fetch the fidelity parameters first for this level
         ProtobufSerialization fps;
