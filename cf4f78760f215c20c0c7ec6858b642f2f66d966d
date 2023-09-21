@@ -263,6 +263,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "16fd1a4e_857b807c",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T10:06:21Z",
+      "side": 1,
+      "message": "the scope is removing \"jt\" not \"it\" - I did briefly look into std::remove_if, it works fine for simple logic, but once adding another argument - it does not look very readable. In addition I tried to keep it consistent with how it is done in SwappyCommon (https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/main/games-frame-pacing/common/SwappyCommon.cpp#694)",
+      "parentUuid": "e97a0af2_375ea458",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bbd34a3c_f1a14934",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 1
