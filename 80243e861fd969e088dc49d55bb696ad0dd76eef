@@ -16,6 +16,24 @@
       "message": "NIT: I would prefer \"clearListeners\" instead.",
       "revId": "80243e861fd969e088dc49d55bb696ad0dd76eef",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4a2bb87_d88e3739",
+        "filename": "games-frame-pacing/common/Settings.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T08:48:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "746f9203_e8f68870",
+      "revId": "80243e861fd969e088dc49d55bb696ad0dd76eef",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
