@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "679e3457_b1e37fc5",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-09-21T22:17:00Z",
+      "side": 1,
+      "message": "It took me over an hour and two attempts to fully grok this code. So there\u0027s a little bit of snark below :)\n\nMy experience went like this:\n-We just want to keep a list of the tracers so why are we staticlly overloading the \u003d\u003d operator?\nOh! because we want to be able to remove by value. Why isn\u0027t that commented?\n\n-Why isn\u0027t this comparison func inside the class?\nOh! because these are c style structs because we provide a c API. Why isn\u0027t that commented?\n\n-Is this just a full field by field comparison of the struct. I guess I\u0027ll have to go check the header and check each field manually.\nOh! swapIntervalChanged isn\u0027t included? Why not? I haven\u0027t been able to figure it out. Why isn\u0027t that commented?\n\nSo we now need to maintain this \u003d\u003d operator. How would anyone adding fields to SwappyTracer know that? They need to remember to go into SwappyVk.cpp and check for any \u003d\u003d overloads? Why isn\u0027t that commented?\n\nalso consider using this formatting:\n```\nstatic bool operator\u003d\u003d(const SwappyTracer\u0026 t1, const SwappyTracer\u0026 t2) {\n    return (t1.preWait \u003d\u003d t2.preWait)\n            \u0026\u0026 (t1.postWait \u003d\u003d t2.postWait)\n            \u0026\u0026 (t1.preSwapBuffers \u003d\u003d t2.preSwapBuffers)\n            \u0026\u0026 (t1.postSwapBuffers \u003d\u003d t2.postSwapBuffers)\n            \u0026\u0026 (t1.startFrame \u003d\u003d t2.startFrame)\n            \u0026\u0026 (t1.userData \u003d\u003d t2.userData);\n}\n```",
+      "revId": "667ae221bfe838de592afce8c4c02985029f2fc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7d8a27c8_78bac07a",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 2
