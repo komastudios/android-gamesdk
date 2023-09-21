@@ -120,6 +120,30 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "af3b62b6_98b8d515",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T11:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "505dbb24_07784754",
+      "range": {
+        "startLine": 24,
+        "startChar": 12,
+        "endLine": 24,
+        "endChar": 33
+      },
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cb1d5cf8_692c67a2",
@@ -173,6 +197,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "efb0d606_8ec71362",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T11:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd21cd87_2aaa2622",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5770f72e_fe202e7f",
@@ -186,6 +228,24 @@
       "writtenOn": "2023-09-21T09:59:08Z",
       "side": 1,
       "message": "Please could you specify type here? Type declarations work as self-documenting code, and it might not be obvious to someone what is the type here.",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "158d04ec_93af5d1a",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T11:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5770f72e_fe202e7f",
       "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
@@ -297,6 +357,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9a8ad50_6711cfc5",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T11:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "16fd1a4e_857b807c",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bbd34a3c_f1a14934",
@@ -310,6 +388,24 @@
       "writtenOn": "2023-09-21T10:06:18Z",
       "side": 1,
       "message": "This copies shared_ptr by value, please change it to const auto \u0026i",
+      "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d857133_02287412",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T11:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbd34a3c_f1a14934",
       "revId": "cf4f78760f215c20c0c7ec6858b642f2f66d966d",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
