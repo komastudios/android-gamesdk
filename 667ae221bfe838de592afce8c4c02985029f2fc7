@@ -16,6 +16,24 @@
       "message": "This is all good, could you do the same change in https://android.googlesource.com/platform/frameworks/opt/gamesdk/+/refs/heads/main/games-frame-pacing/common/SwappyCommon.cpp#694 ?",
       "revId": "667ae221bfe838de592afce8c4c02985029f2fc7",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8a2ccb4_15ca4774",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-21T12:29:08Z",
+      "side": 1,
+      "message": "Is it okay if I create a task for it, as I think it is unrelated to this change.",
+      "parentUuid": "7d8a27c8_78bac07a",
+      "revId": "667ae221bfe838de592afce8c4c02985029f2fc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
