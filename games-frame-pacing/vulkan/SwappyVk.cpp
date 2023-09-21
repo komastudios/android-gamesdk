@@ -19,6 +19,13 @@
 #define LOG_TAG "SwappyVk"
 #include "SwappyLog.h"
 
+static bool operator==(const SwappyTracer& t1, const SwappyTracer& t2) {
+    return (t1.preWait == t2.preWait) && (t1.postWait == t2.postWait) &&
+           (t1.preSwapBuffers == t2.preSwapBuffers) &&
+           (t1.postSwapBuffers == t2.postSwapBuffers) &&
+           (t1.startFrame == t2.startFrame) && (t1.userData == t2.userData);
+}
+
 namespace swappy {
 
 class DefaultSwappyVkFunctionProvider {
@@ -158,6 +165,14 @@ bool SwappyVk::GetRefreshCycleDuration(JNIEnv* env, jobject jactivity,
         }
     }
 
+    // SwappyBase is constructed by this point, so we can add the tracers we
+    // have so far.
+    {
+        std::lock_guard<std::mutex> lock(tracer_list_lock);
+        for (const auto& tracer : tracer_list) {
+            pImplementation->addTracer(&tracer);
+        }
+    }
     // Now, call that derived class to get the refresh duration to return
     return pImplementation->doGetRefreshCycleDuration(swapchain,
                                                       pRefreshDuration);
@@ -291,14 +306,24 @@ std::chrono::nanoseconds SwappyVk::GetSwapInterval(VkSwapchainKHR swapchain) {
 }
 
 void SwappyVk::addTracer(const SwappyTracer* t) {
-    for (auto i : perSwapchainImplementation) {
-        i.second->addTracer(t);
+    if (t != nullptr) {
+        std::lock_guard<std::mutex> lock(tracer_list_lock);
+        tracer_list.push_back(*t);
+
+        for (const auto& i : perSwapchainImplementation) {
+            i.second->addTracer(t);
+        }
     }
 }
 
 void SwappyVk::removeTracer(const SwappyTracer* t) {
-    for (auto i : perSwapchainImplementation) {
-        i.second->removeTracer(t);
+    if (t != nullptr) {
+        std::lock_guard<std::mutex> lock(tracer_list_lock);
+        tracer_list.remove(*t);
+
+        for (const auto& i : perSwapchainImplementation) {
+            i.second->removeTracer(t);
+        }
     }
 }
 
