@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e762cf7f_cc2c70cf",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-22T07:40:28Z",
+      "side": 1,
+      "message": "Good catch with `swapIntervalChanged` - I missed that (maybe because I thought userData would be the last member). But all good points, I will see how I can improve struct to operator maintainability.",
+      "parentUuid": "1b5aa931_ea036ad0",
+      "revId": "667ae221bfe838de592afce8c4c02985029f2fc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7d8a27c8_78bac07a",
         "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
         "patchSetId": 2
