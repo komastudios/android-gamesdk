@@ -72,6 +72,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83a05542_557b4953",
+        "filename": "games-frame-pacing/vulkan/SwappyVk.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-09-22T12:10:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4959ab08_9db34ab8",
+      "revId": "667ae221bfe838de592afce8c4c02985029f2fc7",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7d8a27c8_78bac07a",
