@@ -34,6 +34,24 @@
       "parentUuid": "b489bee0_a32b808f",
       "revId": "118128142080d0dc91c9923e39d473636f883eeb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36a6c47f_eb86b468",
+        "filename": "games-performance-tuner/http_backend/http_request.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-26T12:50:05Z",
+      "side": 1,
+      "message": "Yes, Java pattern if following\nFile file \u003d null;\ntry {\n    file \u003d new File(..);\n    file.read(..);\n} catch(IOExpceiont err) { \n     //handle \n} finally {\n   try {\n       if(file!\u003dnull) file.close();\n    } catch(IOExpceiont err) { \n         // handle\n    }\n\n}",
+      "parentUuid": "1506c417_03745c51",
+      "revId": "118128142080d0dc91c9923e39d473636f883eeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
