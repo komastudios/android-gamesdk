@@ -104,14 +104,15 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
         g_verbose_logging_enabled);  // IOException
     auto writer =
         java::io::BufferedWriter(java::io::OutputStreamWriter(os, "UTF-8"));
+
     writer.write(request_json);
-    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION,
-        g_verbose_logging_enabled);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_CLOSE_RES_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION, g_verbose_logging_enabled,
+        writer.close());  // IOException
     writer.flush();
-    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
-        TUNINGFORK_ERROR_JNI_EXCEPTION,
-        g_verbose_logging_enabled);  // IOException
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_CLOSE_RES_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION, g_verbose_logging_enabled,
+        writer.close());  // IOException
     writer.close();
     SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
         TUNINGFORK_ERROR_JNI_EXCEPTION,
@@ -149,14 +150,25 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
     std::stringstream body;
     while (true) {
         auto line = reader.readLine();
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_CLOSE_RES_AND_RETURN(
+            TUNINGFORK_ERROR_JNI_EXCEPTION, g_verbose_logging_enabled,
+            reader.close());  // IOException
+
         if (line.J() == nullptr) break;
         body << line.C() << "\n";
     }
 
     reader.close();
-    is.close();
-    connection.disconnect();
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
+    is.close();
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
+
+    connection.disconnect();
     response_body = body.str();
 
     return TUNINGFORK_ERROR_OK;

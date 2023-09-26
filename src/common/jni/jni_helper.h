@@ -38,6 +38,24 @@
         return A;                                             \
     }
 
+#define SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_CLOSE_RES_AND_RETURN(A, B, C) \
+    if (RawExceptionCheck()) {                                                 \
+        std::string exception_msg =                                            \
+            B ? GetExceptionMessage()                                          \
+              : RemoveSensitiveInfoFromExceptionMessage(                       \
+                    GetExceptionMessage());                                    \
+        ALOGW("%s", exception_msg.c_str());                                    \
+        C; /* Resource close command */                                        \
+        if (RawExceptionCheck()) {                                             \
+            std::string close_exception_msg =                                  \
+                B ? GetExceptionMessage()                                      \
+                  : RemoveSensitiveInfoFromExceptionMessage(                   \
+                        GetExceptionMessage());                                \
+            ALOGW("%s", close_exception_msg.c_str());                          \
+        }                                                                      \
+        return A;                                                              \
+    }
+
 namespace gamesdk {
 
 namespace jni {
