@@ -131,6 +131,7 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
 
         android::util::DisplayMetrics display_metrics;
 
+        // Returns null on error, no exception
         java::Object win_obj = AppContext().getSystemService(
             android::content::Context::WINDOW_SERVICE);
 

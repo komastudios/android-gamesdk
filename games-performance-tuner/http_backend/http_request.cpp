@@ -149,14 +149,24 @@ TuningFork_ErrorCode HttpRequest::Send(const std::string& rpc_name,
     std::stringstream body;
     while (true) {
         auto line = reader.readLine();
+        SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+            TUNINGFORK_ERROR_JNI_EXCEPTION,
+            g_verbose_logging_enabled);  // IOException
         if (line.J() == nullptr) break;
         body << line.C() << "\n";
     }
 
     reader.close();
-    is.close();
-    connection.disconnect();
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
 
+    is.close();
+    SAFE_LOGGING_CHECK_FOR_JNI_EXCEPTION_AND_RETURN(
+        TUNINGFORK_ERROR_JNI_EXCEPTION,
+        g_verbose_logging_enabled);  // IOException
+
+    connection.disconnect();
     response_body = body.str();
 
     return TUNINGFORK_ERROR_OK;
