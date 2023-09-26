@@ -16,6 +16,24 @@
       "message": "Close must called even if read had an exception",
       "revId": "118128142080d0dc91c9923e39d473636f883eeb",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1506c417_03745c51",
+        "filename": "games-performance-tuner/http_backend/http_request.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1970910
+      },
+      "writtenOn": "2023-09-26T12:43:43Z",
+      "side": 1,
+      "message": "Does that apply for the writer as well? on Line 107-115?",
+      "parentUuid": "b489bee0_a32b808f",
+      "revId": "118128142080d0dc91c9923e39d473636f883eeb",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
