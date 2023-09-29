@@ -29,11 +29,13 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+
+import com.google.tfmonitor.databinding.ActivityMainBinding
+
 import com.google.tuningfork.AppKey
 import com.google.tuningfork.Datastore
 import com.google.tuningfork.Deserializer
 import java.io.File
-import kotlinx.android.synthetic.main.activity_main.toolbar
 
 private class AsyncWebServer(
     val applicationContext: Context, val port: Int,
@@ -100,8 +102,9 @@ class MainActivity : AppCompatActivity(), AppChoiceFragment.OnFragmentInteractio
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        val binding = ActivityMainBinding.inflate(layoutInflater);
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         databaseName = getString(R.string.database_name)
         datastore = Datastore(this.applicationContext, databaseName)
