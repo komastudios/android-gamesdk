@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "722ebc2c_00fe5723",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-09-29T13:25:43Z",
+      "side": 1,
+      "message": "You probably mean from 3.0.0 to 3.8.0",
+      "range": {
+        "startLine": 12,
+        "startChar": 28,
+        "endLine": 12,
+        "endChar": 49
+      },
+      "revId": "eadda605914665ac5634c793f732665cf1d5fe80",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
