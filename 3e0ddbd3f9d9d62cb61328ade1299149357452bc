@@ -16,6 +16,23 @@
       "message": "Nit: include Bug and test into the CL descruption",
       "revId": "3e0ddbd3f9d9d62cb61328ade1299149357452bc",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28a598a1_7856f720",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1554536
+      },
+      "writtenOn": "2023-09-29T15:01:40Z",
+      "side": 1,
+      "message": "Disregard my previous comment just saw the full description (it was cut by UI).",
+      "revId": "3e0ddbd3f9d9d62cb61328ade1299149357452bc",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ],
   "submitRequirementResults": [
