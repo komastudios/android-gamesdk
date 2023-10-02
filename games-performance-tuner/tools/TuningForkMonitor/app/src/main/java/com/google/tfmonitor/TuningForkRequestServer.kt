@@ -132,7 +132,7 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
                                 userAgent += ua.trim { it <= ' ' }
                             }
                         }
-                    else -> throw AssertionError()
+                    else -> break;
                 }
             }
 
