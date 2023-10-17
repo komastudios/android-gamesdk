@@ -138,6 +138,7 @@ TuningFork_ErrorCode Unity_TuningFork_init_with_settings(
     // In API <= 23, the memory portion of the api_key sent from C#
     // becomes corrupted for some reason and it results in failure
     // to connect to the endpoint.
+    //
     // Introducing this workaround to correctly read the api_key
     // set in tuningfork_settings.bin.
     settings->api_key = nullptr;
