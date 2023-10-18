@@ -15,6 +15,7 @@
  */
 
 #include "GameActivity.h"
+#include "GameActivityEvents_internal.h"
 
 #include <android/api-level.h>
 #include <android/asset_manager.h>
@@ -786,9 +787,11 @@ static void onSurfaceDestroyed_native(JNIEnv *env, jobject javaGameActivity,
     }
 }
 
-extern "C" void GameActivity_setImeEditorInfo(GameActivity *activity,
-                                              int inputType, int actionId,
-                                              int imeOptions) {
+extern "C" void GameActivity_setImeEditorInfo(
+        GameActivity *activity,
+        GameTextInputType inputType,
+        GameTextInputActionType actionId,
+        GameTextInputImeOptions imeOptions) {
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_SET_IME_EDITOR_INFO, inputType,
                actionId, imeOptions);
@@ -879,10 +882,27 @@ static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
     if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
+
+    c_event.deviceId = deviceId;
+    c_event.source = source;
+    c_event.action = action;
+
+    c_event.eventTime = eventTime;
+    c_event.downTime = downTime;
+
+    c_event.flags = flags;
+    c_event.metaState = metaState;
+
+    c_event.actionButton = actionButton;
+    c_event.buttonState = buttonState;
+    c_event.classification = classification;
+    c_event.edgeFlags = edgeFlags;
+
+    c_event.precisionX = precisionX;
+    c_event.precisionY = precisionY;
+
     GameActivityMotionEvent_fromJava(
-        env, motionEvent, &c_event, pointerCount, historySize, deviceId, source,
-        action, eventTime, downTime, flags, metaState, actionButton,
-        buttonState, classification, edgeFlags, precisionX, precisionY);
+        env, motionEvent, &c_event, pointerCount, historySize);
     return code->callbacks.onTouchEvent(code, &c_event);
 }
 
@@ -990,7 +1010,7 @@ static void onSoftwareKeyboardVisibilityChangedNative_native(JNIEnv *env,
     }
 }
 
-static bool onEditorActionNative_native(JNIEnv *env,
+static void onEditorActionNative_native(JNIEnv *env,
                                         jobject activity,
                                         jlong handle,
                                         int action) {
@@ -998,11 +1018,9 @@ static bool onEditorActionNative_native(JNIEnv *env,
         NativeCode *code = (NativeCode *)handle;
 
         if (code->callbacks.onEditorAction != nullptr) {
-            return code->callbacks.onEditorAction(code, action);
+            code->callbacks.onEditorAction(code, action);
         }
     }
-
-    return true;
 }
 
 static const JNINativeMethod g_methods[] = {
@@ -1047,7 +1065,7 @@ static const JNINativeMethod g_methods[] = {
      (void *)onContentRectChangedNative_native},
     {"onSoftwareKeyboardVisibilityChangedNative", "(JZ)V",
             (void *)onSoftwareKeyboardVisibilityChangedNative_native},
-    {"onEditorActionNative", "(JI)Z",
+    {"onEditorActionNative", "(JI)V",
      (void *)onEditorActionNative_native},
 };
 

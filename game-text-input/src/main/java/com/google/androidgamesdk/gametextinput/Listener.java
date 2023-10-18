@@ -52,6 +52,6 @@ public interface Listener {
    *
    * @param action Code of the action. A default action is IME_ACTION_DONE.
    */
-  boolean onEditorAction(int action);
+  void onEditorAction(int action);
 
 }

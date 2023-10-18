@@ -15,6 +15,7 @@
  */
 
 #include "GameActivityEvents.h"
+#include "GameActivityEvents_internal.h"
 
 #include <sys/system_properties.h>
 
@@ -190,10 +191,7 @@ static void initMotionEvents(JNIEnv *env) {
 
 extern "C" void GameActivityMotionEvent_fromJava(
     JNIEnv *env, jobject motionEvent, GameActivityMotionEvent *out_event,
-    int pointerCount, int historySize, int deviceId, int source, int action,
-    int64_t eventTime, int64_t downTime, int flags, int metaState,
-    int actionButton, int buttonState, int classification, int edgeFlags,
-    float precisionX, float precisionY) {
+    int pointerCount, int historySize) {
     pointerCount =
         std::min(pointerCount, GAMEACTIVITY_MAX_NUM_POINTERS_IN_MOTION_EVENT);
     out_event->pointerCount = pointerCount;
@@ -259,24 +257,6 @@ extern "C" void GameActivityMotionEvent_fromJava(
             }
         }
     }
-
-    out_event->deviceId = deviceId;
-    out_event->source = source;
-    out_event->action = action;
-
-    out_event->eventTime = eventTime;
-    out_event->downTime = downTime;
-
-    out_event->flags = flags;
-    out_event->metaState = metaState;
-
-    out_event->actionButton = actionButton;
-    out_event->buttonState = buttonState;
-    out_event->classification = classification;
-    out_event->edgeFlags = edgeFlags;
-
-    out_event->precisionX = precisionX;
-    out_event->precisionY = precisionY;
 }
 
 static struct {
