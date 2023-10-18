@@ -587,9 +587,10 @@ public class InputConnection
   @Override
   public boolean performEditorAction(int action) {
     if (listener != null) {
-      return listener.onEditorAction(action);
-    } else {
+      listener.onEditorAction(action);
       return true;
+    } else {
+      return false;
     }
   }
 }

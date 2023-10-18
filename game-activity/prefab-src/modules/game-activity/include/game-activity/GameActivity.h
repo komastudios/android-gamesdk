@@ -619,13 +619,11 @@ bool GameActivity_isSoftwareKeyboardVisible(GameActivity* activity);
  * for the meaning of inputType, actionId and imeOptions.
  *
  * <b>Note:</b> currently only TYPE_NULL AND TYPE_CLASS_NUMBER are supported.
- *
- * Note that this function will attach the current thread to the JVM if it is
- * not already attached, so the caller must detach the thread from the JVM
- * before the thread is destroyed using DetachCurrentThread.
  */
-void GameActivity_setImeEditorInfo(GameActivity* activity, int inputType,
-                                   int actionId, int imeOptions);
+void GameActivity_setImeEditorInfo(GameActivity* activity,
+                                   enum GameTextInputType inputType,
+                                   enum GameTextInputActionType actionId,
+                                   enum GameTextInputImeOptions imeOptions);
 
 /**
  * These are getters for Configuration class members. They may be called from
