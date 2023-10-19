@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b166d6a_df0f7db1",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 884,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-10-19T14:13:09Z",
+      "side": 1,
+      "message": "Why is this static? Can you add a comment to this?",
+      "revId": "d130aad7d9d9aed21bb52338c25544e4166b4e0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e45ef24d_1bd542d2",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 886,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-10-19T14:13:09Z",
+      "side": 1,
+      "message": "consider using \n```\nstatic GameActivityMotionEvent c_event \u003d {\n   .source \u003d source\n   ....\n```",
+      "revId": "d130aad7d9d9aed21bb52338c25544e4166b4e0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
