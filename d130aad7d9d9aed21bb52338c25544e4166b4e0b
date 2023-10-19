@@ -18,6 +18,24 @@
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bef9e04_f2e0645d",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 884,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-10-19T15:11:24Z",
+      "side": 1,
+      "message": "will consider changing it in a separate CL if possible at all",
+      "parentUuid": "9b166d6a_df0f7db1",
+      "revId": "d130aad7d9d9aed21bb52338c25544e4166b4e0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e45ef24d_1bd542d2",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-10-19T14:13:09Z",
       "side": 1,
       "message": "consider using \n```\nstatic GameActivityMotionEvent c_event \u003d {\n   .source \u003d source\n   ....\n```",
+      "revId": "d130aad7d9d9aed21bb52338c25544e4166b4e0b",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0564ea93_330c4e60",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivity.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 886,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2023-10-19T15:11:24Z",
+      "side": 1,
+      "message": "good catch, however it can\u0027t be done for a static variable.",
+      "parentUuid": "e45ef24d_1bd542d2",
       "revId": "d130aad7d9d9aed21bb52338c25544e4166b4e0b",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
