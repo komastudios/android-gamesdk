@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf324072_1905ea3d",
+        "filename": "game-activity/prefab-src/modules/game-activity/include/game-activity/GameActivityEvents_internal.h",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1940280
+      },
+      "writtenOn": "2023-10-20T11:51:54Z",
+      "side": 1,
+      "message": "What is this? \"@{\"?",
+      "revId": "dfca49441b074e6384ce321f46f34d42505f981e",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
