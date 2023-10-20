@@ -74,9 +74,8 @@ public class InputEnabledTextView extends View implements Listener {
     }
 
     @Override
-    public boolean onEditorAction(int action) {
+    public void onEditorAction(int action) {
         System.out.println("onEditorAction: " + action);
-        return true;
     }
 
     @Override

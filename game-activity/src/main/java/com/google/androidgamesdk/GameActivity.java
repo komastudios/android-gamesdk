@@ -232,7 +232,7 @@ public class GameActivity
 
   protected native void onSoftwareKeyboardVisibilityChangedNative(long handle, boolean visible);
 
-  protected native boolean onEditorActionNative(long handle, int action);
+  protected native void onEditorActionNative(long handle, int action);
 
   /**
    * Get the pointer to the C `GameActivity` struct associated to this activity.
@@ -527,8 +527,8 @@ public class GameActivity
   // From the text input Listener.
   // Called when editor action is performed.
   @Override
-  public boolean onEditorAction(int action) {
-    return onEditorActionNative(mNativeHandle, action);
+  public void onEditorAction(int action) {
+    onEditorActionNative(mNativeHandle, action);
   }
 
   /**

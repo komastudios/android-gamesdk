@@ -274,33 +274,8 @@ inline float GameActivityMotionEvent_getHistoricalOrientation(
         event, AMOTION_EVENT_AXIS_ORIENTATION, pointerIndex, historyPos);
 }
 
-/** \brief Performs necessary initialization steps for GameActivityEvents.a
- *
- * User must call this function before calling any other functions of this unit.
- * If you use GameActivity it will call this function for you.
- */
-void GameActivityEventsInit(JNIEnv* env);
-
 /** \brief Handle the freeing of the GameActivityMotionEvent struct. */
 void GameActivityMotionEvent_destroy(GameActivityMotionEvent* c_event);
-
-/**
- * \brief Convert a Java `MotionEvent` to a `GameActivityMotionEvent`.
- *
- * This is done automatically by the GameActivity: see `onTouchEvent` to set
- * a callback to consume the received events.
- * This function can be used if you re-implement events handling in your own
- * activity.
- * Ownership of out_event is maintained by the caller.
- * Note that we pass as much information from Java Activity as possible
- * to avoid extra JNI calls.
- */
-void GameActivityMotionEvent_fromJava(
-    JNIEnv* env, jobject motionEvent, GameActivityMotionEvent* out_event,
-    int pointerCount, int historySize, int deviceId, int source, int action,
-    int64_t eventTime, int64_t downTime, int flags, int metaState,
-    int actionButton, int buttonState, int classification, int edgeFlags,
-    float precisionX, float precisionY);
 
 /**
  * \brief Describe a key event that happened on the GameActivity SurfaceView.
@@ -327,18 +302,6 @@ typedef struct GameActivityKeyEvent {
     int32_t scanCode;
     int32_t unicodeChar;
 } GameActivityKeyEvent;
-
-/**
- * \brief Convert a Java `KeyEvent` to a `GameActivityKeyEvent`.
- *
- * This is done automatically by the GameActivity: see `onKeyUp` and `onKeyDown`
- * to set a callback to consume the received events.
- * This function can be used if you re-implement events handling in your own
- * activity.
- * Ownership of out_event is maintained by the caller.
- */
-void GameActivityKeyEvent_fromJava(JNIEnv* env, jobject motionEvent,
-                                   GameActivityKeyEvent* out_event);
 
 #ifdef __cplusplus
 }

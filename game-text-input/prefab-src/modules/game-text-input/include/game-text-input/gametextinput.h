@@ -302,10 +302,6 @@ void GameTextInputState_fromJava(const GameTextInput *input, jobject state,
                                  void *context);
 
 
-/*
- * Below there are definitions for arguments of GameActivity_setImeEditorInfo().
- */
-
 /**
  * Definitions for inputType argument of GameActivity_setImeEditorInfo()
  *
@@ -355,7 +351,7 @@ void GameTextInputState_fromJava(const GameTextInput *input, jobject state,
  * |-------|-------|-------|-------|</pre>
  */
 
-enum {
+enum GameTextInputType : unsigned int {
     /**
      * Mask of bits that determine the overall class
      * of text being given.  Currently supported classes are:
@@ -701,7 +697,7 @@ enum {
 };
 
 /**
- * Masks for imeOptions argument of GameActivity_setImeEditorInfo().
+ * actionId and imeOptions argument of GameActivity_setImeEditorInfo().
  *
  * <pre>
  * |-------|-------|-------|-------|
@@ -726,7 +722,7 @@ enum {
  * |-------|-------|-------|-------|</pre>
  */
 
-enum {
+enum GameTextInputActionType : unsigned int {
     /**
      * Set of bits in {@link #imeOptions} that provide alternative actions
      * associated with the "enter" key.  This both helps the IME provide
@@ -788,7 +784,9 @@ enum {
      * can be returned to the app if it sets {@link #IME_FLAG_NAVIGATE_PREVIOUS}.
      */
     IME_ACTION_PREVIOUS = 0x00000007,
+};
 
+enum GameTextInputImeOptions : unsigned int {
     /**
      * Flag of {@link #imeOptions}: used to request that the IME should not update any personalized
      * data such as typing history and personalized language model based on what the user typed on
