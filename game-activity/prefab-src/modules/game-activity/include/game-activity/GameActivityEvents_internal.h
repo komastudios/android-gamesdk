@@ -15,13 +15,15 @@
  */
 
 /**
- * @addtogroup GameActivity Game Activity Events
- * The interface to use Game Activity Events.
+ * @addtogroup GameActivity Game Activity Events Internal
+ * These functions are internal details of Game Activity Events.
+ * Please do not rely on anything in this file as this can be changed
+ * without notice.
  * @{
  */
 
 /**
- * @file GameActivityEvents.h
+ * @file GameActivityEvents_internal.h
  */
 #ifndef ANDROID_GAME_SDK_GAME_ACTIVITY_EVENTS_INTERNAL_H
 #define ANDROID_GAME_SDK_GAME_ACTIVITY_EVENTS_INTERNAL_H
