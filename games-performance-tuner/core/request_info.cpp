@@ -28,6 +28,8 @@
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 
+using namespace gamesdk::jni;
+
 namespace {
 
 std::string slurpFile(const char* fname) {
@@ -53,27 +55,13 @@ namespace tuningfork {
 RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     RequestInfo info{};
     // Total memory
-    std::string s = slurpFile("/proc/meminfo");
-    if (!s.empty()) {
-        // Lines like 'MemTotal:        3749460 kB'
-        std::string to_find("MemTotal:");
-        auto it = s.find(to_find);
-        if (it != std::string::npos) {
-            const char* p = s.data() + it + to_find.length();
-            p = skipSpace(p);
-            std::istringstream str(p);
-            uint64_t x;
-            str >> x;
-            std::string units;
-            str >> units;
-            static std::string unitPrefix = "bBkKmMgGtTpP";
-            auto j = unitPrefix.find(units[0]);
-            uint64_t mult = 1;
-            if (j != std::string::npos) {
-                mult = ::pow(1024L, j / 2);
-            }
-            info.total_memory_bytes = x * mult;
-        }
+    if (gamesdk::jni::IsValid()) {
+        android::app::MemoryInfo memory_info;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::ACTIVITY_SERVICE);
+        android::app::ActivityManager activity_manager(std::move(obj));
+        activity_manager.getMemoryInfo(memory_info);
+        info.total_memory_bytes = (uint64_t)memory_info.totalMem();
     }
     info.build_version_sdk = gamesdk::GetSystemProp("ro.build.version.sdk");
     info.build_fingerprint = gamesdk::GetSystemProp("ro.build.fingerprint");
