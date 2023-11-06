@@ -3,10 +3,10 @@
     "canaryProcessTester": true,
     "formulas": {
       "yellow": [
-        "predictedUsage > 0.65"
+        "predictedAvailable < 0.20"
       ],
       "red": [
-        "predictedUsage > 0.75"
+        "predictedAvailable < 0.15"
       ]
     }
   },
