@@ -39,26 +39,16 @@ MemoryAdviceImpl::MemoryAdviceImpl(const char* params,
                                    IPredictor* realtime_predictor,
                                    IPredictor* available_predictor)
     : metrics_provider_(metrics_provider),
-      realtime_predictor_(realtime_predictor),
       available_predictor_(available_predictor) {
     if (metrics_provider_ == nullptr) {
         default_metrics_provider_ = std::make_unique<DefaultMetricsProvider>();
         metrics_provider_ = default_metrics_provider_.get();
-    }
-    if (realtime_predictor_ == nullptr) {
-        default_realtime_predictor_ = std::make_unique<DefaultPredictor>();
-        realtime_predictor_ = default_realtime_predictor_.get();
     }
     if (available_predictor_ == nullptr) {
         default_available_predictor_ = std::make_unique<DefaultPredictor>();
         available_predictor_ = default_available_predictor_.get();
     }
 
-    initialization_error_code_ =
-        realtime_predictor_->Init("realtime.tflite", "realtime_features.json");
-    if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
-        return;
-    }
     initialization_error_code_ = available_predictor_->Init(
         "available.tflite", "available_features.json");
     if (initialization_error_code_ != MEMORYADVICE_ERROR_OK) {
@@ -144,12 +134,6 @@ Json::object MemoryAdviceImpl::GetAdvice() {
     data["baseline"] = baseline_;
     data["sample"] = variable_metrics;
     data["build"] = build_;
-
-    if (variable_spec.find("predictRealtime") != variable_spec.end() &&
-        variable_spec.at("predictRealtime").bool_value()) {
-        variable_metrics["predictedUsage"] =
-            Json(Clamp(realtime_predictor_->Predict(data), 0.0f, 1.0f));
-    }
 
     if (variable_spec.find("availableRealtime") != variable_spec.end() &&
         variable_spec.at("availableRealtime").bool_value()) {
