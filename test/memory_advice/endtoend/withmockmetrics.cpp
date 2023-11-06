@@ -58,7 +58,7 @@ std::string TestEndToEndWithMockMetrics() {
 
 TEST(EndToEndTest, WithMockMetrics) {
   auto result = TestEndToEndWithMockMetrics();
-  std::string expected = GetAdviceString("12341234", "0.97!REGEX(\\d+)", "500", true);
+  std::string expected = GetAdviceString("12341234", "0.9!REGEX(\\d+)", "500", true);
   gamesdk_test::CheckStrings("Base", result, expected);
 }
 

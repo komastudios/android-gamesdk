@@ -40,7 +40,7 @@ bool CheckStrings(const std::string& name, const std::string& result,
 
 // Generates an advice string that satisfies the given parameters
 std::string GetAdviceString(const std::string& avail_mem,
-                            const std::string& predicted_usage,
+                            const std::string& predicted_avail,
                             const std::string& oom_score,
                             bool with_warnings = false);
 

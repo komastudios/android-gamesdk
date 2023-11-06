@@ -30,7 +30,7 @@ static std::list<std::unique_ptr<char[]>> allocated_bytes_list;
 static std::mutex allocated_mutex;
 
 std::string GetAdviceString(const std::string& avail_mem,
-                            const std::string& predicted_usage,
+                            const std::string& predicted_avail,
                             const std::string& oom_score, bool with_warnings) {
     if (with_warnings) {
         return R"MA(
@@ -44,8 +44,8 @@ std::string GetAdviceString(const std::string& avail_mem,
         "meta": {
           "time": !REGEX(\d+)
         },
-        "predictedUsage": )MA" +
-               predicted_usage + R"MA(,
+        "predictedAvailable": )MA" +
+               predicted_avail + R"MA(,
         "proc": {
           "_meta":["duration", !REGEX(\d)],
           "oom_score": )MA" +
@@ -54,11 +54,11 @@ std::string GetAdviceString(const std::string& avail_mem,
       },
       "warnings": [
         {
-          "formula": "predictedUsage>0.75",
+          "formula": "predictedAvailable<0.15",
           "level": "red"
         },
         {
-          "formula": "predictedUsage>0.65",
+          "formula": "predictedAvailable<0.20",
           "level": "yellow"
         }
       ]
@@ -76,8 +76,8 @@ std::string GetAdviceString(const std::string& avail_mem,
         "meta": {
           "time": !REGEX(\d+)
         },
-        "predictedUsage": )MA" +
-               predicted_usage + R"MA(,
+        "predictedAvailable": )MA" +
+               predicted_avail + R"MA(,
         "proc": {
           "_meta":["duration", !REGEX(\d)],
           "oom_score": )MA" +
