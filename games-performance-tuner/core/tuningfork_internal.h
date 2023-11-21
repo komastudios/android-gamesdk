@@ -65,9 +65,6 @@ TuningFork_ErrorCode GetFidelityParameters(
     const ProtobufSerialization& default_params, ProtobufSerialization& params,
     uint32_t timeout_ms);
 
-TuningFork_ErrorCode PredictQualityLevels(QLTimePredictions& predictions,
-                                          uint32_t timeout_ms);
-
 // Protobuf serialization of the current annotation
 TuningFork_ErrorCode SetCurrentAnnotation(
     const ProtobufSerialization& annotation);

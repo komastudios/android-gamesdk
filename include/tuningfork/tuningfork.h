@@ -98,21 +98,6 @@ typedef struct TuningFork_CProtobufSerialization {
     void (*dealloc)(struct TuningFork_CProtobufSerialization*);
 } TuningFork_CProtobufSerialization;
 
-/**
- * @brief A structure holding the predicted frame times for quality levels.
- *
- * This struct holds an array of serialized protocol buffers representing
- * fidelity parameters and another array of predicted frame times in microseconds.
- * The arrays are 1:1 mapped per index, so fidelity_params[i] corresponds to
- * predicted_time_us[i]. There are no guarantees on how the returned data is
- * arranged in the arrays. The size member is the length of both the arrays.
- */
-typedef struct TuningFork_QualityLevelPredictions {
-    TuningFork_CProtobufSerialization* fidelity_params;  /// Array of protobufs.
-    uint32_t *predicted_time_us; /// Array of predicted time in us.
-    uint32_t size;   /// Size of array.
-} TuningFork_QualityLevelPredictions;
-
 /// The instrumentation key identifies a tick point within a frame or a trace
 /// segment
 typedef uint16_t TuningFork_InstrumentKey;
@@ -217,17 +202,6 @@ typedef enum TuningFork_ErrorCode {
     TUNINGFORK_ERROR_FRAME_LOGGING_ALREADY_RUNNING =
         39,  ///< Cannot resume frame time logging because it is already
              ///< running.
-    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR =
-        40,  ///< An error occurred parsing the response to
-             ///< predictQualityLevels
-    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR =
-        41,  ///< The response from predictQualityLevels was not a success
-             ///< code
-    TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_INSUFFICIENT_DATA =
-        42,  ///< There wasn't enough data to make a successful quality level
-             ///< prediction.
-
-
     // Error codes 100-150 are reserved for engines integrations.
 } TuningFork_ErrorCode;
 
@@ -472,33 +446,6 @@ TuningFork_ErrorCode TuningFork_init(const TuningFork_Settings* settings,
 TuningFork_ErrorCode TuningFork_getFidelityParameters(
     const TuningFork_CProtobufSerialization* defaultParams,
     TuningFork_CProtobufSerialization* params, uint32_t timeout_ms);
-
-/**
- * @brief A blocking call to get quality level predictions from the server.
- *
- * The call when successful fills the \p qlp struct with output data, the call
- * also allocates memory on the heap to fill the members of the \p qlp struct.
- * Therefore TuningFork_QualityLevelPredictions_free must be called before freeing it.
- *
- * @see TuningFork_QualityLevelPredictions for how the data in the struct is arranged.
- *
- * @param[out] qlp          Pointer to a Quality levels prediction struct. Cannot be null.
- * @param      timeout_ms   time to wait before returning from this call when no
- *                          connection can be made. If zero, the value in
- *                          Settings.initial_request_timeout_ms is used.
- * @return TUNINGFORK_ERROR_OK on success.
- * @return TUNINGFORK_ERROR_TIMEOUT if there was a timeout before predictions could be returned.
- * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR if the call to the server failed.
- * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR if the response couldn't be parsed.
- */
-TuningFork_ErrorCode TuningFork_predictQualityLevels(
-    TuningFork_QualityLevelPredictions* qlp, uint32_t timeout_ms);
-
-/**
- * @brief Deallocate any memory owned by the Quality level prediction struct.
- * @param qlp Quality Level Prediction struct
- */
-void TuningFork_QualityLevelPredictions_free(TuningFork_QualityLevelPredictions* qlp);
 
 /**
  * @brief Set the current annotation.

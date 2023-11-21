@@ -311,29 +311,6 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
     return result;
 }
 
-TuningFork_ErrorCode TuningForkImpl::PredictQualityLevels(
-    QLTimePredictions &predictions, uint32_t timeout_ms) {
-    if (settings_.EndpointUri().empty()) {
-        ALOGW("The base URI in Tuning Fork TuningFork_Settings is invalid");
-        return TUNINGFORK_ERROR_BAD_PARAMETER;
-    }
-    if (settings_.api_key.empty()) {
-        ALOGE("The API key in Tuning Fork TuningFork_Settings is invalid");
-        return TUNINGFORK_ERROR_BAD_PARAMETER;
-    }
-    Duration timeout =
-        (timeout_ms == 0)
-            ? std::chrono::milliseconds(settings_.initial_request_timeout_ms)
-            : std::chrono::milliseconds(timeout_ms);
-    HttpRequest web_request(settings_.EndpointUri(), settings_.api_key,
-                            timeout);
-    auto result = backend_->PredictQualityLevels(web_request, predictions);
-    if (Debugging() && gamesdk::jni::IsValid()) {
-        backend_->UploadDebugInfo(web_request);
-    }
-    return result;
-}
-
 TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
     InstrumentationKey key, int &index) {
     int nkeys = next_ikey_;

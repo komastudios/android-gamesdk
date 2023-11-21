@@ -55,11 +55,6 @@ class DebugBackend : public IBackend {
         return TUNINGFORK_ERROR_OK;
     }
 
-    TuningFork_ErrorCode PredictQualityLevels(
-        HttpRequest& request, QLTimePredictions& predictions) override {
-        return TUNINGFORK_ERROR_OK;
-    }
-
     TuningFork_ErrorCode UploadDebugInfo(HttpRequest& request) override {
         return TUNINGFORK_ERROR_OK;
     }

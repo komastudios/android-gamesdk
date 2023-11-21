@@ -75,12 +75,6 @@ inline void ToCProtobufSerialization(const ProtobufSerialization& pbs,
 }
 
 /**
- * @brief Convert from a C++ to a C Quality Predictions structure.
- */
-void ToCQualityLevelPredictions(const QLTimePredictions& pred,
-                                TuningFork_QualityLevelPredictions& c_pred);
-
-/**
  * @brief Convert from an STL string to a C serialization.
  */
 inline void ToCProtobufSerialization(const std::string& s,
