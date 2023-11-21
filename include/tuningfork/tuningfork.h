@@ -474,33 +474,6 @@ TuningFork_ErrorCode TuningFork_getFidelityParameters(
     TuningFork_CProtobufSerialization* params, uint32_t timeout_ms);
 
 /**
- * @brief A blocking call to get quality level predictions from the server.
- *
- * The call when successful fills the \p qlp struct with output data, the call
- * also allocates memory on the heap to fill the members of the \p qlp struct.
- * Therefore TuningFork_QualityLevelPredictions_free must be called before freeing it.
- *
- * @see TuningFork_QualityLevelPredictions for how the data in the struct is arranged.
- *
- * @param[out] qlp          Pointer to a Quality levels prediction struct. Cannot be null.
- * @param      timeout_ms   time to wait before returning from this call when no
- *                          connection can be made. If zero, the value in
- *                          Settings.initial_request_timeout_ms is used.
- * @return TUNINGFORK_ERROR_OK on success.
- * @return TUNINGFORK_ERROR_TIMEOUT if there was a timeout before predictions could be returned.
- * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_RESPONSE_ERROR if the call to the server failed.
- * @return TUNINGFORK_ERROR_PREDICT_QUALITY_LEVELS_PARSE_ERROR if the response couldn't be parsed.
- */
-TuningFork_ErrorCode TuningFork_predictQualityLevels(
-    TuningFork_QualityLevelPredictions* qlp, uint32_t timeout_ms);
-
-/**
- * @brief Deallocate any memory owned by the Quality level prediction struct.
- * @param qlp Quality Level Prediction struct
- */
-void TuningFork_QualityLevelPredictions_free(TuningFork_QualityLevelPredictions* qlp);
-
-/**
  * @brief Set the current annotation.
  * @param annotation the protobuf serialization of the current annotation.
  * @return TUNINGFORK_ERROR_INVALID_ANNOTATION if annotation is inconsistent
