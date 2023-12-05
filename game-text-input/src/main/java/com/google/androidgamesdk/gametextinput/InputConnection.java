@@ -341,7 +341,7 @@ public class InputConnection
 
     if (afterLength > 0) {
       this.mEditable.delete(Math.max(0, second),
-              Math.min(this.mEditable.length(), second - afterLength));
+              Math.min(this.mEditable.length(), second + afterLength));
     }
 
     if (beforeLength > 0) {
