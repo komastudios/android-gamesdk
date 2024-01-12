@@ -416,9 +416,19 @@ enum NativeAppGlueAppCmd {
     APP_CMD_WINDOW_INSETS_CHANGED,
 
     /**
-     * Command from main thread: the editor action has been triggered.
+     * Command from main thread: an editor action has been triggered.
      */
     APP_CMD_EDITOR_ACTION,
+
+    /**
+     * Command from main thread: a keyboard event has been received.
+     */
+    APP_CMD_KEY_EVENT,
+
+    /**
+     * Command from main thread: a touch event has been received.
+     */
+    APP_CMD_TOUCH_EVENT,
 
 };
 

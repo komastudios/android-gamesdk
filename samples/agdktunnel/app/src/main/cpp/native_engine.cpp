@@ -536,9 +536,11 @@ void NativeEngine::HandleCommand(int32_t cmd) {
             VLOGD("software keyboard visible: %s",
                   (GameActivity_isSoftwareKeyboardVisible(mApp->activity) ? "yes" : "no"));
             break;
-        case APP_CMD_EDITOR_ACTION:
-            VLOGD("NativeEngine: APP_CMD_EDITOR_ACTION");
-            GameActivity_hideSoftInput(mApp->activity, 0);
+        case APP_CMD_KEY_EVENT:
+            VLOGD("NativeEngine: APP_CMD_KEY_EVENT");
+            break;
+        case APP_CMD_TOUCH_EVENT:
+            VLOGD("NativeEngine: APP_CMD_TOUCH_EVENT");
             break;
         default:
             VLOGD("NativeEngine: (unknown command).");
