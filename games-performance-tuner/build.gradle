@@ -18,8 +18,6 @@ plugins {
     id 'com.android.library'
 }
 
-apply from: '../prepproto.gradle'
-
 buildDir="../../out_tuningfork"
 
 android {
@@ -94,5 +92,3 @@ dependencies {
 repositories {
     mavenCentral()
 }
-
-preBuild.dependsOn prepare_proto

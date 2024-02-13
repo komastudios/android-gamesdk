@@ -85,9 +85,6 @@ then
     pushd ./samples/tuningfork/insightsdemo/
     ./gradlew ":app:assembleDebug"
     popd
-    pushd ./test/tuningfork/testapp/
-    ./gradlew ":app:assembleDebug"
-    popd
     pushd ./samples/tuningfork/experimentsdemo/
     ./gradlew ":app:assembleDebug"
     popd
@@ -140,8 +137,6 @@ then
       "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
     cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
-    cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/test/tuningforktest.apk"
 
     cp samples/game_controller/nativeactivity/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/game_controller_nativeactivity.apk"
@@ -169,7 +164,6 @@ then
     fi
     zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
-    zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
 
     zip -ur agdk-libraries-*.zip "apks/samples/game_controller_nativeactivity.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/game_controller_gameactivity.apk"

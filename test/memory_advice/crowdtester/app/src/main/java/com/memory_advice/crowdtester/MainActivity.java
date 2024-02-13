@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 javaPrediction = new JSONObject(javaAdvisor.getAdvice())
                                      .getJSONObject("metrics")
-                                     .getDouble("predictedUsage");
+                                     .getDouble("predictedAvailable");
                 nativePrediction = new JSONObject(getMemoryAdvice())
                                        .getJSONObject("metrics")
-                                       .getDouble("predictedUsage");
+                                       .getDouble("predictedAvailable");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -26,6 +26,7 @@
 #include "histogram.h"
 #include "loadingtime_metric.h"
 #include "memory_metric.h"
+#include "proto/protobuf_util.h"
 #include "thermal_metric.h"
 
 namespace tuningfork {
@@ -135,6 +136,13 @@ class Session {
     void RecordCrash(CrashReason reason);
     std::vector<CrashReason> GetCrashReports() const;
 
+    void SetFidelityParameters(ProtobufSerialization params) {
+        current_fidelity_parameters = params;
+    }
+    ProtobufSerialization GetFidelityParameters() const {
+        return current_fidelity_parameters;
+    }
+
    private:
     // Get an available metric that has been set up to work with this id.
     FrameTimeMetricData* TakeFrameTimeData(MetricId id) {
@@ -203,6 +211,7 @@ class Session {
     std::vector<InstrumentationKey> instrumentation_keys_;
     std::mutex mutex_;
     mutable std::mutex crash_mutex_;
+    ProtobufSerialization current_fidelity_parameters;
 };
 
 }  // namespace tuningfork

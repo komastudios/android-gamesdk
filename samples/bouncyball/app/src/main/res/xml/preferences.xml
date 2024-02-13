@@ -49,6 +49,16 @@
         android:defaultValue="true"
         android:key="@string/swappy_enable"
         android:title="@string/swappy_enable_title" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="frame_pacing_enabled"
+        android:title="@string/frame_pacing_enabled_title"
+        android:summary="@string/frame_pacing_enabled_summary" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="blocking_wait_enabled"
+        android:title="@string/blocking_wait_enabled_title"
+        android:summary="@string/blocking_wait_enabled_summary" />
 
 
 </PreferenceScreen>

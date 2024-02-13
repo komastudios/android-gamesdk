@@ -251,4 +251,16 @@ Java_com_prefabulated_bouncyball_OrbitActivity_nGetSwappyVersion(JNIEnv * /* env
       + SWAPPY_BUGFIX_VERSION;
 }
 
+JNIEXPORT void JNICALL
+Java_com_prefabulated_bouncyball_OrbitActivity_nSetEnableFramePacing(JNIEnv *env, jobject /* this */,
+                                                                    jboolean enabled) {
+  SwappyGL_enableFramePacing(enabled);
+}
+
+JNIEXPORT void JNICALL
+    Java_com_prefabulated_bouncyball_OrbitActivity_nSetEnableBlockingWait(JNIEnv *env, jobject /* this */,
+    jboolean enabled) {
+  SwappyGL_enableBlockingWait(enabled);
+}
+
 } // extern "C"

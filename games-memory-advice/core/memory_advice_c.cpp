@@ -56,6 +56,10 @@ MemoryAdvice_ErrorCode MemoryAdvice_unregisterWatcher(
     return memory_advice::UnregisterWatcher(callback);
 }
 
+int64_t MemoryAdvice_getAvailableMemory() {
+    return memory_advice::GetAvailableMemory();
+}
+
 float MemoryAdvice_getPercentageAvailableMemory() {
     return memory_advice::GetPercentageAvailableMemory();
 }

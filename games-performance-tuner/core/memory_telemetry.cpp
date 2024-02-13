@@ -165,14 +165,13 @@ void DefaultMemInfoProvider::UpdateOomScore() {
         }
     }
 }
+DefaultMemInfoProvider::DefaultMemInfoProvider() {
+    memInfo.initialized = true;
+    memInfo.pid = (uint32_t)android_process_.myPid();
+}
 
 void DefaultMemInfoProvider::SetEnabled(bool enabled) {
     enabled_ = enabled;
-
-    if (enabled && !memInfo.initialized) {
-        memInfo.initialized = true;
-        memInfo.pid = (uint32_t)android_process_.myPid();
-    }
 }
 
 bool DefaultMemInfoProvider::GetEnabled() const { return enabled_; }
