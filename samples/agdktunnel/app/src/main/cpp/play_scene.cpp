@@ -799,15 +799,15 @@ void PlayScene::OnMovementKey() {
     }
 }
 
-void PlayScene::OnKeyUp(int keyCode) {
-    if (isMovementKey(keyCode) && mSteering == STEERING_KEY) {
-        if (keyCode == KEYCODE_W) {
+void PlayScene::OnKeyUp(int ourKeyCode) {
+    if (isDirectionalKey(ourKeyCode) && mSteering == STEERING_KEY) {
+        if (ourKeyCode == OURKEY_UP) {
             mMotionKeyBitmask &= ~UP_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_A) {
+        } else if (ourKeyCode == OURKEY_LEFT) {
             mMotionKeyBitmask &= ~LEFT_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_S) {
+        } else if (ourKeyCode == OURKEY_DOWN) {
             mMotionKeyBitmask &= ~DOWN_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_D) {
+        } else if (ourKeyCode == OURKEY_RIGHT) {
             mMotionKeyBitmask &= ~RIGHT_MOVEMENT_BIT;
         }
 
@@ -817,27 +817,27 @@ void PlayScene::OnKeyUp(int keyCode) {
     }
 }
 
-void PlayScene::OnKeyDown(int keyCode) {
-    if (isMovementKey(keyCode)) {
+void PlayScene::OnKeyDown(int ourKeyCode) {
+    if (isDirectionalKey(ourKeyCode)) {
         mSteering = STEERING_KEY;
 
-        if (keyCode == KEYCODE_W) {
+        if (ourKeyCode == OURKEY_UP) {
             mMotionKeyBitmask |= UP_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_A) {
+        } else if (ourKeyCode == OURKEY_LEFT) {
             mMotionKeyBitmask |= LEFT_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_S) {
+        } else if (ourKeyCode == OURKEY_DOWN) {
             mMotionKeyBitmask |= DOWN_MOVEMENT_BIT;
-        } else if (keyCode == KEYCODE_D) {
+        } else if (ourKeyCode == OURKEY_RIGHT) {
             mMotionKeyBitmask |= RIGHT_MOVEMENT_BIT;
         }
     }
 
     if (mMenu) {
-        if (keyCode == OURKEY_UP) {
+        if (ourKeyCode == OURKEY_UP) {
             mMenuSel = mMenuSel > 0 ? mMenuSel - 1 : mMenuSel;
-        } else if (keyCode == OURKEY_DOWN) {
+        } else if (ourKeyCode == OURKEY_DOWN) {
             mMenuSel = mMenuSel + 1 < mMenuItemCount ? mMenuSel + 1 : mMenuSel;
-        } else if (keyCode == OURKEY_ENTER) {
+        } else if (ourKeyCode == OURKEY_ENTER) {
             HandleMenu(mMenuItems[mMenuSel]);
         }
     }
@@ -874,6 +874,11 @@ void PlayScene::ShowMenu(int menu) {
             // since we're leaving the menu, reset the frame clock to avoid a skip
             // in the animation
             mFrameClock.Reset();
+    }
+    if (mMenu) {
+        NativeEngine::GetInstance()->SetInputSdkContext(INPUT_CONTEXT_PAUSE_MENU);
+    } else {
+        NativeEngine::GetInstance()->SetInputSdkContext(INPUT_CONTEXT_PLAY_SCENE);
     }
 }
 
@@ -938,6 +943,10 @@ void PlayScene::OnResume() {
             (mMenu == MENU_NONE || mMenu == MENU_PAUSE)) {
         ShowMenu(MENU_LOADING);
     }
+}
+
+void PlayScene::SetInputSdkContext() {
+    NativeEngine::GetInstance()->SetInputSdkContext(INPUT_CONTEXT_PLAY_SCENE);
 }
 
 void PlayScene::OnScreenResized(int /*width*/, int /*height*/) {

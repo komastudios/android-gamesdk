@@ -15,6 +15,7 @@
  */
 
 #include "GameActivity.h"
+#include "GameActivityEvents_internal.h"
 
 #include <android/api-level.h>
 #include <android/asset_manager.h>
@@ -39,6 +40,7 @@
 #include <string>
 
 #include "GameActivityLog.h"
+#include "system_utils.h"
 
 namespace {
 
@@ -134,7 +136,8 @@ enum {
     CMD_SHOW_SOFT_INPUT,
     CMD_HIDE_SOFT_INPUT,
     CMD_SET_SOFT_INPUT_STATE,
-    CMD_SET_IME_EDITOR_INFO
+    CMD_SET_IME_EDITOR_INFO,
+    CMD_RESTART_INPUT
 };
 
 /*
@@ -218,6 +221,9 @@ struct NativeCode : public GameActivity {
         nativeWindow = NULL;
         mainWorkRead = mainWorkWrite = -1;
         gameTextInput = NULL;
+        softwareKeyboardVisible = false;
+        sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
+        ALOGD("SDK version: %d", sdkVersion);
     }
 
     ~NativeCode() {
@@ -281,6 +287,7 @@ struct NativeCode : public GameActivity {
     std::mutex gameTextInputStateMutex;
 
     ARect insetsState[GAMECOMMON_INSETS_TYPE_COUNT];
+    bool softwareKeyboardVisible;
 };
 
 static void readConfigurationValues(NativeCode *code, jobject javaConfig);
@@ -300,6 +307,11 @@ extern "C" void GameActivity_showSoftInput(GameActivity *activity,
                                            uint32_t flags) {
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_SHOW_SOFT_INPUT, flags);
+}
+
+extern "C" void GameActivity_restartInput(GameActivity *activity) {
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    write_work(code->mainWorkWrite, CMD_RESTART_INPUT);
 }
 
 extern "C" void GameActivity_setTextInputState(
@@ -329,6 +341,11 @@ extern "C" void GameActivity_getWindowInsets(GameActivity *activity,
     if (type < 0 || type >= GAMECOMMON_INSETS_TYPE_COUNT) return;
     NativeCode *code = static_cast<NativeCode *>(activity);
     *insets = code->insetsState[type];
+}
+
+extern "C" bool GameActivity_isSoftwareKeyboardVisible(GameActivity *activity) {
+    NativeCode *code = static_cast<NativeCode *>(activity);
+    return code->softwareKeyboardVisible;
 }
 
 extern "C" GameTextInput *GameActivity_getTextInput(
@@ -372,7 +389,8 @@ static int mainWorkCallback(int fd, int events, void *data) {
         case CMD_SET_WINDOW_FLAGS: {
             code->env->CallVoidMethod(code->javaGameActivity,
                                       gGameActivityClassInfo.setWindowFlags,
-                                      work.arg1, work.arg2);
+                                      static_cast<jint>(work.arg1),
+                                      static_cast<jint>(work.arg2));
             checkAndClearException(code->env, "setWindowFlags");
         } break;
         case CMD_SHOW_SOFT_INPUT: {
@@ -390,9 +408,14 @@ static int mainWorkCallback(int fd, int events, void *data) {
         case CMD_SET_IME_EDITOR_INFO: {
             code->env->CallVoidMethod(
                 code->javaGameActivity,
-                gGameActivityClassInfo.setImeEditorInfoFields, work.arg1,
-                work.arg2, work.arg3);
+                gGameActivityClassInfo.setImeEditorInfoFields,
+                static_cast<jint>(work.arg1),
+                static_cast<jint>(work.arg2),
+                static_cast<jint>(work.arg3));
             checkAndClearException(code->env, "setImeEditorInfo");
+        } break;
+        case CMD_RESTART_INPUT: {
+            GameTextInput_restartInput(code->gameTextInput);
         } break;
         default:
             ALOGW("Unknown work command: %d", work.cmd);
@@ -764,9 +787,11 @@ static void onSurfaceDestroyed_native(JNIEnv *env, jobject javaGameActivity,
     }
 }
 
-extern "C" void GameActivity_setImeEditorInfo(GameActivity *activity,
-                                              int inputType, int actionId,
-                                              int imeOptions) {
+extern "C" void GameActivity_setImeEditorInfo(
+        GameActivity *activity,
+        GameTextInputType inputType,
+        GameTextInputActionType actionId,
+        GameTextInputImeOptions imeOptions) {
     NativeCode *code = static_cast<NativeCode *>(activity);
     write_work(code->mainWorkWrite, CMD_SET_IME_EDITOR_INFO, inputType,
                actionId, imeOptions);
@@ -845,15 +870,46 @@ extern "C" int GameActivity_getUIMode(GameActivity *) {
 }
 
 static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
-                                jlong handle, jobject motionEvent) {
+                                jlong handle, jobject motionEvent,
+                                int pointerCount, int historySize, int deviceId,
+                                int source, int action, int64_t eventTime,
+                                int64_t downTime, int flags, int metaState,
+                                int actionButton, int buttonState,
+                                int classification, int edgeFlags,
+                                float precisionX, float precisionY) {
     if (handle == 0) return false;
     NativeCode *code = (NativeCode *)handle;
     if (code->callbacks.onTouchEvent == nullptr) return false;
 
     static GameActivityMotionEvent c_event;
+<<<<<<< HEAD   (fef91e Merge cherrypicks of ['android-review.googlesource.com/25869)
     GameActivityMotionEvent_fromJava(env, motionEvent, &c_event);
     return code->callbacks.onTouchEvent(code, &c_event);
 
+=======
+
+    c_event.deviceId = deviceId;
+    c_event.source = source;
+    c_event.action = action;
+
+    c_event.eventTime = eventTime;
+    c_event.downTime = downTime;
+
+    c_event.flags = flags;
+    c_event.metaState = metaState;
+
+    c_event.actionButton = actionButton;
+    c_event.buttonState = buttonState;
+    c_event.classification = classification;
+    c_event.edgeFlags = edgeFlags;
+
+    c_event.precisionX = precisionX;
+    c_event.precisionY = precisionY;
+
+    GameActivityMotionEvent_fromJava(
+        env, motionEvent, &c_event, pointerCount, historySize);
+    return code->callbacks.onTouchEvent(code, &c_event);
+>>>>>>> BRANCH (884a5e bump game-activity and game-text-input to 3.0.0rc01)
 }
 
 static bool onKeyUp_native(JNIEnv *env, jobject javaGameActivity, jlong handle,
@@ -946,6 +1002,33 @@ static void onContentRectChangedNative_native(JNIEnv *env, jobject activity,
     }
 }
 
+static void onSoftwareKeyboardVisibilityChangedNative_native(JNIEnv *env,
+                                                             jobject activity,
+                                                             jlong handle,
+                                                             bool visible) {
+    if (handle != 0) {
+        NativeCode *code = (NativeCode *)handle;
+        code->softwareKeyboardVisible = visible;
+
+        if (code->callbacks.onSoftwareKeyboardVisibilityChanged != nullptr) {
+            code->callbacks.onSoftwareKeyboardVisibilityChanged(code, visible);
+        }
+    }
+}
+
+static void onEditorActionNative_native(JNIEnv *env,
+                                        jobject activity,
+                                        jlong handle,
+                                        int action) {
+    if (handle != 0) {
+        NativeCode *code = (NativeCode *)handle;
+
+        if (code->callbacks.onEditorAction != nullptr) {
+            code->callbacks.onEditorAction(code, action);
+        }
+    }
+}
+
 static const JNINativeMethod g_methods[] = {
     {"initializeNativeCode",
      "(Ljava/lang/String;Ljava/lang/String;"
@@ -971,7 +1054,7 @@ static const JNINativeMethod g_methods[] = {
     {"onSurfaceRedrawNeededNative", "(JLandroid/view/Surface;)V",
      (void *)onSurfaceRedrawNeeded_native},
     {"onSurfaceDestroyedNative", "(J)V", (void *)onSurfaceDestroyed_native},
-    {"onTouchEventNative", "(JLandroid/view/MotionEvent;)Z",
+    {"onTouchEventNative", "(JLandroid/view/MotionEvent;IIIIIJJIIIIIIFF)Z",
      (void *)onTouchEvent_native},
     {"onKeyDownNative", "(JLandroid/view/KeyEvent;)Z",
      (void *)onKeyDown_native},
@@ -986,6 +1069,10 @@ static const JNINativeMethod g_methods[] = {
      (void *)setInputConnection_native},
     {"onContentRectChangedNative", "(JIIII)V",
      (void *)onContentRectChangedNative_native},
+    {"onSoftwareKeyboardVisibilityChangedNative", "(JZ)V",
+            (void *)onSoftwareKeyboardVisibilityChangedNative_native},
+    {"onEditorActionNative", "(JI)V",
+     (void *)onEditorActionNative_native},
 };
 
 static const char *const kGameActivityPathName =
@@ -1126,6 +1213,9 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                              windowInsetsCompatType_class, methodNames[i],
                              "()I");
     }
+
+    GameActivityEventsInit(env);
+
     return jniRegisterNativeMethods(env, kGameActivityPathName, g_methods,
                                     NELEM(g_methods));
 }

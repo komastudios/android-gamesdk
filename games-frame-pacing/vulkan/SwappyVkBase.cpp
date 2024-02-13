@@ -425,17 +425,27 @@ std::chrono::nanoseconds SwappyVkBase::getSwapInterval() {
 }
 
 void SwappyVkBase::addTracer(const SwappyTracer* tracer) {
-    if (tracer != nullptr) mCommonBase.addTracerCallbacks(*tracer);
+    mCommonBase.addTracerCallbacks(*tracer);
 }
 
 void SwappyVkBase::removeTracer(const SwappyTracer* tracer) {
-    if (tracer != nullptr) mCommonBase.removeTracerCallbacks(*tracer);
+    mCommonBase.removeTracerCallbacks(*tracer);
 }
 
 int SwappyVkBase::getSupportedRefreshPeriodsNS(uint64_t* out_refreshrates,
                                                int allocated_entries) {
     return mCommonBase.getSupportedRefreshPeriodsNS(out_refreshrates,
                                                     allocated_entries);
+}
+
+void SwappyVkBase::resetFramePacing() { mCommonBase.resetFramePacing(); }
+
+void SwappyVkBase::enableFramePacing(bool enable) {
+    mCommonBase.enableFramePacing(enable);
+}
+
+void SwappyVkBase::enableBlockingWait(bool enable) {
+    mCommonBase.enableBlockingWait(enable);
 }
 
 }  // namespace swappy

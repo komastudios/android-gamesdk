@@ -473,7 +473,10 @@ class Context : public java::Object {
     static constexpr const char* BATTERY_SERVICE = "batterymanager";
     static constexpr const char* POWER_SERVICE = "power";
     static constexpr const char* ACTIVITY_SERVICE = "activity";
-    Context(jobject o) : java::Object(o) {}
+    static constexpr const char* WINDOW_SERVICE = "window";
+    Context(jobject o) : java::Object(o) {
+        obj_.Cast("android/content/Context");
+    }
     pm::PackageManager getPackageManager() {
         return CallVOMethod("getPackageManager",
                             "android/content/pm/PackageManager");

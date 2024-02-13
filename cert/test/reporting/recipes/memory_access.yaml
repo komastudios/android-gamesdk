@@ -1,2 +1,0 @@
-build:
-  configuration: recipes/configurations/memory_access/single_core_comparison.json
