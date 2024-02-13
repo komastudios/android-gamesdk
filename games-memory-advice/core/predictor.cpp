@@ -119,14 +119,25 @@ float IPredictor::GetFromPath(std::string feature, Json::object data) {
         feature = feature.substr(pos + 1);
     }
 
-    Json result = search->at(feature);
+    if (feature.length() > 4 && feature.substr(feature.length() - 4) == "Norm") {
+        Json result = search->at(feature.substr(0, feature.length() - 4));
 
-    if (result.is_number()) {
-        return static_cast<float>(result.number_value());
-    } else if (result.is_bool()) {
-        return result.bool_value() ? 1.0f : 0.0f;
+        if (result.is_number()) {
+            return static_cast<float>(result.number_value()) /
+                GetFromPath("baseline/constant/MemoryInfo/totalMem", data);
+        } else {
+            return 0.0f;
+        }
     } else {
-        return 0.0f;
+        Json result = search->at(feature);
+
+        if (result.is_number()) {
+            return static_cast<float>(result.number_value());
+        } else if (result.is_bool()) {
+            return result.bool_value() ? 1.0f : 0.0f;
+        } else {
+            return 0.0f;
+        }
     }
 }
 

@@ -97,7 +97,7 @@ abstract class Toolchain {
 
     fun getProtobufInstallPath(): String {
         return File(
-            "${project_.projectDir}/third_party/protobuf-3.0.0/install/" +
+            "${project_.projectDir}/third_party/protoc-3.21.7/" +
                 osFolderName(ExternalToolName.PROTOBUF)
         ).path
     }

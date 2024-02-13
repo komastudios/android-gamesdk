@@ -23,10 +23,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.google.protobuf.DescriptorProtos
 
+import com.google.tfmonitor.databinding.FragmentItemBinding;
 
 import com.google.tfmonitor.FieldItemFragment.OnListFragmentInteractionListener
-
-import kotlinx.android.synthetic.main.fragment_item.view.*
 
 class FieldItemRecyclerViewAdapter(
     private val mValues: List<DescriptorProtos.FieldDescriptorProto>,
@@ -34,6 +33,7 @@ class FieldItemRecyclerViewAdapter(
 ) : RecyclerView.Adapter<FieldItemRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
+    private var mBinding: FragmentItemBinding? = null;
 
     init {
         mOnClickListener = View.OnClickListener { v ->
@@ -45,9 +45,9 @@ class FieldItemRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_item, parent, false)
-        return ViewHolder(view)
+        mBinding = FragmentItemBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false);
+        return ViewHolder(mBinding!!.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -64,8 +64,8 @@ class FieldItemRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mNameView: TextView = mView.item_name
-        val mTypeView: TextView = mView.item_type
+        val mNameView: TextView = mBinding!!.itemName
+        val mTypeView: TextView = mBinding!!.itemType
         val mValueView: View? = null
 
         override fun toString(): String {

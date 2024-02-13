@@ -134,13 +134,13 @@ NativeEngine::NativeEngine(struct android_app *app) {
     // behaviour of NativeActivity.
     android_app_set_motion_event_filter(app, nullptr);
 
-    // Flags to control how the IME behaves.
-    constexpr int InputType_dot_TYPE_CLASS_TEXT = 1;
-    constexpr int IME_ACTION_NONE = 1;
-    constexpr int IME_FLAG_NO_FULLSCREEN = 33554432;
-
-    GameActivity_setImeEditorInfo(app->activity, InputType_dot_TYPE_CLASS_TEXT,
-                                  IME_ACTION_NONE, IME_FLAG_NO_FULLSCREEN);
+    /*
+     * You can customize IME behavior by uncommenting this function call
+     * and modifying its arguments as you wish. For example, the code below
+     * will only allow user to input numbers. Don't forget IME_FLAG_NO_FULLSCREEN flag,
+     * otherwise the software keyboard will occupy the whole screen. */
+    /* GameActivity_setImeEditorInfo(mApp->activity, TYPE_CLASS_NUMBER,
+                                  IME_ACTION_NONE, IME_ACTION_DONE | IME_FLAG_NO_FULLSCREEN); */
 
     // Set fields retrieved through JNI
     // Find the Java class
@@ -236,10 +236,10 @@ static bool _cooked_event_callback(struct CookedEvent *event) {
             mgr->OnPointerMove(event->motionPointerId, &coords);
             return true;
         case COOKED_EVENT_TYPE_KEY_DOWN:
-            mgr->OnKeyDown(event->keyCode);
+            mgr->OnKeyDown(getOurKeyFromAndroidKey(event->keyCode));
             return true;
         case COOKED_EVENT_TYPE_KEY_UP:
-            mgr->OnKeyUp(event->keyCode);
+            mgr->OnKeyUp(getOurKeyFromAndroidKey(event->keyCode));
             return true;
         case COOKED_EVENT_TYPE_BACK:
             return mgr->OnBackKeyPressed();
@@ -530,6 +530,20 @@ void NativeEngine::HandleCommand(int32_t cmd) {
                 VLOGD("%s insets: left=%d right=%d top=%d bottom=%d",
                       sInsetsTypeName[type], insets.left, insets.right, insets.top, insets.bottom);
             }
+            break;
+        case APP_CMD_SOFTWARE_KB_VIS_CHANGED:
+            VLOGD("NativeEngine: APP_CMD_SOFTWARE_KB_VIS_CHANGED");
+            VLOGD("software keyboard visible: %s",
+                  (GameActivity_isSoftwareKeyboardVisible(mApp->activity) ? "yes" : "no"));
+            break;
+        case APP_CMD_EDITOR_ACTION:
+            VLOGD("NativeEngine: APP_CMD_EDITOR_ACTION");
+            GameActivity_hideSoftInput(mApp->activity, 0);
+        case APP_CMD_KEY_EVENT:
+            VLOGD("NativeEngine: APP_CMD_KEY_EVENT");
+            break;
+        case APP_CMD_TOUCH_EVENT:
+            VLOGD("NativeEngine: APP_CMD_TOUCH_EVENT");
             break;
         default:
             VLOGD("NativeEngine: (unknown command).");
@@ -920,4 +934,12 @@ bool NativeEngine::InitGLObjects() {
         mHasGLObjects = true;
     }
     return true;
+}
+
+void NativeEngine::SetInputSdkContext(int context) {
+    jclass activityClass = GetJniEnv()->GetObjectClass(mApp->activity->javaGameActivity);
+    jmethodID setInputContextID =
+            GetJniEnv()->GetMethodID(activityClass, "setInputContext", "(I)V");
+    GetJniEnv()->CallVoidMethod(
+            mApp->activity->javaGameActivity, setInputContextID, (jint)context);
 }
