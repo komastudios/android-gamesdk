@@ -30,9 +30,6 @@ using namespace json11;
 class MemoryAdviceImpl {
    private:
     IMetricsProvider* metrics_provider_;
-    /** @brief A predictor that tries to predict the current memory consumption
-     * as a percentage of total memory. */
-    IPredictor* realtime_predictor_;
     /** @brief A predictor that attempts to predict the remanining memory that
      * can be safely allocated. */
     IPredictor* available_predictor_;

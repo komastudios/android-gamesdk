@@ -74,8 +74,18 @@ public class InputEnabledTextView extends View implements Listener {
     }
 
     @Override
+    public void onEditorAction(int action) {
+        System.out.println("onEditorAction: " + action);
+    }
+
+    @Override
     public void onImeInsetsChanged(Insets insets) {
         System.out.println("insetsChanged: " + insets);
+    }
+
+    @Override
+    public void onSoftwareKeyboardVisibilityChanged(boolean visible) {
+        System.out.println("onSoftwareKeyboardVisibilityChanged: " + visible);
     }
 
     private native void onTextInputEventNative(State softKeyboardEvent);

@@ -114,24 +114,28 @@ class TuningForkRequestServer(ip: String, port: Int, val requestListener: Reques
             for (h in header.indices) {
                 val value = header[h].trim { it <= ' ' }
 
-                when (true) {
-                    kContentLengthPattern.containsMatchIn(value) -> contentLen =
-                        value.HeaderTrim()
-                    kContentTypePattern.containsMatchIn(value) -> contentType =
-                        value.HeaderTrim()
-                    kConnectionTypePattern.containsMatchIn(value) -> connectionType =
-                        value.HeaderTrim()
-                    kClientHostPattern.containsMatchIn(value) -> hostname =
-                        value.HeaderTrim()
-                    kAcceptEncodingPattern.containsMatchIn(value) -> encoding =
-                        value.HeaderTrim()
-                    kUserAgentPattern.containsMatchIn(value) ->
-                        for (ua in value.split(":".toRegex())
-                            .dropLastWhile { it.isEmpty() }.toTypedArray()) {
-                            if (!ua.equals("User-Agent:", ignoreCase = true)) {
-                                userAgent += ua.trim { it <= ' ' }
-                            }
+                if (kContentLengthPattern.containsMatchIn(value)) {
+                    contentLen = value.HeaderTrim()
+                }
+                if (kContentTypePattern.containsMatchIn(value)) {
+                    contentType = value.HeaderTrim()
+                }
+                if (kConnectionTypePattern.containsMatchIn(value)) {
+                    connectionType = value.HeaderTrim();
+                }
+                if (kClientHostPattern.containsMatchIn(value)) {
+                    hostname = value.HeaderTrim()
+                }
+                if (kAcceptEncodingPattern.containsMatchIn(value)) {
+                    encoding = value.HeaderTrim()
+                }
+                if (kUserAgentPattern.containsMatchIn(value)) {
+                    for (ua in value.split(":".toRegex())
+                        .dropLastWhile { it.isEmpty() }.toTypedArray()) {
+                        if (!ua.equals("User-Agent:", ignoreCase = true)) {
+                            userAgent += ua.trim { it <= ' ' }
                         }
+                    }
                 }
             }
 

@@ -64,6 +64,7 @@ class DefaultMemInfoProvider : public IMemInfoProvider {
     MemInfo memInfo;
 
    public:
+    DefaultMemInfoProvider();
     void UpdateMemInfo() override;
     void UpdateOomScore() override;
     uint64_t GetNativeHeapAllocatedSize() override;

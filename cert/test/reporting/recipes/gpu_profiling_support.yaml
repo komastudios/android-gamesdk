@@ -1,3 +1,0 @@
-build:
-  type: none
-  configuration: recipes/configurations/gpu_profiling_support.json
