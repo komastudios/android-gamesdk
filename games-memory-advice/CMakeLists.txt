@@ -110,7 +110,7 @@ file(APPEND ${mri_file} "end\n")
 
 set(output_archive_placeholder_file ${CMAKE_CURRENT_BINARY_DIR}/${output_archive}.placeholder.cpp)
 add_custom_command(OUTPUT ${output_archive_placeholder_file}
-                   COMMAND touch ${output_archive_placeholder_file}
+                   COMMAND echo  > ${output_archive_placeholder_file}
                    DEPENDS memory_advice_static_pre)
 
 
