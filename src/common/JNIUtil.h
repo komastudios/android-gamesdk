@@ -24,6 +24,7 @@
 #include <string>
 
 #include "Log.h"
+#include "system_utils.h"
 
 // The code in this file will dynamically load Java classes from a binary
 // resource linked to the library. The binary data is in DEX format, accessible
@@ -145,7 +146,9 @@ static jclass loadClass(JNIEnv* env, jobject activity, const char* name,
             classLoaderObj, loadClass, dexLoaderClassName));
         env->DeleteLocalRef(dexLoaderClassName);
 
-        if (env->ExceptionCheck() || !imclassloaderClass) {
+        int sdkVersion = gamesdk::GetSystemPropAsInt("ro.build.version.sdk");
+
+        if (env->ExceptionCheck() || !imclassloaderClass || sdkVersion < 26) {
             env->ExceptionClear();
             // For older SDK versions <26, where InMemoryDexClassLoader is not
             // available
