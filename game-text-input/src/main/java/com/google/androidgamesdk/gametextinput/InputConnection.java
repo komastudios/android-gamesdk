@@ -57,10 +57,39 @@ public class InputConnection
       KeyEvent.KEYCODE_BUTTON_THUMBR, KeyEvent.KEYCODE_BUTTON_SELECT, KeyEvent.KEYCODE_BUTTON_START,
       KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MEDIA_RECORD, KeyEvent.KEYCODE_BUTTON_Z,
       KeyEvent.KEYCODE_BUTTON_C,
+
       // End of common game controller button keycodes
-      KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL,
+      KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.KEYCODE_CTRL_RIGHT,
       KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_BACK,
-      KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE};
+      KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE,
+      KeyEvent.KEYCODE_ALT_LEFT, KeyEvent.KEYCODE_ALT_RIGHT, KeyEvent.KEYCODE_CTRL_LEFT,
+      KeyEvent.KEYCODE_F1, KeyEvent.KEYCODE_F10, KeyEvent.KEYCODE_F11, KeyEvent.KEYCODE_F12,
+      KeyEvent.KEYCODE_F2, KeyEvent.KEYCODE_F3, KeyEvent.KEYCODE_F4, KeyEvent.KEYCODE_F5,
+      KeyEvent.KEYCODE_F6, KeyEvent.KEYCODE_F7, KeyEvent.KEYCODE_F8, KeyEvent.KEYCODE_F9,
+      KeyEvent.KEYCODE_INSERT, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END,
+      KeyEvent.KEYCODE_PAGE_UP, KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.KEYCODE_UNKNOWN,
+      KeyEvent.KEYCODE_SEARCH,
+
+      // all media keys
+      KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+      KeyEvent.KEYCODE_MEDIA_STOP,
+      KeyEvent.KEYCODE_MEDIA_NEXT,
+      KeyEvent.KEYCODE_MEDIA_PREVIOUS,
+      KeyEvent.KEYCODE_MEDIA_REWIND,
+      KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_PLAY,
+      KeyEvent.KEYCODE_MEDIA_PAUSE,
+      KeyEvent.KEYCODE_MEDIA_CLOSE,
+      KeyEvent.KEYCODE_MEDIA_EJECT,
+      KeyEvent.KEYCODE_MEDIA_RECORD,
+      KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK,
+      KeyEvent.KEYCODE_MEDIA_TOP_MENU,
+      KeyEvent.KEYCODE_TV_MEDIA_CONTEXT_MENU,
+      KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD,
+      KeyEvent.KEYCODE_MEDIA_STEP_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD,
+  };
   private final InputMethodManager imm;
   private final View targetView;
   private final Settings settings;
@@ -448,7 +477,7 @@ public class InputConnection
   }
 
   private boolean processKeyEvent(KeyEvent event) {
-    Log.d(TAG, "processKeyEvent");
+    Log.d(TAG, String.format("processKeyEvent(key=%d)", event.getKeyCode()));
 
     // Filter out Enter keys if multi-line mode is disabled.
     if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0 &&
