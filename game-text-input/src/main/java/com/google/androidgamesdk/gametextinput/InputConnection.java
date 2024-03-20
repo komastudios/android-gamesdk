@@ -557,9 +557,9 @@ public class InputConnection
     // Keep a reference to the listener to avoid a race condition when setting the listener.
     Listener listener = this.listener;
 
-    // Only propagate the state change when the keyboard is set to active.
-    // If we don't do this, 'back' events can be passed unnecessarily.
-    if (listener != null && this.mSoftKeyboardActive) {
+    // We always propagate state change events because unfortunately keyboard visibility functions
+    // are unreliable, and text editor logic should not depend on them.
+    if (listener != null) {
       listener.stateChanged(state, dismissed);
     }
   }
