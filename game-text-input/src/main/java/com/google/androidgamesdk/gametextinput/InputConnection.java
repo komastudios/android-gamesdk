@@ -517,8 +517,9 @@ public class InputConnection
 
       int code = event.getKeyCode();
       if (!dontInsertChars.get(code)) {
+        String charsToInsert = Character.toString((char) event.getUnicodeChar());
         this.mEditable.insert(
-            selection.first, (CharSequence) Character.toString((char) event.getUnicodeChar()));
+            selection.first, (CharSequence) charsToInsert);
         int length = this.mEditable.length();
 
         // Same logic as in setComposingText(): we must update composing region,
@@ -531,11 +532,11 @@ public class InputConnection
           }
         }
 
-        // IMM seems to cache set content of Editable, so we update it with restartInput
+        // IMM seems to cache the content of Editable, so we update it with restartInput
         // Also it caches selection and composing region, so let's notify it about updates.
         composingRegion.second = composingRegion.first + length;
         this.setComposingRegion(composingRegion.first, composingRegion.second);
-        int new_cursor = composingRegion.second;
+        int new_cursor = selection.first + charsToInsert.length();
         setSelectionInternal(new_cursor, new_cursor);
         this.informIMM();
         this.restartInput();
@@ -556,9 +557,9 @@ public class InputConnection
     // Keep a reference to the listener to avoid a race condition when setting the listener.
     Listener listener = this.listener;
 
-    // Only propagate the state change when the keyboard is set to active.
-    // If we don't do this, 'back' events can be passed unnecessarily.
-    if (listener != null && this.mSoftKeyboardActive) {
+    // We always propagate state change events because unfortunately keyboard visibility functions
+    // are unreliable, and text editor logic should not depend on them.
+    if (listener != null) {
       listener.stateChanged(state, dismissed);
     }
   }
