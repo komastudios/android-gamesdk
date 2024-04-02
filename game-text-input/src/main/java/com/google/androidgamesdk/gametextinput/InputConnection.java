@@ -601,7 +601,16 @@ public class InputConnection
    * @return The current IME insets
    */
   public Insets getImeInsets() {
+    if (this.targetView == null) {
+      return Insets.NONE;
+    }
+
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+
+    if (insets == null) {
+      return Insets.NONE;
+    }
+
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
@@ -611,7 +620,16 @@ public class InputConnection
    * @return whether software IME is visible or not.
    */
   public boolean isSoftwareKeyboardVisible() {
+    if (this.targetView == null) {
+      return false;
+    }
+
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+
+    if (insets == null) {
+      return false;
+    }
+
     return insets.isVisible(WindowInsetsCompat.Type.ime());
   }
 
