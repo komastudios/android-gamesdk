@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59a60471_0f642a96",
+        "filename": "VERSIONS",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2024-05-20T19:31:35Z",
+      "side": 1,
+      "message": "Sorry, I think this is wrong. 2.0.2 is a bugfix release and bugfix releases are done in release branches. This means that all 2.0.x releases should be done in game-controller-release branch, and main branch (this one) is for 2.1.0 and following.",
+      "revId": "c9a9e4ca5437fbb3b2156ee025127d2ee06cea96",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
