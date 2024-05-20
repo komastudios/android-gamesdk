@@ -732,6 +732,7 @@ int32_t GameControllerManager::processGameActivityMouseEvent(
                             mMouseData.buttonsDown |= axisP > 0.0f ? 1 : 0;
                             updateMouseDataTimestamp();
                         }
+                        handledEvent = HANDLED_EVENT;
                         break;
                     }
                 }
