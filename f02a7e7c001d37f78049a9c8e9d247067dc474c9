@@ -34,6 +34,24 @@
       ],
       "revId": "f02a7e7c001d37f78049a9c8e9d247067dc474c9",
       "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "446f2420_ba33b104",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1715047
+      },
+      "writtenOn": "2024-05-21T17:59:39Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "2e180b10_ce27aa4d",
+      "revId": "f02a7e7c001d37f78049a9c8e9d247067dc474c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
     }
   ]
 }
