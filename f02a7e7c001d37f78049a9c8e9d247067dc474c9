@@ -1,0 +1,39 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e180b10_ce27aa4d",
+        "filename": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2024-05-21T16:47:57Z",
+      "side": 1,
+      "message": "Looks like tabs instead of spaces?",
+      "fixSuggestions": [
+        {
+          "fixId": "2331e382_0b33d532",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "games-controller/src/main/java/com/google/android/games/paddleboat/GameControllerInfo.java",
+              "range": {
+                "startLine": 70,
+                "startChar": 0,
+                "endLine": 73,
+                "endChar": 0
+              },
+              "replacement": "        // Enumerate the info array before the axis to set\n        // the flags that tell us if we need to manually add the\n        // pressure axis\n"
+            }
+          ]
+        }
+      ],
+      "revId": "f02a7e7c001d37f78049a9c8e9d247067dc474c9",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
