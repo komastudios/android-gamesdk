@@ -28,6 +28,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
 
     private long mCookie;
     private Activity mActivity;
+    private DisplayManager mDisplayManager;
     private WindowManager mWindowManager;
     private Display.Mode mCurrentMode;
 
@@ -92,18 +93,18 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
         mCookie = cookie;
         mActivity = activity;
 
+        mDisplayManager = mActivity.getSystemService(DisplayManager.class);
         mWindowManager = mActivity.getSystemService(WindowManager.class);
         Display display = mWindowManager.getDefaultDisplay();
         mCurrentMode = display.getMode();
         updateSupportedRefreshRates(display);
 
         // Register display listener callbacks
-        DisplayManager dm = mActivity.getSystemService(DisplayManager.class);
 
         synchronized(this) {
             mLooper = new LooperThread();
             mLooper.start();
-            dm.registerDisplayListener(this, mLooper.mHandler);
+            mDisplayManager.registerDisplayListener(this, mLooper.mHandler);
         }
     }
 
@@ -152,6 +153,7 @@ public class SwappyDisplayManager implements DisplayManager.DisplayListener {
     }
 
     public void terminate() {
+        mDisplayManager.unregisterDisplayListener(mLooper);
         mLooper.mHandler.getLooper().quit();
     }
 
