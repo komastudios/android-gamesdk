@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fbfdf82_b4078546",
+        "filename": "games-frame-pacing/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1812805
+      },
+      "writtenOn": "2024-06-04T21:47:25Z",
+      "side": 1,
+      "message": "nit: Either move or delete this comment",
+      "range": {
+        "startLine": 102,
+        "startChar": 7,
+        "endLine": 102,
+        "endChar": 46
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "23916a16_03b0b31d",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "games-frame-pacing/extras/src/main/java/com/google/androidgamesdk/SwappyDisplayManager.java",
+              "range": {
+                "startLine": 102,
+                "startChar": 0,
+                "endLine": 104,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "131042323778cfeb7fb3c7b03950f212f5ff3447",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
