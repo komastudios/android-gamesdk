@@ -463,6 +463,8 @@ public class GameActivity
   @Keep
   public Insets getWindowInsets(int type) {
     WindowInsetsCompat allInsets = ViewCompat.getRootWindowInsets(mSurfaceView);
+    if (allInsets == null)
+      return null;
     Insets insets = allInsets.getInsets(type);
     if (insets == Insets.NONE)
       return null;
@@ -473,6 +475,8 @@ public class GameActivity
   @Keep
   public Insets getWaterfallInsets() {
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(mSurfaceView);
+    if (insets == null)
+      return null;
     DisplayCutoutCompat cutout = insets.getDisplayCutout();
     if (cutout != null)
       return cutout.getWaterfallInsets();
