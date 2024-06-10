@@ -629,6 +629,8 @@ static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
 
     gConfiguration.hardKeyboardHidden = code->env->GetIntField(
         javaConfig, gConfigurationClassInfo.hardKeyboardHidden);
+    gConfiguration.keyboard = code->env->GetIntField(
+        javaConfig, gConfigurationClassInfo.keyboard);
     gConfiguration.keyboardHidden = code->env->GetIntField(
         javaConfig, gConfigurationClassInfo.keyboardHidden);
     gConfiguration.mcc =
