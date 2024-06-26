@@ -161,11 +161,15 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
     mChoreographerFilter = std::make_unique<ChoreographerFilter>(
         mCommonSettings.refreshPeriod,
         mCommonSettings.sfVsyncOffset - mCommonSettings.appVsyncOffset,
-        [this]() { return wakeClient(); });
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
+            return wakeClient(sfToVsyncDelay);
+        });
 
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::Swappy, mJVM, jactivity,
-        [this] { mChoreographerFilter->onChoreographer(); },
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
+            mChoreographerFilter->onChoreographer(sfToVsyncDelay);
+        },
         [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     if (!mChoreographerThread->isInitialized()) {
         SWAPPY_LOGE("failed to initialize ChoreographerThread");
@@ -208,12 +212,16 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
     mChoreographerFilter = std::make_unique<ChoreographerFilter>(
         mCommonSettings.refreshPeriod,
         mCommonSettings.sfVsyncOffset - mCommonSettings.appVsyncOffset,
-        [this]() { return wakeClient(); });
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
+            return wakeClient(sfToVsyncDelay);
+        });
     mUsingExternalChoreographer = true;
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::App, nullptr, nullptr,
-        [this] { mChoreographerFilter->onChoreographer(); }, [] {},
-        mCommonSettings.sdkVersion);
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
+            mChoreographerFilter->onChoreographer(sfToVsyncDelay);
+        },
+        [] {}, mCommonSettings.sdkVersion);
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     Settings::getInstance()->setDisplayTimings({mCommonSettings.refreshPeriod,
@@ -266,9 +274,16 @@ void SwappyCommon::onRefreshRateChanged() {
                 1e9f / settings.refreshPeriod.count());
 }
 
-nanoseconds SwappyCommon::wakeClient() {
+nanoseconds SwappyCommon::wakeClient(
+    std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
     std::lock_guard<std::mutex> lock(mWaitingMutex);
     ++mCurrentFrame;
+
+    if (sfToVsyncDelay) {
+        __android_log_print(ANDROID_LOG_ERROR, "adyabr",
+                            "sfToVsyncDelay got to common %.2f",
+                            sfToVsyncDelay->count() / 1e6f);
+    }
 
     // We're attempting to align with SurfaceFlinger's vsync, but it's always
     // better to be a little late than a little early (since a little early
@@ -287,7 +302,9 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mUsingExternalChoreographer = true;
         mChoreographerThread = ChoreographerThread::createChoreographerThread(
             ChoreographerThread::Type::App, nullptr, nullptr,
-            [this] { mChoreographerFilter->onChoreographer(); },
+            [this](std::optional<std::chrono::nanoseconds> sfToVsyncDelay) {
+                mChoreographerFilter->onChoreographer(sfToVsyncDelay);
+            },
             [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     }
 

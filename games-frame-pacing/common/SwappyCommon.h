@@ -197,7 +197,8 @@ class SwappyCommon {
     };
 
     void addFrameDuration(FrameDuration duration);
-    std::chrono::nanoseconds wakeClient();
+    std::chrono::nanoseconds wakeClient(
+        std::optional<std::chrono::nanoseconds> sfToVsyncDelay);
 
     bool swapFaster(int newSwapInterval) REQUIRES(mMutex);
 
