@@ -165,7 +165,9 @@ SwappyCommon::SwappyCommon(JNIEnv* env, jobject jactivity)
 
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::Swappy, mJVM, jactivity,
-        [this] { mChoreographerFilter->onChoreographer(); },
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncTime) {
+            mChoreographerFilter->onChoreographer(sfToVsyncTime);
+        },
         [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     if (!mChoreographerThread->isInitialized()) {
         SWAPPY_LOGE("failed to initialize ChoreographerThread");
@@ -212,8 +214,10 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
     mUsingExternalChoreographer = true;
     mChoreographerThread = ChoreographerThread::createChoreographerThread(
         ChoreographerThread::Type::App, nullptr, nullptr,
-        [this] { mChoreographerFilter->onChoreographer(); }, [] {},
-        mCommonSettings.sdkVersion);
+        [this](std::optional<std::chrono::nanoseconds> sfToVsyncTime) {
+            mChoreographerFilter->onChoreographer(sfToVsyncTime);
+        },
+        [] {}, mCommonSettings.sdkVersion);
 
     Settings::getInstance()->addListener([this]() { onSettingsChanged(); });
     Settings::getInstance()->setDisplayTimings({mCommonSettings.refreshPeriod,
@@ -287,7 +291,9 @@ void SwappyCommon::onChoreographer(int64_t frameTimeNanos) {
         mUsingExternalChoreographer = true;
         mChoreographerThread = ChoreographerThread::createChoreographerThread(
             ChoreographerThread::Type::App, nullptr, nullptr,
-            [this] { mChoreographerFilter->onChoreographer(); },
+            [this](std::optional<std::chrono::nanoseconds> sfToVsyncTime) {
+                mChoreographerFilter->onChoreographer(sfToVsyncTime);
+            },
             [this] { onRefreshRateChanged(); }, mCommonSettings.sdkVersion);
     }
 

@@ -128,7 +128,13 @@ ChoreographerFilter::~ChoreographerFilter() {
     terminateThreadsLocked();
 }
 
-void ChoreographerFilter::onChoreographer() {
+void ChoreographerFilter::onChoreographer(
+    std::optional<std::chrono::nanoseconds> sfToVsyncTime) {
+    if (sfToVsyncTime) {
+        __android_log_print(ANDROID_LOG_ERROR, "adyabr",
+                            "filter got the to vsync time %2.f",
+                            sfToVsyncTime->count() / 1e6f);
+    }
     std::lock_guard<std::mutex> lock(mMutex);
     mLastTimestamp = std::chrono::steady_clock::now();
     ++mSequenceNumber;

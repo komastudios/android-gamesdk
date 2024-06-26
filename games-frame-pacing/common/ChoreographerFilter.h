@@ -18,6 +18,7 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <vector>
 
 #include "Settings.h"
@@ -34,7 +35,7 @@ class ChoreographerFilter {
                                  Worker doWork);
     ~ChoreographerFilter();
 
-    void onChoreographer();
+    void onChoreographer(std::optional<std::chrono::nanoseconds> sfToVsyncTime);
 
    private:
     void launchThreadsLocked();
