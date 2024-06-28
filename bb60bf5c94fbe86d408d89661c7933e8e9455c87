@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23159324_9d1a7676",
+        "filename": "VERSIONS",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1965785
+      },
+      "writtenOn": "2024-06-28T18:23:03Z",
+      "side": 1,
+      "message": "I think this is wrong according to Jetpad release process. Bugfix versions should be used in release branches. Maybe the next version should be beta01?",
+      "revId": "bb60bf5c94fbe86d408d89661c7933e8e9455c87",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
