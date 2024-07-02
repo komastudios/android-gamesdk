@@ -230,6 +230,9 @@ SwappyCommon::SwappyCommon(const SwappyCommonSettings& settings)
 }
 
 SwappyCommon::~SwappyCommon() {
+    // Remove the settings' listeners before destroying Choreographer objects
+    // because the listeners may contain references to the objects
+    Settings::getInstance()->removeAllListeners();
     // destroy all threads first before the other members of this class
     mChoreographerThread.reset();
     mChoreographerFilter.reset();
