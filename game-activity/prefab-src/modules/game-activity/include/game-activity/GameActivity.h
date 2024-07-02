@@ -44,9 +44,15 @@
 extern "C" {
 #endif
 
+<<<<<<< HEAD   (46fd23 fix 'keyboard' variable updates)
 #define GAMEACTIVITY_MAJOR_VERSION 2
 #define GAMEACTIVITY_MINOR_VERSION 1
 #define GAMEACTIVITY_BUGFIX_VERSION 0
+=======
+#define GAMEACTIVITY_MAJOR_VERSION 3
+#define GAMEACTIVITY_MINOR_VERSION 0
+#define GAMEACTIVITY_BUGFIX_VERSION 4
+>>>>>>> CHANGE (6b08f4 bump game-activity to 3.0.4)
 #define GAMEACTIVITY_PACKED_VERSION                            \
     ANDROID_GAMESDK_PACKED_VERSION(GAMEACTIVITY_MAJOR_VERSION, \
                                    GAMEACTIVITY_MINOR_VERSION, \
