@@ -17,10 +17,25 @@
 #pragma once
 
 #include "histogram.h"
+#include "kll.h"
 #include "metricdata.h"
 #include "settings.h"
 
 namespace tuningfork {
+
+/*
+ * Inverse of the epsilon parameter for the KLL library, which denotes the
+ * error margin for each result.
+ */
+static const int32_t KLL_INV_EPS = 100;
+/*
+ * Inverse of the delta parameter for the KLL library, which denotes the
+ * probability that a given result is further off than the error margin.
+ */
+static const int32_t KLL_INV_DELTA = 100000;
+
+using namespace zetasketch::android;
+using namespace dist_proc::aggregation;
 
 struct FrameTimeMetric {
     FrameTimeMetric(uint32_t ikey_index = 0,
@@ -36,11 +51,17 @@ struct FrameTimeMetricData : public MetricData {
           metric_id_(metric_id),
           histogram_(settings, false /*isLoading*/),
           last_time_(TimePoint::min()),
-          duration_(Duration::zero()) {}
+          duration_(Duration::zero()) {
+        KllQuantileOptions options;
+        options.set_inv_eps(KLL_INV_EPS);
+        options.set_inv_delta(KLL_INV_DELTA);
+        aggregator_ = KllQuantile::Create(options);
+    }
     MetricId metric_id_;
     Histogram<double> histogram_;
     TimePoint last_time_;
     Duration duration_;
+    std::unique_ptr<KllQuantile> aggregator_;
     void Tick(TimePoint t, bool record = true);
     void Record(Duration dt);
     virtual void Clear() override;

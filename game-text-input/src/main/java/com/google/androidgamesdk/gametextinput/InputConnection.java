@@ -18,8 +18,13 @@ package com.google.androidgamesdk.gametextinput;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,7 +33,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Keep;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -38,16 +42,54 @@ import java.util.BitSet;
 @Keep
 public class InputConnection
     extends BaseInputConnection
-    implements View.OnKeyListener, OnApplyWindowInsetsListener {
+    implements View.OnKeyListener {
   private static final String TAG = "gti.InputConnection";
   // TODO: (b/183179971) We should react to most of these events rather than ignoring them? Plus
   // there are others that should be ignored.
-  private static final int[] notInsertedKeyCodes = {KeyEvent.KEYCODE_DEL,
-      KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT,
+  private static final int[] notInsertedKeyCodes = {
+      // Start of common game controller button keycodes
       KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP,
       KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_DOWN_LEFT,
       KeyEvent.KEYCODE_DPAD_UP_LEFT, KeyEvent.KEYCODE_DPAD_UP_LEFT, KeyEvent.KEYCODE_DPAD_UP_RIGHT,
-      KeyEvent.KEYCODE_BACK};
+      KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_X,
+      KeyEvent.KEYCODE_BUTTON_Y, KeyEvent.KEYCODE_BUTTON_L1, KeyEvent.KEYCODE_BUTTON_L2,
+      KeyEvent.KEYCODE_BUTTON_R1, KeyEvent.KEYCODE_BUTTON_R2, KeyEvent.KEYCODE_BUTTON_THUMBL,
+      KeyEvent.KEYCODE_BUTTON_THUMBR, KeyEvent.KEYCODE_BUTTON_SELECT, KeyEvent.KEYCODE_BUTTON_START,
+      KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MEDIA_RECORD, KeyEvent.KEYCODE_BUTTON_Z,
+      KeyEvent.KEYCODE_BUTTON_C,
+
+      // End of common game controller button keycodes
+      KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.KEYCODE_CTRL_RIGHT,
+      KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT, KeyEvent.KEYCODE_BACK,
+      KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE,
+      KeyEvent.KEYCODE_ALT_LEFT, KeyEvent.KEYCODE_ALT_RIGHT, KeyEvent.KEYCODE_CTRL_LEFT,
+      KeyEvent.KEYCODE_F1, KeyEvent.KEYCODE_F10, KeyEvent.KEYCODE_F11, KeyEvent.KEYCODE_F12,
+      KeyEvent.KEYCODE_F2, KeyEvent.KEYCODE_F3, KeyEvent.KEYCODE_F4, KeyEvent.KEYCODE_F5,
+      KeyEvent.KEYCODE_F6, KeyEvent.KEYCODE_F7, KeyEvent.KEYCODE_F8, KeyEvent.KEYCODE_F9,
+      KeyEvent.KEYCODE_INSERT, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END,
+      KeyEvent.KEYCODE_PAGE_UP, KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.KEYCODE_UNKNOWN,
+      KeyEvent.KEYCODE_SEARCH,
+
+      // all media keys
+      KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+      KeyEvent.KEYCODE_MEDIA_STOP,
+      KeyEvent.KEYCODE_MEDIA_NEXT,
+      KeyEvent.KEYCODE_MEDIA_PREVIOUS,
+      KeyEvent.KEYCODE_MEDIA_REWIND,
+      KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_PLAY,
+      KeyEvent.KEYCODE_MEDIA_PAUSE,
+      KeyEvent.KEYCODE_MEDIA_CLOSE,
+      KeyEvent.KEYCODE_MEDIA_EJECT,
+      KeyEvent.KEYCODE_MEDIA_RECORD,
+      KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK,
+      KeyEvent.KEYCODE_MEDIA_TOP_MENU,
+      KeyEvent.KEYCODE_TV_MEDIA_CONTEXT_MENU,
+      KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD,
+      KeyEvent.KEYCODE_MEDIA_STEP_FORWARD,
+      KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD,
+  };
   private final InputMethodManager imm;
   private final View targetView;
   private final Settings settings;
@@ -56,6 +98,44 @@ public class InputConnection
   private final BitSet dontInsertChars;
   private Listener listener;
   private boolean mSoftKeyboardActive;
+
+  /*
+   * This class filters EOL characters from the input. For details of how InputFilter.filter
+   * function works, refer to its documentation. If the suggested change is accepted without
+   * modifications, filter() should return null.
+   */
+  private class SingeLineFilter implements InputFilter {
+     public CharSequence filter(CharSequence source, int start, int end,
+                                Spanned dest, int dstart, int dend) {
+
+       boolean keepOriginal = true;
+       StringBuilder builder = new StringBuilder(end - start);
+
+       for (int i = start; i < end; i++) {
+         char c = source.charAt(i);
+
+         if (c == '\n') {
+           keepOriginal = false;
+         } else {
+           builder.append(c);
+         }
+       }
+
+       if (keepOriginal) {
+         return null;
+       }
+
+       if (source instanceof Spanned) {
+         SpannableString s = new SpannableString(builder);
+         TextUtils.copySpansFrom((Spanned) source, start, builder.length(), null, s, 0);
+         return s;
+       } else {
+         return builder;
+       }
+     }
+  }
+
+  private static final int MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT = 5000;
 
   /**
    * Constructor
@@ -83,7 +163,9 @@ public class InputConnection
     }
     // Listen for insets changes
     WindowCompat.setDecorFitsSystemWindows(((Activity)targetView.getContext()).getWindow(), false);
-    ViewCompat.setOnApplyWindowInsetsListener(targetView, this);
+    targetView.setOnKeyListener(this);
+    // Apply EditorInfo settings
+    this.setEditorInfo(settings.mEditorInfo);
   }
 
   /**
@@ -118,8 +200,6 @@ public class InputConnection
     } else {
       this.imm.hideSoftInputFromWindow(this.targetView.getWindowToken(), flags);
     }
-
-    this.mSoftKeyboardActive = active;
   }
 
   /**
@@ -138,6 +218,18 @@ public class InputConnection
    */
   public final void setEditorInfo(EditorInfo editorInfo) {
     this.settings.mEditorInfo = editorInfo;
+
+    // Depending on the multiline state, we might need a different set of filters.
+    // Filters are being used to filter specific characters for hardware keyboards
+    // (software input methods already support TYPE_TEXT_FLAG_MULTI_LINE).
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0) {
+      mEditable.setFilters(new InputFilter[]{
+              new InputFilter.LengthFilter(MAX_LENGTH_FOR_SINGLE_LINE_EDIT_TEXT),
+              new SingeLineFilter()
+      });
+    } else {
+      mEditable.setFilters(new InputFilter[]{ });
+    }
   }
 
   /**
@@ -205,13 +297,8 @@ public class InputConnection
   // From BaseInputConnection
   @Override
   public boolean setComposingText(CharSequence text, int newCursorPosition) {
-    Log.d(TAG,
-        (new StringBuilder())
-            .append("setComposingText: '")
-            .append(text)
-            .append("', newCursorPosition=")
-            .append(newCursorPosition)
-            .toString());
+    Log.d(TAG, String.format("setComposingText='%s' newCursorPosition=%d",
+            text, newCursorPosition));
     if (text == null) {
       return false;
     } else {
@@ -274,15 +361,20 @@ public class InputConnection
   public boolean deleteSurroundingText(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingText: " + beforeLength + ":" + afterLength);
     Pair selection = this.getSelection();
-    int shift = 0;
-    if (beforeLength > 0) {
-      this.mEditable.delete(Math.max(0, selection.first - beforeLength), selection.first);
-      shift = beforeLength;
+    int first = Math.min(selection.first, selection.second);
+    int second = Math.max(selection.first, selection.second);
+
+    if (first == -1) {
+      return false;
     }
 
     if (afterLength > 0) {
-      this.mEditable.delete(Math.max(0, selection.second - shift),
-          Math.min(this.mEditable.length(), selection.second - shift + afterLength));
+      this.mEditable.delete(Math.max(0, second),
+              Math.min(this.mEditable.length(), second + afterLength));
+    }
+
+    if (beforeLength > 0) {
+      this.mEditable.delete(Math.max(0, first - beforeLength), first);
     }
 
     this.stateUpdated(false);
@@ -293,7 +385,9 @@ public class InputConnection
   @Override
   public boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength) {
     Log.d(TAG, "deleteSurroundingTextInCodePoints: " + beforeLength + ":" + afterLength);
-    return super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
+    boolean res = super.deleteSurroundingTextInCodePoints(beforeLength, afterLength);
+    this.stateUpdated(false);
+    return res;
   }
 
   // From BaseInputConnection
@@ -309,37 +403,30 @@ public class InputConnection
   // From BaseInputConnection
   @Override
   public CharSequence getSelectedText(int flags) {
-    Pair selection = this.getSelection();
-    return selection.first == -1 ? (CharSequence) ""
-                                 : this.mEditable.subSequence(selection.first, selection.second);
+    Log.d(TAG, "getSelectedText: " + flags);
+    return super.getSelectedText(flags);
   }
 
   // From BaseInputConnection
   @Override
   public CharSequence getTextAfterCursor(int length, int flags) {
     Log.d(TAG, "getTextAfterCursor: " + length + ":" + flags);
-    Pair selection = this.getSelection();
-    if (selection.first == -1) {
-      return (CharSequence) "";
-    } else {
-      int n = Math.min(selection.second + length, this.mEditable.length());
-      CharSequence seq = this.mEditable.subSequence(selection.second, n);
-      return (CharSequence) seq.toString();
+    if (length < 0) {
+      Log.i(TAG, "getTextAfterCursor: returning null to due to an invalid length=" + length);
+      return null;
     }
+    return super.getTextAfterCursor(length, flags);
   }
 
   // From BaseInputConnection
   @Override
   public CharSequence getTextBeforeCursor(int length, int flags) {
     Log.d(TAG, "getTextBeforeCursor: " + length + ", flags=" + flags);
-    Pair selection = this.getSelection();
-    if (selection.first == -1) {
-      return (CharSequence) "";
-    } else {
-      int start = Math.max(selection.first - length, 0);
-      CharSequence seq = this.mEditable.subSequence(start, selection.first);
-      return (CharSequence) seq.toString();
+    if (length < 0) {
+      Log.i(TAG, "getTextBeforeCursor: returning null to due to an invalid length=" + length);
+      return null;
     }
+    return super.getTextBeforeCursor(length, flags);
   }
 
   // From BaseInputConnection
@@ -376,17 +463,30 @@ public class InputConnection
   }
 
   private final void setComposingRegionInternal(int start_in, int end_in) {
-    if (start_in == -1) {
+    // start_in might be greater than end_in
+    int start = Math.min(start_in, end_in);
+    int end = Math.max(start_in, end_in);
+
+    if (start == -1) {
       GameTextInput.removeComposingRegion(this.mEditable);
     } else {
-      int start = Math.min(this.mEditable.length(), Math.max(0, start_in));
-      int end = Math.min(this.mEditable.length(), Math.max(0, end_in));
+      start = Math.min(this.mEditable.length(), Math.max(0, start));
+      end = Math.min(this.mEditable.length(), Math.max(0, end));
       GameTextInput.setComposingRegion(this.mEditable, start, end);
     }
   }
 
   private boolean processKeyEvent(KeyEvent event) {
-    Log.d(TAG, "sendKeyEvent");
+    Log.d(TAG, String.format("processKeyEvent(key=%d)", event.getKeyCode()));
+
+    // Filter out Enter keys if multi-line mode is disabled.
+    if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0 &&
+        (event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
+        event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.hasNoModifiers()) {
+      this.performEditorAction(settings.mEditorInfo.actionId);
+      return true;
+    }
+
     Pair selection = this.getSelection();
     if (event == null) {
       return false;
@@ -406,21 +506,45 @@ public class InputConnection
         this.mEditable.delete(selection.first, selection.second);
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && selection.first > 0) {
         this.mEditable.delete(selection.first - 1, selection.first);
+        this.stateUpdated(false);
+        return true;
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
           && selection.first < this.mEditable.length() - 1) {
         this.mEditable.delete(selection.first, selection.first + 1);
+        this.stateUpdated(false);
+        return true;
       }
 
       int code = event.getKeyCode();
       if (!dontInsertChars.get(code)) {
+        String charsToInsert = Character.toString((char) event.getUnicodeChar());
         this.mEditable.insert(
-            selection.first, (CharSequence) Character.toString((char) event.getUnicodeChar()));
-        int new_cursor = selection.first + 1;
-        GameTextInput.setSelection(this.mEditable, new_cursor, new_cursor);
-      }
+            selection.first, (CharSequence) charsToInsert);
+        int length = this.mEditable.length();
 
-      this.stateUpdated(false);
-      return true;
+        // Same logic as in setComposingText(): we must update composing region,
+        // so make sure it points to a valid range.
+        Pair composingRegion = this.getComposingRegion();
+        if (composingRegion.first == -1) {
+          composingRegion = this.getSelection();
+          if (composingRegion.first == -1) {
+            composingRegion = new Pair(0, 0);
+          }
+        }
+
+        // IMM seems to cache the content of Editable, so we update it with restartInput
+        // Also it caches selection and composing region, so let's notify it about updates.
+        composingRegion.second = composingRegion.first + length;
+        this.setComposingRegion(composingRegion.first, composingRegion.second);
+        int new_cursor = selection.first + charsToInsert.length();
+        setSelectionInternal(new_cursor, new_cursor);
+        this.informIMM();
+        this.restartInput();
+        this.stateUpdated(false);
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
@@ -433,18 +557,41 @@ public class InputConnection
     // Keep a reference to the listener to avoid a race condition when setting the listener.
     Listener listener = this.listener;
 
-    // Only propagate the state change when the keyboard is set to active.
-    // If we don't do this, 'back' events can be passed unnecessarily.
-    if (listener != null && this.mSoftKeyboardActive) {
+    // We always propagate state change events because unfortunately keyboard visibility functions
+    // are unreliable, and text editor logic should not depend on them.
+    if (listener != null) {
       listener.stateChanged(state, dismissed);
     }
   }
 
-  // From OnApplyWindowInsetsListener
-  @Override
+  /**
+   * This function is called whenever software keyboard (IME) changes its visible dimensions.
+   *
+   * @param v main application View
+   * @param insets insets of the software keyboard (IME)
+   * @return this function should return original insets object unless it wants to modify insets.
+   */
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    if (listener != null)
+    Log.d(TAG, "onApplyWindowInsets" + this.isSoftwareKeyboardVisible());
+
+    if (listener != null) {
       listener.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
+    }
+
+    boolean visible = this.isSoftwareKeyboardVisible();
+    if (visible == this.mSoftKeyboardActive) {
+      return insets;
+    }
+
+    this.mSoftKeyboardActive = visible;
+    if (!visible && VERSION.SDK_INT >= VERSION_CODES.O) {
+      this.targetView.clearFocus();
+    }
+
+    if (listener != null) {
+      listener.onSoftwareKeyboardVisibilityChanged(visible);
+    }
+
     return insets;
   }
 
@@ -454,8 +601,52 @@ public class InputConnection
    * @return The current IME insets
    */
   public Insets getImeInsets() {
+    if (this.targetView == null) {
+      return Insets.NONE;
+    }
+
     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+
+    if (insets == null) {
+      return Insets.NONE;
+    }
+
     return insets.getInsets(WindowInsetsCompat.Type.ime());
   }
 
+  /**
+   * Returns true if software keyboard is visible, false otherwise.
+   *
+   * @return whether software IME is visible or not.
+   */
+  public boolean isSoftwareKeyboardVisible() {
+    if (this.targetView == null) {
+      return false;
+    }
+
+    WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(this.targetView);
+
+    if (insets == null) {
+      return false;
+    }
+
+    return insets.isVisible(WindowInsetsCompat.Type.ime());
+  }
+
+  /**
+   * This is an event handler from InputConnection interface.
+   * It's called when action button is triggered (typically this means Enter was pressed).
+   *
+   * @param action Action code, either one from EditorInfo.imeOptions or a custom one.
+   * @return Returns true on success, false if the input connection is no longer valid.
+   */
+  @Override
+  public boolean performEditorAction(int action) {
+    if (listener != null) {
+      listener.onEditorAction(action);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

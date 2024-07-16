@@ -26,6 +26,7 @@
 #include "core/tuningfork_impl.h"
 #include "core/tuningfork_utils.h"
 #include "modp_b64.h"
+#include "proto/protobuf_util.h"
 
 // TODO(b/140155101): Move the date library into aosp/external
 #include "date/date.h"
@@ -139,7 +140,7 @@ Json::object JsonSerializer::TelemetryContextJson(
         {"tuning_parameters",
          Json::object{{"experiment_id", request_info.experiment_id},
                       {"serialized_fidelity_parameters",
-                       B64Encode(request_info.current_fidelity_parameters)}}},
+                       B64Encode(session_.GetFidelityParameters())}}},
         {"duration", DurationToSecondsString(duration)}};
 }
 
@@ -209,6 +210,8 @@ Json::object JsonSerializer::TelemetryReportJson(const AnnotationId& annotation,
             counts.push_back(static_cast<int32_t>(c));
         Json::object o{{"counts", counts}};
         o["instrument_id"] = session_.GetInstrumentationKey(ft.frame_time.ikey);
+        o["kll_quantiles_sketch"] =
+            B64Encode(Serialize(th->aggregator_->SerializeToProto()));
         render_histograms.push_back(o);
         duration = std::max(th->duration_, duration);
     }

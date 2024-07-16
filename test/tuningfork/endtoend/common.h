@@ -22,10 +22,10 @@
 
 #include "core/memory_telemetry.h"
 #include "core/tuningfork_internal.h"
-#include "full/dev_tuningfork.pb.h"
-#include "full/tuningfork.pb.h"
 #include "gtest/gtest.h"
 #include "http_backend/http_backend.h"
+#include "lite/dev_tuningfork.pb.h"
+#include "lite/tuningfork.pb.h"
 #include "proto/protobuf_util.h"
 
 #ifndef LOG_TAG

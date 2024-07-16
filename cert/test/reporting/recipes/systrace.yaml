@@ -1,5 +1,0 @@
-build:
-  configuration: recipes/configurations/systrace.json
-
-systrace:
-  enabled: true

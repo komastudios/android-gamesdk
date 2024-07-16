@@ -63,6 +63,13 @@ then
     ./gradlew packageMavenZip -Plibraries=paddleboat      -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew packageMavenZip -Plibraries=memory_advice   -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew jetpadJson -Plibraries=swappy,tuningfork,game_activity,game_text_input,paddleboat,memory_advice -PdistPath="$dist_dir" -PpackageName=$package_name
+elif [[ $1 == "tests" ]]
+then
+    package_name=gamesdk-tests
+    ./gradlew :game-controller:connectedAndroidTest -Plibraries=paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew :game-frame-pacing:connectedAndroidTest -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    ./gradlew :game-text-input:connectedAndroidTest -Plibraries=game_text_input,game_activity -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    exit
 else
     # The default is to build the express zip
     package_name=gamesdk-express
@@ -83,9 +90,6 @@ then
 
     # Add the tuningfork samples and apks into the Game SDK distribution zip
     pushd ./samples/tuningfork/insightsdemo/
-    ./gradlew ":app:assembleDebug"
-    popd
-    pushd ./test/tuningfork/testapp/
     ./gradlew ":app:assembleDebug"
     popd
     pushd ./samples/tuningfork/experimentsdemo/
@@ -140,8 +144,6 @@ then
       "$dist_dir/$package_name/apks/samples/insightsdemo.apk"
     cp samples/tuningfork/experimentsdemo/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/experimentsdemo.apk"
-    cp test/tuningfork/testapp/app/build/outputs/apk/debug/app-debug.apk \
-      "$dist_dir/$package_name/apks/test/tuningforktest.apk"
 
     cp samples/game_controller/nativeactivity/app/build/outputs/apk/debug/app-debug.apk \
       "$dist_dir/$package_name/apks/samples/game_controller_nativeactivity.apk"
@@ -169,7 +171,6 @@ then
     fi
     zip -ur agdk-libraries-*.zip "apks/samples/insightsdemo.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/experimentsdemo.apk"
-    zip -ur agdk-libraries-*.zip "apks/test/tuningforktest.apk"
 
     zip -ur agdk-libraries-*.zip "apks/samples/game_controller_nativeactivity.apk"
     zip -ur agdk-libraries-*.zip "apks/samples/game_controller_gameactivity.apk"

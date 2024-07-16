@@ -148,7 +148,9 @@ TuningForkImpl::TuningForkImpl(const Settings &settings, IBackend *backend,
     upload_thread_.InitialChecks(*current_session_, *this,
                                  settings_.c_settings.persistent_cache);
 
-    InitAsyncTelemetry();
+    if (!settings_.c_settings.disable_async_telemetry) {
+        InitAsyncTelemetry();
+    }
 
     // Record the time before we were initialized.
     if (RecordLoadingTime(
@@ -249,9 +251,15 @@ MetricId TuningForkImpl::SetCurrentAnnotation(
             last_id_ = id;
         }
         current_annotation_id_ = MetricId::FrameTime(id, 0);
-        battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
-        thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
-        memory_reporting_task_->UpdateMetricId(MetricId::Memory(id));
+        if (battery_reporting_task_) {
+            battery_reporting_task_->UpdateMetricId(MetricId::Battery(id));
+        }
+        if (thermal_reporting_task_) {
+            thermal_reporting_task_->UpdateMetricId(MetricId::Thermal(id));
+        }
+        if (memory_reporting_task_) {
+            memory_reporting_task_->UpdateMetricId(MetricId::Memory(id));
+        }
         return current_annotation_id_;
     }
 }
@@ -292,10 +300,9 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
     auto result = backend_->GenerateTuningParameters(
         web_request, training_mode_params_.get(), params_ser, experiment_id);
     if (result == TUNINGFORK_ERROR_OK) {
-        RequestInfo::CachedValue().current_fidelity_parameters = params_ser;
+        current_session_->SetFidelityParameters(params_ser);
     } else if (training_mode_params_.get()) {
-        RequestInfo::CachedValue().current_fidelity_parameters =
-            *training_mode_params_;
+        current_session_->SetFidelityParameters(*training_mode_params_);
     }
     RequestInfo::CachedValue().experiment_id = experiment_id;
     if (Debugging() && gamesdk::jni::IsValid()) {
@@ -303,6 +310,7 @@ TuningFork_ErrorCode TuningForkImpl::GetFidelityParameters(
     }
     return result;
 }
+
 TuningFork_ErrorCode TuningForkImpl::GetOrCreateInstrumentKeyIndex(
     InstrumentationKey key, int &index) {
     int nkeys = next_ikey_;
@@ -500,7 +508,7 @@ void TuningForkImpl::InitHistogramSettings() {
         }
     }
     for (uint32_t i = 0; i < max_keys; ++i) {
-        if (i > settings_.histograms.size()) {
+        if (i >= settings_.histograms.size()) {
             ALOGW(
                 "Couldn't get histogram for key index %d. Using default "
                 "histogram",
@@ -551,7 +559,9 @@ void TuningForkImpl::SwapSessions() {
         sessions_[0]->ClearData();
         current_session_ = sessions_[0].get();
     }
-    async_telemetry_->SetSession(current_session_);
+    if (async_telemetry_) {
+        async_telemetry_->SetSession(current_session_);
+    }
 }
 TuningFork_ErrorCode TuningForkImpl::Flush(TimePoint t, bool upload) {
     ALOGV("Flush %d", upload);
@@ -581,7 +591,7 @@ TuningFork_ErrorCode TuningForkImpl::SetFidelityParameters(
         ALOGW("Warning, previous data could not be flushed.");
         SwapSessions();
     }
-    RequestInfo::CachedValue().current_fidelity_parameters = params;
+    current_session_->SetFidelityParameters(params);
     // We clear the experiment id here.
     RequestInfo::CachedValue().experiment_id = "";
     return TUNINGFORK_ERROR_OK;
