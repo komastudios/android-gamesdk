@@ -46,8 +46,8 @@ std::string TestEndToEndWithAllocation() {
   while (s_impl->GetAdvice()
     .at("metrics")
     .object_items()
-    .at("predictedUsage")
-    .number_value() < 0.5) {
+    .at("predictedAvailable")
+    .number_value() > 0.5) {
     AllocateMemory(100 * kBytesInMegabyte);
   }
   std::string result = json11::Json(s_impl->GetAdvice()).dump();

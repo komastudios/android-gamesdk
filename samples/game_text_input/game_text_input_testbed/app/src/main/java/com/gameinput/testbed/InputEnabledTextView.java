@@ -19,6 +19,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.util.Log;
 
 import androidx.core.graphics.Insets;
 import com.google.androidgamesdk.gametextinput.GameTextInput;
@@ -31,6 +32,8 @@ import static android.view.inputmethod.EditorInfo.IME_ACTION_NONE;
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN;
 
 public class InputEnabledTextView extends View implements Listener {
+    private static final String LOG_TAG = "InputEnabledTextView";
+
     public InputConnection mInputConnection;
 
     public InputEnabledTextView(Context context, AttributeSet attrs) {
@@ -69,13 +72,23 @@ public class InputEnabledTextView extends View implements Listener {
     // Called when the IME has changed the input
     @Override
     public void stateChanged(State newState, boolean dismissed) {
-        System.out.println("stateChanged: " + newState + " dismissed: " + dismissed);
+        Log.d(LOG_TAG, "stateChanged: " + newState + " dismissed: " + dismissed);
         onTextInputEventNative(newState);
     }
 
     @Override
+    public void onEditorAction(int action) {
+        Log.d(LOG_TAG, "onEditorAction: " + action);
+    }
+
+    @Override
     public void onImeInsetsChanged(Insets insets) {
-        System.out.println("insetsChanged: " + insets);
+        Log.d(LOG_TAG, "insetsChanged: " + insets);
+    }
+
+    @Override
+    public void onSoftwareKeyboardVisibilityChanged(boolean visible) {
+        Log.d(LOG_TAG, "onSoftwareKeyboardVisibilityChanged: " + visible);
     }
 
     private native void onTextInputEventNative(State softKeyboardEvent);

@@ -285,6 +285,6 @@ class AppDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
             }
 
-        private const val DEFAULT_COLOUR_ID = R.color.colorAccent
+        private val DEFAULT_COLOUR_ID = R.color.colorAccent
     }
 }

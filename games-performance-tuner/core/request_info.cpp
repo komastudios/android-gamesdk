@@ -28,6 +28,8 @@
 #define LOG_TAG "TuningFork"
 #include "Log.h"
 
+using namespace gamesdk::jni;
+
 namespace {
 
 std::string slurpFile(const char* fname) {
@@ -53,27 +55,13 @@ namespace tuningfork {
 RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     RequestInfo info{};
     // Total memory
-    std::string s = slurpFile("/proc/meminfo");
-    if (!s.empty()) {
-        // Lines like 'MemTotal:        3749460 kB'
-        std::string to_find("MemTotal:");
-        auto it = s.find(to_find);
-        if (it != std::string::npos) {
-            const char* p = s.data() + it + to_find.length();
-            p = skipSpace(p);
-            std::istringstream str(p);
-            uint64_t x;
-            str >> x;
-            std::string units;
-            str >> units;
-            static std::string unitPrefix = "bBkKmMgGtTpP";
-            auto j = unitPrefix.find(units[0]);
-            uint64_t mult = 1;
-            if (j != std::string::npos) {
-                mult = ::pow(1024L, j / 2);
-            }
-            info.total_memory_bytes = x * mult;
-        }
+    if (gamesdk::jni::IsValid()) {
+        android::app::MemoryInfo memory_info;
+        java::Object obj = AppContext().getSystemService(
+            android::content::Context::ACTIVITY_SERVICE);
+        android::app::ActivityManager activity_manager(std::move(obj));
+        activity_manager.getMemoryInfo(memory_info);
+        info.total_memory_bytes = (uint64_t)memory_info.totalMem();
     }
     info.build_version_sdk = gamesdk::GetSystemProp("ro.build.version.sdk");
     info.build_fingerprint = gamesdk::GetSystemProp("ro.build.fingerprint");
@@ -116,25 +104,34 @@ RequestInfo RequestInfo::ForThisGameAndDevice(const Settings& settings) {
     }
 
     if (gamesdk::jni::IsValid()) {
+        using namespace gamesdk::jni;
+
         info.apk_version_code = apk_utils::GetVersionCode(
             &info.apk_package_name, &info.gl_es_version);
-        info.model = gamesdk::jni::android::os::Build::MODEL().C();
-        info.brand = gamesdk::jni::android::os::Build::BRAND().C();
-        info.product = gamesdk::jni::android::os::Build::PRODUCT().C();
-        info.device = gamesdk::jni::android::os::Build::DEVICE().C();
+        info.model = android::os::Build::MODEL().C();
+        info.brand = android::os::Build::BRAND().C();
+        info.product = android::os::Build::PRODUCT().C();
+        info.device = android::os::Build::DEVICE().C();
         if (gamesdk::GetSystemPropAsInt("ro.build.version.sdk") >= 31) {
-            info.soc_model = gamesdk::jni::android::os::Build::SOC_MODEL().C();
-            info.soc_manufacturer =
-                gamesdk::jni::android::os::Build::SOC_MANUFACTURER().C();
+            info.soc_model = android::os::Build::SOC_MODEL().C();
+            info.soc_manufacturer = android::os::Build::SOC_MANUFACTURER().C();
         }
 
-        gamesdk::jni::android::util::DisplayMetrics display_metrics;
-        gamesdk::jni::AppContext()
-            .getWindowManager()
-            .getDefaultDisplay()
-            .getMetrics(display_metrics);
-        info.height_pixels = display_metrics.heightPixels();
-        info.width_pixels = display_metrics.widthPixels();
+        android::util::DisplayMetrics display_metrics;
+
+        java::Object win_obj = AppContext().getSystemService(
+            android::content::Context::WINDOW_SERVICE);
+
+        if (win_obj.valid()) {
+            android::view::WindowManager window_manager(std::move(win_obj));
+            window_manager.getDefaultDisplay().getMetrics(display_metrics);
+            info.height_pixels = display_metrics.heightPixels();
+            info.width_pixels = display_metrics.widthPixels();
+        } else {
+            ALOGE(
+                "Unable to get WindowManager service, width and height will be "
+                "set to 0");
+        }
     }
     info.tuningfork_version = TUNINGFORK_PACKED_VERSION;
     info.swappy_version = settings.c_settings.swappy_version;

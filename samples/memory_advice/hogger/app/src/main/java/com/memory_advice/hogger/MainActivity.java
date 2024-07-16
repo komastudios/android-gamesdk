@@ -13,9 +13,6 @@ public class MainActivity extends AppCompatActivity {
     // Used to load the 'hogger' library on application startup.
     static {
         System.loadLibrary("hogger");
-
-        // Explicitly load the MemoryAdvice native library (Optional).
-        //System.loadLibrary("memory_advice");
     }
 
     private final class CheckMemoryAdviceTask extends TimerTask {

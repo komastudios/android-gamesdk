@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "tuningfork/tuningfork.h"
@@ -47,6 +48,12 @@ namespace tuningfork {
  * @brief A protocol buffer serialization stored as a STL vector of bytes
  */
 typedef std::vector<uint8_t> ProtobufSerialization;
+
+/**
+ * @brief A vector of (fidelity_params, frame_time) pairs.
+ */
+typedef std::vector<std::pair<ProtobufSerialization, uint32_t>>
+    QLTimePredictions;
 
 /**
  * @brief Convert from a C to a C++ serialization.
@@ -98,7 +105,7 @@ bool Deserialize(const std::vector<uint8_t>& ser, T& pb) {
  */
 template <typename T>
 bool Serialize(const T& pb, std::vector<uint8_t>& ser) {
-    ser.resize(pb.ByteSize());
+    ser.resize(pb.ByteSizeLong());
     return pb.SerializeToArray(ser.data(), ser.size());
 }
 
@@ -107,7 +114,7 @@ bool Serialize(const T& pb, std::vector<uint8_t>& ser) {
  */
 template <typename T>
 std::vector<uint8_t> Serialize(const T& pb) {
-    std::vector<uint8_t> ser(pb.ByteSize());
+    std::vector<uint8_t> ser(pb.ByteSizeLong());
     pb.SerializeToArray(ser.data(), ser.size());
     return ser;
 }
@@ -122,8 +129,8 @@ template <typename T>
 TuningFork_CProtobufSerialization TuningFork_CProtobufSerialization_Alloc(
     const T& pb) {
     TuningFork_CProtobufSerialization cser;
-    cser.bytes = (uint8_t*)::malloc(pb.ByteSize());
-    cser.size = pb.ByteSize();
+    cser.bytes = (uint8_t*)::malloc(pb.ByteSizeLong());
+    cser.size = pb.ByteSizeLong();
     cser.dealloc = TuningFork_CProtobufSerialization_Dealloc;
     pb.SerializeToArray(cser.bytes, cser.size);
     return cser;

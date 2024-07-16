@@ -58,6 +58,11 @@ class TestDownloadBackend : public tf::IBackend {
         }
     }
 
+    TuningFork_ErrorCode PredictQualityLevels(
+        tf::HttpRequest& request, tf::QLTimePredictions& predictions) override {
+        return TUNINGFORK_ERROR_OK;
+    }
+
     TuningFork_ErrorCode UploadTelemetry(
         const TuningForkLogEvent& evt_ser) override {
         return TUNINGFORK_ERROR_OK;

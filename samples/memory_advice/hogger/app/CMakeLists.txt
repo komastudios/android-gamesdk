@@ -18,7 +18,7 @@ add_library(${CMAKE_PROJECT_NAME}
         )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        games-memory-advice::memory_advice_static
+        games-memory-advice::memory_advice
         android
         GLESv2
         log
