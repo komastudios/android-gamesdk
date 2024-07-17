@@ -49,9 +49,4 @@ public class ExampleInstrumentedTest {
             InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.google.androidgamesdk.gametextinput.test", appContext.getPackageName());
     }
-
-    @Test
-    public void testFalse() {
-        assertEquals(2 * 2, 4);
-    }
 }
