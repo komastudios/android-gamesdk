@@ -102,4 +102,8 @@ public class InputEnabledTextView extends View implements Listener {
     public void enableSoftKeyboard() {
       mInputConnection.setSoftKeyboardActive(true, 0);
     }
+
+    public InputConnection getInputConnection() {
+      return mInputConnection;
+    }
 }
