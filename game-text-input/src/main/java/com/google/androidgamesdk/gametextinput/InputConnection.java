@@ -147,6 +147,8 @@ public class InputConnection
    */
   public InputConnection(Context ctx, View targetView, Settings settings) {
     super(targetView, settings.mEditorInfo.inputType != 0);
+    Log.d(TAG, "InputConnection created");
+
     this.targetView = targetView;
     this.settings = settings;
     Object imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -364,18 +366,18 @@ public class InputConnection
     int first = Math.min(selection.first, selection.second);
     int second = Math.max(selection.first, selection.second);
 
-    if (first == -1) {
-      return false;
+
+    if (first < second) {
+      // if we have a selection, just delete the selection
+      first = Math.max(0, first);
+      second = Math.min(second, this.mEditable.length());
+    } else {
+      first = Math.max(0, first - beforeLength);
+      second = Math.min(second + afterLength, this.mEditable.length());
     }
 
-    if (afterLength > 0) {
-      this.mEditable.delete(Math.max(0, second),
-              Math.min(this.mEditable.length(), second + afterLength));
-    }
-
-    if (beforeLength > 0) {
-      this.mEditable.delete(Math.max(0, first - beforeLength), first);
-    }
+    Log.d(TAG, String.format("deleteSurroundingText: deleting text from %d to %d", first, second));
+    this.mEditable.delete(first, second);
 
     this.stateUpdated(false);
     return true;
@@ -477,7 +479,7 @@ public class InputConnection
   }
 
   private boolean processKeyEvent(KeyEvent event) {
-    Log.d(TAG, String.format("processKeyEvent(key=%d)", event.getKeyCode()));
+    Log.d(TAG, String.format("processKeyEvent(key=%d) text=%s", event.getKeyCode(), this.mEditable.toString()));
 
     // Filter out Enter keys if multi-line mode is disabled.
     if ((settings.mEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) == 0 &&
@@ -502,16 +504,22 @@ public class InputConnection
         selection.second = this.mEditable.length();
       }
 
+      boolean modified = false;
+
       if (selection.first != selection.second) {
+        Log.d(TAG, String.format("processKeyEvent: deleting selection"));
         this.mEditable.delete(selection.first, selection.second);
+        modified = true;
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && selection.first > 0) {
         this.mEditable.delete(selection.first - 1, selection.first);
         this.stateUpdated(false);
+        Log.d(TAG, String.format("processKeyEvent: exit after DEL, text=%s", this.mEditable.toString()));
         return true;
       } else if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
-          && selection.first < this.mEditable.length() - 1) {
+          && selection.first < this.mEditable.length()) {
         this.mEditable.delete(selection.first, selection.first + 1);
         this.stateUpdated(false);
+        Log.d(TAG, String.format("processKeyEvent: exit after FORWARD_DEL, text=%s", this.mEditable.toString()));
         return true;
       }
 
@@ -540,11 +548,15 @@ public class InputConnection
         setSelectionInternal(new_cursor, new_cursor);
         this.informIMM();
         this.restartInput();
-        this.stateUpdated(false);
-        return true;
-      } else {
-        return false;
+        modified = true;
       }
+
+      if (modified) {
+        Log.d(TAG, String.format("processKeyEvent: exit, text=%s", this.mEditable.toString()));
+        this.stateUpdated(false);
+      }
+
+      return modified;
     }
   }
 
