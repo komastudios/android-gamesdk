@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cfdd015f_afe2c343",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370655
+      },
+      "writtenOn": "2024-08-06T23:22:16Z",
+      "side": 1,
+      "message": "Hi Aurimas - can you do a quick review of this change before I send it to an OWNER for review? Thank you!",
+      "revId": "04770db7081b3f4744fa8f63c141ee692c370495",
+      "serverId": "85c56323-6fa9-3386-8a01-6480fb634889"
+    }
+  ]
+}
