@@ -12,7 +12,9 @@ On [Windows](https://gerrit.googlesource.com/git-repo/+/HEAD/docs/windows.md), w
 ```bash
 mkdir android-games-sdk
 cd android-games-sdk
-repo init -u https://android.googlesource.com/platform/manifest -b android-games-sdk
+
+# see https://android.googlesource.com/platform/manifest/+log/refs/heads/android-games-sdk for the latest commit
+repo init -u https://android.googlesource.com/platform/manifest -b 316565dbe02f46d5c89e501058cff32129369aac
 ```
 
 ### Build with locally installed SDK/NDK
@@ -20,9 +22,11 @@ repo init -u https://android.googlesource.com/platform/manifest -b android-games
 If the Android SDK is already installed locally, then download only the AGDK source and build tools (~500Mb).
 
 ```bash
-repo sync -c -j8 gamesdk
+git clone https://github.com/komastudios/android-gamesdk.git gamesdk
+
 repo sync -c -j8 external/modp_b64 external/googletest external/nanopb-c external/protobuf
 repo sync -c -j8 prebuilts/cmake/linux-x86 prebuilts/cmake/windows-x86 prebuilts/cmake/darwin-x86
+repo sync -c -j8 prebuilts/ninja/linux-x86 prebuilts/ninja/windows-x86 prebuilts/ninja/darwin-x86
 ```
 
 Point the environment variable `ANDROID_HOME` to your local Android SDK (and `ANDROID_NDK`, if the ndk isn't in `ANDROID_HOME/ndk-bundle`).
