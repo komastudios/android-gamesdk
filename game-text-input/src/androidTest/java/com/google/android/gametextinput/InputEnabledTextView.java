@@ -46,7 +46,7 @@ public class InputEnabledTextView extends View implements Listener {
     }
 
     public void createInputConnection(int inputType, MainActivity mainActivity) {
-        Log.wtf(LOG_TAG, "createInputConnection");
+        Log.d(LOG_TAG, "createInputConnection");
         mMainActivity = mainActivity;
 
         EditorInfo editorInfo = new EditorInfo();
@@ -76,7 +76,7 @@ public class InputEnabledTextView extends View implements Listener {
     // Called when the IME has changed the input
     @Override
     public void stateChanged(State newState, boolean dismissed) {
-        Log.wtf(LOG_TAG, "stateChanged: " + newState + " dismissed: " + dismissed);
+        Log.d(LOG_TAG, "stateChanged: " + newState + " dismissed: " + dismissed);
         onTextInputEvent(newState);
     }
 
