@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.gametextinput.testbed"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 
