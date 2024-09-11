@@ -175,7 +175,7 @@ enum HideImeFlags {
 };
 
 /**
- * Show the IME. Calls InputMethodManager.hideSoftInputFromWindow().
+ * Hide the IME. Calls InputMethodManager.hideSoftInputFromWindow().
  * @param input A valid GameTextInput library handle.
  * @param flags Defined in HideImeFlags above. For more information see:
  * https://developer.android.com/reference/android/view/inputmethod/InputMethodManager
