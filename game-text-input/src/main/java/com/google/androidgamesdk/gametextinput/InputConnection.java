@@ -529,72 +529,71 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
       return false;
     } else if (event.getAction() != 0) {
       return true;
-    } else {
-      // If no selection is set, move the selection to the end.
-      // This is the case when first typing on keys when the selection is not set.
-      // Note that for InputType.TYPE_CLASS_TEXT, this is not be needed because the
-      // selection is set in setComposingText.
-      if (selection.first == -1) {
-        selection.first = this.mEditable.length();
-        selection.second = this.mEditable.length();
-      }
-
-      boolean modified = false;
-
-      if (selection.first != selection.second) {
-        Log.d(TAG, String.format("processKeyEvent: deleting selection"));
-        this.mEditable.delete(selection.first, selection.second);
-        modified = true;
-      } else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && selection.first > 0) {
-        this.mEditable.delete(selection.first - 1, selection.first);
-        this.stateUpdated(false);
-        Log.d(TAG,
-            String.format("processKeyEvent: exit after DEL, text=%s", this.mEditable.toString()));
-        return true;
-      } else if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
-          && selection.first < this.mEditable.length()) {
-        this.mEditable.delete(selection.first, selection.first + 1);
-        this.stateUpdated(false);
-        Log.d(TAG,
-            String.format(
-                "processKeyEvent: exit after FORWARD_DEL, text=%s", this.mEditable.toString()));
-        return true;
-      }
-
-      int code = event.getKeyCode();
-      if (!dontInsertChars.get(code)) {
-        String charsToInsert = Character.toString((char) event.getUnicodeChar());
-        this.mEditable.insert(selection.first, (CharSequence) charsToInsert);
-        int length = this.mEditable.length();
-
-        // Same logic as in setComposingText(): we must update composing region,
-        // so make sure it points to a valid range.
-        Pair composingRegion = this.getComposingRegion();
-        if (composingRegion.first == -1) {
-          composingRegion = this.getSelection();
-          if (composingRegion.first == -1) {
-            composingRegion = new Pair(0, 0);
-          }
-        }
-
-        // IMM seems to cache the content of Editable, so we update it with restartInput
-        // Also it caches selection and composing region, so let's notify it about updates.
-        composingRegion.second = composingRegion.first + length;
-        this.setComposingRegion(composingRegion.first, composingRegion.second);
-        int new_cursor = selection.first + charsToInsert.length();
-        setSelectionInternal(new_cursor, new_cursor);
-        this.informIMM();
-        this.restartInput();
-        modified = true;
-      }
-
-      if (modified) {
-        Log.d(TAG, String.format("processKeyEvent: exit, text=%s", this.mEditable.toString()));
-        this.stateUpdated(false);
-      }
-
-      return modified;
     }
+    // If no selection is set, move the selection to the end.
+    // This is the case when first typing on keys when the selection is not set.
+    // Note that for InputType.TYPE_CLASS_TEXT, this is not be needed because the
+    // selection is set in setComposingText.
+    if (selection.first == -1) {
+      selection.first = this.mEditable.length();
+      selection.second = this.mEditable.length();
+    }
+
+    boolean modified = false;
+
+    if (selection.first != selection.second) {
+      Log.d(TAG, String.format("processKeyEvent: deleting selection"));
+      this.mEditable.delete(selection.first, selection.second);
+      modified = true;
+    } else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && selection.first > 0) {
+      this.mEditable.delete(selection.first - 1, selection.first);
+      this.stateUpdated(false);
+      Log.d(TAG,
+          String.format("processKeyEvent: exit after DEL, text=%s", this.mEditable.toString()));
+      return true;
+    } else if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
+        && selection.first < this.mEditable.length()) {
+      this.mEditable.delete(selection.first, selection.first + 1);
+      this.stateUpdated(false);
+      Log.d(TAG,
+          String.format(
+              "processKeyEvent: exit after FORWARD_DEL, text=%s", this.mEditable.toString()));
+      return true;
+    }
+
+    int code = event.getKeyCode();
+    if (!dontInsertChars.get(code)) {
+      String charsToInsert = Character.toString((char) event.getUnicodeChar());
+      this.mEditable.insert(selection.first, (CharSequence) charsToInsert);
+      int length = this.mEditable.length();
+
+      // Same logic as in setComposingText(): we must update composing region,
+      // so make sure it points to a valid range.
+      Pair composingRegion = this.getComposingRegion();
+      if (composingRegion.first == -1) {
+        composingRegion = this.getSelection();
+        if (composingRegion.first == -1) {
+          composingRegion = new Pair(0, 0);
+        }
+      }
+
+      // IMM seems to cache the content of Editable, so we update it with restartInput
+      // Also it caches selection and composing region, so let's notify it about updates.
+      composingRegion.second = composingRegion.first + length;
+      this.setComposingRegion(composingRegion.first, composingRegion.second);
+      int new_cursor = selection.first + charsToInsert.length();
+      setSelectionInternal(new_cursor, new_cursor);
+      this.informIMM();
+      this.restartInput();
+      modified = true;
+    }
+
+    if (modified) {
+      Log.d(TAG, String.format("processKeyEvent: exit, text=%s", this.mEditable.toString()));
+      this.stateUpdated(false);
+    }
+
+    return modified;
   }
 
   private final void stateUpdated(boolean dismissed) {
