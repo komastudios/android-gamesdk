@@ -17,18 +17,23 @@ package com.gametextinput.testbed;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.androidgamesdk.gametextinput.InputConnection;
 
+import android.graphics.Color;
+import android.text.style.BackgroundColorSpan;
+import android.text.SpannableString;
+
 public class MainActivity extends AppCompatActivity {
   static {
     System.loadLibrary("game-input");
   }
 
-  InputEnabledTextView inputEnabledTextView;
+  com.gametextinput.testbed.InputEnabledTextView inputEnabledTextView;
   TextView displayedText;
 
   native void onCreated();
@@ -85,7 +90,15 @@ public class MainActivity extends AppCompatActivity {
     setInputConnectionNative(inputEnabledTextView.mInputConnection);
   }
 
-  public void setDisplayedText(String text) {
-    displayedText.setText(text);
+  public void setDisplayedText(String text, int selectionStart, int selectionEnd)
+  {
+    SpannableString str = new SpannableString(text);
+
+    if (selectionStart != selectionEnd) {
+      Log.e("main", String.format("selection: %d to %d", selectionStart, selectionEnd));
+      str.setSpan(new BackgroundColorSpan(Color.YELLOW), selectionStart, selectionEnd, 0);
+    }
+
+    displayedText.setText(str);
   }
 }

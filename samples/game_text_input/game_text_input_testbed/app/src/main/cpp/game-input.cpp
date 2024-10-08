@@ -34,7 +34,8 @@ static void onEvent(void *context, const GameTextInputState *state) {
   JNIEnv *env = (JNIEnv *)context;
 
   jstring currentText = env->NewStringUTF(state->text_UTF8);
-  env->CallVoidMethod(activity, setDisplayedText, currentText);
+  env->CallVoidMethod(activity, setDisplayedText, currentText,
+                      state->selection.start, state->selection.end);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -48,7 +49,7 @@ Java_com_gametextinput_testbed_MainActivity_onCreated(JNIEnv *env,
       env->FindClass("com/gametextinput/testbed/MainActivity");
 
   setDisplayedText = env->GetMethodID(activityClass, "setDisplayedText",
-                                      "(Ljava/lang/String;)V");
+                                      "(Ljava/lang/String;II)V");
   env->DeleteLocalRef(activityClass);
   ALOGD("setDisplayedText is %p...", setDisplayedText);
 }
