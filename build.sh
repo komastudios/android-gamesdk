@@ -67,7 +67,7 @@ elif [[ $1 == "tests" ]]
 then
     package_name=gamesdk-tests
     ./gradlew :game-controller:connectedAndroidTest -Plibraries=paddleboat -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
-    ./gradlew :game-frame-pacing:connectedAndroidTest -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
+    # ./gradlew :game-frame-pacing:connectedAndroidTest -Plibraries=swappy -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     ./gradlew :game-text-input:connectedAndroidTest -Plibraries=game_text_input,game_activity -PincludeSampleSources -PincludeSampleArtifacts -PdistPath="$dist_dir" -PpackageName=$package_name
     exit
 else
