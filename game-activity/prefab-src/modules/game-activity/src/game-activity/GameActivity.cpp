@@ -38,6 +38,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include "GameActivityEvents_internal.h"
 
@@ -72,6 +73,24 @@ static struct {
 } gGameActivityClassInfo;
 
 /*
+ * JNI methods of the android.os.LocaleList class.
+ */
+static struct {
+  jmethodID size;
+  jmethodID get;
+} gLocaleListClassInfo;
+
+/*
+ * JNI methods of the java.util.Locale class.
+ */
+static struct {
+  jmethodID getLanguage;
+  jmethodID getScript;
+  jmethodID getCountry;
+  jmethodID getVariant;
+} gLocaleClassInfo;
+
+/*
  * JNI fields of the androidx.core.graphics.Insets Java class.
  */
 static struct {
@@ -103,6 +122,8 @@ static struct ConfigurationClassInfo {
   jfieldID smallestScreenWidthDp;
   jfieldID touchscreen;
   jfieldID uiMode;
+
+  jmethodID getLocales;
 } gConfigurationClassInfo;
 
 /*
@@ -140,29 +161,42 @@ enum {
 };
 
 /*
+ * A class for locale information, matching Android Java Locale class.
+ */
+struct Locale {
+  std::string language;
+  std::string script;
+  std::string country;
+  std::string variant;
+};
+
+/*
  * Last known Configuration values. They may be accessed from the different
  * thread, this is why they are made atomic.
  */
 static struct Configuration {
-  std::atomic_int colorMode;
-  std::atomic_int densityDpi;
-  std::atomic<float> fontScale;
-  std::atomic_int fontWeightAdjustment;
-  std::atomic_int hardKeyboardHidden;
-  std::atomic_int keyboard;
-  std::atomic_int keyboardHidden;
-  std::atomic_int mcc;
-  std::atomic_int mnc;
-  std::atomic_int navigation;
-  std::atomic_int navigationHidden;
-  std::atomic_int orientation;
-  std::atomic_int screenHeightDp;
-  std::atomic_int screenLayout;
-  std::atomic_int screenWidthDp;
-  std::atomic_int smallestScreenWidthDp;
-  std::atomic_int touchscreen;
-  std::atomic_int uiMode;
+  int colorMode;
+  int densityDpi;
+  float fontScale;
+  int fontWeightAdjustment;
+  int hardKeyboardHidden;
+  int keyboard;
+  int keyboardHidden;
+  int mcc;
+  int mnc;
+  int navigation;
+  int navigationHidden;
+  int orientation;
+  int screenHeightDp;
+  int screenLayout;
+  int screenWidthDp;
+  int smallestScreenWidthDp;
+  int touchscreen;
+  int uiMode;
+  std::vector<Locale> locales;
 } gConfiguration;
+
+static std::mutex gConfigMutex;
 
 /*
  * Write a command to be executed by the GameActivity on the application main
@@ -501,6 +535,7 @@ static jlong initializeNativeCode_native(
     rawSavedSize = env->GetArrayLength(savedState);
   }
 
+  // read configuration for the first time
   readConfigurationValues(code, javaConfig);
 
   GameActivity_onCreate(code, rawSavedState, rawSavedSize);
@@ -610,7 +645,18 @@ static void onStop_native(JNIEnv *env, jobject javaGameActivity, jlong handle) {
   }
 }
 
+static std::string getStringField(JNIEnv *env, jobject obj, jmethodID method) {
+  jstring str = (jstring)env->CallObjectMethod(obj, method);
+  const char *chars = env->GetStringUTFChars(str, NULL);
+  std::string res(chars);
+  env->ReleaseStringUTFChars(str, chars);
+  checkAndClearException(env, "getStringField");
+  return res;
+}
+
 static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+
   if (gConfigurationClassInfo.colorMode != NULL) {
     gConfiguration.colorMode =
         code->env->GetIntField(javaConfig, gConfigurationClassInfo.colorMode);
@@ -656,6 +702,35 @@ static void readConfigurationValues(NativeCode *code, jobject javaConfig) {
       code->env->GetIntField(javaConfig, gConfigurationClassInfo.uiMode);
 
   checkAndClearException(code->env, "Configuration.get");
+
+  jobject locales = code->env->CallObjectMethod(
+      javaConfig, gConfigurationClassInfo.getLocales);
+  checkAndClearException(code->env, "getLocales");
+
+  int localesCount =
+      code->env->CallIntMethod(locales, gLocaleListClassInfo.size);
+  checkAndClearException(code->env, "size");
+  gConfiguration.locales.resize(localesCount);
+
+  // extract the data for every locale
+  for (int i = 0; i < localesCount; ++i) {
+    Locale &locale = gConfiguration.locales[i];
+
+    // get locale object from the array
+    jobject jniLocale =
+        code->env->CallObjectMethod(locales, gLocaleListClassInfo.get, i);
+    checkAndClearException(code->env, "GetObjectArrayElement");
+
+    // get data strings for this locale
+    locale.language =
+        getStringField(code->env, jniLocale, gLocaleClassInfo.getLanguage);
+    locale.script =
+        getStringField(code->env, jniLocale, gLocaleClassInfo.getScript);
+    locale.country =
+        getStringField(code->env, jniLocale, gLocaleClassInfo.getCountry);
+    locale.variant =
+        getStringField(code->env, jniLocale, gLocaleClassInfo.getVariant);
+  }
 }
 
 static void onConfigurationChanged_native(JNIEnv *env, jobject javaGameActivity,
@@ -791,75 +866,159 @@ extern "C" void GameActivity_setImeEditorInfo(
 }
 
 extern "C" int GameActivity_getColorMode(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.colorMode;
 }
 
 extern "C" int GameActivity_getDensityDpi(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.densityDpi;
 }
 
 extern "C" float GameActivity_getFontScale(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.fontScale;
 }
 
 extern "C" int GameActivity_getFontWeightAdjustment(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.fontWeightAdjustment;
 }
 
 extern "C" int GameActivity_getHardKeyboardHidden(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.hardKeyboardHidden;
 }
 
 extern "C" int GameActivity_getKeyboard(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.keyboard;
 }
 
 extern "C" int GameActivity_getKeyboardHidden(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.keyboardHidden;
 }
 
+extern "C" int GameActivity_getLocalesCount(GameActivity *activity) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+  return gConfiguration.locales.size();
+}
+
 extern "C" int GameActivity_getMcc(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.mcc;
 }
 
 extern "C" int GameActivity_getMnc(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.mnc;
 }
 
 extern "C" int GameActivity_getNavigation(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.navigation;
 }
 
 extern "C" int GameActivity_getNavigationHidden(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.navigationHidden;
 }
 
 extern "C" int GameActivity_getOrientation(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.orientation;
 }
 
 extern "C" int GameActivity_getScreenHeightDp(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.screenHeightDp;
 }
 
 extern "C" int GameActivity_getScreenLayout(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.screenLayout;
 }
 
 extern "C" int GameActivity_getScreenWidthDp(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.screenWidthDp;
 }
 
 extern "C" int GameActivity_getSmallestScreenWidthDp(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.smallestScreenWidthDp;
 }
 
 extern "C" int GameActivity_getTouchscreen(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.touchscreen;
 }
 
 extern "C" int GameActivity_getUIMode(GameActivity *) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
   return gConfiguration.uiMode;
+}
+
+static int copyStringIfFits(char *dst, size_t dst_size, const std::string &s) {
+  if (dst_size <= s.size()) {
+    return ENOBUFS;
+  }
+
+  strcpy(dst, s.c_str());
+  return 0;
+}
+
+extern "C" int GameActivity_getLocaleLanguage(char *dst, size_t dst_size,
+                                              GameActivity *activity,
+                                              size_t localeIdx) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+
+  if (localeIdx >= gConfiguration.locales.size()) {
+    return EINVAL;
+  }
+
+  return copyStringIfFits(dst, dst_size,
+                          gConfiguration.locales[localeIdx].language);
+}
+
+extern "C" int GameActivity_getLocaleScript(char *dst, size_t dst_size,
+                                            GameActivity *activity,
+                                            size_t localeIdx) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+
+  if (localeIdx >= gConfiguration.locales.size()) {
+    return EINVAL;
+  }
+
+  return copyStringIfFits(dst, dst_size,
+                          gConfiguration.locales[localeIdx].language);
+}
+
+extern "C" int GameActivity_getLocaleCountry(char *dst, size_t dst_size,
+                                             GameActivity *activity,
+                                             size_t localeIdx) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+
+  if (localeIdx >= gConfiguration.locales.size()) {
+    return EINVAL;
+  }
+
+  return copyStringIfFits(dst, dst_size,
+                          gConfiguration.locales[localeIdx].language);
+}
+
+extern "C" int GameActivity_getLocaleVariant(char *dst, size_t dst_size,
+                                             GameActivity *activity,
+                                             size_t localeIdx) {
+  const std::lock_guard<std::mutex> lock(gConfigMutex);
+
+  if (localeIdx >= gConfiguration.locales.size()) {
+    return EINVAL;
+  }
+
+  return copyStringIfFits(dst, dst_size,
+                          gConfiguration.locales[localeIdx].language);
 }
 
 static bool onTouchEvent_native(JNIEnv *env, jobject javaGameActivity,
@@ -1066,6 +1225,8 @@ static const char *const kConfigurationPathName =
     "android/content/res/Configuration";
 static const char *const kWindowInsetsCompatTypePathName =
     "androidx/core/view/WindowInsetsCompat$Type";
+static const char *const kLocaleListPathName = "android/os/LocaleList";
+static const char *const kLocalePathName = "java/util/Locale";
 
 #define FIND_CLASS(var, className) \
   var = env->FindClass(className); \
@@ -1172,6 +1333,26 @@ extern "C" int GameActivity_register(JNIEnv *env) {
                "touchscreen", "I");
   GET_FIELD_ID(gConfigurationClassInfo.uiMode, configuration_class, "uiMode",
                "I");
+
+  GET_METHOD_ID(gConfigurationClassInfo.getLocales, configuration_class,
+                "getLocales", "()Landroid/os/LocaleList;");
+
+  jclass localeListClass;
+  FIND_CLASS(localeListClass, kLocaleListPathName);
+  GET_METHOD_ID(gLocaleListClassInfo.size, localeListClass, "size", "()I");
+  GET_METHOD_ID(gLocaleListClassInfo.get, localeListClass, "get",
+                "(I)Ljava/util/Locale;");
+
+  jclass localeClass;
+  FIND_CLASS(localeClass, kLocalePathName);
+  GET_METHOD_ID(gLocaleClassInfo.getLanguage, localeClass, "getLanguage",
+                "()Ljava/lang/String;");
+  GET_METHOD_ID(gLocaleClassInfo.getScript, localeClass, "getScript",
+                "()Ljava/lang/String;");
+  GET_METHOD_ID(gLocaleClassInfo.getCountry, localeClass, "getCountry",
+                "()Ljava/lang/String;");
+  GET_METHOD_ID(gLocaleClassInfo.getVariant, localeClass, "getVariant",
+                "()Ljava/lang/String;");
 
   jclass windowInsetsCompatType_class;
   FIND_CLASS(windowInsetsCompatType_class, kWindowInsetsCompatTypePathName);

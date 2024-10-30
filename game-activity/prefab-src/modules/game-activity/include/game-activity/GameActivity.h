@@ -239,7 +239,7 @@ typedef struct GameActivityCallbacks {
                                   ANativeWindow* window);
 
   /**
-   * The current device AConfiguration has changed.  The new configuration can
+   * The current device AConfiguration has changed. The new configuration can
    * be retrieved from assetManager.
    */
   void (*onConfigurationChanged)(GameActivity* activity);
@@ -653,6 +653,7 @@ int GameActivity_getFontWeightAdjustment(GameActivity* activity);
 int GameActivity_getHardKeyboardHidden(GameActivity* activity);
 int GameActivity_getKeyboard(GameActivity* activity);
 int GameActivity_getKeyboardHidden(GameActivity* activity);
+int GameActivity_getLocalesCount(GameActivity* activity);
 int GameActivity_getMcc(GameActivity* activity);
 int GameActivity_getMnc(GameActivity* activity);
 int GameActivity_getNavigation(GameActivity* activity);
@@ -664,6 +665,22 @@ int GameActivity_getScreenWidthDp(GameActivity* activity);
 int GameActivity_getSmallestScreenWidthDp(GameActivity* activity);
 int GameActivity_getTouchscreen(GameActivity* activity);
 int GameActivity_getUIMode(GameActivity* activity);
+
+/**
+ * The functions in the block below return string values in the provided buffer.
+ * Return value is zero if there were no errors, otherwise it's non-zero.
+ * If the return value is zero, `dst` will contain a null-terminated string:
+ * strlen(dst) <= dst_size - 1.
+ * If the return value is not-zero, the content of dst is undefined.
+ */
+int GameActivity_getLocaleLanguage(char* dst, size_t dst_size,
+                                   GameActivity* activity, size_t localeIdx);
+int GameActivity_getLocaleScript(char* dst, size_t dst_size,
+                                 GameActivity* activity, size_t localeIdx);
+int GameActivity_getLocaleCountry(char* dst, size_t dst_size,
+                                  GameActivity* activity, size_t localeIdx);
+int GameActivity_getLocaleVariant(char* dst, size_t dst_size,
+                                  GameActivity* activity, size_t localeIdx);
 
 #ifdef __cplusplus
 }
