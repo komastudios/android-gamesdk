@@ -317,7 +317,7 @@ static struct android_app* android_app_create(GameActivity* activity,
   return android_app;
 }
 
-static void android_app_write_cmd(struct android_app* android_app, int8_t cmd) {
+void android_app_write_cmd(struct android_app* android_app, int8_t cmd) {
   if (write(android_app->msgwrite, &cmd, sizeof(cmd)) != sizeof(cmd)) {
     LOGE("Failure writing android_app cmd: %s", strerror(errno));
   }

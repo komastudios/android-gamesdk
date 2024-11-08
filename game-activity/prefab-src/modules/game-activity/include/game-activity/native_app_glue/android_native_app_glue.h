@@ -504,6 +504,13 @@ void android_app_set_key_event_filter(struct android_app* app,
 void android_app_set_motion_event_filter(struct android_app* app,
                                          android_motion_event_filter filter);
 
+/**
+ * You can send your custom events using the function below.
+ *
+ * Make sure your custom codes do not overlap with this library's ones.
+ */
+void android_app_write_cmd(struct android_app* android_app, int8_t cmd);
+
 #ifdef __cplusplus
 }
 #endif
