@@ -667,11 +667,31 @@ int GameActivity_getTouchscreen(GameActivity* activity);
 int GameActivity_getUIMode(GameActivity* activity);
 
 /**
+ * The functions below return Java locale information.
+ *
+ * In simple cases there will be just one locale, but it's possible tha
+ * there are more than one locale objects. Users are encouraged to write code
+ * that handles all locales and not just the first one.
+ *
  * The functions in the block below return string values in the provided buffer.
  * Return value is zero if there were no errors, otherwise it's non-zero.
  * If the return value is zero, `dst` will contain a null-terminated string:
  * strlen(dst) <= dst_size - 1.
- * If the return value is not-zero, the content of dst is undefined.
+ * If the return value is non-zero, the content of dst is undefined.
+ *
+ * Parameters:
+ *
+ * dst, dst_size: define a receiver buffer. Locale string can be something
+ * short like "EN/EN", but it may be longer. You should be safe with a buffer
+ * size of 256 bytes.
+ *
+ * If the buffer is too small, ENOBUFS is returned. Try allocating a larger
+ * buffer in this case.
+ *
+ * localeIdx must be between 0 and the value of GameActivity_getLocalesCount().
+ * If localeIdx is out of range, EINVAL is returned.
+ *
+ * Refer to Java documentation of locales for more information.
  */
 int GameActivity_getLocaleLanguage(char* dst, size_t dst_size,
                                    GameActivity* activity, size_t localeIdx);
