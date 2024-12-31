@@ -55,7 +55,7 @@ typedef struct GameTextInputSpan {
 /**
  * Values with special meaning in a GameTextInputSpan.
  */
-enum GameTextInputSpanFlag { SPAN_UNDEFINED = -1 };
+enum GameTextInputSpanFlag : int32_t { SPAN_UNDEFINED = -1 };
 
 /**
  * This struct holds the state of an editable section of text.
@@ -142,7 +142,7 @@ void GameTextInput_destroy(GameTextInput *input);
 /**
  * Flags to be passed to GameTextInput_showIme.
  */
-enum ShowImeFlags {
+enum ShowImeFlags : uint32_t {
   SHOW_IME_UNDEFINED = 0,  // Default value.
   SHOW_IMPLICIT =
       1,  // Indicates that the user has forced the input method open so it
@@ -163,7 +163,7 @@ void GameTextInput_showIme(GameTextInput *input, uint32_t flags);
 /**
  * Flags to be passed to GameTextInput_hideIme.
  */
-enum HideImeFlags {
+enum HideImeFlags : uint32_t {
   HIDE_IME_UNDEFINED = 0,  // Default value.
   HIDE_IMPLICIT_ONLY =
       1,  // Indicates that the soft input window should only be hidden if it
@@ -349,7 +349,7 @@ void GameTextInputState_fromJava(const GameTextInput *input, jobject state,
  * |-------|-------|-------|-------|</pre>
  */
 
-enum GameTextInputType : unsigned int {
+enum GameTextInputType : uint32_t {
   /**
    * Mask of bits that determine the overall class
    * of text being given.  Currently supported classes are:
@@ -726,7 +726,7 @@ enum GameTextInputType : unsigned int {
  * |-------|-------|-------|-------|</pre>
  */
 
-enum GameTextInputActionType : unsigned int {
+enum GameTextInputActionType : uint32_t {
   /**
    * Set of bits in {@link #imeOptions} that provide alternative actions
    * associated with the "enter" key.  This both helps the IME provide
@@ -790,7 +790,7 @@ enum GameTextInputActionType : unsigned int {
   IME_ACTION_PREVIOUS = 0x00000007,
 };
 
-enum GameTextInputImeOptions : unsigned int {
+enum GameTextInputImeOptions : uint32_t {
   /**
    * Flag of {@link #imeOptions}: used to request that the IME should not update
    * any personalized data such as typing history and personalized language
