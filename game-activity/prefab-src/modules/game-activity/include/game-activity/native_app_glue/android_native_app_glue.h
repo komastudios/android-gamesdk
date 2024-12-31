@@ -303,6 +303,9 @@ enum NativeAppGlueLooperId {
 
 /**
  * Commands passed from the application's main Java thread to the game's thread.
+ *
+ * Values from 0 to 127 are reserved for this library; values from -128 to -1
+ * can be used for custom user's events.
  */
 enum NativeAppGlueAppCmd {
   /**
@@ -508,6 +511,9 @@ void android_app_set_motion_event_filter(struct android_app* app,
  * You can send your custom events using the function below.
  *
  * Make sure your custom codes do not overlap with this library's ones.
+ *
+ * Values from 0 to 127 are reserved for this library; values from -128 to -1
+ * can be used for custom user's events.
  */
 void android_app_write_cmd(struct android_app* android_app, int8_t cmd);
 
