@@ -75,6 +75,8 @@ public class GameActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
   private EditorInfo imeEditorInfo;
 
+  private boolean softwareKeyboardVisible = false;
+
   /**
    * The SurfaceView used by default for displaying the game and getting a text input.
    * You can override its creation in `onCreateSurfaceView`.
@@ -481,7 +483,12 @@ public class GameActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
   @Override
   public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    this.mSurfaceView.mInputConnection.onApplyWindowInsets(v, insets);
+    this.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
+    boolean keyboardVisible = isSoftwareKeyboardVisible(insets);
+    if (keyboardVisible != softwareKeyboardVisible) {
+      softwareKeyboardVisible = keyboardVisible;
+      onSoftwareKeyboardVisibilityChanged(keyboardVisible);
+    }
     onWindowInsetsChangedNative(mNativeHandle);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
       // Pass through to the view - we don't want to handle the insets, just observe them.
@@ -608,5 +615,13 @@ public class GameActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public void setEditorInfo(EditorInfo e) {
       mInputConnection.setEditorInfo(e);
     }
+  }
+
+  private boolean isSoftwareKeyboardVisible(WindowInsetsCompat insets) {
+    if (insets == null) {
+      return false;
+    }
+
+    return insets.isVisible(WindowInsetsCompat.Type.ime());
   }
 }

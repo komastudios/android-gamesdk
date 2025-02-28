@@ -117,9 +117,6 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
     targetView.setOnKeyListener(this);
     // Apply EditorInfo settings
     this.setEditorInfo(settings.mEditorInfo);
-
-    ViewCompat.setOnApplyWindowInsetsListener(
-        targetView, (v, insets) -> onApplyWindowInsets(v, insets));
   }
 
   /**
@@ -148,6 +145,7 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
    */
   public final void setSoftKeyboardActive(boolean active, int flags) {
     Log.d(TAG, "setSoftKeyboardActive, active: " + active);
+
     this.mSoftKeyboardActive = active;
     if (active) {
       this.targetView.setFocusableInTouchMode(true);
@@ -528,36 +526,6 @@ public class InputConnection extends BaseInputConnection implements View.OnKeyLi
     if (listener != null) {
       listener.stateChanged(state, /*dismissed=*/false);
     }
-  }
-
-  /**
-   * This function is called whenever software keyboard (IME) changes its visible dimensions.
-   *
-   * @param v main application View
-   * @param insets insets of the software keyboard (IME)
-   * @return this function should return original insets object unless it wants to modify insets.
-   */
-  public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-    Log.d(TAG, "onApplyWindowInsets: " + this.isSoftwareKeyboardVisible());
-
-    Listener listener = this.listener;
-    if (listener != null) {
-      listener.onImeInsetsChanged(insets.getInsets(WindowInsetsCompat.Type.ime()));
-    }
-
-    boolean visible = this.isSoftwareKeyboardVisible();
-    if (visible == this.mSoftKeyboardActive) {
-      return insets;
-    }
-
-    this.mSoftKeyboardActive = visible;
-    imm.restartInput(targetView);
-
-    if (listener != null) {
-      listener.onSoftwareKeyboardVisibilityChanged(visible);
-    }
-
-    return insets;
   }
 
   /**
